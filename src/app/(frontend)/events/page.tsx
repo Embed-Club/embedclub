@@ -1,5 +1,6 @@
 import { SidebarShell, MainbarShell } from "@/components/FrontendShell";
 import { Carousel, Card } from "@/components/EventsCarousel";
+import { EventsCards } from "@/components/EventsCards";
 import RichTextRender from "@/components/RichTextRender";
 import type { Event } from "@/payload-types";
 import Image from "next/image";
@@ -14,7 +15,7 @@ const payloadURL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
  */
 async function getEvents() {
   const res = await fetch(
-    `${payloadURL}/api/events?depth=1&sort=-createdAt`,
+    `${payloadURL}/api/events?depth=1&sort=-createdAt&limit=5`,
     { next: { revalidate: 60 } }
   );
   
@@ -33,8 +34,33 @@ async function getEvents() {
   return data.docs;
 }
 
+/**
+ * Fetch all events for the gallery (with pagination support).
+ */
+async function getAllEvents() {
+  const res = await fetch(
+    `${payloadURL}/api/events?depth=1&sort=-createdAt&limit=100`,
+    { next: { revalidate: 60 } }
+  );
+  
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('Failed to fetch all events:', {
+      status: res.status,
+      statusText: res.statusText,
+      error: errorText,
+      url: `${payloadURL}/api/events?depth=1&sort=-createdAt`
+    });
+    throw new Error(`Failed to load events: ${res.status} ${res.statusText}`);
+  }
+  
+  const data = (await res.json()) as { docs: Event[] };
+  return data.docs;
+}
+
 export default async function Page() {
   const events = await getEvents();
+  const allEvents = await getAllEvents();
 
   const items = events.map((event, index) => (
     <Card
@@ -161,6 +187,18 @@ export default async function Page() {
         </h1>
         <div className="pt-24 md:pt-32">
           <Carousel items={items} initialScroll={0} />
+        </div>
+
+        {/* Gallery Section */}
+
+        <div className="w-full px-6 md:px-12 lg:px-16 pb-20 pt-20">
+          <h1 className="mb-8 text-left text-xl font-light md:text-4xl">
+            All Events
+          </h1>
+
+          <div>
+            <EventsCards events={allEvents} />
+          </div>
         </div>
       </MainbarShell>
     </SidebarShell>

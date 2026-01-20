@@ -176,7 +176,7 @@ export const Events: CollectionConfig = {
                   admin: {
                     description: 'Click on the map to pin the exact event location',
                     components: {
-                      Field: '#components/admin/LeafletLocationField',
+                      Field: '@/components/admin/LeafletLocationField',
                     },
                   },
                   fields: [
