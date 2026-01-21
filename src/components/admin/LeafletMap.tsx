@@ -28,9 +28,21 @@ function MapUpdater({ lat, lng, setInternalMarker }: { lat?: number; lng?: numbe
   const map = useMap()
   
   useEffect(() => {
-    if (lat !== undefined && lng !== undefined) {
-      setInternalMarker({ lat, lng })
-      map.setView([lat, lng], map.getZoom())
+    // Only update if we have valid numeric coordinates and map is ready
+    if (
+      typeof lat === 'number' && 
+      typeof lng === 'number' && 
+      !isNaN(lat) && 
+      !isNaN(lng) && 
+      map && 
+      map._crs
+    ) {
+      try {
+        setInternalMarker({ lat, lng })
+        map.setView([lat, lng], map.getZoom())
+      } catch (err) {
+        console.warn('Error updating map view:', err)
+      }
     }
   }, [lat, lng, map, setInternalMarker])
   
@@ -63,14 +75,26 @@ export default function LeafletMap({ lat, lng, onChange }: LeafletMapProps) {
 
   // Update marker position when props change (from manual input)
   useEffect(() => {
-    if (lat !== undefined && lng !== undefined) {
+    // Only set marker if we have valid numeric coordinates
+    if (typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)) {
       setMarkerPos({ lat, lng })
     }
+    // Don't clear marker if coordinates become invalid - preserve last valid position
   }, [lat, lng])
 
   // PA College of Engineering coordinates as default
   const defaultPosition: [number, number] = [12.808128, 74.933174]
-  const position: [number, number] = lat !== undefined && lng !== undefined ? [lat, lng] : defaultPosition
+  const position: [number, number] = 
+    typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)
+      ? [lat, lng] 
+      : defaultPosition
+
+  // Helper to check if markerPos has valid coordinates
+  const hasValidMarker = markerPos && 
+    typeof markerPos.lat === 'number' && 
+    typeof markerPos.lng === 'number' && 
+    !isNaN(markerPos.lat) && 
+    !isNaN(markerPos.lng)
 
   return (
     <div style={{ height: '600px', width: '100%', borderRadius: '8px', overflow: 'hidden' }}>
@@ -86,7 +110,7 @@ export default function LeafletMap({ lat, lng, onChange }: LeafletMapProps) {
         />
         <ClickHandler onSelect={onChange} setInternalMarker={setMarkerPos} />
         <MapUpdater lat={lat} lng={lng} setInternalMarker={setMarkerPos} />
-        {markerPos && <Marker position={[markerPos.lat, markerPos.lng]} />}
+        {hasValidMarker && <Marker position={[markerPos.lat, markerPos.lng]} />}
       </MapContainer>
     </div>
   )

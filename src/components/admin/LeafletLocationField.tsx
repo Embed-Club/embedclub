@@ -2,56 +2,75 @@
 
 import { useField } from '@payloadcms/ui'
 import type { FieldClientComponent } from 'payload'
+import React, { useEffect, useState, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import React, { useEffect, useState, useRef } from 'react'
 
-// Dynamically import Leaflet map to avoid SSR issues
+// Import with ssr: false to prevent server-side rendering of Leaflet
 const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false })
+
+interface CoordinateValue {
+  lat?: number | null
+  lng?: number | null
+}
 
 const LeafletLocationField: FieldClientComponent = (props) => {
   const { path } = props
-  const { value = {}, setValue } = useField<{ lat?: number; lng?: number }>({ path })
+  
+  // Use individual field hooks for lat and lng instead of the group value
+  const { value: latValue, setValue: setLatValue } = useField<number | null>({ path: `${path}.lat` })
+  const { value: lngValue, setValue: setLngValue } = useField<number | null>({ path: `${path}.lng` })
+  
   const [localLat, setLocalLat] = useState<string>('')
   const [localLng, setLocalLng] = useState<string>('')
   const isUpdatingFromMap = useRef(false)
 
-  // Sync local state with form value only when NOT updating from map
+  // Sync local state with form values
   useEffect(() => {
     if (!isUpdatingFromMap.current) {
-      if (value.lat !== undefined) {
-        setLocalLat(value.lat.toString())
+      if (latValue !== undefined && latValue !== null && latValue !== '') {
+        setLocalLat(latValue.toString())
+      } else {
+        setLocalLat('')
       }
-      if (value.lng !== undefined) {
-        setLocalLng(value.lng.toString())
+      
+      if (lngValue !== undefined && lngValue !== null && lngValue !== '') {
+        setLocalLng(lngValue.toString())
+      } else {
+        setLocalLng('')
       }
     }
     isUpdatingFromMap.current = false
-  }, [value.lat, value.lng])
+  }, [latValue, lngValue])
 
   const handleMapClick = (coords: { lat: number; lng: number }) => {
     isUpdatingFromMap.current = true
     setLocalLat(coords.lat.toString())
     setLocalLng(coords.lng.toString())
-    setValue(coords)
+    
+    console.log('Setting coordinates from map:', coords)
+    setLatValue(coords.lat)
+    setLngValue(coords.lng)
   }
 
   const handleLatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
     setLocalLat(val)
-    const lat = val ? parseFloat(val) : undefined
-    const lng = localLng ? parseFloat(localLng) : undefined
-    if (lat !== undefined && lng !== undefined && !isNaN(lat) && !isNaN(lng)) {
-      setValue({ lat, lng })
+    const lat = val ? parseFloat(val) : null
+    
+    if (lat === null || !isNaN(lat)) {
+      console.log('Setting lat from input:', lat)
+      setLatValue(lat)
     }
   }
 
   const handleLngChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
     setLocalLng(val)
-    const lat = localLat ? parseFloat(localLat) : undefined
-    const lng = val ? parseFloat(val) : undefined
-    if (lat !== undefined && lng !== undefined && !isNaN(lat) && !isNaN(lng)) {
-      setValue({ lat, lng })
+    const lng = val ? parseFloat(val) : null
+    
+    if (lng === null || !isNaN(lng)) {
+      console.log('Setting lng from input:', lng)
+      setLngValue(lng)
     }
   }
 
@@ -109,16 +128,18 @@ const LeafletLocationField: FieldClientComponent = (props) => {
       <div style={{ marginBottom: '10px' }}>
         <strong>Click on map to set marker:</strong>
       </div>
-      <LeafletMap
-        lat={value.lat}
-        lng={value.lng}
-        onChange={handleMapClick}
-      />
+      <Suspense fallback={<div style={{ height: '600px', backgroundColor: '#f0f0f0', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading map...</div>}>
+        <LeafletMap
+          lat={typeof latValue === 'number' ? latValue : undefined}
+          lng={typeof lngValue === 'number' ? lngValue : undefined}
+          onChange={handleMapClick}
+        />
+      </Suspense>
 
       {/* Current Coordinates Display */}
-      {value.lat && value.lng && (
+      {typeof latValue === 'number' && typeof lngValue === 'number' && (
         <div style={{ marginTop: '10px', padding: '8px', backgroundColor: '#f0f0f0', borderRadius: '4px', fontSize: '12px' }}>
-          <strong>Current Location:</strong> {value.lat.toFixed(6)}, {value.lng.toFixed(6)}
+          <strong>Current Location:</strong> {latValue.toFixed(6)}, {lngValue.toFixed(6)}
         </div>
       )}
     </div>
