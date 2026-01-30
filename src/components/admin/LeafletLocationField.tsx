@@ -27,13 +27,13 @@ const LeafletLocationField: FieldClientComponent = (props) => {
   // Sync local state with form values
   useEffect(() => {
     if (!isUpdatingFromMap.current) {
-      if (latValue !== undefined && latValue !== null && latValue !== '') {
+      if (latValue !== undefined && latValue !== null) {
         setLocalLat(latValue.toString())
       } else {
         setLocalLat('')
       }
       
-      if (lngValue !== undefined && lngValue !== null && lngValue !== '') {
+      if (lngValue !== undefined && lngValue !== null) {
         setLocalLng(lngValue.toString())
       } else {
         setLocalLng('')

@@ -11,6 +11,10 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import {Achievements} from './collections/Achievements'
 import { Events } from './collections/Events'
+import { MemberCategories } from './collections/MemberCategories'
+import { MemberRoles } from './collections/MemberRoles'
+import {Members} from './collections/Members'
+import {MemberPhoto} from './collections/MemberPhoto'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,7 +26,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Achievements, Events],
+  collections: [Users, Media, Achievements, Events, MemberCategories, MemberPhoto, MemberRoles, Members],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -76,7 +80,7 @@ export default buildConfig({
           delete: false
         },
         description: 'Embed Club events including workshops, meetings, and activities'
-      }
+      },
     }
   })
 ]

@@ -1,6 +1,11 @@
+'use client'
+
 import React from 'react'
 import { SidebarShell, MainbarShell } from '@/components/FrontendShell'
 import { ScrollTimeline } from '@/components/ScrollTimeline'
+import { AchievementsTimeline } from '@/components/MobileTimelineItem'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 type Achievement = {
   id: number
@@ -83,10 +88,41 @@ function transformAchievements(achievements: Achievement[]): TimelineAchievement
   })
 }
 
+/**
+ * Transform achievements for mobile timeline
+ */
+function transformAchievementsForMobile(achievements: Achievement[]) {
+  // Sort by date descending (newest first)
+  const sortedAchievements = [...achievements].sort((a, b) => {
+    const dateA = a.date ? new Date(a.date).getTime() : 0
+    const dateB = b.date ? new Date(b.date).getTime() : 0
+    return dateB - dateA
+  })
+
+  return sortedAchievements.map((achievement) => {
+    const description = extractTextFromLexical(achievement.summary)
+    let imageUrl: string | undefined = undefined
+    
+    if (achievement.image && typeof achievement.image === 'object' && 'url' in achievement.image) {
+      imageUrl = achievement.image.url || undefined
+    }
+
+    return {
+      id: achievement.id.toString(),
+      title: achievement.title,
+      description,
+      imageUrl,
+      date: achievement.date,
+    }
+  })
+}
+
 async function fetchAchievements(): Promise<Achievement[]> {
-  // Build an absolute URL for server-side fetch (works during SSR/static generation)
+  // Build an absolute URL for client-side fetch
   const base =
-    process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_BASE_URL || 'http://localhost:3000'
+    typeof window !== 'undefined' 
+      ? window.location.origin 
+      : process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_BASE_URL || 'http://localhost:3000'
   const url = new URL('/api/achievements', base)
   // Use Payload REST `sort` param: prefix with - to sort descending (newest first)
   url.searchParams.set('depth', '1')
@@ -114,15 +150,92 @@ async function fetchAchievements(): Promise<Achievement[]> {
   return json.docs as Achievement[]
 }
 
-export default async function AchievementsPage() {
-  const achievements = await fetchAchievements()
-  const timelineAchievements = transformAchievements(achievements)
+function AchievementsSkeleton({ isMobile }: { isMobile: boolean }) {
+  const items = isMobile ? 4 : 5
+
+  return (
+    <div className="h-full w-full overflow-hidden p-6 lg:p-10">
+      <div className="mx-auto flex h-full w-full max-w-3xl flex-col gap-6">
+        {Array.from({ length: items }).map((_, index) => (
+          <div
+            key={`achievement-skeleton-${index}`}
+            className="rounded-lg border border-border/60 bg-card/60 p-6 shadow-sm"
+          >
+            <div className="mb-4 flex items-center gap-3">
+              <Skeleton className="h-3 w-3 rounded-full" />
+              <Skeleton className="h-5 w-48" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-11/12" />
+              <Skeleton className="h-4 w-5/6" />
+            </div>
+            <Skeleton className="mt-4 h-40 w-full rounded-md" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function AchievementsPage() {
+  const isMobile = useIsMobile()
+  const [achievements, setAchievements] = React.useState<Achievement[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [error, setError] = React.useState<string | null>(null)
+
+  // Fetch achievements on component mount
+  React.useEffect(() => {
+    fetchAchievements()
+      .then((data) => {
+        setAchievements(data)
+        setIsLoading(false)
+      })
+      .catch((err) => {
+        console.error('Error fetching achievements:', err)
+        setError('Failed to load achievements')
+        setIsLoading(false)
+      })
+  }, [])
+
+  // Transform data based on the view type
+  const timelineAchievements = React.useMemo(
+    () => transformAchievements(achievements),
+    [achievements]
+  )
+  const mobileAchievements = React.useMemo(
+    () => transformAchievementsForMobile(achievements),
+    [achievements]
+  )
 
   return (
     <SidebarShell>
       <MainbarShell>
-        <div className="w-full h-screen overflow-hidden">
-          <ScrollTimeline achievements={timelineAchievements} />
+        {/* Mobile heading only - desktop heading is inside ScrollTimeline */}
+        {isMobile && (
+          <h1 className="absolute left-5 top-24 text-xl font-medium md:left-5 md:top-10 md:text-4xl">
+            CHIEEENTS
+          </h1>
+        )}
+        <div className={isMobile ? "pt-4 md:pt-32" : ""}>
+          {isLoading ? (
+          <AchievementsSkeleton isMobile={isMobile} />
+        ) : error ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-destructive">{error}</p>
+          </div>
+        ) : isMobile ? (
+          <AchievementsTimeline 
+            achievements={mobileAchievements} 
+            position="right" 
+            fillDistance={100}
+            className="w-full"
+          />
+        ) : (
+          <div className="absolute inset-0 overflow-hidden">
+            <ScrollTimeline achievements={timelineAchievements} />
+          </div>
+        )}
         </div>
       </MainbarShell>
     </SidebarShell>

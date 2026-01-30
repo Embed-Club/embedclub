@@ -5,15 +5,22 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/theme-toggle";
 import { ContentPanel } from "@/components/ContentPanel";
+import MobileMenu from "@/components/MobileMenu";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function SidebarShell({ children }: { children?: React.ReactNode }) {
   return (
     <SidebarProvider>
-      {/* Sidebar itself */}
-      <AppSidebar />
+      {/* Desktop sidebar */}
+      <div className="hidden lg:block">
+        <AppSidebar />
+      </div>
+
+      {/* Mobile menu */}
+      <MobileMenu />
 
       {/* Top-right Dark Mode Toggle */}
-      <div className="absolute right-8 top-6 z-40">
+      <div className="absolute right-8 top-6 z-40 hidden lg:block">
         <ModeToggle />
       </div>
 
@@ -23,9 +30,16 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   );
 }
 
-export function MainbarShell({ children }: { children?: React.ReactNode }) {
+interface MainbarShellProps {
+  children?: React.ReactNode
+  borderless?: boolean
+}
+
+export function MainbarShell({ children, borderless }: MainbarShellProps) {
+  const isMobile = useIsMobile()
+  
   return (
-    <ContentPanel>
+    <ContentPanel borderless={borderless || isMobile}>
       <div className="h-full w-full flex flex-col items-center justify-center">
         {children}
       </div>

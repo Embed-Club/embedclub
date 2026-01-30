@@ -40,44 +40,44 @@ import {
 const data = {
   navMain: [
     {
-      title: "Home",
+      title: "HOE",
       url: "/dashboard",
       icon: LucideHome,
     },
   ],
   navSecondary: [
     {
-      title: "Activities",
+      title: "CTIITIES",
       icon: SquareChartGantt,
       items: [
         {
-          title: "Events",
+          title: "EENTS",
           url: "/events",
           icon: CalendarRange,
         },
         {
-          title: "Achievements",
+          title: "CHIEEENTS",
           url: "/achievements",
           icon: Trophy,
         },
       ],
     },
     {
-      title: "Learning",
+      title: "LERNING",
       icon: LibraryBig,
       items: [
         {
-          title: "Resources",
+          title: "RESOURCES",
           url: "/resources",
           icon: Boxes,
         },
         {
-          title: "Tutorials",
+          title: "TUTORILS",
           url: "/tutorials",
           icon: School,
         },
         {
-          title: "Simulators",
+          title: "SIULTORS",
           url: "/simulators",
           icon: Bot,
         },
@@ -87,13 +87,13 @@ const data = {
   navThird:[
 
     {
-      title: "Gallery",
+      title: "GLLERY",
       url: "/gallery",
       icon: Images,
     },
 
     {
-      title: "Members",
+      title: "EBERS",
       url: "/members",
       icon: UsersRound,
     },
@@ -101,17 +101,17 @@ const data = {
   ],
   navBottom: [
       {
-      title: "Feedback",
+      title: "FEEDBCK",
       url: "/feedback",
       icon: SquareTerminal,
     },
     {
-      title: "Support",
+      title: "SUPPORT",
       url: "/support",
       icon: Settings2,
     },
     {
-      title: "Contact",
+      title: "CONTCT",
       url: "/contact",
       icon: SquareTerminal,
     },

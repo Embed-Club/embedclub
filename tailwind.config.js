@@ -12,6 +12,9 @@ export default {
 		],
   theme: {
   	extend: {
+  		fontFamily: {
+  			avant: ['var(--font-avant-garde)', 'sans-serif'],
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

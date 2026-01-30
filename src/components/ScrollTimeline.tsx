@@ -85,13 +85,24 @@ export function ScrollTimeline({ achievements }: ScrollTimelineProps) {
       {/* Scrollable Content */}
       <div
         ref={containerRef}
-        className="w-full h-full overflow-y-auto overflow-x-hidden scrollbar-hide"
+        data-timeline-scroll
+        className="w-full h-full overflow-y-scroll overflow-x-hidden"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-y',
+          overscrollBehavior: 'contain',
         }}
       >
         <div ref={contentRef} className="relative min-h-full pt-32 pb-32">
+          {/* Timeline Heading */}
+          <div className="relative mb-16 px-8">
+            <h1 className="text-left text-xl font-medium md:text-4xl">
+              CHIEEENTS
+            </h1>
+          </div>
+
           {/* Timeline Bar Container - Fixed positioning */}
           <div
             ref={timelineBarRef}
@@ -154,6 +165,9 @@ export function ScrollTimeline({ achievements }: ScrollTimelineProps) {
 
       <style>{`
         .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        [data-timeline-scroll]::-webkit-scrollbar {
           display: none;
         }
       `}</style>

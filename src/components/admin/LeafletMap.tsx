@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet'
 import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 interface ClickHandlerProps {
   onSelect: (coords: { lat: number; lng: number }) => void
@@ -34,8 +35,7 @@ function MapUpdater({ lat, lng, setInternalMarker }: { lat?: number; lng?: numbe
       typeof lng === 'number' && 
       !isNaN(lat) && 
       !isNaN(lng) && 
-      map && 
-      map._crs
+      map
     ) {
       try {
         setInternalMarker({ lat, lng })
@@ -59,11 +59,8 @@ export default function LeafletMap({ lat, lng, onChange }: LeafletMapProps) {
   // Internal marker state that doesn't change from parent re-renders
   const [markerPos, setMarkerPos] = useState<{ lat: number; lng: number } | null>(null)
 
-  // Load Leaflet CSS and fix marker icons on mount
+  // Fix marker icons on mount
   useEffect(() => {
-    // Dynamically import CSS only on client
-    import('leaflet/dist/leaflet.css')
-    
     // Fix for default marker icons in react-leaflet
     delete (L.Icon.Default.prototype as any)._getIconUrl
     L.Icon.Default.mergeOptions({

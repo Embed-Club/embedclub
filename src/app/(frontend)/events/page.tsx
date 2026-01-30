@@ -63,8 +63,8 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell>
-        <h1 className="absolute left-20 top-20 text-xl font-light md:text-4xl">
-          Recent Events
+        <h1 className="absolute left-20 top-20 text-xl font-medium md:text-4xl">
+          RECENT EENTS
         </h1>
         <div className="pt-24 md:pt-32">
           <CarouselWithModal events={events} />
@@ -73,8 +73,8 @@ export default async function Page() {
         {/* Gallery Section */}
 
         <div className="w-full px-6 md:px-12 lg:px-16 pb-20 pt-20">
-          <h1 className="mb-8 text-left text-xl font-light md:text-4xl">
-            All Events
+          <h1 className="mb-8 text-left text-xl font-medium md:text-4xl">
+            ALL EENTS
           </h1>
 
           <div>

@@ -72,6 +72,10 @@ export interface Config {
     media: Media;
     achievements: Achievement;
     events: Event;
+    'member-categories': MemberCategory;
+    'member-photo': MemberPhoto;
+    'member-roles': MemberRole;
+    members: Member;
     'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -84,6 +88,10 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     achievements: AchievementsSelect<false> | AchievementsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
+    'member-categories': MemberCategoriesSelect<false> | MemberCategoriesSelect<true>;
+    'member-photo': MemberPhotoSelect<false> | MemberPhotoSelect<true>;
+    'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
     'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -294,6 +302,117 @@ export interface Event {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-categories".
+ */
+export interface MemberCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  /**
+   * Order in which this category appears. Lower numbers appear first. Occupied positions will be automatically reassigned.
+   */
+  sortOrder: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-photo".
+ */
+export interface MemberPhoto {
+  id: number;
+  /**
+   * e.g., "Photo of John Doe"
+   */
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    profile?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-roles".
+ */
+export interface MemberRole {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  /**
+   * Order in which this role appears. Lower numbers appear first. Occupied positions will be automatically reassigned.
+   */
+  sortOrder: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: number;
+  fullName: string;
+  photo: number | MemberPhoto;
+  category: number | MemberCategory;
+  roles: number | MemberRole;
+  bio?: string | null;
+  /**
+   * e.g. 2021
+   */
+  startYear: number;
+  /**
+   * Leave empty if still active
+   */
+  endYear?: number | null;
+  github?: string | null;
+  linkedin?: string | null;
+  socialAccounts?:
+    | {
+        platform?: ('twitter' | 'instagram' | 'facebook' | 'youtube' | 'tiktok' | 'other') | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * API keys control which collections, resources, tools, and prompts MCP clients can access
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -414,6 +533,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'events';
         value: number | Event;
+      } | null)
+    | ({
+        relationTo: 'member-categories';
+        value: number | MemberCategory;
+      } | null)
+    | ({
+        relationTo: 'member-photo';
+        value: number | MemberPhoto;
+      } | null)
+    | ({
+        relationTo: 'member-roles';
+        value: number | MemberRole;
+      } | null)
+    | ({
+        relationTo: 'members';
+        value: number | Member;
       } | null)
     | ({
         relationTo: 'payload-mcp-api-keys';
@@ -557,6 +692,106 @@ export interface EventsSelect<T extends boolean = true> {
               lng?: T;
             };
         zoom?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-categories_select".
+ */
+export interface MemberCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-photo_select".
+ */
+export interface MemberPhotoSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        profile?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-roles_select".
+ */
+export interface MemberRolesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  fullName?: T;
+  photo?: T;
+  category?: T;
+  roles?: T;
+  bio?: T;
+  startYear?: T;
+  endYear?: T;
+  github?: T;
+  linkedin?: T;
+  socialAccounts?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

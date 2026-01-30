@@ -5,6 +5,7 @@ import React, {
   useState,
   createContext,
   useContext,
+  type ReactNode,
 } from "react";
 import {
   ArrowLeft,
@@ -18,7 +19,7 @@ import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export interface CarouselProps {
-  items: JSX.Element[];
+  items: ReactNode[];
   initialScroll?: number;
 }
 
@@ -29,6 +30,7 @@ type Card = {
   content: React.ReactNode;
 };
 
+//Closing the card jumps back to the last active card
 export const CarouselContext = createContext<{
   onCardClose: (index: number) => void;
   currentIndex: number;
@@ -37,13 +39,15 @@ export const CarouselContext = createContext<{
   currentIndex: 0,
 });
 
+
+//Set the states for carousel and the cards
 export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
-  const carouselRef = React.useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = React.useState(false);
-  const [canScrollRight, setCanScrollRight] = React.useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
-  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const carouselRef = React.useRef<HTMLDivElement>(null); 
+  const [canScrollLeft, setCanScrollLeft] = React.useState(false); //Scroll Left (Initial is 0)
+  const [canScrollRight, setCanScrollRight] = React.useState(true); //Scroll Right (Initial, the cards exist on the right side)
+  const [currentIndex, setCurrentIndex] = useState(0); //Current active card index
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true); //Auto Scroll, disabled on hover or click or manual scroll
+  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null); //
   const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
