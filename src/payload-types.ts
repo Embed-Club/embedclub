@@ -76,6 +76,7 @@ export interface Config {
     'member-photo': MemberPhoto;
     'member-roles': MemberRole;
     members: Member;
+    gallery: Gallery;
     'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -92,6 +93,7 @@ export interface Config {
     'member-photo': MemberPhotoSelect<false> | MemberPhotoSelect<true>;
     'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
+    gallery: GallerySelect<false> | GallerySelect<true>;
     'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -413,6 +415,35 @@ export interface Member {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery".
+ */
+export interface Gallery {
+  id: number;
+  title: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
  * API keys control which collections, resources, tools, and prompts MCP clients can access
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -549,6 +580,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'members';
         value: number | Member;
+      } | null)
+    | ({
+        relationTo: 'gallery';
+        value: number | Gallery;
       } | null)
     | ({
         relationTo: 'payload-mcp-api-keys';
@@ -795,6 +830,38 @@ export interface MembersSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery_select".
+ */
+export interface GallerySelect<T extends boolean = true> {
+  title?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -159,18 +159,20 @@ function AchievementsSkeleton({ isMobile }: { isMobile: boolean }) {
         {Array.from({ length: items }).map((_, index) => (
           <div
             key={`achievement-skeleton-${index}`}
-            className="rounded-lg border border-border/60 bg-card/60 p-6 shadow-sm"
+            className={`rounded-lg border border-border/60 bg-card/60 shadow-sm ${
+              isMobile ? 'p-4' : 'p-6'
+            }`}
           >
             <div className="mb-4 flex items-center gap-3">
-              <Skeleton className="h-3 w-3 rounded-full" />
-              <Skeleton className="h-5 w-48" />
+              <Skeleton className={`rounded-full ${isMobile ? 'h-4 w-4' : 'h-3 w-3'}`} />
+              <Skeleton className={`${isMobile ? 'h-6 w-40' : 'h-5 w-48'}`} />
             </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-11/12" />
-              <Skeleton className="h-4 w-5/6" />
+            <div className="space-y-3">
+              <Skeleton className={`w-full ${isMobile ? 'h-5' : 'h-4'}`} />
+              <Skeleton className={`${isMobile ? 'h-5 w-11/12' : 'h-4 w-11/12'}`} />
+              <Skeleton className={`${isMobile ? 'h-5 w-9/12' : 'h-4 w-5/6'}`} />
             </div>
-            <Skeleton className="mt-4 h-40 w-full rounded-md" />
+            <Skeleton className={`mt-6 w-full rounded-md ${isMobile ? 'h-48' : 'h-40'}`} />
           </div>
         ))}
       </div>
@@ -213,11 +215,15 @@ export default function AchievementsPage() {
       <MainbarShell>
         {/* Mobile heading only - desktop heading is inside ScrollTimeline */}
         {isMobile && (
-          <h1 className="absolute left-5 top-24 text-xl font-medium md:left-5 md:top-10 md:text-4xl">
-            CHIEEENTS
-          </h1>
+          isLoading ? (
+            <Skeleton className="absolute left-5 top-24 h-7 w-48 md:left-5 md:top-10" />
+          ) : (
+            <h1 className="absolute left-5 top-28 text-xl font-medium md:left-5 md:top-10 md:text-4xl">
+              CHIEEENTS
+            </h1>
+          )
         )}
-        <div className={isMobile ? "pt-4 md:pt-32" : ""}>
+        <div className={isMobile ? "pt-10 md:pt-32" : ""}>
           {isLoading ? (
           <AchievementsSkeleton isMobile={isMobile} />
         ) : error ? (

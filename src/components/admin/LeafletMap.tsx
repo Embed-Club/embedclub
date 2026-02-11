@@ -25,39 +25,60 @@ function ClickHandler({ onSelect, setInternalMarker }: ClickHandlerProps) {
 }
 
 // Component to update map center when coordinates change externally
-function MapUpdater({ lat, lng, setInternalMarker }: { lat?: number; lng?: number; setInternalMarker: (coords: { lat: number; lng: number }) => void }) {
+function MapUpdater({
+  lat,
+  lng,
+  zoom,
+  setInternalMarker
+}: {
+  lat?: number
+  lng?: number
+  zoom?: number
+  setInternalMarker: (coords: { lat: number; lng: number }) => void
+}) {
   const map = useMap()
-  
+
   useEffect(() => {
-    // Only update if we have valid numeric coordinates and map is ready
     if (
-      typeof lat === 'number' && 
-      typeof lng === 'number' && 
-      !isNaN(lat) && 
-      !isNaN(lng) && 
-      map
+      typeof lat === "number" &&
+      typeof lng === "number" &&
+      !isNaN(lat) &&
+      !isNaN(lng)
     ) {
-      try {
-        setInternalMarker({ lat, lng })
-        map.setView([lat, lng], map.getZoom())
-      } catch (err) {
-        console.warn('Error updating map view:', err)
-      }
+      setInternalMarker({ lat, lng })
+
+      setTimeout(() => {
+        map.invalidateSize()
+
+        map.flyTo(
+          [lat, lng],
+          zoom ?? map.getZoom(),
+          { duration: 1.3 }
+        )
+      }, 250)
     }
-  }, [lat, lng, map, setInternalMarker])
-  
+  }, [lat, lng, zoom, map])
+
   return null
 }
+
 
 interface LeafletMapProps {
   lat?: number
   lng?: number
+  zoom?: number
+  readonly?: boolean
   onChange: (coords: { lat: number; lng: number }) => void
 }
 
-export default function LeafletMap({ lat, lng, onChange }: LeafletMapProps) {
+export default function LeafletMap({ lat, lng, zoom, onChange, readonly = false }: LeafletMapProps) {
   // Internal marker state that doesn't change from parent re-renders
   const [markerPos, setMarkerPos] = useState<{ lat: number; lng: number } | null>(null)
+  const safeZoom =
+  typeof zoom === "number" && !isNaN(zoom)
+    ? Math.min(Math.max(zoom, 3), 18)
+    : 15
+
 
   // Fix marker icons on mount
   useEffect(() => {
@@ -94,19 +115,29 @@ export default function LeafletMap({ lat, lng, onChange }: LeafletMapProps) {
     !isNaN(markerPos.lng)
 
   return (
-    <div style={{ height: '600px', width: '100%', borderRadius: '8px', overflow: 'hidden' }}>
+    <div className="h-[240px] w-full rounded-lg overflow-hidden touch-pan-y">
       <MapContainer 
         center={position} 
-        zoom={17.5} 
+        zoom={safeZoom} 
         style={{ height: '100%', width: '100%' }}
-        scrollWheelZoom={true}
+        scrollWheelZoom={false}
+        dragging={true}
+        doubleClickZoom={false}
+        touchZoom={true}
+        tap={false}
+        Keyboard={false}
+        boxZoom={false}
+        zoomControl={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {!readonly && onChange && (
         <ClickHandler onSelect={onChange} setInternalMarker={setMarkerPos} />
-        <MapUpdater lat={lat} lng={lng} setInternalMarker={setMarkerPos} />
+        )}
+
+        <MapUpdater lat={lat} lng={lng} zoom={safeZoom} setInternalMarker={setMarkerPos} />
         {hasValidMarker && <Marker position={[markerPos.lat, markerPos.lng]} />}
       </MapContainer>
     </div>

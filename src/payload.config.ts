@@ -15,6 +15,7 @@ import { MemberCategories } from './collections/MemberCategories'
 import { MemberRoles } from './collections/MemberRoles'
 import {Members} from './collections/Members'
 import {MemberPhoto} from './collections/MemberPhoto'
+import { Gallery } from './collections/Gallery'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -26,7 +27,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Achievements, Events, MemberCategories, MemberPhoto, MemberRoles, Members],
+  collections: [Users, Media, Achievements, Events, MemberCategories, MemberPhoto, MemberRoles, Members, Gallery],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

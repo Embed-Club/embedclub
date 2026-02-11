@@ -41,12 +41,7 @@ export function AchievementsTimeline({
   className = '',
 }: AchievementsTimelineProps) {
   return (
-    <Timeline 
-      items={achievements} 
-      position={position} 
-      fillDistance={fillDistance} 
-      className={className}
-    >
+    <Timeline items={achievements} position={position} fillDistance={fillDistance} className={className}>
       {(achievement, index) => (
         <TimelineItem index={index}>
           <TimelineNode index={index} />
