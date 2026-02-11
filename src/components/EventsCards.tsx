@@ -162,10 +162,10 @@ export const EventModal = ({
             <X className="h-6 w-6" />
           </button>
 
-          <div className="grid grid-cols-1 gap-8 p-2 md:p-8 lg:p-10 md:grid-cols-2 overflow-y-auto max-h-[90vh]">
+          <div className="grid h-full grid-cols-1 gap-8 p-2 md:p-8 lg:p-10 md:grid-cols-2 overflow-y-auto max-h-[90vh]">
             {/* Image Section */}
-            <div className="flex items-start md:items-center justify-center">
-              <div className="relative h-52 w-full overflow-hidden rounded-2xl md:h-96">
+            <div className="flex h-full items-stretch justify-center">
+              <div className="relative h-full w-full overflow-hidden rounded-2xl">
                 <BlurImage
                   src={card.src}
                   alt={card.title}

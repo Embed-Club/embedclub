@@ -2,13 +2,18 @@
 
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { gsap } from 'gsap'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const useMedia = (queries: string[], values: number[], defaultValue: number): number => {
-  const get = () => values[queries.findIndex((q) => window.matchMedia(q).matches)] ?? defaultValue
+  const get = () => {
+    if (typeof window === 'undefined') return defaultValue
+    return values[queries.findIndex((q) => window.matchMedia(q).matches)] ?? defaultValue
+  }
 
   const [value, setValue] = useState<number>(get)
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
     const handler = () => setValue(get)
     queries.forEach((q) => matchMedia(q).addEventListener('change', handler))
     return () => queries.forEach((q) => window.matchMedia(q).removeEventListener('change', handler))
@@ -52,6 +57,7 @@ interface Item {
   img: string
   url: string
   height: number
+  width: number
 }
 
 interface GridItem extends Item {
@@ -84,14 +90,15 @@ const Masonry: React.FC<MasonryProps> = ({
   blurToFocus = true,
   colorShiftOnHover = false,
 }) => {
-  const columns = useMedia(
-    ['(min-width:1500px)', '(min-width:1000px)', '(min-width:600px)', '(min-width:400px)'],
-    [5, 4, 3, 2],
+  const itemsPerRow = useMedia(
+    ['(min-width:1600px)', '(min-width:1100px)', '(min-width:700px)'],
+    [4, 3, 2],
     1,
   )
 
   const [containerRef, { width }] = useMeasure<HTMLDivElement>()
   const [imagesReady, setImagesReady] = useState(false)
+  const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set())
 
   const getInitialPosition = (item: GridItem) => {
     const containerRect = containerRef.current?.getBoundingClientRect()
@@ -126,23 +133,68 @@ const Masonry: React.FC<MasonryProps> = ({
     preloadImages(items.map((i) => i.img)).then(() => setImagesReady(true))
   }, [items])
 
-  const grid = useMemo<GridItem[]>(() => {
-    if (!width) return []
-    const colHeights = new Array(columns).fill(0)
-    const gap = 16
-    const totalGaps = (columns - 1) * gap
-    const columnWidth = (width - totalGaps) / columns
-
-    return items.map((child) => {
-      const col = colHeights.indexOf(Math.min(...colHeights))
-      const x = col * (columnWidth + gap)
-      const height = child.height / 2
-      const y = colHeights[col]
-
-      colHeights[col] += height + gap
-      return { ...child, x, y, w: columnWidth, h: height }
+  useEffect(() => {
+    setLoadedIds(new Set())
+    items.forEach((item) => {
+      const img = new Image()
+      img.src = item.img
+      img.onload = img.onerror = () => {
+        setLoadedIds((prev) => {
+          if (prev.has(item.id)) return prev
+          const next = new Set(prev)
+          next.add(item.id)
+          return next
+        })
+      }
     })
-  }, [columns, items, width])
+  }, [items])
+
+  const { grid, containerHeight } = useMemo(() => {
+    if (!width) return { grid: [] as GridItem[], containerHeight: 0 }
+    const gap = 16
+    const baseHeight = Math.max(160, Math.min(320, (width / itemsPerRow) * 0.6))
+    const gridItems: GridItem[] = []
+
+    let row: Item[] = []
+    let rowAspectSum = 0
+    let y = 0
+
+    const flushRow = (isLastRow: boolean) => {
+      if (!row.length) return
+      const gaps = gap * (row.length - 1)
+      const rowWidth = width - gaps
+      const scale = isLastRow ? 1 : rowWidth / (rowAspectSum * baseHeight)
+      const rowHeight = baseHeight * scale
+      let x = 0
+
+      row.forEach((item) => {
+        const aspect = item.width > 0 && item.height > 0 ? item.width / item.height : 1
+        const w = aspect * rowHeight
+        gridItems.push({ ...item, x, y, w, h: rowHeight })
+        x += w + gap
+      })
+
+      y += rowHeight + gap
+      row = []
+      rowAspectSum = 0
+    }
+
+    items.forEach((item, index) => {
+      const aspect = item.width > 0 && item.height > 0 ? item.width / item.height : 1
+      const nextWidth = (rowAspectSum + aspect) * baseHeight + gap * row.length
+      if (nextWidth > width && row.length > 0) {
+        flushRow(false)
+      }
+      row.push(item)
+      rowAspectSum += aspect
+      if (index === items.length - 1) {
+        flushRow(true)
+      }
+    })
+
+    const height = Math.max(0, y - gap)
+    return { grid: gridItems, containerHeight: height }
+  }, [items, itemsPerRow, width])
 
   const hasMounted = useRef(false)
 
@@ -216,7 +268,11 @@ const Masonry: React.FC<MasonryProps> = ({
   }
 
   return (
-    <div ref={containerRef} className="relative w-full h-full">
+    <div
+      ref={containerRef}
+      className="relative w-full"
+      style={{ height: containerHeight || 'auto' }}
+    >
       {grid.map((item) => (
         <div
           key={item.id}
@@ -229,8 +285,15 @@ const Masonry: React.FC<MasonryProps> = ({
         >
           <div
             className="relative w-full h-full bg-cover bg-center rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] uppercase text-[10px] leading-[10px]"
-            style={{ backgroundImage: `url(${item.img})` }}
+            style={{
+              backgroundImage: loadedIds.has(item.id)
+                ? `url(\"${item.img}\")`
+                : 'none',
+            }}
           >
+            {!loadedIds.has(item.id) && (
+              <Skeleton className="absolute inset-0 h-full w-full rounded-[10px]" />
+            )}
             {colorShiftOnHover && (
               <div className="color-overlay absolute inset-0 rounded-[10px] bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
             )}

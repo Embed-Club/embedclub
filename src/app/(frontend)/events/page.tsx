@@ -161,7 +161,7 @@ export default function Page() {
       <MainbarShell>
         {isLoading ? (
           <>
-            <div className="absolute left-20 top-20">
+            <div className="absolute left-5 top-20 md:left-20 md:top-12">
               <Skeleton className="h-6 w-36 md:h-10 md:w-56" />
             </div>
             <div className="pt-24 md:pt-32">
@@ -182,7 +182,7 @@ export default function Page() {
           </div>
         ) : (
           <>
-            <h1 className="absolute left-20 top-20 text-xl font-medium md:text-4xl">
+            <h1 className="absolute left-5 top-20 md:left-20 md:top-12 text-xl font-medium md:text-4xl">
               RECENT EENTS
             </h1>
             <div className="w-full h-full py-20">
@@ -197,10 +197,55 @@ export default function Page() {
               />
             </div>
 
-            <div className="w-full px-6 pb-20 pt-6 md:px-12 lg:px-16">
-              <h2 className="mb-6 text-lg font-medium md:text-2xl">
-                ALL EVENTS
+            <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
+              <h2 className="relative text-xl font-medium md:text-4xl">
+                LL EENTS
               </h2>
+              {totalPages > 1 && (
+                <div className="mt-6 flex w-full justify-end pb-6">
+                  <Pagination className="justify-end">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          href="#"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setCurrentPage((page) => Math.max(1, page - 1));
+                          }}
+                        />
+                      </PaginationItem>
+                      {Array.from({ length: totalPages }).map((_, index) => {
+                        const pageNumber = index + 1;
+                        return (
+                          <PaginationItem key={pageNumber}>
+                            <PaginationLink
+                              href="#"
+                              isActive={pageNumber === currentPage}
+                              onClick={(event) => {
+                                event.preventDefault();
+                                setCurrentPage(pageNumber);
+                              }}
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
+                      <PaginationItem>
+                        <PaginationNext
+                          href="#"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setCurrentPage((page) =>
+                              Math.min(totalPages, page + 1)
+                            );
+                          }}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
               <FocusCards
                 cards={visibleEvents.map((event) => ({
                   title: event.title || "Untitled Event",

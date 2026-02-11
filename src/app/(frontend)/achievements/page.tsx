@@ -128,22 +128,8 @@ async function fetchAchievements(): Promise<Achievement[]> {
   url.searchParams.set('depth', '1')
   url.searchParams.set('sort', '-date') // Sort by date descending: newest achievements first
 
-  // Debugging: log the URL being requested
-  // eslint-disable-next-line no-console
-  console.log('→ FETCHING:', url.toString())
-
   const res = await fetch(url.toString(), { cache: 'no-store' })
   if (!res.ok) {
-    // Log response details to help debugging in development
-    // eslint-disable-next-line no-console
-    try {
-      const text = await res.text()
-      // eslint-disable-next-line no-console
-      console.error('Failed to load achievements:', res.status, res.statusText, text)
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to load achievements and could not read body', e)
-    }
     throw new Error('Failed to load achievements')
   }
   const json = await res.json()
@@ -193,8 +179,7 @@ export default function AchievementsPage() {
         setAchievements(data)
         setIsLoading(false)
       })
-      .catch((err) => {
-        console.error('Error fetching achievements:', err)
+      .catch(() => {
         setError('Failed to load achievements')
         setIsLoading(false)
       })
@@ -218,7 +203,7 @@ export default function AchievementsPage() {
           isLoading ? (
             <Skeleton className="absolute left-5 top-24 h-7 w-48 md:left-5 md:top-10" />
           ) : (
-            <h1 className="absolute left-5 top-28 text-xl font-medium md:left-5 md:top-10 md:text-4xl">
+            <h1 className="absolute left-5 top-20 md:left-20 md:top-12 text-xl font-medium  md:text-4xl">
               CHIEEENTS
             </h1>
           )
