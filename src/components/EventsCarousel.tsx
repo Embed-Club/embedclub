@@ -1,7 +1,6 @@
 "use client";
 import React, {
   useEffect,
-  useRef,
   useState,
 } from "react";
 import {
@@ -10,11 +9,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
-import Image, { ImageProps } from "next/image";
 import { CarouselContext } from "@/components/EventsCards";
 
 export interface CarouselProps {
-  items: JSX.Element[];
+  items: React.ReactNode[];
   initialScroll?: number;
 }
 
@@ -134,4 +132,4 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   );
 };
 
-export { Card, BlurImage, type Card as CardType } from "@/components/EventsCards";
+export { Card, BlurImage, type EventCardData as CardType } from "@/components/EventsCards";

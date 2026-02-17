@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/DesktopMenu";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { ModeToggle } from "@/components/theme-toggle";
+import { ModeToggle } from "@/components/ThemeToggle";
 import { ContentPanel } from "@/components/ContentPanel";
 import MobileMenu from "@/components/MobileMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -40,7 +40,7 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
   
   return (
     <ContentPanel borderless={borderless || isMobile}>
-      <div className="h-full w-full flex flex-col items-center justify-center">
+      <div className="h-full w-full relative">
         {children}
       </div>
     </ContentPanel>

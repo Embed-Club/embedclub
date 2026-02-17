@@ -6,6 +6,7 @@ export default async function Page() {
   return (
     <FrontendShellWrapper>
       <DashboardTitle />
+      
     </FrontendShellWrapper>
   );
 }

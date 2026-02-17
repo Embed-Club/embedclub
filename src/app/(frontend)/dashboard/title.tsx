@@ -5,7 +5,7 @@ import DecryptedTextProps from "@/components/DecryptedText";
 
 export default function DashboardTitle() {
   return (
-    <div className="font-montserrat text-center -translate-y-8">
+    <div className="flex min-h-full w-full flex-col items-center justify-center text-center">
       <div className="text-2xl md:text-3xl lg:text-4xl font-light mb-4">
         ELCOE TO
       </div>

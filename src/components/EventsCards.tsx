@@ -16,11 +16,12 @@ import { useOutsideClick } from "@/hooks/use-outside-click";
 import { EventDetails } from "@/components/EventDetails";
 import type { Event } from "@/payload-types";
 
-type Card = {
+type EventCardData = {
   src: string;
   title: string;
   category: string;
   content: React.ReactNode;
+  isFallback?: boolean;
 };
 
 export const CarouselContext = createContext<{
@@ -37,7 +38,7 @@ export const Card = ({
   layout = false,
   event,
 }: {
-  card: Card;
+  card: EventCardData;
   index: number;
   layout?: boolean;
   event?: Event;
@@ -133,80 +134,102 @@ export const EventModal = ({
 }: {
   open: boolean;
   onClose: () => void;
-  card: Card;
+  card: EventCardData;
   event?: Event;
-  containerRef?: React.RefObject<HTMLDivElement>;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
   layoutId?: string;
-}) => (
-  <AnimatePresence>
-    {open && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 md:py-6 overflow-auto">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 h-full w-full bg-black/80 backdrop-blur-lg"
-        />
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          ref={containerRef}
-          layoutId={layoutId}
-          className="relative z-[60] w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl md:rounded-3xl bg-white font-sans dark:bg-neutral-900"
-        >
-          <button
-            className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 transition"
-            onClick={onClose}
+}) => {
+  const isFallback = Boolean(card.isFallback);
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 md:py-6 overflow-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 h-full w-full bg-black/80 backdrop-blur-lg"
+          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            ref={containerRef}
+            layoutId={layoutId}
+            className="relative z-[60] w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl md:rounded-3xl bg-white font-sans dark:bg-neutral-900"
           >
-            <X className="h-6 w-6" />
-          </button>
+            <button
+              className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 transition"
+              onClick={onClose}
+            >
+              <X className="h-6 w-6" />
+            </button>
 
-          <div className="grid h-full grid-cols-1 gap-8 p-2 md:p-8 lg:p-10 md:grid-cols-2 overflow-y-auto max-h-[90vh]">
-            {/* Image Section */}
-            <div className="flex h-full items-stretch justify-center">
-              <div className="relative h-full w-full overflow-hidden rounded-2xl">
-                <BlurImage
-                  src={card.src}
-                  alt={card.title}
-                  fill
-                  className="object-cover"
+            {isFallback ? (
+              <div className="flex h-full w-full flex-col items-center justify-center gap-6 p-6 md:p-10">
+                <img
+                  src="/placeholder/NoNetwork.svg"
+                  alt="No network"
+                  className="h-40 w-40 md:h-56 md:w-56 dark:invert"
                 />
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-neutral-900 dark:text-white">
+                    No network
+                  </p>
+                  <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                    Unable to load event details right now.
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="grid h-full grid-cols-1 gap-8 p-2 md:p-8 lg:p-10 md:grid-cols-2 overflow-y-auto max-h-[90vh]">
+                {/* Image Section */}
+                <div className="flex h-full items-stretch justify-center">
+                  <div className="relative h-full w-full overflow-hidden rounded-2xl">
+                    <BlurImage
+                      src={card.src}
+                      alt={card.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
 
-            {/* Details Section */}
-            <div className="flex flex-col justify-start space-y-4 md:space-y-6">
-              <div>
-                <motion.p
-                  className="text-sm font-medium text-neutral-600 dark:text-neutral-400"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {card.category}
-                </motion.p>
-                <motion.p
-                  className="mt-2 text-3xl font-bold text-neutral-900 md:text-4xl dark:text-white"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.1 }}
-                >
-                  {card.title}
-                </motion.p>
-              </div>
+                {/* Details Section */}
+                <div className="flex flex-col justify-start space-y-4 md:space-y-6">
+                  <div>
+                    <motion.p
+                      className="text-sm font-medium text-neutral-600 dark:text-neutral-400"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {card.category}
+                    </motion.p>
+                    <motion.p
+                      className="mt-2 text-3xl font-bold text-neutral-900 md:text-4xl dark:text-white"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                    >
+                      {card.title}
+                    </motion.p>
+                  </div>
 
-              {/* Content (Event Details) */}
-              <div className="flex-1 pr-4">
-                {event ? <EventDetails event={event} /> : card.content}
+                  {/* Content (Event Details) */}
+                  <div className="flex-1 pr-4">
+                    {event ? <EventDetails event={event} /> : card.content}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    )}
-  </AnimatePresence>
-);
+            )}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 export const BlurImage = ({
   height,
@@ -237,17 +260,17 @@ export const BlurImage = ({
   );
 };
 
-export type { Card };
+export type { EventCardData };
 
 /**
  * Helper function to convert Event data to Card type
  * Extracts image URL and basic info from Event collection
  */
-export const eventToCard = (event: Event): Card => {
+export const eventToCard = (event: Event): EventCardData => {
   const imageUrl =
-    typeof event.image === "string"
-      ? event.image
-      : event.image?.url || "/placeholder-event.jpg";
+    typeof event.image === "object" && event.image !== null && "url" in event.image
+      ? event.image.url || "/placeholder/placeholder.jpg"
+      : "/placeholder/placeholder.jpg";
 
   return {
     src: imageUrl,

@@ -2,8 +2,7 @@
 
 import React from 'react'
 import { SidebarShell, MainbarShell } from '@/components/FrontendShell'
-import { ScrollTimeline } from '@/components/ScrollTimeline'
-import { AchievementsTimeline } from '@/components/MobileTimelineItem'
+import { Timeline } from '@/components/UnifiedTimeline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsMobile } from '@/hooks/use-mobile'
 
@@ -88,35 +87,6 @@ function transformAchievements(achievements: Achievement[]): TimelineAchievement
   })
 }
 
-/**
- * Transform achievements for mobile timeline
- */
-function transformAchievementsForMobile(achievements: Achievement[]) {
-  // Sort by date descending (newest first)
-  const sortedAchievements = [...achievements].sort((a, b) => {
-    const dateA = a.date ? new Date(a.date).getTime() : 0
-    const dateB = b.date ? new Date(b.date).getTime() : 0
-    return dateB - dateA
-  })
-
-  return sortedAchievements.map((achievement) => {
-    const description = extractTextFromLexical(achievement.summary)
-    let imageUrl: string | undefined = undefined
-    
-    if (achievement.image && typeof achievement.image === 'object' && 'url' in achievement.image) {
-      imageUrl = achievement.image.url || undefined
-    }
-
-    return {
-      id: achievement.id.toString(),
-      title: achievement.title,
-      description,
-      imageUrl,
-      date: achievement.date,
-    }
-  })
-}
-
 async function fetchAchievements(): Promise<Achievement[]> {
   // Build an absolute URL for client-side fetch
   const base =
@@ -137,30 +107,93 @@ async function fetchAchievements(): Promise<Achievement[]> {
 }
 
 function AchievementsSkeleton({ isMobile }: { isMobile: boolean }) {
-  const items = isMobile ? 4 : 5
+  const items = 4
+  const barPositionClass = isMobile
+    ? 'right-[16px] translate-x-1/2'
+    : 'left-1/2 -translate-x-1/2'
 
   return (
-    <div className="h-full w-full overflow-hidden p-6 lg:p-10">
-      <div className="mx-auto flex h-full w-full max-w-3xl flex-col gap-6">
-        {Array.from({ length: items }).map((_, index) => (
-          <div
-            key={`achievement-skeleton-${index}`}
-            className={`rounded-lg border border-border/60 bg-card/60 shadow-sm ${
-              isMobile ? 'p-4' : 'p-6'
-            }`}
-          >
-            <div className="mb-4 flex items-center gap-3">
-              <Skeleton className={`rounded-full ${isMobile ? 'h-4 w-4' : 'h-3 w-3'}`} />
-              <Skeleton className={`${isMobile ? 'h-6 w-40' : 'h-5 w-48'}`} />
-            </div>
-            <div className="space-y-3">
-              <Skeleton className={`w-full ${isMobile ? 'h-5' : 'h-4'}`} />
-              <Skeleton className={`${isMobile ? 'h-5 w-11/12' : 'h-4 w-11/12'}`} />
-              <Skeleton className={`${isMobile ? 'h-5 w-9/12' : 'h-4 w-5/6'}`} />
-            </div>
-            <Skeleton className={`mt-6 w-full rounded-md ${isMobile ? 'h-48' : 'h-40'}`} />
-          </div>
-        ))}
+    <div className="relative h-full w-full overflow-hidden">
+      <div className="absolute left-5 top-5 md:left-20 md:top-12 z-10">
+        <Skeleton className="h-6 w-40 md:h-8 md:w-56" />
+      </div>
+
+      <div className={`relative h-full w-full ${isMobile ? 'pt-16 pb-12' : 'pt-24 pb-24'}`}>
+        <div className={`absolute top-0 bottom-20 w-3 pointer-events-none ${barPositionClass}`}>
+          <div className="absolute top-0 bottom-0 w-full rounded-full border-2 border-foreground/40 dark:border-white/40 bg-transparent" />
+        </div>
+
+        <div className={`relative ${isMobile ? 'space-y-10 px-4' : 'space-y-16 px-8'}`}>
+          {Array.from({ length: items }).map((_, index) => {
+            const isLeft = index % 2 === 0
+
+            if (isMobile) {
+              return (
+                <div key={`achievement-skeleton-${index}`} className="relative">
+                  <div className="flex items-start gap-2 flex-row-reverse pr-0 pl-2">
+                    <div className="flex-shrink-0 w-[32px]" />
+                    <div className="flex-1 max-w-[92%]">
+                      <div className="rounded-lg border border-border/60 bg-card/60 shadow-sm p-4">
+                        <div className="mb-4 flex items-center gap-3">
+                          <Skeleton className="h-4 w-4 rounded-full" />
+                          <Skeleton className="h-5 w-40" />
+                        </div>
+                        <div className="space-y-3">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-11/12" />
+                          <Skeleton className="h-4 w-9/12" />
+                        </div>
+                        <Skeleton className="mt-6 h-44 w-full rounded-md" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
+            return (
+              <div key={`achievement-skeleton-${index}`} className="flex items-center gap-16 px-8 max-w-7xl mx-auto">
+                <div className="flex-1">
+                  {isLeft ? (
+                    <div className="rounded-lg border border-border/60 bg-card/60 shadow-sm p-6">
+                      <div className="mb-4 flex items-center gap-3">
+                        <Skeleton className="h-3 w-3 rounded-full" />
+                        <Skeleton className="h-5 w-48" />
+                      </div>
+                      <div className="space-y-3">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-11/12" />
+                        <Skeleton className="h-4 w-5/6" />
+                      </div>
+                    </div>
+                  ) : (
+                    <Skeleton className="h-40 w-full rounded-lg" />
+                  )}
+                </div>
+
+                <div className="w-0" />
+
+                <div className="flex-1">
+                  {!isLeft ? (
+                    <div className="rounded-lg border border-border/60 bg-card/60 shadow-sm p-6">
+                      <div className="mb-4 flex items-center gap-3">
+                        <Skeleton className="h-3 w-3 rounded-full" />
+                        <Skeleton className="h-5 w-48" />
+                      </div>
+                      <div className="space-y-3">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-11/12" />
+                        <Skeleton className="h-4 w-5/6" />
+                      </div>
+                    </div>
+                  ) : (
+                    <Skeleton className="h-40 w-full rounded-lg" />
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
@@ -185,49 +218,59 @@ export default function AchievementsPage() {
       })
   }, [])
 
-  // Transform data based on the view type
+  // Transform data for unified timeline
   const timelineAchievements = React.useMemo(
     () => transformAchievements(achievements),
-    [achievements]
-  )
-  const mobileAchievements = React.useMemo(
-    () => transformAchievementsForMobile(achievements),
     [achievements]
   )
 
   return (
     <SidebarShell>
       <MainbarShell>
-        {/* Mobile heading only - desktop heading is inside ScrollTimeline */}
-        {isMobile && (
-          isLoading ? (
-            <Skeleton className="absolute left-5 top-24 h-7 w-48 md:left-5 md:top-10" />
-          ) : (
-            <h1 className="absolute left-5 top-20 md:left-20 md:top-12 text-xl font-medium  md:text-4xl">
-              CHIEEENTS
-            </h1>
-          )
+        {/* Mobile heading only - desktop heading is inside Timeline component */}
+        {isMobile && !isLoading && (
+          <h1 className="absolute left-5 top-5 text-2xl font-medium md:text-5xl">
+            CHIEEENTS
+          </h1>
         )}
-        <div className={isMobile ? "pt-10 md:pt-32" : ""}>
-          {isLoading ? (
+        
+        {isLoading ? (
           <AchievementsSkeleton isMobile={isMobile} />
         ) : error ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-destructive">{error}</p>
-          </div>
-        ) : isMobile ? (
-          <AchievementsTimeline 
-            achievements={mobileAchievements} 
-            position="right" 
-            fillDistance={100}
-            className="w-full"
-          />
+          <>
+            {!isMobile && (
+              <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-5xl">
+                CHIEEENTS
+              </h1>
+            )}
+            <div className="flex h-full w-full flex-col items-center justify-center gap-6">
+              <img
+                src="/placeholder/NoNetwork.svg"
+                alt="No network"
+                className="h-40 w-40 md:h-56 md:w-56 dark:invert"
+              />
+              <div className="text-center">
+                <p className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  No network
+                </p>
+                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                  Failed to load achievements right now.
+                </p>
+              </div>
+            </div>
+          </>
         ) : (
-          <div className="absolute inset-0 overflow-hidden">
-            <ScrollTimeline achievements={timelineAchievements} />
+          <div className={isMobile ? "w-full h-full" : "absolute inset-0"}>
+            <Timeline
+              items={timelineAchievements}
+              fillDistance={100}
+              showHeader={!isMobile}
+              headerText="CHIEEENTS"
+              mobilePosition="right"
+              className="w-full h-full"
+            />
           </div>
         )}
-        </div>
       </MainbarShell>
     </SidebarShell>
   )

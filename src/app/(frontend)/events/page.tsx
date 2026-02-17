@@ -3,7 +3,7 @@
 import React from "react";
 import { SidebarShell, MainbarShell } from "@/components/FrontendShell";
 import { Carousel } from "@/components/EventsCarousel";
-import { EventCard } from "@/components/EventsCards";
+import { Card as CarouselCard, EventCard, type EventCardData as CarouselCardData } from "@/components/EventsCards";
 import {
   Pagination,
   PaginationContent,
@@ -73,6 +73,12 @@ async function getAllEvents(baseUrl: string) {
   return data.docs;
 }
 
+function getEventImageUrl(event: Event): string {
+  return typeof event.image === "object" && event.image !== null && "url" in event.image
+    ? event.image.url || "/placeholder/placeholder.jpg"
+    : "/placeholder/placeholder.jpg";
+}
+
 
 function CarouselSkeleton({ count = 4 }: { count?: number }) {
   return (
@@ -107,8 +113,31 @@ export default function Page() {
   const [allEvents, setAllEvents] = React.useState<Event[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [useFallback, setUseFallback] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(9);
+
+  const fallbackCarouselCards = React.useMemo<CarouselCardData[]>(
+    () =>
+      Array.from({ length: 4 }).map(() => ({
+        title: "No Network",
+        category: "Event",
+        src: "/placeholder/placeholder.jpg",
+        content: null,
+        isFallback: true,
+      })),
+    []
+  );
+
+  const fallbackGridCards = React.useMemo(
+    () =>
+      Array.from({ length: pageSize }).map(() => ({
+        title: "No Network",
+        src: "/placeholder/placeholder.jpg",
+        isFallback: true,
+      })),
+    [pageSize]
+  );
 
   React.useEffect(() => {
     let isMounted = true;
@@ -130,6 +159,7 @@ export default function Page() {
         console.error("Error fetching events:", err);
         if (!isMounted) return;
         setError("Failed to load events");
+        setUseFallback(true);
         setIsLoading(false);
       });
 
@@ -161,31 +191,51 @@ export default function Page() {
       <MainbarShell>
         {isLoading ? (
           <>
-            <div className="absolute left-5 top-20 md:left-20 md:top-12">
+            <div className="absolute left-5 top-5 md:left-20 md:top-12">
               <Skeleton className="h-6 w-36 md:h-10 md:w-56" />
             </div>
-            <div className="pt-24 md:pt-32">
+            <div className="pt-6 md:pt-12">
               <CarouselSkeleton />
             </div>
+            <div className="mr-10 flex justify-end gap-2">
+              <Skeleton className=" h-11 w-11 rounded-full" />
+              <Skeleton className="h-11 w-11 rounded-full" />
+            </div>
 
-            <div className="w-full px-6 pb-20 pt-20 md:px-12 lg:px-16">
-              <Skeleton className="mb-6 h-5 w-32 md:h-7 md:w-44" />
+            <div className="w-full px-6 pt-20 pb-40 md:px-12 lg:px-16">
+              <Skeleton className="mb-6 h-20 w-32 md:h-10 md:w-48" />
               <FocusCardsSkeleton />
               <div className="mt-6 flex w-full justify-end">
                 <Skeleton className="h-9 w-56" />
               </div>
             </div>
           </>
-        ) : error ? (
-          <div className="flex h-full items-center justify-center">
-            <p className="text-destructive">{error}</p>
-          </div>
-        ) : (
+        ) : useFallback ? (
           <>
-            <h1 className="absolute left-5 top-20 md:left-20 md:top-12 text-xl font-medium md:text-4xl">
+            <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl">
               RECENT EENTS
             </h1>
-            <div className="w-full h-full py-20">
+            <div className="w-full py-6 md:py-12">
+              <Carousel
+                items={fallbackCarouselCards.map((card, index) => (
+                  <CarouselCard key={`fallback-${index}`} card={card} index={index} />
+                ))}
+              />
+            </div>
+
+            <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
+              <h2 className="relative text-2xl font-medium md:text-4xl">
+                LL EENTS
+              </h2>
+              <FocusCards cards={fallbackGridCards} />
+            </div>
+          </>
+        ) : (
+          <>
+            <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl">
+              RECENT EENTS
+            </h1>
+            <div className="w-full py-6 md:py-12">
               <Carousel
                 items={events.map((event, index) => (
                   <EventCard
@@ -198,7 +248,7 @@ export default function Page() {
             </div>
 
             <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
-              <h2 className="relative text-xl font-medium md:text-4xl">
+              <h2 className="relative text-2xl font-medium md:text-4xl">
                 LL EENTS
               </h2>
               {totalPages > 1 && (
@@ -249,10 +299,7 @@ export default function Page() {
               <FocusCards
                 cards={visibleEvents.map((event) => ({
                   title: event.title || "Untitled Event",
-                  src:
-                    typeof event.image === "string"
-                      ? event.image
-                      : event.image?.url || "/placeholder-event.jpg",
+                  src: getEventImageUrl(event),
                   event,
                 }))}
               />

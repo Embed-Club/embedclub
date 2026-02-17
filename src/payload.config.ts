@@ -9,6 +9,7 @@ import { mcpPlugin } from '@payloadcms/plugin-mcp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Audio, AudioFiles } from './collections/Audio'
 import {Achievements} from './collections/Achievements'
 import { Events } from './collections/Events'
 import { MemberCategories } from './collections/MemberCategories'
@@ -27,7 +28,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Achievements, Events, MemberCategories, MemberPhoto, MemberRoles, Members, Gallery],
+  collections: [Users, Media, AudioFiles, Audio, Achievements, Events, MemberCategories, MemberPhoto, MemberRoles, Members, Gallery],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

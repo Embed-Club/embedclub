@@ -70,6 +70,8 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    'audio-files': AudioFile;
+    audio: Audio;
     achievements: Achievement;
     events: Event;
     'member-categories': MemberCategory;
@@ -87,6 +89,8 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'audio-files': AudioFilesSelect<false> | AudioFilesSelect<true>;
+    audio: AudioSelect<false> | AudioSelect<true>;
     achievements: AchievementsSelect<false> | AchievementsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     'member-categories': MemberCategoriesSelect<false> | MemberCategoriesSelect<true>;
@@ -197,6 +201,105 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * Upload audio assets used across the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audio-files".
+ */
+export interface AudioFile {
+  id: number;
+  /**
+   * Friendly name to identify this audio file in pickers.
+   */
+  title: string;
+  /**
+   * Optional tags to group or search audio files.
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Configure how each sound behaves on the website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audio".
+ */
+export interface Audio {
+  id: number;
+  /**
+   * Friendly name shown in the admin list.
+   */
+  name: string;
+  /**
+   * Controls where this sound is used in the frontend.
+   */
+  type: 'buttonClick' | 'mouseClick' | 'pageChange' | 'scroll' | 'background' | 'custom';
+  enabled?: boolean | null;
+  /**
+   * Base volume for this sound.
+   */
+  volume: number;
+  loop?: boolean | null;
+  /**
+   * 1 = normal speed. Lower is slower, higher is faster.
+   */
+  playbackRate?: number | null;
+  fadeInMs?: number | null;
+  fadeOutMs?: number | null;
+  /**
+   * Optional boost multiplier applied by the frontend.
+   */
+  volumeBoost?: number | null;
+  effects?: {
+    echo?: {
+      enabled?: boolean | null;
+      delayMs?: number | null;
+      feedback?: number | null;
+      mix?: number | null;
+    };
+    ambience?: {
+      enabled?: boolean | null;
+      mix?: number | null;
+      lowpassHz?: number | null;
+    };
+  };
+  /**
+   * Add one or more sources. The frontend can pick randomly.
+   */
+  sources?:
+    | {
+        label?: string | null;
+        file?: (number | null) | AudioFile;
+        /**
+         * Use this for hosted audio (e.g., CDN).
+         */
+        externalUrl?: string | null;
+        /**
+         * Higher weight makes this source more likely to be chosen.
+         */
+        weight?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -558,6 +661,14 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'audio-files';
+        value: number | AudioFile;
+      } | null)
+    | ({
+        relationTo: 'audio';
+        value: number | Audio;
+      } | null)
+    | ({
         relationTo: 'achievements';
         value: number | Achievement;
       } | null)
@@ -680,6 +791,75 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audio-files_select".
+ */
+export interface AudioFilesSelect<T extends boolean = true> {
+  title?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audio_select".
+ */
+export interface AudioSelect<T extends boolean = true> {
+  name?: T;
+  type?: T;
+  enabled?: T;
+  volume?: T;
+  loop?: T;
+  playbackRate?: T;
+  fadeInMs?: T;
+  fadeOutMs?: T;
+  volumeBoost?: T;
+  effects?:
+    | T
+    | {
+        echo?:
+          | T
+          | {
+              enabled?: T;
+              delayMs?: T;
+              feedback?: T;
+              mix?: T;
+            };
+        ambience?:
+          | T
+          | {
+              enabled?: T;
+              mix?: T;
+              lowpassHz?: T;
+            };
+      };
+  sources?:
+    | T
+    | {
+        label?: T;
+        file?: T;
+        externalUrl?: T;
+        weight?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
