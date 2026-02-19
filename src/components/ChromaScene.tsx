@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
+import { useTheme } from 'next-themes';
 
 interface ChromaSceneProps {
   children: React.ReactNode;
@@ -27,6 +28,16 @@ const ChromaScene: React.FC<ChromaSceneProps> = ({
   const fadeRef = useRef<HTMLDivElement>(null);
   const posRef = useRef({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = mounted ? (resolvedTheme || theme) : 'dark';
+  const isLightMode = currentTheme === 'light';
 
   useEffect(() => {
     // Detect mobile / small screens; disable chroma overlays there
@@ -100,6 +111,11 @@ const ChromaScene: React.FC<ChromaSceneProps> = ({
     return <div className="relative w-full h-full">{children}</div>;
   }
 
+  // Backdrop filter settings based on theme
+  const backdropFilterValue = isLightMode 
+    ? 'grayscale(1) brightness(1.02)' 
+    : 'grayscale(1) brightness(0.78)';
+
   return (
     <div
       ref={rootRef}
@@ -119,8 +135,8 @@ const ChromaScene: React.FC<ChromaSceneProps> = ({
       <div
         className="absolute inset-0 pointer-events-none z-30"
         style={{
-          backdropFilter: 'grayscale(1) brightness(0.78)',
-          WebkitBackdropFilter: 'grayscale(1) brightness(0.78)',
+          backdropFilter: backdropFilterValue,
+          WebkitBackdropFilter: backdropFilterValue,
           background: 'rgba(0,0,0,0.001)',
           maskImage:
             'radial-gradient(circle var(--r) at var(--x) var(--y),transparent 0%,transparent 15%,rgba(0,0,0,0.10) 30%,rgba(0,0,0,0.22) 45%,rgba(0,0,0,0.35) 60%,rgba(0,0,0,0.50) 75%,rgba(0,0,0,0.68) 88%,white 100%)',
@@ -134,8 +150,8 @@ const ChromaScene: React.FC<ChromaSceneProps> = ({
         ref={fadeRef}
         className="absolute inset-0 pointer-events-none transition-opacity duration-[250ms] z-40"
         style={{
-          backdropFilter: 'grayscale(1) brightness(0.78)',
-          WebkitBackdropFilter: 'grayscale(1) brightness(0.78)',
+          backdropFilter: backdropFilterValue,
+          WebkitBackdropFilter: backdropFilterValue,
           background: 'rgba(0,0,0,0.001)',
           maskImage:
             'radial-gradient(circle var(--r) at var(--x) var(--y),white 0%,white 15%,rgba(255,255,255,0.90) 30%,rgba(255,255,255,0.78) 45%,rgba(255,255,255,0.65) 60%,rgba(255,255,255,0.50) 75%,rgba(255,255,255,0.32) 88%,transparent 100%)',

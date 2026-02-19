@@ -217,7 +217,7 @@ export default function Page() {
             </div>
           ) : (
             <div className="px-4 py-8 md:px-8 lg:px-12">
-              <h1 className="mb-6 left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl">EBERS</h1>
+              <h1 className="mb-30 left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl text-foreground">EBERS</h1>
 
               {grouped.map(({ category, items }) => {
                 const currentMembers = items.filter((m) => !m.endYear)
@@ -225,7 +225,7 @@ export default function Page() {
 
                 return (
                   <section key={category} className="mb-12">
-                    <h2 className="mb-4 text-2xl font-semibold">{category}</h2>
+                    <h2 className="mb-4 text-2xl font-semibold text-foreground">{category}</h2>
 
                     {currentMembers.length > 0 && (
                       <ChromaGridWrapper

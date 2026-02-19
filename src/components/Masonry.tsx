@@ -270,7 +270,7 @@ const Masonry: React.FC<MasonryProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full"
+      className="relative w-full overflow-hidden"
       style={{ height: containerHeight || 'auto' }}
     >
       {grid.map((item) => (

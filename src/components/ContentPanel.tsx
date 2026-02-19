@@ -8,7 +8,7 @@ interface ContentPanelProps {
 export function ContentPanel({ children, borderless }: ContentPanelProps) {
   return (
     <div 
-      className={`flex-1 overflow-auto relative pt-16 lg:pt-0 ${!borderless ? 'bg-sidebar m-2 ml-0 rounded-lg' : 'bg-transparent m-0'}`}
+      className={`flex-1 overflow-auto relative pt-16 lg:pt-0 ${!borderless ? 'bg-sidebar m-2 ml-0 rounded-lg border' : 'bg-transparent m-0'}`}
       style={borderless ? {
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',

@@ -203,10 +203,23 @@ export default function Page() {
             </div>
 
             <div className="w-full px-6 pt-20 pb-40 md:px-12 lg:px-16">
-              <Skeleton className="mb-6 h-20 w-32 md:h-10 md:w-48" />
+              <Skeleton className="mb-2 h-20 w-32 md:h-10 md:w-48" />
+              <div className="mt-2 flex w-full justify-end">
+                <div className="flex items-center gap-2 pb-6">
+                  <Skeleton className="h-9 w-24 rounded-md" />
+                  <Skeleton className="h-9 w-9 rounded-md" />
+                  <Skeleton className="h-9 w-9 rounded-md" />
+                  <Skeleton className="h-9 w-16 rounded-md" />
+                </div>
+              </div>
               <FocusCardsSkeleton />
               <div className="mt-6 flex w-full justify-end">
-                <Skeleton className="h-9 w-56" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-9 w-24 rounded-md" />
+                  <Skeleton className="h-9 w-9 rounded-md" />
+                  <Skeleton className="h-9 w-9 rounded-md" />
+                  <Skeleton className="h-9 w-16 rounded-md" />
+                </div>
               </div>
             </div>
           </>
