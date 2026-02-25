@@ -79,6 +79,8 @@ export interface Config {
     'member-roles': MemberRole;
     members: Member;
     gallery: Gallery;
+    resources: Resource;
+    tags: Tag;
     'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -98,6 +100,8 @@ export interface Config {
     'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
+    resources: ResourcesSelect<false> | ResourcesSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
     'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -547,6 +551,239 @@ export interface Gallery {
   };
 }
 /**
+ * Technical learning resources with flexible content blocks
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources".
+ */
+export interface Resource {
+  id: number;
+  title: string;
+  /**
+   * URL-friendly version (auto-generated from title, but you can edit it)
+   */
+  slug: string;
+  /**
+   * One-line summary shown in resource cards and previews
+   */
+  description: string;
+  /**
+   * Image displayed in resource cards (1-2 sentence preview)
+   */
+  thumbnail: number | Media;
+  /**
+   * Difficulty level for this resource
+   */
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  /**
+   * Categorize this resource with tags (Python, React, Backend, etc.)
+   */
+  tags?: (number | Tag)[] | null;
+  /**
+   * Approximate time to complete this resource
+   */
+  estimatedReadTime?: number | null;
+  /**
+   * Feature this resource on the homepage
+   */
+  featured?: boolean | null;
+  /**
+   * When this resource was last updated
+   */
+  lastUpdated?: string | null;
+  /**
+   * Build your resource with flexible content blocks. Add text, code, tables, images, diagrams, and more.
+   */
+  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Resource tags for categorization and filtering
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  name: string;
+  /**
+   * URL-friendly version (auto-generated from name, but you can edit it)
+   */
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TextBlock".
+ */
+export interface TextBlock {
+  /**
+   * Formatted text content with support for bold, italic, lists, and more
+   */
+  text: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'textBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock".
+ */
+export interface CodeBlock {
+  /**
+   * Programming language for syntax highlighting
+   */
+  language:
+    | 'javascript'
+    | 'typescript'
+    | 'python'
+    | 'java'
+    | 'cpp'
+    | 'csharp'
+    | 'go'
+    | 'rust'
+    | 'ruby'
+    | 'php'
+    | 'swift'
+    | 'kotlin'
+    | 'html'
+    | 'css'
+    | 'sql'
+    | 'bash'
+    | 'yaml'
+    | 'json'
+    | 'markdown'
+    | 'xml';
+  /**
+   * Paste or write your code here
+   */
+  code: string;
+  /**
+   * Optional caption or file name to display above the code
+   */
+  caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'codeBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TableBlock".
+ */
+export interface TableBlock {
+  /**
+   * Column headers for the table
+   */
+  headers: {
+    header: string;
+    id?: string | null;
+  }[];
+  /**
+   * Table rows and cells
+   */
+  rows: {
+    cells: {
+      cell: string;
+      id?: string | null;
+    }[];
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'tableBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GraphBlock".
+ */
+export interface GraphBlock {
+  /**
+   * Type of graph or diagram to display
+   */
+  graphType: 'mermaid' | 'chartData' | 'html';
+  /**
+   * Mermaid diagram syntax (e.g., graph TD, flowchart, etc.)
+   */
+  mermaidDefinition?: string | null;
+  /**
+   * Chart data in JSON format (Chart.js compatible)
+   */
+  chartData?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Custom HTML for embedding (use with caution)
+   */
+  html?: string | null;
+  /**
+   * Optional caption for the diagram
+   */
+  caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'graphBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBlock".
+ */
+export interface ImageBlock {
+  /**
+   * Upload an image to display
+   */
+  image: number | Media;
+  /**
+   * Optional caption or alt text for the image
+   */
+  caption?: string | null;
+  /**
+   * Display width of the image
+   */
+  size?: ('small' | 'medium' | 'large') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imageBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RowBlock".
+ */
+export interface RowBlock {
+  /**
+   * Number of columns in this row
+   */
+  columns: '1' | '2' | '3';
+  /**
+   * Blocks to display in this row (nested RowBlocks not supported)
+   */
+  blocks?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'rowBlock';
+}
+/**
  * API keys control which collections, resources, tools, and prompts MCP clients can access
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -695,6 +932,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'gallery';
         value: number | Gallery;
+      } | null)
+    | ({
+        relationTo: 'resources';
+        value: number | Resource;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: number | Tag;
       } | null)
     | ({
         relationTo: 'payload-mcp-api-keys';
@@ -1042,6 +1287,130 @@ export interface GallerySelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources_select".
+ */
+export interface ResourcesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  thumbnail?: T;
+  difficulty?: T;
+  tags?: T;
+  estimatedReadTime?: T;
+  featured?: T;
+  lastUpdated?: T;
+  content?:
+    | T
+    | {
+        textBlock?: T | TextBlockSelect<T>;
+        codeBlock?: T | CodeBlockSelect<T>;
+        tableBlock?: T | TableBlockSelect<T>;
+        graphBlock?: T | GraphBlockSelect<T>;
+        imageBlock?: T | ImageBlockSelect<T>;
+        rowBlock?: T | RowBlockSelect<T>;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TextBlock_select".
+ */
+export interface TextBlockSelect<T extends boolean = true> {
+  text?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock_select".
+ */
+export interface CodeBlockSelect<T extends boolean = true> {
+  language?: T;
+  code?: T;
+  caption?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TableBlock_select".
+ */
+export interface TableBlockSelect<T extends boolean = true> {
+  headers?:
+    | T
+    | {
+        header?: T;
+        id?: T;
+      };
+  rows?:
+    | T
+    | {
+        cells?:
+          | T
+          | {
+              cell?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GraphBlock_select".
+ */
+export interface GraphBlockSelect<T extends boolean = true> {
+  graphType?: T;
+  mermaidDefinition?: T;
+  chartData?: T;
+  html?: T;
+  caption?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBlock_select".
+ */
+export interface ImageBlockSelect<T extends boolean = true> {
+  image?: T;
+  caption?: T;
+  size?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RowBlock_select".
+ */
+export interface RowBlockSelect<T extends boolean = true> {
+  columns?: T;
+  blocks?:
+    | T
+    | {
+        textBlock?: T | TextBlockSelect<T>;
+        codeBlock?: T | CodeBlockSelect<T>;
+        tableBlock?: T | TableBlockSelect<T>;
+        graphBlock?: T | GraphBlockSelect<T>;
+        imageBlock?: T | ImageBlockSelect<T>;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
