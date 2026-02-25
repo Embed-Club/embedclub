@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { AppSidebar } from "@/components/DesktopMenu";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/ThemeToggle";
@@ -11,46 +11,38 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export function SidebarShell({ children }: { children?: React.ReactNode }) {
   return (
     <SidebarProvider>
-      {/* Desktop sidebar */}
-      <div className="hidden lg:block">
-        <AppSidebar />
-      </div>
-
-      {/* Mobile menu */}
+      <div className="hidden lg:block"><AppSidebar /></div>
       <MobileMenu />
-
-      {/* Top-right Dark Mode Toggle */}
-      <div className="absolute right-8 top-6 z-40 hidden lg:block">
-        <ModeToggle />
-      </div>
-
-      {/* Render inner content */}
+      <div className="absolute right-8 top-6 z-40 hidden lg:block"><ModeToggle /></div>
       {children}
     </SidebarProvider>
   );
 }
 
 interface MainbarShellProps {
-  children?: React.ReactNode
-  borderless?: boolean
+  children?: React.ReactNode;
+  borderless?: boolean;
 }
 
+// ✅ Context holds the actual DOM element, not a ref object
+export const ScrollContainerContext = React.createContext<HTMLDivElement | null>(null);
+
 export function MainbarShell({ children, borderless }: MainbarShellProps) {
-  const isMobile = useIsMobile()
-  
+  const isMobile = useIsMobile();
+  const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null); // ✅ useState triggers re-render
+
   return (
-    <ContentPanel borderless={borderless || isMobile}>
-      <div className="h-full w-full relative">
-        {children}
-      </div>
-    </ContentPanel>
+    // ✅ pass the actual DOM node
+    <ScrollContainerContext.Provider value={scrollEl}>
+      <ContentPanel ref={setScrollEl} borderless={borderless || isMobile}>
+        <div className="h-full w-full relative">
+          {children}
+        </div>
+      </ContentPanel>
+    </ScrollContainerContext.Provider>
   );
 }
 
-/**
- * If you ever want a single wrapper combining both (useful for smaller pages),
- * you can export this too. Optional.
- */
 export default function FrontendShell({ children }: { children?: React.ReactNode }) {
   return (
     <SidebarShell>
