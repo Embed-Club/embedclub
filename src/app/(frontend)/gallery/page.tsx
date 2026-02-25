@@ -35,7 +35,7 @@ export default async function Page() {
         <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl">
           GALLERY
         </h1>
-        <div className="h-full w-full px-2 pt-16 md:pt-32 md:pl-20">
+        <div className="h-full w-full px-2 pt-16 md:pt-32 ">
           <Masonry
             items={items}
             ease="power3.out"
