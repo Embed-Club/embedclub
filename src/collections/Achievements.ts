@@ -11,10 +11,10 @@ export const Achievements: CollectionConfig = {
   },
   fields: [
     // Title - shown to editors in admin (used internally, not displayed on timeline)
-    { 
-      name: 'title', 
-      label: 'Title', 
-      type: 'text', 
+    {
+      name: 'title',
+      label: 'Title',
+      type: 'text',
       required: true,
     },
 
@@ -34,7 +34,7 @@ export const Achievements: CollectionConfig = {
       required: true,
       admin: {
         description: 'Date of the achievement (newest first)',
-        date: { 
+        date: {
           pickerAppearance: 'dayAndTime',
           displayFormat: 'MMM d, yyyy',
         },

@@ -1,11 +1,9 @@
 'use client'
-
-import React from 'react'
-import { useField } from '@payloadcms/ui'
-import type { NumberFieldClientComponent } from 'payload'
 import ElasticSlider from '@/components/ElasticSlider'
 import { Volume2Icon } from '@/components/animate-ui/icons/Volume2'
 import { VolumeOffIcon } from '@/components/animate-ui/icons/VolumeOff'
+import { useField } from '@payloadcms/ui'
+import type { NumberFieldClientComponent } from 'payload'
 
 const AudioSliderField: NumberFieldClientComponent = (props) => {
   const { path, label } = props
@@ -18,7 +16,7 @@ const AudioSliderField: NumberFieldClientComponent = (props) => {
 
   // Determine which icons to show based on field type
   const isVolumeField = path.includes('volume') || path.includes('mix')
-  
+
   const leftIcon = isVolumeField ? (
     <VolumeOffIcon size={20} className="text-gray-400 dark:text-gray-500" />
   ) : (
@@ -40,10 +38,21 @@ const AudioSliderField: NumberFieldClientComponent = (props) => {
 
   return (
     <div className="field-type-number" style={{ marginBottom: '1.5rem' }}>
-      <label className="field-label" style={{ marginBottom: '0.75rem', display: 'block', fontSize: '13px', fontWeight: 600 }}>
+      <label
+        className="field-label"
+        style={{ marginBottom: '0.75rem', display: 'block', fontSize: '13px', fontWeight: 600 }}
+      >
         {label || path}
       </label>
-      <div style={{ width: '100%', padding: '0.5rem 1rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div
+        style={{
+          width: '100%',
+          padding: '0.5rem 1rem',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <div style={{ maxWidth: '400px', width: '100%' }}>
           <ElasticSlider
             defaultValue={value ?? props.defaultValue ?? min}

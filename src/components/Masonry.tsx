@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { gsap } from 'gsap'
 import { Skeleton } from '@/components/ui/skeleton'
+import { gsap } from 'gsap'
+import type React from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 const useMedia = (queries: string[], values: number[], defaultValue: number): number => {
   const get = () => {
@@ -286,9 +287,7 @@ const Masonry: React.FC<MasonryProps> = ({
           <div
             className="relative w-full h-full bg-cover bg-center rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] uppercase text-[10px] leading-[10px]"
             style={{
-              backgroundImage: loadedIds.has(item.id)
-                ? `url(\"${item.img}\")`
-                : 'none',
+              backgroundImage: loadedIds.has(item.id) ? `url(\"${item.img}\")` : 'none',
             }}
           >
             {!loadedIds.has(item.id) && (

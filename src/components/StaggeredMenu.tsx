@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react'
-import { useTheme } from 'next-themes'
 import { gsap } from 'gsap'
 import { Moon, Sun } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react'
 
 export interface StaggeredMenuItem {
   label: string
@@ -47,7 +47,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   logoLightUrl = '/embedClubLogo-Light.png',
   logoDarkUrl = '/embedClubLogo-Dark.png',
   menuButtonColor = '#fff',
-  openMenuButtonColor = '#fff',
   changeMenuColorOnOpen = true,
   accentColor = '#5227FF',
   isFixed = false,
@@ -121,7 +120,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor })
     })
     return () => ctx.revert()
-  }, [menuButtonColor, position])
+  }, [menuButtonColor])
 
   const buildOpenTimeline = useCallback(() => {
     const panel = panelRef.current
@@ -149,6 +148,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     const panelStart = Number(gsap.getProperty(panel, 'xPercent'))
 
     if (itemEls.length) gsap.set(itemEls, { yPercent: 140, rotate: 10 })
+    // biome-ignore lint/suspicious/noExplicitAny: custom property
     if (numberEls.length) gsap.set(numberEls, { ['--sm-num-opacity' as any]: 0 })
     if (socialTitle) gsap.set(socialTitle, { opacity: 0 })
     if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 })
@@ -197,6 +197,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           {
             duration: 0.6,
             ease: 'power2.out',
+            // biome-ignore lint/suspicious/noExplicitAny: custom property
             ['--sm-num-opacity' as any]: 1,
             stagger: { each: 0.08, from: 'start' },
           },
@@ -272,6 +273,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         const numberEls = Array.from(
           panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'),
         ) as HTMLElement[]
+        // biome-ignore lint/suspicious/noExplicitAny: custom property
         if (numberEls.length) gsap.set(numberEls, { ['--sm-num-opacity' as any]: 0 })
 
         const socialTitle = panel.querySelector('.sm-socials-title') as HTMLElement | null
@@ -336,7 +338,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         gsap.set(btn, { color: mounted && isDark ? '#e9e9ef' : '#111111' })
       }
     },
-    [mounted, isDark, changeMenuColorOnOpen],
+    [changeMenuColorOnOpen, getButtonColor],
   )
 
   React.useEffect(() => {
@@ -435,15 +437,12 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       } pointer-events-none`}
     >
       <div
-        className={
-          (className ? className + ' ' : '') +
-          'staggered-menu-wrapper pointer-events-none relative w-full h-full z-40'
-        }
+        className={`${className ? `${className} ` : ''}staggered-menu-wrapper pointer-events-none relative w-full h-full z-40`}
         style={{
-          ['--sm-accent' as any]: accentColor,
-          ['--sm-bg' as any]: mounted && isDark ? '#0b0b0f' : '#ffffff',
-          ['--sm-fg' as any]: mounted && isDark ? '#f5f5f5' : '#000000',
-          ['--sm-muted' as any]: mounted && isDark ? '#c2c2c2' : '#111111',
+          ['--sm-accent' as keyof React.CSSProperties]: accentColor,
+          ['--sm-bg' as keyof React.CSSProperties]: mounted && isDark ? '#0b0b0f' : '#ffffff',
+          ['--sm-fg' as keyof React.CSSProperties]: mounted && isDark ? '#f5f5f5' : '#000000',
+          ['--sm-muted' as keyof React.CSSProperties]: mounted && isDark ? '#c2c2c2' : '#111111',
         }}
         data-position={position}
         data-open={open || undefined}
@@ -454,14 +453,15 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           aria-hidden="true"
         >
           {(() => {
-            const raw = colors && colors.length ? colors.slice(0, 4) : ['#1e1e22', '#35353c']
-            let arr = [...raw]
+            const raw = colors?.length ? colors.slice(0, 4) : ['#1e1e22', '#35353c']
+            const arr = [...raw]
             if (arr.length >= 3) {
               const mid = Math.floor(arr.length / 2)
               arr.splice(mid, 1)
             }
             return arr.map((c, i) => (
               <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: safe for layers
                 key={i}
                 className="sm-prelayer absolute top-0 right-0 h-full w-full translate-x-0"
                 style={{ background: c }}
@@ -490,7 +490,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
           <button
             ref={toggleBtnRef}
-            className={`sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer font-medium leading-none overflow-visible pointer-events-auto`}
+            className={
+              'sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer font-medium leading-none overflow-visible pointer-events-auto'
+            }
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="staggered-menu-panel"
@@ -513,6 +515,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             >
               <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
                 {textLines.map((l, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: valid static rendering
                   <span className="sm-toggle-line block h-[1em] leading-none" key={i}>
                     {l}
                   </span>
@@ -551,13 +554,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           <div className="sm-panel-inner flex-1 flex flex-col gap-5">
             <ul
               className="sm-panel-list list-none m-0 p-0 flex flex-col gap-2"
-              role="list"
               data-numbering={displayItemNumbering || undefined}
             >
-              {items && items.length ? (
+              {items?.length ? (
                 items.map((it, idx) => (
                   <li
                     className="sm-panel-itemWrap relative overflow-hidden leading-none"
+                    // biome-ignore lint/suspicious/noArrayIndexKey: fixed layout
                     key={it.label + idx}
                   >
                     <a
@@ -594,11 +597,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 <h3 className="sm-socials-title m-0 text-base font-medium [color:var(--sm-accent,#ff0000)]">
                   Socials
                 </h3>
-                <ul
-                  className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap"
-                  role="list"
-                >
+                <ul className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap">
                   {socialItems.map((s, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: fixed layout
                     <li key={s.label + i} className="sm-socials-item">
                       <a
                         href={s.link}

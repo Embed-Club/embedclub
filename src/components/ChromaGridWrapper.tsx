@@ -6,6 +6,6 @@ const ChromaGrid = dynamic(() => import('@/components/ChromaGrid'), {
   ssr: false,
 })
 
-export default function ChromaGridWrapper(props: any) {
+export default function ChromaGridWrapper(props: Record<string, unknown>) {
   return <ChromaGrid {...props} />
 }

@@ -1,42 +1,42 @@
-"use client";
+'use client'
 
-import React, { useEffect, useRef, useCallback } from "react";
-import { gsap } from "gsap";
-import { ResourceCard } from "@/components/ResourceCard";
-import type { ResourceCardData } from "@/app/(frontend)/resources/ResourcesPageContent";
+import type { ResourceCardData } from '@/app/(frontend)/resources/ResourcesPageContent'
+import { ResourceCard } from '@/components/ResourceCard'
+import { gsap } from 'gsap'
+import { useCallback, useEffect, useRef } from 'react'
 
 interface ResourceCardsProps {
-  resources: ResourceCardData[];
+  resources: ResourceCardData[]
 }
 
 export function ResourceCards({ resources }: ResourceCardsProps) {
-  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   const setCardRef = useCallback((id: string, el: HTMLDivElement | null) => {
     if (el) {
-      cardRefs.current.set(id, el);
+      cardRefs.current.set(id, el)
     } else {
-      cardRefs.current.delete(id);
+      cardRefs.current.delete(id)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    const elements = Array.from(cardRefs.current.values());
+    const elements = Array.from(cardRefs.current.values())
 
     elements.forEach((el) => {
-      gsap.set(el, { opacity: 0, y: 0 });
-    });
+      gsap.set(el, { opacity: 0, y: 0 })
+    })
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+          if (!entry.isIntersecting) return
 
-          const el = entry.target as HTMLDivElement;
-          const indexAttr = el.getAttribute("data-index");
-          const index = indexAttr ? Number(indexAttr) : 0;
+          const el = entry.target as HTMLDivElement
+          const indexAttr = el.getAttribute('data-index')
+          const index = indexAttr ? Number(indexAttr) : 0
 
-          const startY = window.innerHeight + 200;
+          const startY = window.innerHeight + 200
 
           gsap.fromTo(
             el,
@@ -48,24 +48,24 @@ export function ResourceCards({ resources }: ResourceCardsProps) {
               opacity: 1,
               y: 0,
               duration: 0.8,
-              ease: "power3.in",
+              ease: 'power3.in',
               delay: index * 0.05,
-            }
-          );
+            },
+          )
 
-          observer.unobserve(el);
-        });
+          observer.unobserve(el)
+        })
       },
-      { threshold: 0.2 }
-    );
+      { threshold: 0.2 },
+    )
 
-    elements.forEach((el) => observer.observe(el));
+    elements.forEach((el) => observer.observe(el))
 
     return () => {
-      observer.disconnect();
-      cardRefs.current.clear();
-    };
-  }, [resources]);
+      observer.disconnect()
+      cardRefs.current.clear()
+    }
+  }, [resources])
 
   return (
     <div className="w-full">
@@ -82,5 +82,5 @@ export function ResourceCards({ resources }: ResourceCardsProps) {
         ))}
       </div>
     </div>
-  );
+  )
 }

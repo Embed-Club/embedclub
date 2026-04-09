@@ -1,16 +1,14 @@
-'use client';
-
-import * as React from 'react';
-import { motion, type Variants } from 'motion/react';
+'use client'
+import { type Variants, motion } from 'motion/react'
 
 import {
+  type IconProps,
+  IconWrapper,
   getVariants,
   useAnimateIconContext,
-  IconWrapper,
-  type IconProps,
-} from '@/components/animate-ui/icons/Icon';
+} from '@/components/animate-ui/icons/Icon'
 
-type VolumeOffProps = IconProps<keyof typeof animations>;
+type VolumeOffProps = IconProps<keyof typeof animations>
 
 const animations = {
   default: {
@@ -46,11 +44,11 @@ const animations = {
     path4: {},
     path5: {},
   } satisfies Record<string, Variants>,
-} as const;
+} as const
 
 function IconComponent({ size, ...props }: VolumeOffProps) {
-  const { controls } = useAnimateIconContext();
-  const variants = getVariants(animations);
+  const { controls } = useAnimateIconContext()
+  const variants = getVariants(animations)
 
   return (
     <motion.svg
@@ -80,12 +78,7 @@ function IconComponent({ size, ...props }: VolumeOffProps) {
         initial="initial"
         animate={controls}
       />
-      <motion.path
-        d="m2 2 20 20"
-        variants={variants.path3}
-        initial="initial"
-        animate={controls}
-      />
+      <motion.path d="m2 2 20 20" variants={variants.path3} initial="initial" animate={controls} />
       <motion.path
         d="m7 7-.587.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298V11"
         variants={variants.path4}
@@ -99,11 +92,11 @@ function IconComponent({ size, ...props }: VolumeOffProps) {
         animate={controls}
       />
     </motion.svg>
-  );
+  )
 }
 
 function VolumeOff(props: VolumeOffProps) {
-  return <IconWrapper icon={IconComponent} {...props} />;
+  return <IconWrapper icon={IconComponent} {...props} />
 }
 
 export {
@@ -112,4 +105,4 @@ export {
   VolumeOff as VolumeOffIcon,
   type VolumeOffProps,
   type VolumeOffProps as VolumeOffIconProps,
-};
+}

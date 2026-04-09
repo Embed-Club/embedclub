@@ -1,9 +1,10 @@
-"use client";
+'use client'
 
 import { useField } from '@payloadcms/ui'
-import type { FieldClientComponent } from 'payload'
-import React, { useEffect, useState, useRef, Suspense } from 'react'
 import dynamic from 'next/dynamic'
+import type { FieldClientComponent } from 'payload'
+import type React from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 
 // Import with ssr: false to prevent server-side rendering of Leaflet
 const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false })
@@ -15,11 +16,15 @@ interface CoordinateValue {
 
 const LeafletLocationField: FieldClientComponent = (props) => {
   const { path } = props
-  
+
   // Use individual field hooks for lat and lng instead of the group value
-  const { value: latValue, setValue: setLatValue } = useField<number | null>({ path: `${path}.lat` })
-  const { value: lngValue, setValue: setLngValue } = useField<number | null>({ path: `${path}.lng` })
-  
+  const { value: latValue, setValue: setLatValue } = useField<number | null>({
+    path: `${path}.lat`,
+  })
+  const { value: lngValue, setValue: setLngValue } = useField<number | null>({
+    path: `${path}.lng`,
+  })
+
   const [localLat, setLocalLat] = useState<string>('')
   const [localLng, setLocalLng] = useState<string>('')
   const isUpdatingFromMap = useRef(false)
@@ -32,7 +37,7 @@ const LeafletLocationField: FieldClientComponent = (props) => {
       } else {
         setLocalLat('')
       }
-      
+
       if (lngValue !== undefined && lngValue !== null) {
         setLocalLng(lngValue.toString())
       } else {
@@ -46,7 +51,7 @@ const LeafletLocationField: FieldClientComponent = (props) => {
     isUpdatingFromMap.current = true
     setLocalLat(coords.lat.toString())
     setLocalLng(coords.lng.toString())
-    
+
     console.log('Setting coordinates from map:', coords)
     setLatValue(coords.lat)
     setLngValue(coords.lng)
@@ -55,9 +60,9 @@ const LeafletLocationField: FieldClientComponent = (props) => {
   const handleLatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
     setLocalLat(val)
-    const lat = val ? parseFloat(val) : null
-    
-    if (lat === null || !isNaN(lat)) {
+    const lat = val ? Number.parseFloat(val) : null
+
+    if (lat === null || !Number.isNaN(lat)) {
       console.log('Setting lat from input:', lat)
       setLatValue(lat)
     }
@@ -66,9 +71,9 @@ const LeafletLocationField: FieldClientComponent = (props) => {
   const handleLngChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
     setLocalLng(val)
-    const lng = val ? parseFloat(val) : null
-    
-    if (lng === null || !isNaN(lng)) {
+    const lng = val ? Number.parseFloat(val) : null
+
+    if (lng === null || !Number.isNaN(lng)) {
       console.log('Setting lng from input:', lng)
       setLngValue(lng)
     }
@@ -83,7 +88,9 @@ const LeafletLocationField: FieldClientComponent = (props) => {
       {/* Manual Input Fields */}
       <div style={{ marginBottom: '15px', display: 'flex', gap: '10px' }}>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}>
+          <label
+            style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}
+          >
             Latitude
           </label>
           <input
@@ -103,7 +110,9 @@ const LeafletLocationField: FieldClientComponent = (props) => {
           />
         </div>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}>
+          <label
+            style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}
+          >
             Longitude
           </label>
           <input
@@ -128,7 +137,22 @@ const LeafletLocationField: FieldClientComponent = (props) => {
       <div style={{ marginBottom: '10px' }}>
         <strong>Click on map to set marker:</strong>
       </div>
-      <Suspense fallback={<div style={{ height: '600px', backgroundColor: '#f0f0f0', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading map...</div>}>
+      <Suspense
+        fallback={
+          <div
+            style={{
+              height: '600px',
+              backgroundColor: '#f0f0f0',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            Loading map...
+          </div>
+        }
+      >
         <LeafletMap
           lat={typeof latValue === 'number' ? latValue : undefined}
           lng={typeof lngValue === 'number' ? lngValue : undefined}
@@ -138,7 +162,15 @@ const LeafletLocationField: FieldClientComponent = (props) => {
 
       {/* Current Coordinates Display */}
       {typeof latValue === 'number' && typeof lngValue === 'number' && (
-        <div style={{ marginTop: '10px', padding: '8px', backgroundColor: '#f0f0f0', borderRadius: '4px', fontSize: '12px' }}>
+        <div
+          style={{
+            marginTop: '10px',
+            padding: '8px',
+            backgroundColor: '#f0f0f0',
+            borderRadius: '4px',
+            fontSize: '12px',
+          }}
+        >
           <strong>Current Location:</strong> {latValue.toFixed(6)}, {lngValue.toFixed(6)}
         </div>
       )}

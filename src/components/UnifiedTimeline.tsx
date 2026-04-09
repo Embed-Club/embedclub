@@ -1,8 +1,8 @@
 'use client'
 
-import * as React from 'react'
-import { motion, useTransform } from 'motion/react'
 import { useTimelineScroll } from '@/hooks/useTimelineScroll'
+import { motion, useTransform } from 'motion/react'
+import * as React from 'react'
 
 // Simple className merger
 function cn(...classes: (string | undefined | null | false)[]) {
@@ -20,7 +20,7 @@ export interface TimelineItemData {
   description?: string
   image: string | null
   imageUrl?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export interface TimelineContextValue {
@@ -102,11 +102,11 @@ export function Timeline({
 
         if (distanceToNode <= 0) {
           return 1
-        } else if (distanceToNode <= fillDistance) {
-          return 1 - distanceToNode / fillDistance
-        } else {
-          return 0
         }
+        if (distanceToNode <= fillDistance) {
+          return 1 - distanceToNode / fillDistance
+        }
+        return 0
       })
 
       setNodeFillLevels(fillLevels)
@@ -116,7 +116,7 @@ export function Timeline({
     setTimeout(calculateFill, 100)
 
     return () => unsubscribe()
-  }, [scrollYProgress, items, fillDistance])
+  }, [scrollYProgress, fillDistance])
 
   const registerNode = React.useCallback((index: number) => {
     return (el: HTMLDivElement | null) => {
@@ -209,7 +209,13 @@ export function Timeline({
             {/* Timeline Items */}
             <div className="relative">
               {items.map((item, index) => (
-                <TimelineItemWrapper key={item.id} item={item} index={index} totalItems={items.length} mobilePosition={mobilePosition} />
+                <TimelineItemWrapper
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  totalItems={items.length}
+                  mobilePosition={mobilePosition}
+                />
               ))}
             </div>
           </div>
@@ -239,8 +245,13 @@ interface TimelineItemWrapperProps {
   mobilePosition: 'left' | 'right'
 }
 
-function TimelineItemWrapper({ item, index, totalItems, mobilePosition }: TimelineItemWrapperProps) {
-  const { isMobile, nodeFillLevels, registerNode, scrollProgress, nodeRefs } = useTimelineContext()
+function TimelineItemWrapper({
+  item,
+  index,
+  totalItems,
+  mobilePosition,
+}: TimelineItemWrapperProps) {
+  const { isMobile, nodeFillLevels, registerNode, scrollProgress } = useTimelineContext()
   const nodeFillProgress = nodeFillLevels[index] || 0
   const isLeft = index % 2 === 0
 
@@ -249,7 +260,7 @@ function TimelineItemWrapper({ item, index, totalItems, mobilePosition }: Timeli
       <div className="relative mb-8">
         {/* Node Circle */}
         <TimelineNode index={index} />
-        
+
         {/* Mobile Content */}
         <TimelineContentMobile index={index} item={item} position={mobilePosition} />
       </div>
@@ -260,10 +271,7 @@ function TimelineItemWrapper({ item, index, totalItems, mobilePosition }: Timeli
   return (
     <div className="relative mb-48">
       {/* Node Circle with progressive fill */}
-      <div
-        ref={registerNode(index)}
-        className="absolute left-1/2 -translate-x-1/2 w-7 h-7 z-20"
-      >
+      <div ref={registerNode(index)} className="absolute left-1/2 -translate-x-1/2 w-7 h-7 z-20">
         {/* Outer border */}
         <div className="absolute inset-0 rounded-full border-2 border-foreground/40 dark:border-white/40 bg-background" />
 
@@ -301,9 +309,14 @@ interface TimelineItemDesktopProps {
   scrollProgress: number
 }
 
-function TimelineItemDesktop({ item, isLeft, index, totalItems, scrollProgress }: TimelineItemDesktopProps) {
+function TimelineItemDesktop({
+  item,
+  isLeft,
+  index,
+  totalItems,
+  scrollProgress,
+}: TimelineItemDesktopProps) {
   const [isVisible, setIsVisible] = React.useState(false)
-  const { nodeRefs } = useTimelineContext()
 
   const itemProgress = index / (totalItems - 1)
   const visibilityThreshold = itemProgress - 0.1
@@ -335,9 +348,7 @@ function TimelineItemDesktop({ item, isLeft, index, totalItems, scrollProgress }
             <h3 className="text-card-foreground dark:text-white text-xl font-semibold mb-3">
               {item.title}
             </h3>
-            <p className="text-card-foreground/90 dark:text-white/90 leading-relaxed">
-              {text}
-            </p>
+            <p className="text-card-foreground/90 dark:text-white/90 leading-relaxed">{text}</p>
           </div>
         ) : hasImage ? (
           // Image on left (when card is on right)
@@ -370,9 +381,7 @@ function TimelineItemDesktop({ item, isLeft, index, totalItems, scrollProgress }
             <h3 className="text-card-foreground dark:text-white text-xl font-semibold mb-3">
               {item.title}
             </h3>
-            <p className="text-card-foreground/90 dark:text-white/90 leading-relaxed">
-              {text}
-            </p>
+            <p className="text-card-foreground/90 dark:text-white/90 leading-relaxed">{text}</p>
           </div>
         ) : hasImage ? (
           // Image on right (when card is on left)
@@ -437,7 +446,11 @@ interface TimelineContentMobileProps {
   position: 'left' | 'right'
 }
 
-function TimelineContentMobile({ index, item, position }: TimelineContentMobileProps) {
+function TimelineContentMobile({
+  _index,
+  item,
+  position,
+}: TimelineContentMobileProps & { _index?: number }) {
   const [isVisible, setIsVisible] = React.useState(false)
   const cardRef = React.useRef<HTMLDivElement>(null)
 
@@ -456,7 +469,7 @@ function TimelineContentMobile({ index, item, position }: TimelineContentMobileP
       {
         threshold: [0, 0.2, 0.5, 1], // Multiple thresholds for smooth detection
         rootMargin: '-50px 0px -50px 0px', // Trigger slightly before it's fully in view
-      }
+      },
     )
 
     observer.observe(element)
