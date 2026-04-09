@@ -1,14 +1,14 @@
 'use client'
 
-import ChromaScene from '@/components/ChromaScene'
-import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
+import ChromaScene from '@/components/common/ChromaScene'
+import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import { Skeleton } from '@/components/ui/skeleton'
 import React from 'react'
 
 // Local ChromaGrid component (client-side wrapper)
-import ChromaGridWrapper from '@/components/ChromaGridWrapper'
+import ChromaGridWrapper from '@/components/common/ChromaGridWrapper'
 
-import type { Member as MemberDoc, MemberPhoto as MemberPhotoDoc } from '@/payload-types'
+import type { Member as MemberDoc, MemberPhoto as MemberPhotoDoc } from '@/payload/payload-types'
 
 function getBaseUrl() {
   return typeof window !== 'undefined'

@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { StarsBackground } from './animate-ui/components/backgrounds/stars'
+import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars'
 
 type ThemedStarsBackgroundProps = {
   children: React.ReactNode

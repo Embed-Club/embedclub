@@ -148,7 +148,7 @@ const ChromaScene: React.FC<ChromaSceneProps> = ({
       {/* Fade overlay: soft glow that fades when moving mouse */}
       <div
         ref={fadeRef}
-        className="absolute inset-0 pointer-events-none transition-opacity duration-[250ms] z-40"
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-40"
         style={{
           backdropFilter: backdropFilterValue,
           WebkitBackdropFilter: backdropFilterValue,

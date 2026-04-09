@@ -12,12 +12,12 @@ interface Option {
   occupiedBy?: string
 }
 
-const buildOptions = (docs: any[], currentId?: string | null): Option[] => {
+const buildOptions = (docs: Record<string, unknown>[], currentId?: string | null): Option[] => {
   // Build a map of sortOrder -> name for showing who occupies each slot
   const occupancyMap = new Map<number, string>()
   for (const doc of docs) {
     if (doc?.id !== currentId && typeof doc?.sortOrder === 'number') {
-      occupancyMap.set(doc.sortOrder, doc.name || 'Unnamed')
+      occupancyMap.set(doc.sortOrder, (doc.name as string) || 'Unnamed')
     }
   }
 
@@ -59,29 +59,29 @@ const SortOrderSelectCategory: FieldClientComponent = ({ path }) => {
         })
         if (!res.ok) throw new Error(`Request failed: ${res.status}`)
         const data = await res.json()
-        const docs = Array.isArray(data?.docs) ? data.docs : []
+        const docs = Array.isArray(data?.docs) ? (data.docs as Record<string, unknown>[]) : []
         const built = buildOptions(docs, currentId ? String(currentId) : null)
         setOptions(built)
 
         // Check for duplicates on initial load only (use ref to prevent duplicate toasts)
         if (!hasShownInitialToast.current) {
           const sortOrderMap = new Map<number, string[]>()
-          docs.forEach((doc: any) => {
+          for (const doc of docs) {
             const sortOrder = Number(doc?.sortOrder)
             if (!Number.isNaN(sortOrder)) {
               if (!sortOrderMap.has(sortOrder)) {
                 sortOrderMap.set(sortOrder, [])
               }
-              sortOrderMap.get(sortOrder)?.push(doc?.name || 'Unnamed')
+              sortOrderMap.get(sortOrder)?.push((doc?.name as string) || 'Unnamed')
             }
-          })
+          }
 
           const duplicateList: string[] = []
-          sortOrderMap.forEach((names, sortOrder) => {
+          for (const [sortOrder, names] of sortOrderMap.entries()) {
             if (names.length > 1) {
               duplicateList.push(`Position ${sortOrder}: ${names.join(', ')}`)
             }
-          })
+          }
 
           if (duplicateList.length > 0) {
             toast.warning(
@@ -109,7 +109,7 @@ const SortOrderSelectCategory: FieldClientComponent = ({ path }) => {
     }
 
     load()
-  }, [currentId, setValue])
+  }, [currentId, setValue, value])
 
   // Monitor for form save and check duplicates after save
   useEffect(() => {
@@ -134,25 +134,25 @@ const SortOrderSelectCategory: FieldClientComponent = ({ path }) => {
           if (!res.ok) return
 
           const data = await res.json()
-          const docs = Array.isArray(data?.docs) ? data.docs : []
+          const docs = Array.isArray(data?.docs) ? (data.docs as Record<string, unknown>[]) : []
 
           const sortOrderMap = new Map<number, string[]>()
-          docs.forEach((doc: any) => {
+          for (const doc of docs) {
             const sortOrder = Number(doc?.sortOrder)
             if (!Number.isNaN(sortOrder)) {
               if (!sortOrderMap.has(sortOrder)) {
                 sortOrderMap.set(sortOrder, [])
               }
-              sortOrderMap.get(sortOrder)?.push(doc?.name || 'Unnamed')
+              sortOrderMap.get(sortOrder)?.push((doc?.name as string) || 'Unnamed')
             }
-          })
+          }
 
           const duplicateList: string[] = []
-          sortOrderMap.forEach((names, sortOrder) => {
+          for (const [sortOrder, names] of sortOrderMap.entries()) {
             if (names.length > 1) {
               duplicateList.push(`Position ${sortOrder}: ${names.join(', ')}`)
             }
-          })
+          }
 
           if (duplicateList.length > 0) {
             toast.warning(
@@ -171,7 +171,7 @@ const SortOrderSelectCategory: FieldClientComponent = ({ path }) => {
     }
 
     setLastSortOrderValue(currentSortOrderValue)
-  }, [value])
+  }, [value, lastSortOrderValue])
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const next = Number(e.target.value)

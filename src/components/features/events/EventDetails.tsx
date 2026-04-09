@@ -1,7 +1,7 @@
 'use client'
 
 import { Skeleton } from '@/components/ui/skeleton'
-import type { Event } from '@/payload-types'
+import type { Event } from '@/payload/payload-types'
 import dynamic from 'next/dynamic'
 import type React from 'react'
 import { Suspense } from 'react'

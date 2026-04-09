@@ -1,7 +1,7 @@
 'use client'
 
-import { ResourceCards } from '@/components/ResourceCards'
-import { SearchBar } from '@/components/SearchBar'
+import { ResourceCards } from '@/components/features/resources/ResourceCards'
+import { SearchBar } from '@/components/common/SearchBar'
 import { useEffect, useMemo, useState } from 'react'
 
 export interface ResourceCardData {

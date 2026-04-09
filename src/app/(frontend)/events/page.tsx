@@ -4,9 +4,9 @@ import {
   Card as CarouselCard,
   type EventCardData as CarouselCardData,
   EventCard,
-} from '@/components/EventsCards'
-import { Carousel } from '@/components/EventsCarousel'
-import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
+} from '@/components/features/events/EventsCards'
+import { Carousel } from '@/components/features/events/EventsCarousel'
+import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import { FocusCards } from '@/components/ui/focus-cards'
 import {
   Pagination,
@@ -17,7 +17,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { Event } from '@/payload-types'
+import type { Event } from '@/payload/payload-types'
 import React from 'react'
 
 function getBaseUrl() {
@@ -177,7 +177,6 @@ export default function Page() {
 
   React.useEffect(() => {
     setCurrentPage(1)
-    // biome-ignore lint/correctness/useExhaustiveDependencies: Only run once or conditionally
   }, [])
 
   const totalPages = Math.max(1, Math.ceil(allEvents.length / pageSize))

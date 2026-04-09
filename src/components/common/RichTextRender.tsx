@@ -21,7 +21,7 @@ function renderTextNode(node: Record<string, unknown>, key: number): React.React
   if (!node) return null
 
   // Base text content
-  let content: React.ReactNode = node.text || ''
+  let content: React.ReactNode = (node.text as string) || ''
 
   // Apply text formatting using bitwise flags
   // Lexical uses bit flags: 1=bold, 2=italic, 4=strikethrough, 8=underline, etc.
@@ -92,7 +92,7 @@ function renderNode(node: Record<string, unknown>, key: number): React.ReactNode
       )
 
     case 'heading': {
-      const headingTag = node.tag || 'h2'
+      const headingTag = (node.tag as string) || 'h2'
       const headingSizes: Record<string, string> = {
         h1: 'text-3xl font-bold mb-4',
         h2: 'text-2xl font-semibold mb-3',
@@ -103,15 +103,15 @@ function renderNode(node: Record<string, unknown>, key: number): React.ReactNode
       }
       return React.createElement(
         headingTag,
-        { key, className: headingSizes[headingTag] || headingSizes.h2 },
+        { key, className: headingSizes[headingTag as string] || headingSizes.h2 },
         renderedChildren,
       )
     }
 
     case 'list': {
-      const listTag = node.listType === 'number' ? 'ol' : 'ul'
+      const listTag = (node.listType as string) === 'number' ? 'ol' : 'ul'
       const listClass =
-        node.listType === 'number'
+        (node.listType as string) === 'number'
           ? 'mb-4 ml-6 list-decimal space-y-1'
           : 'mb-4 ml-6 list-disc space-y-1'
       return React.createElement(listTag, { key, className: listClass }, renderedChildren)

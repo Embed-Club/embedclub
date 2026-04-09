@@ -9,11 +9,6 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 // Import with ssr: false to prevent server-side rendering of Leaflet
 const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false })
 
-interface CoordinateValue {
-  lat?: number | null
-  lng?: number | null
-}
-
 const LeafletLocationField: FieldClientComponent = (props) => {
   const { path } = props
 
@@ -89,11 +84,13 @@ const LeafletLocationField: FieldClientComponent = (props) => {
       <div style={{ marginBottom: '15px', display: 'flex', gap: '10px' }}>
         <div style={{ flex: 1 }}>
           <label
+            htmlFor={`${path}-lat`}
             style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}
           >
             Latitude
           </label>
           <input
+            id={`${path}-lat`}
             type="number"
             step="0.000001"
             value={localLat}
@@ -111,11 +108,13 @@ const LeafletLocationField: FieldClientComponent = (props) => {
         </div>
         <div style={{ flex: 1 }}>
           <label
+            htmlFor={`${path}-lng`}
             style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '500' }}
           >
             Longitude
           </label>
           <input
+            id={`${path}-lng`}
             type="number"
             step="0.000001"
             value={localLng}

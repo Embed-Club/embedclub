@@ -53,7 +53,7 @@ function MapUpdater({
         map.flyTo([lat, lng], zoom ?? map.getZoom(), { duration: 1.3 })
       }, 250)
     }
-  }, [lat, lng, zoom, map])
+  }, [lat, lng, zoom, map, setInternalMarker])
 
   return null
 }
@@ -81,6 +81,7 @@ export default function LeafletMap({
   // Fix marker icons on mount
   useEffect(() => {
     // Fix for default marker icons in react-leaflet
+    // biome-ignore lint/suspicious/noExplicitAny: complex Leaflet internals
     ;(L.Icon.Default.prototype as any)._getIconUrl = undefined
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',

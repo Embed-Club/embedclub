@@ -1,5 +1,5 @@
 'use client'
-import { CarouselContext } from '@/components/EventsCards'
+import { CarouselContext } from '@/components/features/events/EventsCards'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { motion } from 'motion/react'
@@ -123,4 +123,4 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   )
 }
 
-export { Card, BlurImage, type EventCardData as CardType } from '@/components/EventsCards'
+export { Card, BlurImage, type EventCardData as CardType } from '@/components/features/events/EventsCards'

@@ -1,5 +1,5 @@
 import './globals.css'
-import ThemeWrapper from '@/components/ThemeWrapper'
+import ThemeWrapper from '@/components/theme/ThemeWrapper'
 import { avantGarde } from './fonts'
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 
-const ChromaGrid = dynamic(() => import('@/components/ChromaGrid'), {
+const ChromaGrid = dynamic(() => import('@/components/common/ChromaGrid'), {
   ssr: false,
 })
 
