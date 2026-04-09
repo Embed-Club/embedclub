@@ -21,11 +21,14 @@ export const MemberCategories: CollectionConfig = {
       },
     ],
     beforeChange: [
-      async ({ data, req, originalDoc }) => {
+      async ({ data, req, originalDoc: _originalDoc }) => {
         // Normalize sortOrder coming from admin (can be string)
-        let desiredSort: number | undefined | null = data.sortOrder as any
+        let desiredSort: number | undefined | null = data.sortOrder as unknown as
+          | number
+          | undefined
+          | null
         if (typeof desiredSort === 'string') {
-          const parsed = parseInt(desiredSort, 10)
+          const parsed = Number.parseInt(desiredSort, 10)
           desiredSort = Number.isFinite(parsed) ? parsed : undefined
         }
 
@@ -49,19 +52,21 @@ export const MemberCategories: CollectionConfig = {
         })
 
         const sortOrderMap = new Map<number, string[]>()
-        allCategories.docs.forEach((cat: any) => {
-          const sortOrder = Number(cat?.sortOrder)
+        for (const cat of allCategories.docs) {
+          const sortOrder = Number((cat as Record<string, unknown>)?.sortOrder)
           if (!Number.isNaN(sortOrder)) {
             if (!sortOrderMap.has(sortOrder)) {
               sortOrderMap.set(sortOrder, [])
             }
-            sortOrderMap.get(sortOrder)!.push(cat?.name || 'Unnamed')
+            sortOrderMap
+              .get(sortOrder)
+              ?.push(((cat as Record<string, unknown>)?.name as string) || 'Unnamed')
           }
-        })
+        }
 
         // Check if there are duplicates
-        const hasDuplicates = Array.from(sortOrderMap.values()).some(names => names.length > 1)
-        
+        const hasDuplicates = Array.from(sortOrderMap.values()).some((names) => names.length > 1)
+
         if (hasDuplicates) {
           // Store in context for client-side toast
           req.context = req.context || {}
@@ -76,12 +81,13 @@ export const MemberCategories: CollectionConfig = {
     { name: 'name', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, unique: true },
     { name: 'description', type: 'textarea' },
-    { 
-      name: 'sortOrder', 
+    {
+      name: 'sortOrder',
       type: 'number',
       required: true,
       admin: {
-        description: 'Order in which this category appears. Lower numbers appear first. Occupied positions will be automatically reassigned.',
+        description:
+          'Order in which this category appears. Lower numbers appear first. Occupied positions will be automatically reassigned.',
         components: {
           Field: '@/components/admin/SortOrderSelectCategory',
         },
@@ -89,4 +95,3 @@ export const MemberCategories: CollectionConfig = {
     },
   ],
 }
-

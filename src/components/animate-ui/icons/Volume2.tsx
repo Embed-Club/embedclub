@@ -1,22 +1,20 @@
-'use client';
-
-import * as React from 'react';
-import { motion, type Variants } from 'motion/react';
+'use client'
+import { type Variants, motion } from 'motion/react'
 
 import {
+  type IconProps,
+  IconWrapper,
   getVariants,
   useAnimateIconContext,
-  IconWrapper,
-  type IconProps,
-} from '@/components/animate-ui/icons/Icon';
+} from '@/components/animate-ui/icons/Icon'
 
-type Volume2Props = IconProps<keyof typeof animations>;
+type Volume2Props = IconProps<keyof typeof animations>
 
 const animations = {
   default: (() => {
     const animation: Record<string, Variants> = {
       path3: {},
-    };
+    }
 
     for (let i = 1; i <= 2; i++) {
       animation[`path${i}`] = {
@@ -43,16 +41,16 @@ const animations = {
             },
           },
         },
-      };
+      }
     }
 
-    return animation;
+    return animation
   })() satisfies Record<string, Variants>,
-} as const;
+} as const
 
 function IconComponent({ size, ...props }: Volume2Props) {
-  const { controls } = useAnimateIconContext();
-  const variants = getVariants(animations);
+  const { controls } = useAnimateIconContext()
+  const variants = getVariants(animations)
 
   return (
     <motion.svg
@@ -86,11 +84,11 @@ function IconComponent({ size, ...props }: Volume2Props) {
         animate={controls}
       />
     </motion.svg>
-  );
+  )
 }
 
 function Volume2(props: Volume2Props) {
-  return <IconWrapper icon={IconComponent} {...props} />;
+  return <IconWrapper icon={IconComponent} {...props} />
 }
 
 export {
@@ -99,4 +97,4 @@ export {
   Volume2 as Volume2Icon,
   type Volume2Props,
   type Volume2Props as Volume2IconProps,
-};
+}

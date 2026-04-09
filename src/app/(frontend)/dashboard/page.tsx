@@ -1,6 +1,6 @@
-import { SidebarShell, MainbarShell } from '@/components/FrontendShell'
-import DashboardTitle from './title'
+import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
 import { ThemedStarsBackground } from '@/components/ThemedStarsBackground'
+import DashboardTitle from './title'
 
 export default async function Page() {
   return (

@@ -1,44 +1,36 @@
-import * as React from 'react';
-import { type VariantProps } from 'class-variance-authority';
+import type { VariantProps } from 'class-variance-authority'
 
+import { buttonVariants } from '@/components/animate-ui/components/buttons/button'
 import {
-  FlipButton as FlipButtonPrimitive,
-  FlipButtonFront as FlipButtonFrontPrimitive,
   FlipButtonBack as FlipButtonBackPrimitive,
-  type FlipButtonProps as FlipButtonPrimitiveProps,
-  type FlipButtonFrontProps as FlipButtonFrontPrimitiveProps,
   type FlipButtonBackProps as FlipButtonBackPrimitiveProps,
-} from '@/components/animate-ui/primitives/buttons/flip';
-import { getStrictContext } from '@/lib/get-strict-context';
-import { buttonVariants } from '@/components/animate-ui/components/buttons/button';
-import { cn } from '@/lib/utils';
+  FlipButtonFront as FlipButtonFrontPrimitive,
+  type FlipButtonFrontProps as FlipButtonFrontPrimitiveProps,
+  FlipButton as FlipButtonPrimitive,
+  type FlipButtonProps as FlipButtonPrimitiveProps,
+} from '@/components/animate-ui/primitives/buttons/flip'
+import { getStrictContext } from '@/lib/get-strict-context'
+import { cn } from '@/lib/utils'
 
-type FlipButtonContextType = VariantProps<typeof buttonVariants>;
+type FlipButtonContextType = VariantProps<typeof buttonVariants>
 
 const [FlipButtonProvider, useFlipButton] =
-  getStrictContext<FlipButtonContextType>('FlipButtonContext');
+  getStrictContext<FlipButtonContextType>('FlipButtonContext')
 
-type FlipButtonProps = FlipButtonPrimitiveProps &
-  VariantProps<typeof buttonVariants>;
+type FlipButtonProps = FlipButtonPrimitiveProps & VariantProps<typeof buttonVariants>
 
 function FlipButton({ variant, size, ...props }: FlipButtonProps) {
   return (
     <FlipButtonProvider value={{ variant, size }}>
       <FlipButtonPrimitive {...props} />
     </FlipButtonProvider>
-  );
+  )
 }
 
-type FlipButtonFrontProps = FlipButtonFrontPrimitiveProps &
-  VariantProps<typeof buttonVariants>;
+type FlipButtonFrontProps = FlipButtonFrontPrimitiveProps & VariantProps<typeof buttonVariants>
 
-function FlipButtonFront({
-  variant,
-  size,
-  className,
-  ...props
-}: FlipButtonFrontProps) {
-  const { variant: buttonVariant, size: buttonSize } = useFlipButton();
+function FlipButtonFront({ variant, size, className, ...props }: FlipButtonFrontProps) {
+  const { variant: buttonVariant, size: buttonSize } = useFlipButton()
   return (
     <FlipButtonFrontPrimitive
       className={cn(
@@ -50,19 +42,13 @@ function FlipButtonFront({
       )}
       {...props}
     />
-  );
+  )
 }
 
-type FlipButtonBackProps = FlipButtonBackPrimitiveProps &
-  VariantProps<typeof buttonVariants>;
+type FlipButtonBackProps = FlipButtonBackPrimitiveProps & VariantProps<typeof buttonVariants>
 
-function FlipButtonBack({
-  variant,
-  size,
-  className,
-  ...props
-}: FlipButtonBackProps) {
-  const { variant: buttonVariant, size: buttonSize } = useFlipButton();
+function FlipButtonBack({ variant, size, className, ...props }: FlipButtonBackProps) {
+  const { variant: buttonVariant, size: buttonSize } = useFlipButton()
   return (
     <FlipButtonBackPrimitive
       className={cn(
@@ -74,7 +60,7 @@ function FlipButtonBack({
       )}
       {...props}
     />
-  );
+  )
 }
 
 export {
@@ -84,4 +70,4 @@ export {
   type FlipButtonProps,
   type FlipButtonFrontProps,
   type FlipButtonBackProps,
-};
+}

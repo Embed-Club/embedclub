@@ -1,10 +1,8 @@
-'use client';
+'use client'
+import { type HTMLMotionProps, type Variant, motion } from 'motion/react'
 
-import * as React from 'react';
-import { motion, type HTMLMotionProps, type Variant } from 'motion/react';
-
-import { getStrictContext } from '@/lib/get-strict-context';
-import { Slot, type WithAsChild } from '@/components/animate-ui/primitives/animate/slot';
+import { Slot, type WithAsChild } from '@/components/animate-ui/primitives/animate/slot'
+import { getStrictContext } from '@/lib/get-strict-context'
 
 const buildVariant = ({
   opacity,
@@ -13,35 +11,35 @@ const buildVariant = ({
   isVertical,
   rotateAxis,
 }: {
-  opacity: number;
-  rotation: number;
-  offset: string | null;
-  isVertical: boolean;
-  rotateAxis: string;
+  opacity: number
+  rotation: number
+  offset: string | null
+  isVertical: boolean
+  rotateAxis: string
 }): Variant => ({
   opacity,
   [rotateAxis]: rotation,
   ...(isVertical && offset !== null ? { y: offset } : {}),
   ...(!isVertical && offset !== null ? { x: offset } : {}),
-});
+})
 
-type FlipDirection = 'top' | 'bottom' | 'left' | 'right';
+type FlipDirection = 'top' | 'bottom' | 'left' | 'right'
 
 type FlipButtonContextType = {
-  from: FlipDirection;
-  isVertical: boolean;
-  rotateAxis: string;
-};
+  from: FlipDirection
+  isVertical: boolean
+  rotateAxis: string
+}
 
 const [FlipButtonProvider, useFlipButton] =
-  getStrictContext<FlipButtonContextType>('FlipButtonContext');
+  getStrictContext<FlipButtonContextType>('FlipButtonContext')
 
 type FlipButtonProps = WithAsChild<
   HTMLMotionProps<'button'> & {
-    from?: FlipDirection;
-    tapScale?: number;
+    from?: FlipDirection
+    tapScale?: number
   }
->;
+>
 
 function FlipButton({
   from = 'top',
@@ -50,10 +48,10 @@ function FlipButton({
   style,
   ...props
 }: FlipButtonProps) {
-  const isVertical = from === 'top' || from === 'bottom';
-  const rotateAxis = isVertical ? 'rotateX' : 'rotateY';
+  const isVertical = from === 'top' || from === 'bottom'
+  const rotateAxis = isVertical ? 'rotateX' : 'rotateY'
 
-  const Component = asChild ? Slot : motion.button;
+  const Component = asChild ? Slot : motion.button
 
   return (
     <FlipButtonProvider value={{ from, isVertical, rotateAxis }}>
@@ -71,10 +69,10 @@ function FlipButton({
         {...props}
       />
     </FlipButtonProvider>
-  );
+  )
 }
 
-type FlipButtonFaceProps = WithAsChild<HTMLMotionProps<'span'>>;
+type FlipButtonFaceProps = WithAsChild<HTMLMotionProps<'span'>>
 
 function FlipButtonFront({
   transition = { type: 'spring', stiffness: 280, damping: 20 },
@@ -82,9 +80,9 @@ function FlipButtonFront({
   style,
   ...props
 }: FlipButtonFaceProps) {
-  const { from, isVertical, rotateAxis } = useFlipButton();
+  const { from, isVertical, rotateAxis } = useFlipButton()
 
-  const frontOffset = from === 'top' || from === 'left' ? '50%' : '-50%';
+  const frontOffset = from === 'top' || from === 'left' ? '50%' : '-50%'
 
   const frontVariants = {
     initial: buildVariant({
@@ -101,9 +99,9 @@ function FlipButtonFront({
       isVertical,
       rotateAxis,
     }),
-  };
+  }
 
-  const Component = asChild ? Slot : motion.span;
+  const Component = asChild ? Slot : motion.span
 
   return (
     <Component
@@ -119,7 +117,7 @@ function FlipButtonFront({
       }}
       {...props}
     />
-  );
+  )
 }
 
 function FlipButtonBack({
@@ -128,9 +126,9 @@ function FlipButtonBack({
   style,
   ...props
 }: FlipButtonFaceProps) {
-  const { from, isVertical, rotateAxis } = useFlipButton();
+  const { from, isVertical, rotateAxis } = useFlipButton()
 
-  const backOffset = from === 'top' || from === 'left' ? '-50%' : '50%';
+  const backOffset = from === 'top' || from === 'left' ? '-50%' : '50%'
 
   const backVariants = {
     initial: buildVariant({
@@ -147,9 +145,9 @@ function FlipButtonBack({
       isVertical,
       rotateAxis,
     }),
-  };
+  }
 
-  const Component = asChild ? Slot : motion.span;
+  const Component = asChild ? Slot : motion.span
 
   return (
     <Component
@@ -165,7 +163,7 @@ function FlipButtonBack({
       }}
       {...props}
     />
-  );
+  )
 }
 
 export {
@@ -178,4 +176,4 @@ export {
   type FlipButtonFaceProps as FlipButtonBackProps,
   type FlipDirection,
   type FlipButtonContextType,
-};
+}
