@@ -1,4 +1,4 @@
-import config from '@/payload.config'
+import config from '@/payload/payload.config'
 import { type Payload, getPayload } from 'payload'
 
 import { beforeAll, describe, expect, it } from 'vitest'

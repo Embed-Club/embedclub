@@ -1,4 +1,4 @@
-import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
+import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 
 export default async function Page() {
   return (

@@ -1,6 +1,6 @@
-import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
-import Masonry from '@/components/Masonry'
-import type { Gallery } from '@/payload-types'
+import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
+import Masonry from '@/components/features/gallery/Masonry'
+import type { Gallery } from '@/payload/payload-types'
 
 function getBaseUrl() {
   return typeof window !== 'undefined'

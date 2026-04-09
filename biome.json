@@ -14,7 +14,11 @@
       "build/**",
       "public/**",
       "*.tsbuildinfo",
-      "src/payload-types.ts"
+      "src/payload-types.ts",
+      ".claude/**",
+      ".gemini/**",
+      "tree.md",
+      "generate_tree.py"
     ]
   },
   "formatter": {

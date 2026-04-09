@@ -14,4 +14,7 @@ const nextConfig = {
   },
 }
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+export default withPayload(nextConfig, {
+  configPath: './src/payload/payload.config.ts',
+  devBundleServerPackages: false,
+})

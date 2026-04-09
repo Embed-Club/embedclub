@@ -54,6 +54,8 @@ function IconComponent({ size, ...props }: Volume2Props) {
 
   return (
     <motion.svg
+      aria-label="Volume level 2 icon"
+      role="img"
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
@@ -65,6 +67,7 @@ function IconComponent({ size, ...props }: Volume2Props) {
       strokeLinejoin="round"
       {...props}
     >
+      <title>Volume level 2 icon</title>
       <motion.path
         d="M16 9a5 5 0 0 1 0 6"
         variants={variants.path1}
