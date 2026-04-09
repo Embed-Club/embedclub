@@ -4,6 +4,7 @@ embed-club2/
 ├── .mcp.json
 ├── .npmrc
 ├── .yarnrc
+├── antigravity-restructure-prompt.md
 ├── biome.json
 ├── CLAUDE.md
 ├── components.json
@@ -17,6 +18,7 @@ embed-club2/
 ├── README.md
 ├── skills-lock.json
 ├── tailwind.config.js
+├── tree.md
 ├── tsconfig.json
 ├── tsconfig.tsbuildinfo
 ├── vitest.config.mts
@@ -495,6 +497,7 @@ embed-club2/
 │   │   ├── audit-status.json
 │   ├── sessions/
 │   ├── workflows/
+├── .gemini/
 ├── audio-files/
 │   ├── FAHH.mp3
 ├── gallery/
@@ -710,8 +713,6 @@ embed-club2/
 │   ├── web-design-guidelines/
 │   │   ├── SKILL.md
 ├── src/
-│   ├── payload-types.ts
-│   ├── payload.config.ts
 │   ├── app/
 │   │   ├── (frontend)/
 │   │   │   ├── fonts.ts
@@ -728,26 +729,6 @@ embed-club2/
 │   │   │   ├── events/
 │   │   │   │   ├── page.tsx
 │   │   │   ├── fonts/
-│   │   │   │   ├── ITCAvantGardeStd-Bk.woff2
-│   │   │   │   ├── ITCAvantGardeStd-BkCn.woff2
-│   │   │   │   ├── ITCAvantGardeStd-BkCnObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-BkObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-Bold.woff2
-│   │   │   │   ├── ITCAvantGardeStd-BoldCn.woff2
-│   │   │   │   ├── ITCAvantGardeStd-BoldCnObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-BoldObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-Demi.woff2
-│   │   │   │   ├── ITCAvantGardeStd-DemiCn.woff2
-│   │   │   │   ├── ITCAvantGardeStd-DemiCnObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-DemiObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-Md.woff2
-│   │   │   │   ├── ITCAvantGardeStd-MdCn.woff2
-│   │   │   │   ├── ITCAvantGardeStd-MdCnObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-MdObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-XLt.woff2
-│   │   │   │   ├── ITCAvantGardeStd-XLtCn.woff2
-│   │   │   │   ├── ITCAvantGardeStd-XLtCnObl.woff2
-│   │   │   │   ├── ITCAvantGardeStd-XLtObl.woff2
 │   │   │   ├── gallery/
 │   │   │   │   ├── page.tsx
 │   │   │   ├── members/
@@ -783,44 +764,7 @@ embed-club2/
 │   │   ├── my-route/
 │   │   │   ├── route.ts
 │   ├── collections/
-│   │   ├── Achievements.ts
-│   │   ├── Audio.ts
-│   │   ├── Events.ts
-│   │   ├── Gallery.ts
-│   │   ├── Media.ts
-│   │   ├── MemberCategories.ts
-│   │   ├── MemberPhoto.ts
-│   │   ├── MemberRoles.ts
-│   │   ├── Members.ts
-│   │   ├── Resources.ts
-│   │   ├── Tags.ts
-│   │   ├── Users.ts
 │   ├── components/
-│   │   ├── ChromaGrid.tsx
-│   │   ├── ChromaGridWrapper.tsx
-│   │   ├── ChromaScene.tsx
-│   │   ├── ContentPanel.tsx
-│   │   ├── cursor.tsx
-│   │   ├── DecryptedText.tsx
-│   │   ├── DesktopMenu.tsx
-│   │   ├── ElasticSlider.tsx
-│   │   ├── EventDetails.tsx
-│   │   ├── EventsCards.tsx
-│   │   ├── EventsCarousel.tsx
-│   │   ├── FrontendShell.tsx
-│   │   ├── FrontendShellWrapper.tsx
-│   │   ├── Masonry.tsx
-│   │   ├── MobileMenu.tsx
-│   │   ├── ResourceCard.tsx
-│   │   ├── ResourceCards.tsx
-│   │   ├── RichTextRender.tsx
-│   │   ├── SearchBar.tsx
-│   │   ├── StaggeredMenu.tsx
-│   │   ├── ThemedStarsBackground.tsx
-│   │   ├── ThemeProvider.tsx
-│   │   ├── ThemeToggle.tsx
-│   │   ├── ThemeWrapper.tsx
-│   │   ├── UnifiedTimeline.tsx
 │   │   ├── admin/
 │   │   │   ├── AudioSliderField.tsx
 │   │   │   ├── LeafletLocationField.tsx
@@ -854,9 +798,39 @@ embed-club2/
 │   │   │   │   ├── texts/
 │   │   │   │   │   ├── counting-number.tsx
 │   │   │   │   │   ├── sliding-number.tsx
-│   │   ├── lib/
-│   │   │   ├── utils.d.ts
-│   │   │   ├── utils.ts
+│   │   ├── common/
+│   │   │   ├── ChromaGrid.tsx
+│   │   │   ├── ChromaGridWrapper.tsx
+│   │   │   ├── ChromaScene.tsx
+│   │   │   ├── cursor.tsx
+│   │   │   ├── DecryptedText.tsx
+│   │   │   ├── ElasticSlider.tsx
+│   │   │   ├── RichTextRender.tsx
+│   │   │   ├── SearchBar.tsx
+│   │   ├── features/
+│   │   │   ├── events/
+│   │   │   │   ├── EventDetails.tsx
+│   │   │   │   ├── EventsCards.tsx
+│   │   │   │   ├── EventsCarousel.tsx
+│   │   │   ├── gallery/
+│   │   │   │   ├── Masonry.tsx
+│   │   │   ├── resources/
+│   │   │   │   ├── ResourceCard.tsx
+│   │   │   │   ├── ResourceCards.tsx
+│   │   │   ├── timeline/
+│   │   │   │   ├── UnifiedTimeline.tsx
+│   │   ├── layout/
+│   │   │   ├── ContentPanel.tsx
+│   │   │   ├── DesktopMenu.tsx
+│   │   │   ├── FrontendShell.tsx
+│   │   │   ├── FrontendShellWrapper.tsx
+│   │   │   ├── MobileMenu.tsx
+│   │   │   ├── StaggeredMenu.tsx
+│   │   ├── theme/
+│   │   │   ├── ThemedStarsBackground.tsx
+│   │   │   ├── ThemeProvider.tsx
+│   │   │   ├── ThemeToggle.tsx
+│   │   │   ├── ThemeWrapper.tsx
 │   │   ├── ui/
 │   │   │   ├── button.tsx
 │   │   │   ├── field.tsx
@@ -878,6 +852,48 @@ embed-club2/
 │   ├── lib/
 │   │   ├── get-strict-context.tsx
 │   │   ├── utils.ts
+│   ├── payload/
+│   │   ├── payload-types.ts
+│   │   ├── payload.config.ts
+│   │   ├── collections/
+│   │   │   ├── Achievements.ts
+│   │   │   ├── Audio.ts
+│   │   │   ├── Events.ts
+│   │   │   ├── Gallery.ts
+│   │   │   ├── Media.ts
+│   │   │   ├── MemberCategories.ts
+│   │   │   ├── MemberPhoto.ts
+│   │   │   ├── MemberRoles.ts
+│   │   │   ├── Members.ts
+│   │   │   ├── Resources.ts
+│   │   │   ├── Tags.ts
+│   │   │   ├── Users.ts
+│   │   ├── fields/
+│   │   │   ├── .gitkeep
+│   ├── styles/
+│   │   ├── fonts/
+│   │   │   ├── ITCAvantGardeStd-Bk.woff2
+│   │   │   ├── ITCAvantGardeStd-BkCn.woff2
+│   │   │   ├── ITCAvantGardeStd-BkCnObl.woff2
+│   │   │   ├── ITCAvantGardeStd-BkObl.woff2
+│   │   │   ├── ITCAvantGardeStd-Bold.woff2
+│   │   │   ├── ITCAvantGardeStd-BoldCn.woff2
+│   │   │   ├── ITCAvantGardeStd-BoldCnObl.woff2
+│   │   │   ├── ITCAvantGardeStd-BoldObl.woff2
+│   │   │   ├── ITCAvantGardeStd-Demi.woff2
+│   │   │   ├── ITCAvantGardeStd-DemiCn.woff2
+│   │   │   ├── ITCAvantGardeStd-DemiCnObl.woff2
+│   │   │   ├── ITCAvantGardeStd-DemiObl.woff2
+│   │   │   ├── ITCAvantGardeStd-Md.woff2
+│   │   │   ├── ITCAvantGardeStd-MdCn.woff2
+│   │   │   ├── ITCAvantGardeStd-MdCnObl.woff2
+│   │   │   ├── ITCAvantGardeStd-MdObl.woff2
+│   │   │   ├── ITCAvantGardeStd-XLt.woff2
+│   │   │   ├── ITCAvantGardeStd-XLtCn.woff2
+│   │   │   ├── ITCAvantGardeStd-XLtCnObl.woff2
+│   │   │   ├── ITCAvantGardeStd-XLtObl.woff2
+│   ├── types/
+│   │   ├── index.ts
 ├── tests/
 │   ├── e2e/
 │   │   ├── frontend.e2e.spec.ts
