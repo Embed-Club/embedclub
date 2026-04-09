@@ -128,8 +128,6 @@ export default function LeafletMap({
         dragging={true}
         doubleClickZoom={false}
         touchZoom={true}
-        tap={false}
-        Keyboard={false}
         boxZoom={false}
         zoomControl={true}
       >

@@ -29,10 +29,10 @@ async function getMembers(base: string): Promise<MemberDoc[]> {
 
 function getPrimaryRoleSortOrder(member: MemberDoc) {
   // roles is configured as hasMany: false (single relationship)
-  const rolesValue = member.roles as Record<string, unknown>
+  const rolesValue = member.roles as unknown as Record<string, unknown>
 
   if (rolesValue && typeof rolesValue === 'object' && !Array.isArray(rolesValue)) {
-    const sortOrder = (rolesValue as Record<string, unknown>).sortOrder
+    const sortOrder = (rolesValue as unknown as Record<string, unknown>).sortOrder
     return typeof sortOrder === 'number' ? sortOrder : 999
   }
 
@@ -40,7 +40,9 @@ function getPrimaryRoleSortOrder(member: MemberDoc) {
   if (Array.isArray(rolesValue)) {
     const sortOrders = rolesValue
       .map((r) =>
-        typeof r === 'object' && r ? (r as Record<string, unknown>).sortOrder : undefined,
+        typeof r === 'object' && r
+          ? (r as unknown as Record<string, unknown>).sortOrder
+          : undefined,
       )
       .filter((v): v is number => typeof v === 'number')
 
@@ -56,17 +58,18 @@ function groupByCategorySorted(members: MemberDoc[]) {
   for (const m of members) {
     const catObj =
       typeof m.category === 'object' && m.category
-        ? (m.category as Record<string, unknown>)
+        ? (m.category as unknown as Record<string, unknown>)
         : undefined
-    const catLabel: string = catObj?.name ?? catObj?.slug ?? 'Uncategorized'
-    const sortOrder = catObj?.sortOrder ?? 999 // Use 999 for uncategorized so they appear last
+    const catLabel = (catObj?.name as string) ?? (catObj?.slug as string) ?? 'Uncategorized'
+    const sortOrder = (catObj?.sortOrder as number) ?? 999 // Use 999 for uncategorized so they appear last
 
-    let entry = map.get(catLabel)
+    const entry = map.get(catLabel)
     if (!entry) {
-      entry = { items: [], sortOrder }
-      map.set(catLabel, entry)
+      const newEntry = { items: [m], sortOrder }
+      map.set(catLabel, newEntry)
+    } else {
+      entry.items.push(m)
     }
-    entry.items.push(m)
   }
 
   // Convert to array and sort by sortOrder
@@ -112,7 +115,7 @@ function groupByCategorySorted(members: MemberDoc[]) {
 
 function resolveImageSrc(photo: MemberPhotoDoc | null, base: string) {
   if (!photo) return undefined
-  const sizes = photo.sizes as Record<string, { url?: string }> | undefined
+  const sizes = photo.sizes as unknown as Record<string, { url?: string }> | undefined
   const raw = sizes?.card?.url || sizes?.thumbnail?.url || photo.url
   if (!raw) return undefined
   return raw.startsWith('http') ? raw : `${base}${raw}`
@@ -124,12 +127,15 @@ function toChromaItems(items: MemberDoc[], base: string) {
     const src = resolveImageSrc(photo, base) ?? 'https://via.placeholder.com/600x600?text=Member'
     let rolesLabel = ''
     if (Array.isArray(m.roles)) {
-      rolesLabel = (m.roles as Array<Record<string, unknown>>)
+      rolesLabel = (m.roles as unknown as Array<Record<string, unknown>>)
         .map((r) => r?.name ?? r?.slug ?? r?.id)
         .filter(Boolean)
         .join(', ')
     } else if (m.roles && typeof m.roles === 'object') {
-      rolesLabel = (m.roles as Record<string, unknown>)?.name as string ?? (m.roles as Record<string, unknown>)?.slug as string ?? ''
+      rolesLabel =
+        ((m.roles as unknown as Record<string, unknown>)?.name as string) ??
+        ((m.roles as unknown as Record<string, unknown>)?.slug as string) ??
+        ''
     }
     const yearsLabel = m.startYear ? `${m.startYear}${m.endYear ? `–${m.endYear}` : ''}` : ''
     const subtitle = rolesLabel || yearsLabel || 'Member'

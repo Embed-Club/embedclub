@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [".next/**", "node_modules/**", "out/**", "build/**", "public/**", "*.tsbuildinfo"]
+    "ignore": [
+      ".next/**",
+      "node_modules/**",
+      "out/**",
+      "build/**",
+      "public/**",
+      "*.tsbuildinfo",
+      "src/payload-types.ts"
+    ]
   },
   "formatter": {
     "enabled": true,

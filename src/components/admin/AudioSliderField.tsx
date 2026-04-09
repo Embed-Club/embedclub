@@ -6,13 +6,15 @@ import { useField } from '@payloadcms/ui'
 import type { NumberFieldClientComponent } from 'payload'
 
 const AudioSliderField: NumberFieldClientComponent = (props) => {
-  const { path, label } = props
+  const { path } = props
   const { value, setValue } = useField<number>({ path })
 
-  // Get field config from props
-  const min = props.min ?? 0
-  const max = props.max ?? 1
-  const step = props.step ?? 0.05
+  // biome-ignore lint/suspicious/noExplicitAny: Payload field props are complex
+  const field = props.field as any
+  const label = field.label
+  const min = field.min ?? 0
+  const max = field.max ?? 1
+  const step = field.step ?? 0.05
 
   // Determine which icons to show based on field type
   const isVolumeField = path.includes('volume') || path.includes('mix')
@@ -38,12 +40,11 @@ const AudioSliderField: NumberFieldClientComponent = (props) => {
 
   return (
     <div className="field-type-number" style={{ marginBottom: '1.5rem' }}>
-      <label
-        className="field-label"
+      <span
         style={{ marginBottom: '0.75rem', display: 'block', fontSize: '13px', fontWeight: 600 }}
       >
         {label || path}
-      </label>
+      </span>
       <div
         style={{
           width: '100%',
@@ -55,7 +56,8 @@ const AudioSliderField: NumberFieldClientComponent = (props) => {
       >
         <div style={{ maxWidth: '400px', width: '100%' }}>
           <ElasticSlider
-            defaultValue={value ?? props.defaultValue ?? min}
+            // biome-ignore lint/suspicious/noExplicitAny: complex payload props
+            defaultValue={value ?? (field as any).defaultValue ?? min}
             startingValue={min}
             maxValue={max}
             stepSize={step}

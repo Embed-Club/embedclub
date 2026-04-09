@@ -21,7 +21,7 @@ export function useDeviceType() {
   return isMobile
 }
 
-export function useTimelineScroll(containerRef: RefObject<HTMLDivElement>) {
+export function useTimelineScroll(containerRef: RefObject<HTMLDivElement | null>) {
   const isMobile = useDeviceType()
 
   // Desktop: scroll within container

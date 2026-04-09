@@ -140,6 +140,8 @@ export function SearchBar({
           <div className="flex items-center justify-center w-12 h-12 text-zinc-500">
             {icon || (
               <svg
+                role="img"
+                aria-label="Search"
                 xmlns="http://www.w3.org/2000/svg"
                 width="18"
                 height="18"
@@ -294,6 +296,8 @@ export function SearchBarMinimal({
         >
           <div className="flex items-center justify-center w-10 text-zinc-600">
             <svg
+              role="img"
+              aria-label="Search"
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"

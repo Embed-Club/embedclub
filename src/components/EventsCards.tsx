@@ -153,8 +153,10 @@ export const EventModal = ({
             className="relative z-[60] w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl md:rounded-3xl bg-white font-sans dark:bg-neutral-900"
           >
             <button
+              type="button"
               className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 transition"
               onClick={onClose}
+              aria-label="Close modal"
             >
               <X className="h-6 w-6" />
             </button>
@@ -234,7 +236,8 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
       height={height}
       loading="lazy"
       decoding="async"
-      alt={alt ? alt : 'Background of a beautiful view'}
+      alt={alt || ''}
+      aria-hidden={!alt}
       {...rest}
     />
   )

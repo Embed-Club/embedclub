@@ -21,7 +21,6 @@ const ElasticSlider: React.FC<ElasticSliderProps> = ({
   defaultValue = 50,
   startingValue = 0,
   maxValue = 100,
-  className = '',
   isStepped = false,
   stepSize = 1,
   leftIcon = <>-</>,

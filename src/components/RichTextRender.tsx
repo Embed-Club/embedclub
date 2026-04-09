@@ -17,7 +17,7 @@ import React from 'react'
 /**
  * Recursively render inline text nodes with formatting
  */
-function renderTextNode(node: any, key: number): React.ReactNode {
+function renderTextNode(node: Record<string, unknown>, key: number): React.ReactNode {
   if (!node) return null
 
   // Base text content
@@ -44,7 +44,7 @@ function renderTextNode(node: any, key: number): React.ReactNode {
 /**
  * Render a block-level node (paragraph, heading, list, etc.)
  */
-function renderNode(node: any, key: number): React.ReactNode {
+function renderNode(node: Record<string, unknown>, key: number): React.ReactNode {
   if (!node) return null
 
   const { type, children = [] } = node
@@ -56,10 +56,13 @@ function renderNode(node: any, key: number): React.ReactNode {
 
   // Link nodes
   if (type === 'link') {
-    const linkChildren = children.map((child: any, i: number) => renderNode(child, i))
-    const href = node.fields?.url || node.url || '#'
-    const target = node.fields?.newTab ? '_blank' : undefined
-    const rel = node.fields?.newTab ? 'noopener noreferrer' : undefined
+    const linkChildren = (children as Array<Record<string, unknown>>).map((child, i) =>
+      renderNode(child, i),
+    )
+    const fields = node.fields as Record<string, unknown> | undefined
+    const href = (fields?.url as string) || (node.url as string) || '#'
+    const target = fields?.newTab ? '_blank' : undefined
+    const rel = fields?.newTab ? 'noopener noreferrer' : undefined
 
     return (
       <a
@@ -75,7 +78,9 @@ function renderNode(node: any, key: number): React.ReactNode {
   }
 
   // Render child nodes
-  const renderedChildren = children.map((child: any, i: number) => renderNode(child, i))
+  const renderedChildren = (children as Array<Record<string, unknown>>).map((child, i) =>
+    renderNode(child, i),
+  )
 
   // Block-level elements
   switch (type) {
@@ -144,31 +149,40 @@ function renderNode(node: any, key: number): React.ReactNode {
 /**
  * Main component - handles the top-level Lexical document structure
  */
-export default function RichTextRender({ content, value }: { content?: any; value?: any }) {
+export default function RichTextRender({
+  content,
+  value,
+}: {
+  content?: Record<string, unknown> | Array<unknown>
+  value?: Record<string, unknown> | Array<unknown>
+}) {
   // Support both 'content' and 'value' prop names for flexibility
   const data = content || value
 
   if (!data) return null
 
   // Extract the blocks array from Lexical's root structure
-  let blocks: any[] = []
+  let blocks: Array<Record<string, unknown>> = []
 
-  if (data?.root?.children) {
+  // biome-ignore lint/suspicious/noExplicitAny: complex dynamic structure
+  if (data && typeof data === 'object' && 'root' in data && (data.root as any)?.children) {
     // Standard Lexical format: { root: { children: [...] } }
-    blocks = data.root.children
+    // biome-ignore lint/suspicious/noExplicitAny: complex dynamic structure
+    blocks = (data.root as any).children as Array<Record<string, unknown>>
   } else if (Array.isArray(data)) {
     // Already an array of blocks
-    blocks = data
-  } else if (data?.children) {
+    blocks = data as Array<Record<string, unknown>>
+  } else if (data && typeof data === 'object' && 'children' in data) {
     // Direct children array
-    blocks = data.children
+    // biome-ignore lint/suspicious/noExplicitAny: complex dynamic structure
+    blocks = (data as any).children as Array<Record<string, unknown>>
   }
 
   if (blocks.length === 0) return null
 
   return (
     <div className="prose prose-neutral max-w-none dark:prose-invert">
-      {blocks.map((block: any, i: number) => renderNode(block, i))}
+      {blocks.map((block, i) => renderNode(block, i))}
     </div>
   )
 }

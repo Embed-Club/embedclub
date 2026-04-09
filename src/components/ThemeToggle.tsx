@@ -17,7 +17,7 @@ export function ModeToggle() {
   }, [])
 
   if (!mounted) {
-    return <button />
+    return <button type="button" tabIndex={-1} aria-hidden="true" />
   }
 
   const isDark = resolvedTheme === 'dark'

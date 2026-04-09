@@ -156,12 +156,12 @@ export default function DecryptedText({
     if (animateOn !== 'view' && animateOn !== 'both') return
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
+      for (const entry of entries) {
         if (entry.isIntersecting && !hasAnimated) {
           setIsHovering(true)
           setHasAnimated(true)
         }
-      })
+      }
     }
 
     const observerOptions = {
@@ -203,6 +203,7 @@ export default function DecryptedText({
           const isRevealedOrDone = revealedIndices.has(index) || !isScrambling || !isHovering
 
           return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: stable for split animation
             <span key={index} className={isRevealedOrDone ? className : encryptedClassName}>
               {char}
             </span>

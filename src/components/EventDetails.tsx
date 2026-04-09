@@ -79,11 +79,12 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
             {Array.isArray(event.description) ? (
               <div className="space-y-2">
                 {event.description.map((block: Record<string, unknown>, idx: number) => {
-                  const arr = block.children as Array<{text?: string}> | undefined;
+                  const arr = block.children as Array<{ text?: string }> | undefined
                   return (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: simple static render
-                  <p key={idx}>{arr?.[0]?.text || ''}</p>
-                )})}
+                    // biome-ignore lint/suspicious/noArrayIndexKey: simple static render
+                    <p key={idx}>{arr?.[0]?.text || ''}</p>
+                  )
+                })}
               </div>
             ) : (
               <p>{event.shortDescription || 'No description available'}</p>

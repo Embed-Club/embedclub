@@ -53,14 +53,14 @@ export const MemberRoles: CollectionConfig = {
 
         const sortOrderMap = new Map<number, string[]>()
         for (const role of allRoles.docs) {
-          const sortOrder = Number((role as Record<string, unknown>)?.sortOrder)
+          const sortOrder = Number((role as unknown as Record<string, unknown>)?.sortOrder)
           if (!Number.isNaN(sortOrder)) {
             if (!sortOrderMap.has(sortOrder)) {
               sortOrderMap.set(sortOrder, [])
             }
             sortOrderMap
               .get(sortOrder)
-              ?.push(((role as Record<string, unknown>)?.name as string) || 'Unnamed')
+              ?.push(((role as unknown as Record<string, unknown>)?.name as string) || 'Unnamed')
           }
         }
 
