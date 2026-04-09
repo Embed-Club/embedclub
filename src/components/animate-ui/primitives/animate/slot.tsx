@@ -16,14 +16,14 @@ type WithAsChild<Base extends object> =
   | (Base & { asChild?: false | undefined });
 
 type SlotProps<T extends HTMLElement = HTMLElement> = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: Slot accepts arbitrary children with unknown props
   children?: any;
 } & DOMMotionProps<T>;
 
 function mergeRefs<T>(
   ...refs: (React.Ref<T> | undefined)[]
 ): React.RefCallback<T> {
-  return (node) => {
+  return (node: T | null) => {
     refs.forEach((ref) => {
       if (!ref) return;
       if (typeof ref === 'function') {

@@ -120,8 +120,8 @@ function composeEventHandlers<E extends React.SyntheticEvent<unknown>>(
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyProps = Record<string, any>;
+// biome-ignore lint/suspicious/noExplicitAny: used for merging arbitrary React props
+type AnyProps = Record<string, any>
 
 function AnimateIcon({
   asChild = false,
@@ -209,7 +209,7 @@ function AnimateIcon({
     setCurrentAnimation(typeof animate === 'string' ? animate : animation);
     if (animate) startAnimation(animate as TriggerProp);
     else stopAnimation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally only watches `animate` — calling startAnimation/stopAnimation inside dep array would create infinite loops
   }, [animate]);
 
   React.useEffect(() => {
@@ -368,7 +368,7 @@ function AnimateIcon({
         loopDelayRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally only watches localAnimate and controls to avoid infinite re-render loop
   }, [localAnimate, controls]);
 
   const childProps = (
@@ -618,7 +618,7 @@ function getVariants<
   V extends { default: T; [key: string]: T },
   T extends Record<string, Variants>,
 >(animations: V): T {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // biome-ignore lint/correctness/useHookAtTopLevel: getVariants is always called at the top of render — rule is a false-positive here
   const { animation: animationType } = useAnimateIconContext();
 
   let result: T;
