@@ -1,10 +1,9 @@
-import { SidebarShell, MainbarShell } from "@/components/FrontendShell";
+import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
 
 export default async function Page() {
   return (
     <SidebarShell>
-      <MainbarShell>
-      </MainbarShell>
+      <MainbarShell />
     </SidebarShell>
-  );
+  )
 }

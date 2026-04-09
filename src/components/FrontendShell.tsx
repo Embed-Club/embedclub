@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
-import { AppSidebar } from '@/components/DesktopMenu'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { ModeToggle } from '@/components/ThemeToggle'
 import { ContentPanel } from '@/components/ContentPanel'
+import { AppSidebar } from '@/components/DesktopMenu'
 import MobileMenu from '@/components/MobileMenu'
+import { ModeToggle } from '@/components/ThemeToggle'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import { useIsMobile } from '@/hooks/use-mobile'
+import React, { useState } from 'react'
 
 export function SidebarShell({ children }: { children?: React.ReactNode }) {
   return (

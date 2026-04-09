@@ -1,33 +1,32 @@
-import { SidebarShell, MainbarShell } from "@/components/FrontendShell";
-import Masonry from "@/components/Masonry";
-import type { Gallery } from "@/payload-types";
+import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
+import Masonry from '@/components/Masonry'
+import type { Gallery } from '@/payload-types'
 
 function getBaseUrl() {
   return typeof window !== 'undefined'
-  ? window.location.origin
-  : process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_BASE_URL || 'http://localhost:3000'
+    ? window.location.origin
+    : process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_BASE_URL || 'http://localhost:3000'
 }
 
 async function getGallery(base: string): Promise<Gallery[]> {
   const res = await fetch(`${base}/api/gallery?depth=1&limit=1000`, {
     cache: 'no-store',
-  });
-  if (!res.ok) throw new Error("Failed to fetch");
+  })
+  if (!res.ok) throw new Error('Failed to fetch')
 
-  const data = await res.json();
-  return data.docs;
+  const data = await res.json()
+  return data.docs
 }
 
-
 export default async function Page() {
-  const gallery = await getGallery(getBaseUrl());
+  const gallery = await getGallery(getBaseUrl())
   const items = gallery.map((g) => ({
     id: g.id.toString(),
-    img: g.url ?? "",
-    url: g.url ?? "",
+    img: g.url ?? '',
+    url: g.url ?? '',
     height: g.height ?? 400,
     width: g.width ?? 400,
-  }));
+  }))
 
   return (
     <SidebarShell>
@@ -45,9 +44,9 @@ export default async function Page() {
             scaleOnHover={true}
             hoverScale={0.95}
             colorShiftOnHover={false}
-          ></Masonry>
+          />
         </div>
       </MainbarShell>
     </SidebarShell>
-  );
+  )
 }

@@ -59,152 +59,154 @@ export type SupportedTimezones =
   | 'Pacific/Guam'
   | 'Pacific/Noumea'
   | 'Pacific/Auckland'
-  | 'Pacific/Fiji';
+  | 'Pacific/Fiji'
 
 export interface Config {
   auth: {
-    users: UserAuthOperations;
-    'payload-mcp-api-keys': PayloadMcpApiKeyAuthOperations;
-  };
-  blocks: {};
+    users: UserAuthOperations
+    'payload-mcp-api-keys': PayloadMcpApiKeyAuthOperations
+  }
+  blocks: {}
   collections: {
-    users: User;
-    media: Media;
-    'audio-files': AudioFile;
-    audio: Audio;
-    achievements: Achievement;
-    events: Event;
-    'member-categories': MemberCategory;
-    'member-photo': MemberPhoto;
-    'member-roles': MemberRole;
-    members: Member;
-    gallery: Gallery;
-    resources: Resource;
-    tags: Tag;
-    'payload-mcp-api-keys': PayloadMcpApiKey;
-    'payload-kv': PayloadKv;
-    'payload-locked-documents': PayloadLockedDocument;
-    'payload-preferences': PayloadPreference;
-    'payload-migrations': PayloadMigration;
-  };
-  collectionsJoins: {};
+    users: User
+    media: Media
+    'audio-files': AudioFile
+    audio: Audio
+    achievements: Achievement
+    events: Event
+    'member-categories': MemberCategory
+    'member-photo': MemberPhoto
+    'member-roles': MemberRole
+    members: Member
+    gallery: Gallery
+    resources: Resource
+    tags: Tag
+    'payload-mcp-api-keys': PayloadMcpApiKey
+    'payload-kv': PayloadKv
+    'payload-locked-documents': PayloadLockedDocument
+    'payload-preferences': PayloadPreference
+    'payload-migrations': PayloadMigration
+  }
+  collectionsJoins: {}
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    'audio-files': AudioFilesSelect<false> | AudioFilesSelect<true>;
-    audio: AudioSelect<false> | AudioSelect<true>;
-    achievements: AchievementsSelect<false> | AchievementsSelect<true>;
-    events: EventsSelect<false> | EventsSelect<true>;
-    'member-categories': MemberCategoriesSelect<false> | MemberCategoriesSelect<true>;
-    'member-photo': MemberPhotoSelect<false> | MemberPhotoSelect<true>;
-    'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
-    members: MembersSelect<false> | MembersSelect<true>;
-    gallery: GallerySelect<false> | GallerySelect<true>;
-    resources: ResourcesSelect<false> | ResourcesSelect<true>;
-    tags: TagsSelect<false> | TagsSelect<true>;
-    'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
-    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
-    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
-  };
+    users: UsersSelect<false> | UsersSelect<true>
+    media: MediaSelect<false> | MediaSelect<true>
+    'audio-files': AudioFilesSelect<false> | AudioFilesSelect<true>
+    audio: AudioSelect<false> | AudioSelect<true>
+    achievements: AchievementsSelect<false> | AchievementsSelect<true>
+    events: EventsSelect<false> | EventsSelect<true>
+    'member-categories': MemberCategoriesSelect<false> | MemberCategoriesSelect<true>
+    'member-photo': MemberPhotoSelect<false> | MemberPhotoSelect<true>
+    'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>
+    members: MembersSelect<false> | MembersSelect<true>
+    gallery: GallerySelect<false> | GallerySelect<true>
+    resources: ResourcesSelect<false> | ResourcesSelect<true>
+    tags: TagsSelect<false> | TagsSelect<true>
+    'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
+    'payload-locked-documents':
+      | PayloadLockedDocumentsSelect<false>
+      | PayloadLockedDocumentsSelect<true>
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>
+  }
   db: {
-    defaultIDType: number;
-  };
-  fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
+    defaultIDType: number
+  }
+  fallbackLocale: null
+  globals: Record<string, unknown>
+  globalsSelect: Record<string, unknown>
+  locale: null
   user:
     | (User & {
-        collection: 'users';
+        collection: 'users'
       })
     | (PayloadMcpApiKey & {
-        collection: 'payload-mcp-api-keys';
-      });
+        collection: 'payload-mcp-api-keys'
+      })
   jobs: {
-    tasks: unknown;
-    workflows: unknown;
-  };
+    tasks: unknown
+    workflows: unknown
+  }
 }
 export interface UserAuthOperations {
   forgotPassword: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   login: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   registerFirstUser: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   unlock: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
 }
 export interface PayloadMcpApiKeyAuthOperations {
   forgotPassword: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   login: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   registerFirstUser: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   unlock: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
+  id: number
+  updatedAt: string
+  createdAt: string
+  email: string
+  resetPasswordToken?: string | null
+  resetPasswordExpiration?: string | null
+  salt?: string | null
+  hash?: string | null
+  loginAttempts?: number | null
+  lockUntil?: string | null
   sessions?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        id: string
+        createdAt?: string | null
+        expiresAt: string
       }[]
-    | null;
-  password?: string | null;
+    | null
+  password?: string | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  id: number
+  alt: string
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
 }
 /**
  * Upload audio assets used across the site.
@@ -213,31 +215,31 @@ export interface Media {
  * via the `definition` "audio-files".
  */
 export interface AudioFile {
-  id: number;
+  id: number
   /**
    * Friendly name to identify this audio file in pickers.
    */
-  title: string;
+  title: string
   /**
    * Optional tags to group or search audio files.
    */
   tags?:
     | {
-        tag: string;
-        id?: string | null;
+        tag: string
+        id?: string | null
       }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+    | null
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
 }
 /**
  * Configure how each sound behaves on the website.
@@ -246,309 +248,309 @@ export interface AudioFile {
  * via the `definition` "audio".
  */
 export interface Audio {
-  id: number;
+  id: number
   /**
    * Friendly name shown in the admin list.
    */
-  name: string;
+  name: string
   /**
    * Controls where this sound is used in the frontend.
    */
-  type: 'buttonClick' | 'mouseClick' | 'pageChange' | 'scroll' | 'background' | 'custom';
-  enabled?: boolean | null;
+  type: 'buttonClick' | 'mouseClick' | 'pageChange' | 'scroll' | 'background' | 'custom'
+  enabled?: boolean | null
   /**
    * Base volume for this sound.
    */
-  volume: number;
-  loop?: boolean | null;
+  volume: number
+  loop?: boolean | null
   /**
    * 1 = normal speed. Lower is slower, higher is faster.
    */
-  playbackRate?: number | null;
-  fadeInMs?: number | null;
-  fadeOutMs?: number | null;
+  playbackRate?: number | null
+  fadeInMs?: number | null
+  fadeOutMs?: number | null
   /**
    * Optional boost multiplier applied by the frontend.
    */
-  volumeBoost?: number | null;
+  volumeBoost?: number | null
   effects?: {
     echo?: {
-      enabled?: boolean | null;
-      delayMs?: number | null;
-      feedback?: number | null;
-      mix?: number | null;
-    };
+      enabled?: boolean | null
+      delayMs?: number | null
+      feedback?: number | null
+      mix?: number | null
+    }
     ambience?: {
-      enabled?: boolean | null;
-      mix?: number | null;
-      lowpassHz?: number | null;
-    };
-  };
+      enabled?: boolean | null
+      mix?: number | null
+      lowpassHz?: number | null
+    }
+  }
   /**
    * Add one or more sources. The frontend can pick randomly.
    */
   sources?:
     | {
-        label?: string | null;
-        file?: (number | null) | AudioFile;
+        label?: string | null
+        file?: (number | null) | AudioFile
         /**
          * Use this for hosted audio (e.g., CDN).
          */
-        externalUrl?: string | null;
+        externalUrl?: string | null
         /**
          * Higher weight makes this source more likely to be chosen.
          */
-        weight?: number | null;
-        id?: string | null;
+        weight?: number | null
+        id?: string | null
       }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
+    | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "achievements".
  */
 export interface Achievement {
-  id: number;
-  title: string;
+  id: number
+  title: string
   summary: {
     root: {
-      type: string;
+      type: string
       children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  }
   /**
    * Date of the achievement (newest first)
    */
-  date: string;
-  image?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
+  date: string
+  image?: (number | null) | Media
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events".
  */
 export interface Event {
-  id: number;
+  id: number
   /**
    * E.g., "Workshop", "Seminar", "Social Event"
    */
-  category: string;
-  title: string;
+  category: string
+  title: string
   /**
    * URL-friendly version (auto-generated from title, but you can edit it)
    */
-  slug: string;
+  slug: string
   /**
    * Main image shown in carousel and modal
    */
-  image: number | Media;
+  image: number | Media
   /**
    * Brief tagline shown on the carousel card (optional)
    */
-  shortDescription?: string | null;
+  shortDescription?: string | null
   /**
    * Full details about the event (shown in modal popup)
    */
   description: {
     root: {
-      type: string;
+      type: string
       children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  }
   venue?: {
-    roomName?: string | null;
-    floor?: string | null;
-  };
+    roomName?: string | null
+    floor?: string | null
+  }
   contact?: {
     /**
      * Email for questions about this event
      */
-    email?: string | null;
+    email?: string | null
     /**
      * Phone number for event inquiries
      */
-    phone?: string | null;
-  };
+    phone?: string | null
+  }
   location?: {
     /**
      * Full street address (e.g., "123 Main St, City, Country")
      */
-    address?: string | null;
+    address?: string | null
     /**
      * Click on the map to pin the exact event location
      */
     coords?: {
-      lat?: number | null;
-      lng?: number | null;
-    };
+      lat?: number | null
+      lng?: number | null
+    }
     /**
      * Zoom level for the embedded map (1=world view, 18=street level)
      */
-    zoom?: number | null;
-  };
-  updatedAt: string;
-  createdAt: string;
+    zoom?: number | null
+  }
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "member-categories".
  */
 export interface MemberCategory {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string | null;
+  id: number
+  name: string
+  slug: string
+  description?: string | null
   /**
    * Order in which this category appears. Lower numbers appear first. Occupied positions will be automatically reassigned.
    */
-  sortOrder: number;
-  updatedAt: string;
-  createdAt: string;
+  sortOrder: number
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "member-photo".
  */
 export interface MemberPhoto {
-  id: number;
+  id: number
   /**
    * e.g., "Photo of John Doe"
    */
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  alt: string
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
   sizes?: {
     thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
+      url?: string | null
+      width?: number | null
+      height?: number | null
+      mimeType?: string | null
+      filesize?: number | null
+      filename?: string | null
+    }
     card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
+      url?: string | null
+      width?: number | null
+      height?: number | null
+      mimeType?: string | null
+      filesize?: number | null
+      filename?: string | null
+    }
     profile?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
+      url?: string | null
+      width?: number | null
+      height?: number | null
+      mimeType?: string | null
+      filesize?: number | null
+      filename?: string | null
+    }
+  }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "member-roles".
  */
 export interface MemberRole {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string | null;
+  id: number
+  name: string
+  slug: string
+  description?: string | null
   /**
    * Order in which this role appears. Lower numbers appear first. Occupied positions will be automatically reassigned.
    */
-  sortOrder: number;
-  updatedAt: string;
-  createdAt: string;
+  sortOrder: number
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "members".
  */
 export interface Member {
-  id: number;
-  fullName: string;
-  photo: number | MemberPhoto;
-  category: number | MemberCategory;
-  roles: number | MemberRole;
-  bio?: string | null;
+  id: number
+  fullName: string
+  photo: number | MemberPhoto
+  category: number | MemberCategory
+  roles: number | MemberRole
+  bio?: string | null
   /**
    * e.g. 2021
    */
-  startYear: number;
+  startYear: number
   /**
    * Leave empty if still active
    */
-  endYear?: number | null;
-  github?: string | null;
-  linkedin?: string | null;
+  endYear?: number | null
+  github?: string | null
+  linkedin?: string | null
   socialAccounts?:
     | {
-        platform?: ('twitter' | 'instagram' | 'facebook' | 'youtube' | 'tiktok' | 'other') | null;
-        url?: string | null;
-        id?: string | null;
+        platform?: ('twitter' | 'instagram' | 'facebook' | 'youtube' | 'tiktok' | 'other') | null
+        url?: string | null
+        id?: string | null
       }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
+    | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery".
  */
 export interface Gallery {
-  id: number;
-  title: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  id: number
+  title: string
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
   sizes?: {
     thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
+      url?: string | null
+      width?: number | null
+      height?: number | null
+      mimeType?: string | null
+      filesize?: number | null
+      filename?: string | null
+    }
+  }
 }
 /**
  * Technical learning resources with flexible content blocks
@@ -557,46 +559,46 @@ export interface Gallery {
  * via the `definition` "resources".
  */
 export interface Resource {
-  id: number;
-  title: string;
+  id: number
+  title: string
   /**
    * URL-friendly version (auto-generated from title, but you can edit it)
    */
-  slug: string;
+  slug: string
   /**
    * One-line summary shown in resource cards and previews
    */
-  description: string;
+  description: string
   /**
    * Image displayed in resource cards (1-2 sentence preview)
    */
-  thumbnail: number | Media;
+  thumbnail: number | Media
   /**
    * Difficulty level for this resource
    */
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
   /**
    * Categorize this resource with tags (Python, React, Backend, etc.)
    */
-  tags?: (number | Tag)[] | null;
+  tags?: (number | Tag)[] | null
   /**
    * Approximate time to complete this resource
    */
-  estimatedReadTime?: number | null;
+  estimatedReadTime?: number | null
   /**
    * Feature this resource on the homepage
    */
-  featured?: boolean | null;
+  featured?: boolean | null
   /**
    * When this resource was last updated
    */
-  lastUpdated?: string | null;
+  lastUpdated?: string | null
   /**
    * Build your resource with flexible content blocks. Add text, code, tables, images, diagrams, and more.
    */
-  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock)[] | null;
-  updatedAt: string;
-  createdAt: string;
+  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock)[] | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * Resource tags for categorization and filtering
@@ -605,14 +607,14 @@ export interface Resource {
  * via the `definition` "tags".
  */
 export interface Tag {
-  id: number;
-  name: string;
+  id: number
+  name: string
   /**
    * URL-friendly version (auto-generated from name, but you can edit it)
    */
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
+  slug: string
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -624,22 +626,22 @@ export interface TextBlock {
    */
   text: {
     root: {
-      type: string;
+      type: string
       children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'textBlock';
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  }
+  id?: string | null
+  blockName?: string | null
+  blockType: 'textBlock'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -669,18 +671,18 @@ export interface CodeBlock {
     | 'yaml'
     | 'json'
     | 'markdown'
-    | 'xml';
+    | 'xml'
   /**
    * Paste or write your code here
    */
-  code: string;
+  code: string
   /**
    * Optional caption or file name to display above the code
    */
-  caption?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'codeBlock';
+  caption?: string | null
+  id?: string | null
+  blockName?: string | null
+  blockType: 'codeBlock'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -691,22 +693,22 @@ export interface TableBlock {
    * Column headers for the table
    */
   headers: {
-    header: string;
-    id?: string | null;
-  }[];
+    header: string
+    id?: string | null
+  }[]
   /**
    * Table rows and cells
    */
   rows: {
     cells: {
-      cell: string;
-      id?: string | null;
-    }[];
-    id?: string | null;
-  }[];
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'tableBlock';
+      cell: string
+      id?: string | null
+    }[]
+    id?: string | null
+  }[]
+  id?: string | null
+  blockName?: string | null
+  blockType: 'tableBlock'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -716,34 +718,34 @@ export interface GraphBlock {
   /**
    * Type of graph or diagram to display
    */
-  graphType: 'mermaid' | 'chartData' | 'html';
+  graphType: 'mermaid' | 'chartData' | 'html'
   /**
    * Mermaid diagram syntax (e.g., graph TD, flowchart, etc.)
    */
-  mermaidDefinition?: string | null;
+  mermaidDefinition?: string | null
   /**
    * Chart data in JSON format (Chart.js compatible)
    */
   chartData?:
     | {
-        [k: string]: unknown;
+        [k: string]: unknown
       }
     | unknown[]
     | string
     | number
     | boolean
-    | null;
+    | null
   /**
    * Custom HTML for embedding (use with caution)
    */
-  html?: string | null;
+  html?: string | null
   /**
    * Optional caption for the diagram
    */
-  caption?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'graphBlock';
+  caption?: string | null
+  id?: string | null
+  blockName?: string | null
+  blockType: 'graphBlock'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -753,18 +755,18 @@ export interface ImageBlock {
   /**
    * Upload an image to display
    */
-  image: number | Media;
+  image: number | Media
   /**
    * Optional caption or alt text for the image
    */
-  caption?: string | null;
+  caption?: string | null
   /**
    * Display width of the image
    */
-  size?: ('small' | 'medium' | 'large') | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'imageBlock';
+  size?: ('small' | 'medium' | 'large') | null
+  id?: string | null
+  blockName?: string | null
+  blockType: 'imageBlock'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -774,14 +776,14 @@ export interface RowBlock {
   /**
    * Number of columns in this row
    */
-  columns: '1' | '2' | '3';
+  columns: '1' | '2' | '3'
   /**
    * Blocks to display in this row (nested RowBlocks not supported)
    */
-  blocks?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock)[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'rowBlock';
+  blocks?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock)[] | null
+  id?: string | null
+  blockName?: string | null
+  blockType: 'rowBlock'
 }
 /**
  * API keys control which collections, resources, tools, and prompts MCP clients can access
@@ -790,550 +792,550 @@ export interface RowBlock {
  * via the `definition` "payload-mcp-api-keys".
  */
 export interface PayloadMcpApiKey {
-  id: number;
+  id: number
   /**
    * The user that the API key is associated with.
    */
-  user: number | User;
+  user: number | User
   /**
    * A useful label for the API key.
    */
-  label?: string | null;
+  label?: string | null
   /**
    * The purpose of the API key.
    */
-  description?: string | null;
+  description?: string | null
   users?: {
     /**
      * Allow clients to find users.
      */
-    find?: boolean | null;
+    find?: boolean | null
     /**
      * Allow clients to create users.
      */
-    create?: boolean | null;
+    create?: boolean | null
     /**
      * Allow clients to update users.
      */
-    update?: boolean | null;
-  };
+    update?: boolean | null
+  }
   media?: {
     /**
      * Allow clients to find media.
      */
-    find?: boolean | null;
+    find?: boolean | null
     /**
      * Allow clients to create media.
      */
-    create?: boolean | null;
+    create?: boolean | null
     /**
      * Allow clients to update media.
      */
-    update?: boolean | null;
-  };
+    update?: boolean | null
+  }
   achievements?: {
     /**
      * Allow clients to find achievements.
      */
-    find?: boolean | null;
+    find?: boolean | null
     /**
      * Allow clients to create achievements.
      */
-    create?: boolean | null;
+    create?: boolean | null
     /**
      * Allow clients to update achievements.
      */
-    update?: boolean | null;
-  };
+    update?: boolean | null
+  }
   events?: {
     /**
      * Allow clients to find events.
      */
-    find?: boolean | null;
+    find?: boolean | null
     /**
      * Allow clients to create events.
      */
-    create?: boolean | null;
+    create?: boolean | null
     /**
      * Allow clients to update events.
      */
-    update?: boolean | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  enableAPIKey?: boolean | null;
-  apiKey?: string | null;
-  apiKeyIndex?: string | null;
+    update?: boolean | null
+  }
+  updatedAt: string
+  createdAt: string
+  enableAPIKey?: boolean | null
+  apiKey?: string | null
+  apiKeyIndex?: string | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: number;
-  key: string;
+  id: number
+  key: string
   data:
     | {
-        [k: string]: unknown;
+        [k: string]: unknown
       }
     | unknown[]
     | string
     | number
     | boolean
-    | null;
+    | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: number
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'users'
+        value: number | User
       } | null)
     | ({
-        relationTo: 'media';
-        value: number | Media;
+        relationTo: 'media'
+        value: number | Media
       } | null)
     | ({
-        relationTo: 'audio-files';
-        value: number | AudioFile;
+        relationTo: 'audio-files'
+        value: number | AudioFile
       } | null)
     | ({
-        relationTo: 'audio';
-        value: number | Audio;
+        relationTo: 'audio'
+        value: number | Audio
       } | null)
     | ({
-        relationTo: 'achievements';
-        value: number | Achievement;
+        relationTo: 'achievements'
+        value: number | Achievement
       } | null)
     | ({
-        relationTo: 'events';
-        value: number | Event;
+        relationTo: 'events'
+        value: number | Event
       } | null)
     | ({
-        relationTo: 'member-categories';
-        value: number | MemberCategory;
+        relationTo: 'member-categories'
+        value: number | MemberCategory
       } | null)
     | ({
-        relationTo: 'member-photo';
-        value: number | MemberPhoto;
+        relationTo: 'member-photo'
+        value: number | MemberPhoto
       } | null)
     | ({
-        relationTo: 'member-roles';
-        value: number | MemberRole;
+        relationTo: 'member-roles'
+        value: number | MemberRole
       } | null)
     | ({
-        relationTo: 'members';
-        value: number | Member;
+        relationTo: 'members'
+        value: number | Member
       } | null)
     | ({
-        relationTo: 'gallery';
-        value: number | Gallery;
+        relationTo: 'gallery'
+        value: number | Gallery
       } | null)
     | ({
-        relationTo: 'resources';
-        value: number | Resource;
+        relationTo: 'resources'
+        value: number | Resource
       } | null)
     | ({
-        relationTo: 'tags';
-        value: number | Tag;
+        relationTo: 'tags'
+        value: number | Tag
       } | null)
     | ({
-        relationTo: 'payload-mcp-api-keys';
-        value: number | PayloadMcpApiKey;
-      } | null);
-  globalSlug?: string | null;
+        relationTo: 'payload-mcp-api-keys'
+        value: number | PayloadMcpApiKey
+      } | null)
+  globalSlug?: string | null
   user:
     | {
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'users'
+        value: number | User
       }
     | {
-        relationTo: 'payload-mcp-api-keys';
-        value: number | PayloadMcpApiKey;
-      };
-  updatedAt: string;
-  createdAt: string;
+        relationTo: 'payload-mcp-api-keys'
+        value: number | PayloadMcpApiKey
+      }
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: number
   user:
     | {
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'users'
+        value: number | User
       }
     | {
-        relationTo: 'payload-mcp-api-keys';
-        value: number | PayloadMcpApiKey;
-      };
-  key?: string | null;
+        relationTo: 'payload-mcp-api-keys'
+        value: number | PayloadMcpApiKey
+      }
+  key?: string | null
   value?:
     | {
-        [k: string]: unknown;
+        [k: string]: unknown
       }
     | unknown[]
     | string
     | number
     | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
+    | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
-  name?: string | null;
-  batch?: number | null;
-  updatedAt: string;
-  createdAt: string;
+  id: number
+  name?: string | null
+  batch?: number | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
+  updatedAt?: T
+  createdAt?: T
+  email?: T
+  resetPasswordToken?: T
+  resetPasswordExpiration?: T
+  salt?: T
+  hash?: T
+  loginAttempts?: T
+  lockUntil?: T
   sessions?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
+        id?: T
+        createdAt?: T
+        expiresAt?: T
+      }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+  alt?: T
+  updatedAt?: T
+  createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "audio-files_select".
  */
 export interface AudioFilesSelect<T extends boolean = true> {
-  title?: T;
+  title?: T
   tags?:
     | T
     | {
-        tag?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+        tag?: T
+        id?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "audio_select".
  */
 export interface AudioSelect<T extends boolean = true> {
-  name?: T;
-  type?: T;
-  enabled?: T;
-  volume?: T;
-  loop?: T;
-  playbackRate?: T;
-  fadeInMs?: T;
-  fadeOutMs?: T;
-  volumeBoost?: T;
+  name?: T
+  type?: T
+  enabled?: T
+  volume?: T
+  loop?: T
+  playbackRate?: T
+  fadeInMs?: T
+  fadeOutMs?: T
+  volumeBoost?: T
   effects?:
     | T
     | {
         echo?:
           | T
           | {
-              enabled?: T;
-              delayMs?: T;
-              feedback?: T;
-              mix?: T;
-            };
+              enabled?: T
+              delayMs?: T
+              feedback?: T
+              mix?: T
+            }
         ambience?:
           | T
           | {
-              enabled?: T;
-              mix?: T;
-              lowpassHz?: T;
-            };
-      };
+              enabled?: T
+              mix?: T
+              lowpassHz?: T
+            }
+      }
   sources?:
     | T
     | {
-        label?: T;
-        file?: T;
-        externalUrl?: T;
-        weight?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
+        label?: T
+        file?: T
+        externalUrl?: T
+        weight?: T
+        id?: T
+      }
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "achievements_select".
  */
 export interface AchievementsSelect<T extends boolean = true> {
-  title?: T;
-  summary?: T;
-  date?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  title?: T
+  summary?: T
+  date?: T
+  image?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events_select".
  */
 export interface EventsSelect<T extends boolean = true> {
-  category?: T;
-  title?: T;
-  slug?: T;
-  image?: T;
-  shortDescription?: T;
-  description?: T;
+  category?: T
+  title?: T
+  slug?: T
+  image?: T
+  shortDescription?: T
+  description?: T
   venue?:
     | T
     | {
-        roomName?: T;
-        floor?: T;
-      };
+        roomName?: T
+        floor?: T
+      }
   contact?:
     | T
     | {
-        email?: T;
-        phone?: T;
-      };
+        email?: T
+        phone?: T
+      }
   location?:
     | T
     | {
-        address?: T;
+        address?: T
         coords?:
           | T
           | {
-              lat?: T;
-              lng?: T;
-            };
-        zoom?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
+              lat?: T
+              lng?: T
+            }
+        zoom?: T
+      }
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "member-categories_select".
  */
 export interface MemberCategoriesSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  description?: T;
-  sortOrder?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  name?: T
+  slug?: T
+  description?: T
+  sortOrder?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "member-photo_select".
  */
 export interface MemberPhotoSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+  alt?: T
+  updatedAt?: T
+  createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
   sizes?:
     | T
     | {
         thumbnail?:
           | T
           | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
+              url?: T
+              width?: T
+              height?: T
+              mimeType?: T
+              filesize?: T
+              filename?: T
+            }
         card?:
           | T
           | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
+              url?: T
+              width?: T
+              height?: T
+              mimeType?: T
+              filesize?: T
+              filename?: T
+            }
         profile?:
           | T
           | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
+              url?: T
+              width?: T
+              height?: T
+              mimeType?: T
+              filesize?: T
+              filename?: T
+            }
+      }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "member-roles_select".
  */
 export interface MemberRolesSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  description?: T;
-  sortOrder?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  name?: T
+  slug?: T
+  description?: T
+  sortOrder?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "members_select".
  */
 export interface MembersSelect<T extends boolean = true> {
-  fullName?: T;
-  photo?: T;
-  category?: T;
-  roles?: T;
-  bio?: T;
-  startYear?: T;
-  endYear?: T;
-  github?: T;
-  linkedin?: T;
+  fullName?: T
+  photo?: T
+  category?: T
+  roles?: T
+  bio?: T
+  startYear?: T
+  endYear?: T
+  github?: T
+  linkedin?: T
   socialAccounts?:
     | T
     | {
-        platform?: T;
-        url?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
+        platform?: T
+        url?: T
+        id?: T
+      }
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery_select".
  */
 export interface GallerySelect<T extends boolean = true> {
-  title?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+  title?: T
+  updatedAt?: T
+  createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
   sizes?:
     | T
     | {
         thumbnail?:
           | T
           | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
+              url?: T
+              width?: T
+              height?: T
+              mimeType?: T
+              filesize?: T
+              filename?: T
+            }
+      }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resources_select".
  */
 export interface ResourcesSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  description?: T;
-  thumbnail?: T;
-  difficulty?: T;
-  tags?: T;
-  estimatedReadTime?: T;
-  featured?: T;
-  lastUpdated?: T;
+  title?: T
+  slug?: T
+  description?: T
+  thumbnail?: T
+  difficulty?: T
+  tags?: T
+  estimatedReadTime?: T
+  featured?: T
+  lastUpdated?: T
   content?:
     | T
     | {
-        textBlock?: T | TextBlockSelect<T>;
-        codeBlock?: T | CodeBlockSelect<T>;
-        tableBlock?: T | TableBlockSelect<T>;
-        graphBlock?: T | GraphBlockSelect<T>;
-        imageBlock?: T | ImageBlockSelect<T>;
-        rowBlock?: T | RowBlockSelect<T>;
-      };
-  updatedAt?: T;
-  createdAt?: T;
+        textBlock?: T | TextBlockSelect<T>
+        codeBlock?: T | CodeBlockSelect<T>
+        tableBlock?: T | TableBlockSelect<T>
+        graphBlock?: T | GraphBlockSelect<T>
+        imageBlock?: T | ImageBlockSelect<T>
+        rowBlock?: T | RowBlockSelect<T>
+      }
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TextBlock_select".
  */
 export interface TextBlockSelect<T extends boolean = true> {
-  text?: T;
-  id?: T;
-  blockName?: T;
+  text?: T
+  id?: T
+  blockName?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CodeBlock_select".
  */
 export interface CodeBlockSelect<T extends boolean = true> {
-  language?: T;
-  code?: T;
-  caption?: T;
-  id?: T;
-  blockName?: T;
+  language?: T
+  code?: T
+  caption?: T
+  id?: T
+  blockName?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1343,165 +1345,164 @@ export interface TableBlockSelect<T extends boolean = true> {
   headers?:
     | T
     | {
-        header?: T;
-        id?: T;
-      };
+        header?: T
+        id?: T
+      }
   rows?:
     | T
     | {
         cells?:
           | T
           | {
-              cell?: T;
-              id?: T;
-            };
-        id?: T;
-      };
-  id?: T;
-  blockName?: T;
+              cell?: T
+              id?: T
+            }
+        id?: T
+      }
+  id?: T
+  blockName?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "GraphBlock_select".
  */
 export interface GraphBlockSelect<T extends boolean = true> {
-  graphType?: T;
-  mermaidDefinition?: T;
-  chartData?: T;
-  html?: T;
-  caption?: T;
-  id?: T;
-  blockName?: T;
+  graphType?: T
+  mermaidDefinition?: T
+  chartData?: T
+  html?: T
+  caption?: T
+  id?: T
+  blockName?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ImageBlock_select".
  */
 export interface ImageBlockSelect<T extends boolean = true> {
-  image?: T;
-  caption?: T;
-  size?: T;
-  id?: T;
-  blockName?: T;
+  image?: T
+  caption?: T
+  size?: T
+  id?: T
+  blockName?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "RowBlock_select".
  */
 export interface RowBlockSelect<T extends boolean = true> {
-  columns?: T;
+  columns?: T
   blocks?:
     | T
     | {
-        textBlock?: T | TextBlockSelect<T>;
-        codeBlock?: T | CodeBlockSelect<T>;
-        tableBlock?: T | TableBlockSelect<T>;
-        graphBlock?: T | GraphBlockSelect<T>;
-        imageBlock?: T | ImageBlockSelect<T>;
-      };
-  id?: T;
-  blockName?: T;
+        textBlock?: T | TextBlockSelect<T>
+        codeBlock?: T | CodeBlockSelect<T>
+        tableBlock?: T | TableBlockSelect<T>
+        graphBlock?: T | GraphBlockSelect<T>
+        imageBlock?: T | ImageBlockSelect<T>
+      }
+  id?: T
+  blockName?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tags_select".
  */
 export interface TagsSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  name?: T
+  slug?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-mcp-api-keys_select".
  */
 export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
-  user?: T;
-  label?: T;
-  description?: T;
+  user?: T
+  label?: T
+  description?: T
   users?:
     | T
     | {
-        find?: T;
-        create?: T;
-        update?: T;
-      };
+        find?: T
+        create?: T
+        update?: T
+      }
   media?:
     | T
     | {
-        find?: T;
-        create?: T;
-        update?: T;
-      };
+        find?: T
+        create?: T
+        update?: T
+      }
   achievements?:
     | T
     | {
-        find?: T;
-        create?: T;
-        update?: T;
-      };
+        find?: T
+        create?: T
+        update?: T
+      }
   events?:
     | T
     | {
-        find?: T;
-        create?: T;
-        update?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  enableAPIKey?: T;
-  apiKey?: T;
-  apiKeyIndex?: T;
+        find?: T
+        create?: T
+        update?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  enableAPIKey?: T
+  apiKey?: T
+  apiKeyIndex?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
-  key?: T;
-  data?: T;
+  key?: T
+  data?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
-  document?: T;
-  globalSlug?: T;
-  user?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  document?: T
+  globalSlug?: T
+  user?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences_select".
  */
 export interface PayloadPreferencesSelect<T extends boolean = true> {
-  user?: T;
-  key?: T;
-  value?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  user?: T
+  key?: T
+  value?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-migrations_select".
  */
 export interface PayloadMigrationsSelect<T extends boolean = true> {
-  name?: T;
-  batch?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  name?: T
+  batch?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {
-  [k: string]: unknown;
+  [k: string]: unknown
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

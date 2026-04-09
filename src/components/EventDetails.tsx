@@ -1,9 +1,10 @@
 'use client'
 
-import React, { Suspense } from 'react'
-import dynamic from 'next/dynamic'
-import type { Event } from '@/payload-types'
 import { Skeleton } from '@/components/ui/skeleton'
+import type { Event } from '@/payload-types'
+import dynamic from 'next/dynamic'
+import type React from 'react'
+import { Suspense } from 'react'
 
 // Dynamically import LeafletMap to avoid SSR issues
 const LeafletMap = dynamic(() => import('@/components/admin/LeafletMap'), {
@@ -77,9 +78,12 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
           <div className="text-sm text-neutral-700 dark:text-neutral-300 line-clamp-3">
             {Array.isArray(event.description) ? (
               <div className="space-y-2">
-                {event.description.map((block: any, idx: number) => (
-                  <p key={idx}>{block.children?.[0]?.text || ''}</p>
-                ))}
+                {event.description.map((block: Record<string, unknown>, idx: number) => {
+                  const arr = block.children as Array<{text?: string}> | undefined;
+                  return (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: simple static render
+                  <p key={idx}>{arr?.[0]?.text || ''}</p>
+                )})}
               </div>
             ) : (
               <p>{event.shortDescription || 'No description available'}</p>

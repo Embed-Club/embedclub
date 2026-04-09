@@ -1,6 +1,4 @@
 'use client'
-
-import React from 'react'
 import DecryptedTextProps from '@/components/DecryptedText'
 
 export default function DashboardTitle() {

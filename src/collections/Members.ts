@@ -10,11 +10,11 @@ export const Members: CollectionConfig = {
   fields: [
     { name: 'fullName', label: 'Full Name', type: 'text', required: true },
     {
-        name: 'photo',
-        label: 'Photo',
-        type: 'upload',
-        relationTo: 'member-photo', // changed from 'media'
-        required: true,
+      name: 'photo',
+      label: 'Photo',
+      type: 'upload',
+      relationTo: 'member-photo', // changed from 'media'
+      required: true,
     },
     {
       name: 'category',
@@ -73,14 +73,7 @@ export const Members: CollectionConfig = {
           name: 'platform',
           label: 'Platform',
           type: 'select',
-          options: [
-            'twitter',
-            'instagram',
-            'facebook',
-            'youtube',
-            'tiktok',
-            'other',
-          ],
+          options: ['twitter', 'instagram', 'facebook', 'youtube', 'tiktok', 'other'],
           required: false,
         },
         {

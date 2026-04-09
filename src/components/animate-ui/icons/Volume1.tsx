@@ -1,16 +1,14 @@
-'use client';
-
-import * as React from 'react';
-import { motion, type Variants } from 'motion/react';
+'use client'
+import { type Variants, motion } from 'motion/react'
 
 import {
+  type IconProps,
+  IconWrapper,
   getVariants,
   useAnimateIconContext,
-  IconWrapper,
-  type IconProps,
-} from '@/components/animate-ui/icons/Icon';
+} from '@/components/animate-ui/icons/Icon'
 
-type Volume1Props = IconProps<keyof typeof animations>;
+type Volume1Props = IconProps<keyof typeof animations>
 
 const animations = {
   default: {
@@ -39,11 +37,11 @@ const animations = {
     },
     path2: {},
   } satisfies Record<string, Variants>,
-} as const;
+} as const
 
 function IconComponent({ size, ...props }: Volume1Props) {
-  const { controls } = useAnimateIconContext();
-  const variants = getVariants(animations);
+  const { controls } = useAnimateIconContext()
+  const variants = getVariants(animations)
 
   return (
     <motion.svg
@@ -71,11 +69,11 @@ function IconComponent({ size, ...props }: Volume1Props) {
         animate={controls}
       />
     </motion.svg>
-  );
+  )
 }
 
 function Volume1(props: Volume1Props) {
-  return <IconWrapper icon={IconComponent} {...props} />;
+  return <IconWrapper icon={IconComponent} {...props} />
 }
 
 export {
@@ -84,4 +82,4 @@ export {
   Volume1 as Volume1Icon,
   type Volume1Props,
   type Volume1Props as Volume1IconProps,
-};
+}

@@ -1,15 +1,9 @@
-"use client";
+'use client'
 
-import React, { useEffect, useRef, useState } from "react";
-import { Filter, ArrowUpDown } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
+import { ArrowUpDown, Filter } from 'lucide-react'
+import type React from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const searchBarStyles = `
 @keyframes placeholder-slide-up {
@@ -37,29 +31,28 @@ const searchBarStyles = `
     filter: blur(0px);
   }
 }
-`;
+`
 
 type SearchBarProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  "onChange" | "value" | "defaultValue"
+  'onChange' | 'value' | 'defaultValue'
 > & {
-  placeholders?: string[];
-  interval?: number;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit?: (value: string) => void;
-  icon?: React.ReactNode;
-  className?: string;
-  inputClassName?: string;
-  categories: string[];
-  selectedCategory: string | "all";
-  onCategoryChange: (category: string) => void;
-  sortBy: string;
-  onSortChange: (sort: string) => void;
-};
-
+  placeholders?: string[]
+  interval?: number
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onSubmit?: (value: string) => void
+  icon?: React.ReactNode
+  className?: string
+  inputClassName?: string
+  categories: string[]
+  selectedCategory: string | 'all'
+  onCategoryChange: (category: string) => void
+  sortBy: string
+  onSortChange: (sort: string) => void
+}
 
 export function SearchBar({
-  placeholders = ["Search...", "Type something...", "What are you looking for?"],
+  placeholders = ['Search...', 'Type something...', 'What are you looking for?'],
   interval = 3000,
   onChange,
   onSubmit,
@@ -69,62 +62,64 @@ export function SearchBar({
   onCategoryChange,
   sortBy,
   onSortChange,
-  className = "",
-  inputClassName = "",
+  className = '',
+  inputClassName = '',
   ...props
 }: SearchBarProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const [_isFocused, setIsFocused] = useState(false)
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    if (inputValue) return;
+    if (inputValue) return
 
     const timer = window.setInterval(() => {
-      setIsAnimating(true);
+      setIsAnimating(true)
       window.setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % placeholders.length);
-        setIsAnimating(false);
-      }, 300);
-    }, interval);
+        setCurrentIndex((prev) => (prev + 1) % placeholders.length)
+        setIsAnimating(false)
+      }, 300)
+    }, interval)
 
-    return () => window.clearInterval(timer);
-  }, [placeholders.length, interval, inputValue]);
+    return () => window.clearInterval(timer)
+  }, [placeholders.length, interval, inputValue])
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-        e.preventDefault();
-        inputRef.current?.focus();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        inputRef.current?.focus()
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleGlobalKeyDown);
-    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, []);
+    window.addEventListener('keydown', handleGlobalKeyDown)
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    onChange?.(e);
-  };
+    setInputValue(e.target.value)
+    onChange?.(e)
+  }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    onSubmit?.(inputValue);
-  };
+  const handleSubmit = (
+    e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    e.preventDefault()
+    onSubmit?.(inputValue)
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSubmit(e);
+    if (e.key === 'Enter') {
+      handleSubmit(e)
     }
-  };
+  }
 
-  const handleClear = () => {
-    setInputValue("");
-    inputRef.current?.focus();
-  };
+  const _handleClear = () => {
+    setInputValue('')
+    inputRef.current?.focus()
+  }
 
   return (
     <>
@@ -187,8 +182,8 @@ export function SearchBar({
                   className="text-zinc-500 text-[15px] transition-all duration-300 ease-in-out"
                   style={{
                     animation: isAnimating
-                      ? "placeholder-slide-up 0.3s ease-in-out forwards"
-                      : "placeholder-slide-in 0.3s ease-in-out forwards",
+                      ? 'placeholder-slide-up 0.3s ease-in-out forwards'
+                      : 'placeholder-slide-in 0.3s ease-in-out forwards',
                   }}
                 >
                   {placeholders[currentIndex]}
@@ -210,7 +205,6 @@ export function SearchBar({
                     {category}
                   </SelectItem>
                 ))}
-
               </SelectContent>
             </Select>
 
@@ -231,56 +225,56 @@ export function SearchBar({
         </div>
       </form>
     </>
-  );
+  )
 }
 
 type SearchBarMinimalProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  "onChange" | "value" | "defaultValue"
+  'onChange' | 'value' | 'defaultValue'
 > & {
-  placeholders?: string[];
-  interval?: number;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit?: (value: string) => void;
-  className?: string;
-};
+  placeholders?: string[]
+  interval?: number
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onSubmit?: (value: string) => void
+  className?: string
+}
 
 export function SearchBarMinimal({
-  placeholders = ["Search...", "Type something...", "What are you looking for?"],
+  placeholders = ['Search...', 'Type something...', 'What are you looking for?'],
   interval = 3000,
   onChange,
   onSubmit,
-  className = "",
+  className = '',
   ...props
 }: SearchBarMinimalProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
 
   useEffect(() => {
-    if (inputValue || isFocused) return;
+    if (inputValue || isFocused) return
 
     const timer = window.setInterval(() => {
-      setIsAnimating(true);
+      setIsAnimating(true)
       window.setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % placeholders.length);
-        setIsAnimating(false);
-      }, 300);
-    }, interval);
+        setCurrentIndex((prev) => (prev + 1) % placeholders.length)
+        setIsAnimating(false)
+      }, 300)
+    }, interval)
 
-    return () => window.clearInterval(timer);
-  }, [placeholders.length, interval, inputValue, isFocused]);
+    return () => window.clearInterval(timer)
+  }, [placeholders.length, interval, inputValue, isFocused])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    onChange?.(e);
-  };
+    setInputValue(e.target.value)
+    onChange?.(e)
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onSubmit?.(inputValue);
-  };
+    e.preventDefault()
+    onSubmit?.(inputValue)
+  }
 
   return (
     <>
@@ -332,8 +326,8 @@ export function SearchBarMinimal({
                   className="text-zinc-600 text-sm transition-all duration-300 ease-in-out"
                   style={{
                     animation: isAnimating
-                      ? "placeholder-slide-up 0.3s ease-in-out forwards"
-                      : "placeholder-slide-in 0.3s ease-in-out forwards",
+                      ? 'placeholder-slide-up 0.3s ease-in-out forwards'
+                      : 'placeholder-slide-in 0.3s ease-in-out forwards',
                   }}
                 >
                   {placeholders[currentIndex]}
@@ -344,5 +338,5 @@ export function SearchBarMinimal({
         </div>
       </form>
     </>
-  );
+  )
 }

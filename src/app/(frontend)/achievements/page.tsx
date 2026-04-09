@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
-import { SidebarShell, MainbarShell } from '@/components/FrontendShell'
+import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
 import { Timeline } from '@/components/UnifiedTimeline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsMobile } from '@/hooks/use-mobile'
+import React from 'react'
 
 type Achievement = {
   id: number
@@ -90,8 +90,8 @@ function transformAchievements(achievements: Achievement[]): TimelineAchievement
 async function fetchAchievements(): Promise<Achievement[]> {
   // Build an absolute URL for client-side fetch
   const base =
-    typeof window !== 'undefined' 
-      ? window.location.origin 
+    typeof window !== 'undefined'
+      ? window.location.origin
       : process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_BASE_URL || 'http://localhost:3000'
   const url = new URL('/api/achievements', base)
   // Use Payload REST `sort` param: prefix with - to sort descending (newest first)
@@ -108,9 +108,7 @@ async function fetchAchievements(): Promise<Achievement[]> {
 
 function AchievementsSkeleton({ isMobile }: { isMobile: boolean }) {
   const items = 4
-  const barPositionClass = isMobile
-    ? 'right-[16px] translate-x-1/2'
-    : 'left-1/2 -translate-x-1/2'
+  const barPositionClass = isMobile ? 'right-[16px] translate-x-1/2' : 'left-1/2 -translate-x-1/2'
 
   return (
     <div className="relative h-full w-full overflow-hidden">
@@ -152,7 +150,10 @@ function AchievementsSkeleton({ isMobile }: { isMobile: boolean }) {
             }
 
             return (
-              <div key={`achievement-skeleton-${index}`} className="flex items-center gap-16 px-8 max-w-7xl mx-auto">
+              <div
+                key={`achievement-skeleton-${index}`}
+                className="flex items-center gap-16 px-8 max-w-7xl mx-auto"
+              >
                 <div className="flex-1">
                   {isLeft ? (
                     <div className="rounded-lg border border-border/60 bg-card/60 shadow-sm p-6">
@@ -221,7 +222,7 @@ export default function AchievementsPage() {
   // Transform data for unified timeline
   const timelineAchievements = React.useMemo(
     () => transformAchievements(achievements),
-    [achievements]
+    [achievements],
   )
 
   return (
@@ -229,11 +230,9 @@ export default function AchievementsPage() {
       <MainbarShell>
         {/* Mobile heading only - desktop heading is inside Timeline component */}
         {isMobile && !isLoading && (
-          <h1 className="absolute left-5 top-5 text-2xl font-medium md:text-5xl">
-            CHIEEENTS
-          </h1>
+          <h1 className="absolute left-5 top-5 text-2xl font-medium md:text-5xl">CHIEEENTS</h1>
         )}
-        
+
         {isLoading ? (
           <AchievementsSkeleton isMobile={isMobile} />
         ) : error ? (
@@ -250,9 +249,7 @@ export default function AchievementsPage() {
                 className="h-40 w-40 md:h-56 md:w-56 dark:invert"
               />
               <div className="text-center">
-                <p className="text-lg font-semibold text-neutral-900 dark:text-white">
-                  No network
-                </p>
+                <p className="text-lg font-semibold text-neutral-900 dark:text-white">No network</p>
                 <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
                   Failed to load achievements right now.
                 </p>
@@ -260,7 +257,7 @@ export default function AchievementsPage() {
             </div>
           </>
         ) : (
-          <div className={isMobile ? "w-full h-full" : "absolute inset-0"}>
+          <div className={isMobile ? 'w-full h-full' : 'absolute inset-0'}>
             <Timeline
               items={timelineAchievements}
               fillDistance={100}

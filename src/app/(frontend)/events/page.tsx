@@ -1,9 +1,13 @@
-"use client";
+'use client'
 
-import React from "react";
-import { SidebarShell, MainbarShell } from "@/components/FrontendShell";
-import { Carousel } from "@/components/EventsCarousel";
-import { Card as CarouselCard, EventCard, type EventCardData as CarouselCardData } from "@/components/EventsCards";
+import {
+  Card as CarouselCard,
+  type EventCardData as CarouselCardData,
+  EventCard,
+} from '@/components/EventsCards'
+import { Carousel } from '@/components/EventsCarousel'
+import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
+import { FocusCards } from '@/components/ui/focus-cards'
 import {
   Pagination,
   PaginationContent,
@@ -11,15 +15,15 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Skeleton } from "@/components/ui/skeleton";
-import { FocusCards } from "@/components/ui/focus-cards";
-import type { Event } from "@/payload-types";
+} from '@/components/ui/pagination'
+import { Skeleton } from '@/components/ui/skeleton'
+import type { Event } from '@/payload-types'
+import React from 'react'
 
 function getBaseUrl() {
-  return typeof window !== "undefined"
+  return typeof window !== 'undefined'
     ? window.location.origin
-    : process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 }
 
 /**
@@ -29,120 +33,113 @@ function getBaseUrl() {
  * next.revalidate controls ISR; bump or use { cache: "no-store" } if you need true SSR.
  */
 async function getEvents(baseUrl: string) {
-  const res = await fetch(
-    `${baseUrl}/api/events?depth=1&sort=-createdAt&limit=5`,
-    { cache: "no-store" }
-  );
-  
+  const res = await fetch(`${baseUrl}/api/events?depth=1&sort=-createdAt&limit=5`, {
+    cache: 'no-store',
+  })
+
   if (!res.ok) {
-    const errorText = await res.text();
+    const errorText = await res.text()
     console.error('Failed to fetch events:', {
       status: res.status,
       statusText: res.statusText,
       error: errorText,
-      url: `${baseUrl}/api/events?depth=1&sort=-createdAt`
-    });
-    throw new Error(`Failed to load events: ${res.status} ${res.statusText}`);
+      url: `${baseUrl}/api/events?depth=1&sort=-createdAt`,
+    })
+    throw new Error(`Failed to load events: ${res.status} ${res.statusText}`)
   }
-  
-  const data = (await res.json()) as { docs: Event[] };
-  return data.docs;
+
+  const data = (await res.json()) as { docs: Event[] }
+  return data.docs
 }
 
 /**
  * Fetch all events for the gallery (with pagination support).
  */
 async function getAllEvents(baseUrl: string) {
-  const res = await fetch(
-    `${baseUrl}/api/events?depth=1&sort=-createdAt&limit=100`,
-    { cache: "no-store" }
-  );
-  
+  const res = await fetch(`${baseUrl}/api/events?depth=1&sort=-createdAt&limit=100`, {
+    cache: 'no-store',
+  })
+
   if (!res.ok) {
-    const errorText = await res.text();
+    const errorText = await res.text()
     console.error('Failed to fetch all events:', {
       status: res.status,
       statusText: res.statusText,
       error: errorText,
-      url: `${baseUrl}/api/events?depth=1&sort=-createdAt`
-    });
-    throw new Error(`Failed to load events: ${res.status} ${res.statusText}`);
+      url: `${baseUrl}/api/events?depth=1&sort=-createdAt`,
+    })
+    throw new Error(`Failed to load events: ${res.status} ${res.statusText}`)
   }
-  
-  const data = (await res.json()) as { docs: Event[] };
-  return data.docs;
+
+  const data = (await res.json()) as { docs: Event[] }
+  return data.docs
 }
 
 function getEventImageUrl(event: Event): string {
-  return typeof event.image === "object" && event.image !== null && "url" in event.image
-    ? event.image.url || "/placeholder/placeholder.jpg"
-    : "/placeholder/placeholder.jpg";
+  return typeof event.image === 'object' && event.image !== null && 'url' in event.image
+    ? event.image.url || '/placeholder/placeholder.jpg'
+    : '/placeholder/placeholder.jpg'
 }
-
 
 function CarouselSkeleton({ count = 4 }: { count?: number }) {
   return (
     <div className="flex w-full overflow-hidden py-10 md:py-20">
       <div className="mx-auto flex w-full max-w-7xl flex-row justify-start gap-4 pl-4">
         {Array.from({ length: count }).map((_, index) => (
-          <Skeleton
-            key={index}
-            className="h-80 w-56 rounded-3xl md:h-[40rem] md:w-96"
-          />
+          // biome-ignore lint/suspicious/noArrayIndexKey: safe for static placeholder
+          <Skeleton key={index} className="h-80 w-56 rounded-3xl md:h-[40rem] md:w-96" />
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 function FocusCardsSkeleton({ count = 9 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 gap-10 w-full md:px-8 md:grid-cols-3">
       {Array.from({ length: count }).map((_, index) => (
-        <Skeleton
-          key={index}
-          className="h-60 w-full rounded-lg md:h-96"
-        />
+          // biome-ignore lint/suspicious/noArrayIndexKey: valid for placeholders
+        <Skeleton key={index} className="h-60 w-full rounded-lg md:h-96" />
       ))}
     </div>
-  );
+  )
 }
 
 export default function Page() {
-  const [events, setEvents] = React.useState<Event[]>([]);
-  const [allEvents, setAllEvents] = React.useState<Event[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-  const [useFallback, setUseFallback] = React.useState(false);
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(9);
+  const [events, setEvents] = React.useState<Event[]>([])
+  const [allEvents, setAllEvents] = React.useState<Event[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [_error, setError] = React.useState<string | null>(null)
+  const [useFallback, setUseFallback] = React.useState(false)
+  const [currentPage, setCurrentPage] = React.useState(1)
+  const [pageSize, setPageSize] = React.useState(9)
 
   const fallbackCarouselCards = React.useMemo<CarouselCardData[]>(
     () =>
       Array.from({ length: 4 }).map(() => ({
-        title: "No Network",
-        category: "Event",
-        src: "/placeholder/placeholder.jpg",
+        title: 'No Network',
+        category: 'Event',
+        src: '/placeholder/placeholder.jpg',
         content: null,
         isFallback: true,
       })),
-    []
-  );
+    [],
+  )
 
   const fallbackGridCards = React.useMemo(
     () =>
       Array.from({ length: pageSize }).map(() => ({
-        title: "No Network",
-        src: "/placeholder/placeholder.jpg",
+        title: 'No Network',
+        src: '/placeholder/placeholder.jpg',
         isFallback: true,
       })),
-    [pageSize]
-  );
+    [pageSize],
+  )
 
   React.useEffect(() => {
-    let isMounted = true;
-    const baseUrl = getBaseUrl();
-    const minLoadingMs = 600;
+    let isMounted = true
+    const baseUrl = getBaseUrl()
+    const minLoadingMs = 600
 
     Promise.all([
       getEvents(baseUrl),
@@ -150,41 +147,42 @@ export default function Page() {
       new Promise((resolve) => setTimeout(resolve, minLoadingMs)),
     ])
       .then(([eventsData, allEventsData]) => {
-        if (!isMounted) return;
-        setEvents(eventsData as Event[]);
-        setAllEvents(allEventsData as Event[]);
-        setIsLoading(false);
+        if (!isMounted) return
+        setEvents(eventsData as Event[])
+        setAllEvents(allEventsData as Event[])
+        setIsLoading(false)
       })
       .catch((err) => {
-        console.error("Error fetching events:", err);
-        if (!isMounted) return;
-        setError("Failed to load events");
-        setUseFallback(true);
-        setIsLoading(false);
-      });
+        console.error('Error fetching events:', err)
+        if (!isMounted) return
+        setError('Failed to load events')
+        setUseFallback(true)
+        setIsLoading(false)
+      })
 
     return () => {
-      isMounted = false;
-    };
-  }, []);
+      isMounted = false
+    }
+  }, [])
 
   React.useEffect(() => {
     const updatePageSize = () => {
-      setPageSize(window.innerWidth < 768 ? 6 : 9);
-    };
+      setPageSize(window.innerWidth < 768 ? 6 : 9)
+    }
 
-    updatePageSize();
-    window.addEventListener("resize", updatePageSize);
-    return () => window.removeEventListener("resize", updatePageSize);
-  }, []);
+    updatePageSize()
+    window.addEventListener('resize', updatePageSize)
+    return () => window.removeEventListener('resize', updatePageSize)
+  }, [])
 
   React.useEffect(() => {
-    setCurrentPage(1);
-  }, [allEvents.length, pageSize]);
+    setCurrentPage(1)
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Only run once or conditionally
+  }, [])
 
-  const totalPages = Math.max(1, Math.ceil(allEvents.length / pageSize));
-  const startIndex = (currentPage - 1) * pageSize;
-  const visibleEvents = allEvents.slice(startIndex, startIndex + pageSize);
+  const totalPages = Math.max(1, Math.ceil(allEvents.length / pageSize))
+  const startIndex = (currentPage - 1) * pageSize
+  const visibleEvents = allEvents.slice(startIndex, startIndex + pageSize)
 
   return (
     <SidebarShell>
@@ -231,15 +229,14 @@ export default function Page() {
             <div className="w-full py-6 md:py-12">
               <Carousel
                 items={fallbackCarouselCards.map((card, index) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: fixed fallbacks
                   <CarouselCard key={`fallback-${index}`} card={card} index={index} />
                 ))}
               />
             </div>
 
             <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
-              <h2 className="relative text-2xl font-medium md:text-4xl">
-                LL EENTS
-              </h2>
+              <h2 className="relative text-2xl font-medium md:text-4xl">LL EENTS</h2>
               <FocusCards cards={fallbackGridCards} />
             </div>
           </>
@@ -251,19 +248,13 @@ export default function Page() {
             <div className="w-full py-6 md:py-12">
               <Carousel
                 items={events.map((event, index) => (
-                  <EventCard
-                    key={event.id ?? index}
-                    event={event}
-                    index={index}
-                  />
+                  <EventCard key={event.id ?? index} event={event} index={index} />
                 ))}
               />
             </div>
 
             <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
-              <h2 className="relative text-2xl font-medium md:text-4xl">
-                LL EENTS
-              </h2>
+              <h2 className="relative text-2xl font-medium md:text-4xl">LL EENTS</h2>
               {totalPages > 1 && (
                 <div className="mt-6 flex w-full justify-end pb-6">
                   <Pagination className="justify-end">
@@ -272,36 +263,34 @@ export default function Page() {
                         <PaginationPrevious
                           href="#"
                           onClick={(event) => {
-                            event.preventDefault();
-                            setCurrentPage((page) => Math.max(1, page - 1));
+                            event.preventDefault()
+                            setCurrentPage((page) => Math.max(1, page - 1))
                           }}
                         />
                       </PaginationItem>
                       {Array.from({ length: totalPages }).map((_, index) => {
-                        const pageNumber = index + 1;
+                        const pageNumber = index + 1
                         return (
                           <PaginationItem key={pageNumber}>
                             <PaginationLink
                               href="#"
                               isActive={pageNumber === currentPage}
                               onClick={(event) => {
-                                event.preventDefault();
-                                setCurrentPage(pageNumber);
+                                event.preventDefault()
+                                setCurrentPage(pageNumber)
                               }}
                             >
                               {pageNumber}
                             </PaginationLink>
                           </PaginationItem>
-                        );
+                        )
                       })}
                       <PaginationItem>
                         <PaginationNext
                           href="#"
                           onClick={(event) => {
-                            event.preventDefault();
-                            setCurrentPage((page) =>
-                              Math.min(totalPages, page + 1)
-                            );
+                            event.preventDefault()
+                            setCurrentPage((page) => Math.min(totalPages, page + 1))
                           }}
                         />
                       </PaginationItem>
@@ -311,7 +300,7 @@ export default function Page() {
               )}
               <FocusCards
                 cards={visibleEvents.map((event) => ({
-                  title: event.title || "Untitled Event",
+                  title: event.title || 'Untitled Event',
                   src: getEventImageUrl(event),
                   event,
                 }))}
@@ -324,36 +313,34 @@ export default function Page() {
                         <PaginationPrevious
                           href="#"
                           onClick={(event) => {
-                            event.preventDefault();
-                            setCurrentPage((page) => Math.max(1, page - 1));
+                            event.preventDefault()
+                            setCurrentPage((page) => Math.max(1, page - 1))
                           }}
                         />
                       </PaginationItem>
                       {Array.from({ length: totalPages }).map((_, index) => {
-                        const pageNumber = index + 1;
+                        const pageNumber = index + 1
                         return (
                           <PaginationItem key={pageNumber}>
                             <PaginationLink
                               href="#"
                               isActive={pageNumber === currentPage}
                               onClick={(event) => {
-                                event.preventDefault();
-                                setCurrentPage(pageNumber);
+                                event.preventDefault()
+                                setCurrentPage(pageNumber)
                               }}
                             >
                               {pageNumber}
                             </PaginationLink>
                           </PaginationItem>
-                        );
+                        )
                       })}
                       <PaginationItem>
                         <PaginationNext
                           href="#"
                           onClick={(event) => {
-                            event.preventDefault();
-                            setCurrentPage((page) =>
-                              Math.min(totalPages, page + 1)
-                            );
+                            event.preventDefault()
+                            setCurrentPage((page) => Math.min(totalPages, page + 1))
                           }}
                         />
                       </PaginationItem>
@@ -362,10 +349,9 @@ export default function Page() {
                 </div>
               )}
             </div>
-            
           </>
         )}
       </MainbarShell>
     </SidebarShell>
-  );
+  )
 }

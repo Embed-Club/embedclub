@@ -1,5 +1,5 @@
-import { useEffect, useState, RefObject } from 'react'
-import { useScroll, useMotionValue } from 'motion/react'
+import { useMotionValue, useScroll } from 'motion/react'
+import { type RefObject, useEffect, useState } from 'react'
 
 export function useDeviceType() {
   const [isMobile, setIsMobile] = useState(false)
@@ -45,7 +45,7 @@ export function useTimelineScroll(containerRef: RefObject<HTMLDivElement>) {
     handleScroll() // Initial calculation
     window.addEventListener('scroll', handleScroll, { passive: true })
     window.addEventListener('resize', handleScroll, { passive: true })
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleScroll)

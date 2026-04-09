@@ -1,30 +1,31 @@
-import React, { useState, useEffect, memo, useCallback, useRef } from 'react';
-import { useTheme } from 'next-themes';
-import { cn } from "@/lib/utils";
-import { animate } from "motion/react";
+import { cn } from '@/lib/utils'
+import { animate } from 'motion/react'
+import { useTheme } from 'next-themes'
+import type React from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
 export interface ChromaItem {
-  image: string;
-  title: string;
-  subtitle: string;
-  handle?: string;
-  location?: string;
-  borderColor?: string;
-  gradient?: string;
-  url?: string;
+  image: string
+  title: string
+  subtitle: string
+  handle?: string
+  location?: string
+  borderColor?: string
+  gradient?: string
+  url?: string
 }
 
 interface GlowingEffectProps {
-  blur?: number;
-  inactiveZone?: number;
-  proximity?: number;
-  spread?: number;
-  variant?: "default" | "white";
-  glow?: boolean;
-  className?: string;
-  disabled?: boolean;
-  movementDuration?: number;
-  borderWidth?: number;
+  blur?: number
+  inactiveZone?: number
+  proximity?: number
+  spread?: number
+  variant?: 'default' | 'white'
+  glow?: boolean
+  className?: string
+  disabled?: boolean
+  movementDuration?: number
+  borderWidth?: number
 }
 
 const GlowingEffect = memo(
@@ -40,93 +41,87 @@ const GlowingEffect = memo(
     borderWidth = 1,
     disabled = true,
   }: GlowingEffectProps) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const lastPosition = useRef({ x: 0, y: 0 });
-    const animationFrameRef = useRef<number>(0);
+    const containerRef = useRef<HTMLDivElement>(null)
+    const lastPosition = useRef({ x: 0, y: 0 })
+    const animationFrameRef = useRef<number>(0)
 
     const handleMove = useCallback(
       (e?: MouseEvent | { x: number; y: number }) => {
-        if (!containerRef.current) return;
+        if (!containerRef.current) return
 
         if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
+          cancelAnimationFrame(animationFrameRef.current)
         }
 
         animationFrameRef.current = requestAnimationFrame(() => {
-          const element = containerRef.current;
-          if (!element) return;
+          const element = containerRef.current
+          if (!element) return
 
-          const { left, top, width, height } = element.getBoundingClientRect();
-          const mouseX = e?.x ?? lastPosition.current.x;
-          const mouseY = e?.y ?? lastPosition.current.y;
+          const { left, top, width, height } = element.getBoundingClientRect()
+          const mouseX = e?.x ?? lastPosition.current.x
+          const mouseY = e?.y ?? lastPosition.current.y
 
           if (e) {
-            lastPosition.current = { x: mouseX, y: mouseY };
+            lastPosition.current = { x: mouseX, y: mouseY }
           }
 
-          const center = [left + width * 0.5, top + height * 0.5];
-          const distanceFromCenter = Math.hypot(
-            mouseX - center[0],
-            mouseY - center[1]
-          );
-          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
+          const center = [left + width * 0.5, top + height * 0.5]
+          const distanceFromCenter = Math.hypot(mouseX - center[0], mouseY - center[1])
+          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone
 
           if (distanceFromCenter < inactiveRadius) {
-            element.style.setProperty('--active', '0');
-            return;
+            element.style.setProperty('--active', '0')
+            return
           }
 
           const isActive =
             mouseX > left - proximity &&
             mouseX < left + width + proximity &&
             mouseY > top - proximity &&
-            mouseY < top + height + proximity;
+            mouseY < top + height + proximity
 
-          element.style.setProperty('--active', isActive ? '1' : '0');
+          element.style.setProperty('--active', isActive ? '1' : '0')
 
-          if (!isActive) return;
+          if (!isActive) return
 
-          const currentAngle =
-            parseFloat(element.style.getPropertyValue('--start')) || 0;
+          const currentAngle = Number.parseFloat(element.style.getPropertyValue('--start')) || 0
           const targetAngle =
-            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
-              Math.PI +
-            90;
+            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) / Math.PI + 90
 
-          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
-          const newAngle = currentAngle + angleDiff;
+          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180
+          const newAngle = currentAngle + angleDiff
 
           animate(currentAngle, newAngle, {
             duration: movementDuration,
             ease: [0.16, 1, 0.3, 1],
             onUpdate: (value) => {
-              element.style.setProperty('--start', String(value));
+              element.style.setProperty('--start', String(value))
             },
-          });
-        });
+          })
+        })
       },
-      [inactiveZone, proximity, movementDuration]
-    );
+      [inactiveZone, proximity, movementDuration],
+    )
 
     useEffect(() => {
-      if (disabled) return;
+      if (disabled) return
 
-      const handleScroll = () => handleMove();
-      const handlePointerMove = (e: PointerEvent) => handleMove(e);
+      const handleScroll = () => handleMove()
+      const handlePointerMove = (e: PointerEvent) => handleMove(e)
 
-      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('scroll', handleScroll, { passive: true })
       document.body.addEventListener('pointermove', handlePointerMove, {
         passive: true,
-      });
+      })
 
       return () => {
         if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
+          cancelAnimationFrame(animationFrameRef.current)
         }
-        window.removeEventListener('scroll', handleScroll);
-        document.body.removeEventListener('pointermove', handlePointerMove);
-      };
-    }, [handleMove, disabled]);
+        window.removeEventListener('scroll', handleScroll)
+        document.body.removeEventListener('pointermove', handlePointerMove)
+      }
+    }, [handleMove, disabled])
 
     return (
       <>
@@ -135,7 +130,7 @@ const GlowingEffect = memo(
             'pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity',
             glow && 'opacity-100',
             variant === 'white' && 'border-white',
-            disabled && '!block'
+            disabled && '!block',
           )}
         />
         <div
@@ -175,7 +170,7 @@ const GlowingEffect = memo(
             glow && 'opacity-100',
             blur > 0 && 'blur-[var(--blur)]',
             className,
-            disabled && '!hidden'
+            disabled && '!hidden',
           )}
         >
           <div
@@ -188,26 +183,24 @@ const GlowingEffect = memo(
               'after:opacity-[var(--active)] after:transition-opacity after:duration-300',
               'after:[mask-clip:padding-box,border-box]',
               'after:[mask-composite:intersect]',
-              'after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]'
+              'after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]',
             )}
           />
         </div>
       </>
-    );
-  }
-);
+    )
+  },
+)
 
-GlowingEffect.displayName = 'GlowingEffect';
+GlowingEffect.displayName = 'GlowingEffect'
 export interface ChromaGridProps {
-  items?: ChromaItem[];
-  className?: string;
-  radius?: number;
-  damping?: number;
-  fadeOut?: number;
-  ease?: string;
+  items?: ChromaItem[]
+  className?: string
+  radius?: number
+  damping?: number
+  fadeOut?: number
+  ease?: string
 }
-
-
 
 const ChromaGrid: React.FC<ChromaGridProps> = ({
   items,
@@ -215,29 +208,29 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
   radius,
   damping,
   fadeOut,
-  ease
+  ease,
 }) => {
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const { theme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   // Prevent hydration mismatch
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   // Detect mobile screens
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 640px)');
-    const updateMobile = () => setIsMobile(mq.matches);
-    updateMobile();
-    mq.addEventListener('change', updateMobile);
+    const mq = window.matchMedia('(max-width: 640px)')
+    const updateMobile = () => setIsMobile(mq.matches)
+    updateMobile()
+    mq.addEventListener('change', updateMobile)
 
-    return () => mq.removeEventListener('change', updateMobile);
-  }, []);
+    return () => mq.removeEventListener('change', updateMobile)
+  }, [])
 
-  const currentTheme = mounted ? (resolvedTheme || theme) : 'dark';
-  const isLightMode = currentTheme === 'light';
+  const currentTheme = mounted ? resolvedTheme || theme : 'dark'
+  const isLightMode = currentTheme === 'light'
 
   const demo: ChromaItem[] = [
     {
@@ -247,7 +240,7 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
       handle: '@alexrivera',
       borderColor: '#4F46E5',
       gradient: 'linear-gradient(145deg,#4F46E5,#000)',
-      url: 'https://github.com/'
+      url: 'https://github.com/',
     },
     {
       image: 'https://i.pravatar.cc/300?img=11',
@@ -256,7 +249,7 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
       handle: '@jordanchen',
       borderColor: '#10B981',
       gradient: 'linear-gradient(210deg,#10B981,#000)',
-      url: 'https://linkedin.com/in/'
+      url: 'https://linkedin.com/in/',
     },
     {
       image: 'https://i.pravatar.cc/300?img=3',
@@ -265,7 +258,7 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
       handle: '@morganblake',
       borderColor: '#F59E0B',
       gradient: 'linear-gradient(165deg,#F59E0B,#000)',
-      url: 'https://dribbble.com/'
+      url: 'https://dribbble.com/',
     },
     {
       image: 'https://i.pravatar.cc/300?img=16',
@@ -274,7 +267,7 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
       handle: '@caseypark',
       borderColor: '#EF4444',
       gradient: 'linear-gradient(195deg,#EF4444,#000)',
-      url: 'https://kaggle.com/'
+      url: 'https://kaggle.com/',
     },
     {
       image: 'https://i.pravatar.cc/300?img=25',
@@ -283,7 +276,7 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
       handle: '@thesamkim',
       borderColor: '#8B5CF6',
       gradient: 'linear-gradient(225deg,#8B5CF6,#000)',
-      url: 'https://github.com/'
+      url: 'https://github.com/',
     },
     {
       image: 'https://i.pravatar.cc/300?img=60',
@@ -292,41 +285,45 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
       handle: '@tylerrod',
       borderColor: '#06B6D4',
       gradient: 'linear-gradient(135deg,#06B6D4,#000)',
-      url: 'https://aws.amazon.com/'
-    }
-  ];
+      url: 'https://aws.amazon.com/',
+    },
+  ]
 
-  const data = items?.length ? items : demo;
+  const data = items?.length ? items : demo
 
   const handleCardClick = (url?: string) => {
-    if (url) window.open(url, '_blank', 'noopener,noreferrer');
-  };
+    if (url) window.open(url, '_blank', 'noopener,noreferrer')
+  }
 
   return (
     <div className={`relative w-full flex flex-wrap justify-center items-start gap-3 ${className}`}>
       {data.map((c, i) => {
         // Theme-aware card styling
-        const cardBackground = isLightMode 
+        const cardBackground = isLightMode
           ? 'rgb(249, 250, 251)' // Very light grey for light mode
-          : c.gradient;
-        
+          : c.gradient
+
         const borderStyle = isLightMode
           ? 'border-gray-300/40 hover:border-gray-400/60'
-          : 'border-white/15 hover:border-white/30';
-        
-        const textColorClass = isLightMode
-          ? 'text-gray-700 group-hover:text-black'
-          : 'text-white';
-        
-        const spotlightColor = 'rgba(255,255,255,0.3)';
+          : 'border-white/15 hover:border-white/30'
+
+        const textColorClass = isLightMode ? 'text-gray-700 group-hover:text-black' : 'text-white'
+
+        const spotlightColor = 'rgba(255,255,255,0.3)'
 
         return (
           <article
             key={i}
             onMouseMove={(e) => {
-              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-              (e.currentTarget as HTMLElement).style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-              (e.currentTarget as HTMLElement).style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+              ;(e.currentTarget as HTMLElement).style.setProperty(
+                '--mouse-x',
+                `${e.clientX - rect.left}px`,
+              )
+              ;(e.currentTarget as HTMLElement).style.setProperty(
+                '--mouse-y',
+                `${e.clientY - rect.top}px`,
+              )
             }}
             onClick={() => handleCardClick(c.url)}
             className="group relative flex flex-col w-full sm:w-[300px] md:w-[320px] cursor-pointer"
@@ -334,7 +331,7 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
               {
                 '--mouse-x': '50%',
                 '--mouse-y': '50%',
-                '--spotlight-color': spotlightColor
+                '--spotlight-color': spotlightColor,
               } as React.CSSProperties
             }
           >
@@ -354,7 +351,7 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
                 isLightMode ? 'hover:bg-white' : ''
               }`}
               style={{
-                background: cardBackground
+                background: cardBackground,
               }}
             >
               {/* Spotlight hover effect - inherited from parent chroma context */}
@@ -362,32 +359,47 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
                 <div
                   className="absolute inset-0 pointer-events-none z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   style={{
-                    background: 'radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 70%)'
+                    background:
+                      'radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 70%)',
                   }}
                 />
               )}
-              
+
               <div className="relative z-10 flex-1 p-[10px] box-border">
-                <img 
-                  src={c.image} 
-                  alt={c.title} 
-                  loading="lazy" 
+                <img
+                  src={c.image}
+                  alt={c.title}
+                  loading="lazy"
                   className="w-full h-full object-cover rounded-[10px] transition-all duration-300"
                 />
               </div>
-              <footer className={`relative z-10 p-3 font-sans grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 ${textColorClass}`}>
-                <h3 className="m-0 text-[1.05rem] font-semibold transition-colors duration-300">{c.title}</h3>
-                {c.handle && <span className="text-[0.95rem] opacity-80 text-right transition-colors duration-300">{c.handle}</span>}
-                <p className="m-0 text-[0.85rem] opacity-85 transition-colors duration-300">{c.subtitle}</p>
-                {c.location && <span className="text-[0.85rem] opacity-85 text-right transition-colors duration-300">{c.location}</span>}
+              <footer
+                className={`relative z-10 p-3 font-sans grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 ${textColorClass}`}
+              >
+                <h3 className="m-0 text-[1.05rem] font-semibold transition-colors duration-300">
+                  {c.title}
+                </h3>
+                {c.handle && (
+                  <span className="text-[0.95rem] opacity-80 text-right transition-colors duration-300">
+                    {c.handle}
+                  </span>
+                )}
+                <p className="m-0 text-[0.85rem] opacity-85 transition-colors duration-300">
+                  {c.subtitle}
+                </p>
+                {c.location && (
+                  <span className="text-[0.85rem] opacity-85 text-right transition-colors duration-300">
+                    {c.location}
+                  </span>
+                )}
               </footer>
             </div>
           </article>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default ChromaGrid;
-export { GlowingEffect };
+export default ChromaGrid
+export { GlowingEffect }

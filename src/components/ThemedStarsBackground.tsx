@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { StarsBackground } from './animate-ui/components/backgrounds/stars';
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
+import { StarsBackground } from './animate-ui/components/backgrounds/stars'
 
 type ThemedStarsBackgroundProps = {
-  children: React.ReactNode;
-  speed?: number;
-  factor?: number;
-  pointerEvents?: boolean;
-};
+  children: React.ReactNode
+  speed?: number
+  factor?: number
+  pointerEvents?: boolean
+}
 
 export function ThemedStarsBackground({
   children,
@@ -17,13 +17,13 @@ export function ThemedStarsBackground({
   factor = 0.5,
   pointerEvents = true,
 }: ThemedStarsBackgroundProps) {
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { theme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   // Prevent hydration mismatch
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   // If not mounted yet, render with default dark theme
   if (!mounted) {
@@ -37,11 +37,11 @@ export function ThemedStarsBackground({
       >
         {children}
       </StarsBackground>
-    );
+    )
   }
 
-  const currentTheme = resolvedTheme || theme;
-  const isLightMode = currentTheme === 'light';
+  const currentTheme = resolvedTheme || theme
+  const isLightMode = currentTheme === 'light'
 
   return (
     <StarsBackground
@@ -57,5 +57,5 @@ export function ThemedStarsBackground({
     >
       {children}
     </StarsBackground>
-  );
+  )
 }

@@ -1,8 +1,9 @@
-"use client";
+'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { toast, useDocumentInfo, useField } from '@payloadcms/ui'
 import type { FieldClientComponent } from 'payload'
+import type React from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 interface Option {
   label: string
@@ -21,7 +22,7 @@ const buildOptions = (docs: any[], currentId?: string | null): Option[] => {
   }
 
   // Get max sort order to determine how many slots to show
-  const maxPosition = Math.max(0, ...docs.map(doc => Number(doc?.sortOrder) || 0))
+  const maxPosition = Math.max(0, ...docs.map((doc) => Number(doc?.sortOrder) || 0))
   const totalOptions = maxPosition + 1
   const options: Option[] = []
 
@@ -71,7 +72,7 @@ const SortOrderSelectRole: FieldClientComponent = ({ path }) => {
               if (!sortOrderMap.has(sortOrder)) {
                 sortOrderMap.set(sortOrder, [])
               }
-              sortOrderMap.get(sortOrder)!.push(doc?.name || 'Unnamed')
+              sortOrderMap.get(sortOrder)?.push(doc?.name || 'Unnamed')
             }
           })
 
@@ -83,9 +84,12 @@ const SortOrderSelectRole: FieldClientComponent = ({ path }) => {
           })
 
           if (duplicateList.length > 0) {
-            toast.warning(`You need to change the sort order number for the following:\n${duplicateList.join('\n')}`, {
-              duration: 6000,
-            })
+            toast.warning(
+              `You need to change the sort order number for the following:\n${duplicateList.join('\n')}`,
+              {
+                duration: 6000,
+              },
+            )
           }
 
           hasShownInitialToast.current = true
@@ -93,7 +97,7 @@ const SortOrderSelectRole: FieldClientComponent = ({ path }) => {
 
         // If no value yet, default to first available slot
         if (value === undefined || value === null) {
-          const firstAvailable = built.find(opt => !opt.occupied)
+          const firstAvailable = built.find((opt) => !opt.occupied)
           if (firstAvailable) setValue(firstAvailable.value)
         }
       } catch (err) {
@@ -110,7 +114,7 @@ const SortOrderSelectRole: FieldClientComponent = ({ path }) => {
   // Monitor for form save and check duplicates after save
   useEffect(() => {
     const currentSortOrderValue = value
-    
+
     // Only trigger post-save check if:
     // 1. The last value was actually set (not null/undefined on initial mount)
     // 2. The value has changed
@@ -121,8 +125,8 @@ const SortOrderSelectRole: FieldClientComponent = ({ path }) => {
     ) {
       const checkAfterSave = async () => {
         // Wait for the form to process the save
-        await new Promise(resolve => setTimeout(resolve, 800))
-        
+        await new Promise((resolve) => setTimeout(resolve, 800))
+
         try {
           const res = await fetch('/api/member-roles?limit=1000&sort=sortOrder', {
             credentials: 'include',
@@ -139,7 +143,7 @@ const SortOrderSelectRole: FieldClientComponent = ({ path }) => {
               if (!sortOrderMap.has(sortOrder)) {
                 sortOrderMap.set(sortOrder, [])
               }
-              sortOrderMap.get(sortOrder)!.push(doc?.name || 'Unnamed')
+              sortOrderMap.get(sortOrder)?.push(doc?.name || 'Unnamed')
             }
           })
 
@@ -151,9 +155,12 @@ const SortOrderSelectRole: FieldClientComponent = ({ path }) => {
           })
 
           if (duplicateList.length > 0) {
-            toast.warning(`You need to change the sort order number for the following:\n${duplicateList.join('\n')}`, {
-              duration: 6000,
-            })
+            toast.warning(
+              `You need to change the sort order number for the following:\n${duplicateList.join('\n')}`,
+              {
+                duration: 6000,
+              },
+            )
           }
         } catch (err) {
           console.error('Failed to check duplicates after save', err)
@@ -183,7 +190,7 @@ const SortOrderSelectRole: FieldClientComponent = ({ path }) => {
         <option value="" disabled>
           {loading ? 'Loading...' : 'Select position'}
         </option>
-        {options.map(opt => (
+        {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>

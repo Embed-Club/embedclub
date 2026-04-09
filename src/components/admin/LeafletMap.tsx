@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet'
 import L from 'leaflet'
+import { useEffect, useState } from 'react'
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 
 interface ClickHandlerProps {
@@ -29,7 +29,7 @@ function MapUpdater({
   lat,
   lng,
   zoom,
-  setInternalMarker
+  setInternalMarker,
 }: {
   lat?: number
   lng?: number
@@ -40,28 +40,23 @@ function MapUpdater({
 
   useEffect(() => {
     if (
-      typeof lat === "number" &&
-      typeof lng === "number" &&
-      !isNaN(lat) &&
-      !isNaN(lng)
+      typeof lat === 'number' &&
+      typeof lng === 'number' &&
+      !Number.isNaN(lat) &&
+      !Number.isNaN(lng)
     ) {
       setInternalMarker({ lat, lng })
 
       setTimeout(() => {
         map.invalidateSize()
 
-        map.flyTo(
-          [lat, lng],
-          zoom ?? map.getZoom(),
-          { duration: 1.3 }
-        )
+        map.flyTo([lat, lng], zoom ?? map.getZoom(), { duration: 1.3 })
       }, 250)
     }
   }, [lat, lng, zoom, map])
 
   return null
 }
-
 
 interface LeafletMapProps {
   lat?: number
@@ -71,19 +66,22 @@ interface LeafletMapProps {
   onChange: (coords: { lat: number; lng: number }) => void
 }
 
-export default function LeafletMap({ lat, lng, zoom, onChange, readonly = false }: LeafletMapProps) {
+export default function LeafletMap({
+  lat,
+  lng,
+  zoom,
+  onChange,
+  readonly = false,
+}: LeafletMapProps) {
   // Internal marker state that doesn't change from parent re-renders
   const [markerPos, setMarkerPos] = useState<{ lat: number; lng: number } | null>(null)
   const safeZoom =
-  typeof zoom === "number" && !isNaN(zoom)
-    ? Math.min(Math.max(zoom, 3), 18)
-    : 15
-
+    typeof zoom === 'number' && !Number.isNaN(zoom) ? Math.min(Math.max(zoom, 3), 18) : 15
 
   // Fix marker icons on mount
   useEffect(() => {
     // Fix for default marker icons in react-leaflet
-    delete (L.Icon.Default.prototype as any)._getIconUrl
+    ;(L.Icon.Default.prototype as any)._getIconUrl = undefined
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
       iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -94,7 +92,12 @@ export default function LeafletMap({ lat, lng, zoom, onChange, readonly = false 
   // Update marker position when props change (from manual input)
   useEffect(() => {
     // Only set marker if we have valid numeric coordinates
-    if (typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)) {
+    if (
+      typeof lat === 'number' &&
+      typeof lng === 'number' &&
+      !Number.isNaN(lat) &&
+      !Number.isNaN(lng)
+    ) {
       setMarkerPos({ lat, lng })
     }
     // Don't clear marker if coordinates become invalid - preserve last valid position
@@ -102,23 +105,24 @@ export default function LeafletMap({ lat, lng, zoom, onChange, readonly = false 
 
   // PA College of Engineering coordinates as default
   const defaultPosition: [number, number] = [12.808128, 74.933174]
-  const position: [number, number] = 
-    typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)
-      ? [lat, lng] 
+  const position: [number, number] =
+    typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng)
+      ? [lat, lng]
       : defaultPosition
 
   // Helper to check if markerPos has valid coordinates
-  const hasValidMarker = markerPos && 
-    typeof markerPos.lat === 'number' && 
-    typeof markerPos.lng === 'number' && 
-    !isNaN(markerPos.lat) && 
-    !isNaN(markerPos.lng)
+  const hasValidMarker =
+    markerPos &&
+    typeof markerPos.lat === 'number' &&
+    typeof markerPos.lng === 'number' &&
+    !Number.isNaN(markerPos.lat) &&
+    !Number.isNaN(markerPos.lng)
 
   return (
     <div className="h-[240px] w-full rounded-lg overflow-hidden touch-pan-y">
-      <MapContainer 
-        center={position} 
-        zoom={safeZoom} 
+      <MapContainer
+        center={position}
+        zoom={safeZoom}
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={false}
         dragging={true}
@@ -134,7 +138,7 @@ export default function LeafletMap({ lat, lng, zoom, onChange, readonly = false 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {!readonly && onChange && (
-        <ClickHandler onSelect={onChange} setInternalMarker={setMarkerPos} />
+          <ClickHandler onSelect={onChange} setInternalMarker={setMarkerPos} />
         )}
 
         <MapUpdater lat={lat} lng={lng} zoom={safeZoom} setInternalMarker={setMarkerPos} />

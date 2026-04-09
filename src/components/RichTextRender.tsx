@@ -3,7 +3,7 @@ import React from 'react'
 
 /**
  * RichTextRender - Renders Payload CMS Lexical editor content
- * 
+ *
  * This component handles the Lexical rich text format from Payload CMS.
  * It supports:
  * - Paragraphs, headings (h1-h6)
@@ -30,7 +30,12 @@ function renderTextNode(node: any, key: number): React.ReactNode {
     if (node.format & 2) content = <em>{content}</em> // Italic
     if (node.format & 8) content = <u>{content}</u> // Underline
     if (node.format & 4) content = <s>{content}</s> // Strikethrough
-    if (node.format & 16) content = <code className="rounded bg-neutral-100 px-1 py-0.5 text-sm dark:bg-neutral-800">{content}</code> // Code
+    if (node.format & 16)
+      content = (
+        <code className="rounded bg-neutral-100 px-1 py-0.5 text-sm dark:bg-neutral-800">
+          {content}
+        </code>
+      ) // Code
   }
 
   return <React.Fragment key={key}>{content}</React.Fragment>
@@ -55,11 +60,11 @@ function renderNode(node: any, key: number): React.ReactNode {
     const href = node.fields?.url || node.url || '#'
     const target = node.fields?.newTab ? '_blank' : undefined
     const rel = node.fields?.newTab ? 'noopener noreferrer' : undefined
-    
+
     return (
-      <a 
-        key={key} 
-        href={href} 
+      <a
+        key={key}
+        href={href}
         target={target}
         rel={rel}
         className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
@@ -75,9 +80,13 @@ function renderNode(node: any, key: number): React.ReactNode {
   // Block-level elements
   switch (type) {
     case 'paragraph':
-      return <p key={key} className="mb-4 leading-relaxed">{renderedChildren}</p>
+      return (
+        <p key={key} className="mb-4 leading-relaxed">
+          {renderedChildren}
+        </p>
+      )
 
-    case 'heading':
+    case 'heading': {
       const headingTag = node.tag || 'h2'
       const headingSizes: Record<string, string> = {
         h1: 'text-3xl font-bold mb-4',
@@ -90,27 +99,30 @@ function renderNode(node: any, key: number): React.ReactNode {
       return React.createElement(
         headingTag,
         { key, className: headingSizes[headingTag] || headingSizes.h2 },
-        renderedChildren
+        renderedChildren,
       )
+    }
 
-    case 'list':
+    case 'list': {
       const listTag = node.listType === 'number' ? 'ol' : 'ul'
-      const listClass = node.listType === 'number' 
-        ? 'mb-4 ml-6 list-decimal space-y-1'
-        : 'mb-4 ml-6 list-disc space-y-1'
-      return React.createElement(
-        listTag,
-        { key, className: listClass },
-        renderedChildren
-      )
+      const listClass =
+        node.listType === 'number'
+          ? 'mb-4 ml-6 list-decimal space-y-1'
+          : 'mb-4 ml-6 list-disc space-y-1'
+      return React.createElement(listTag, { key, className: listClass }, renderedChildren)
+    }
 
     case 'listitem':
-      return <li key={key} className="leading-relaxed">{renderedChildren}</li>
+      return (
+        <li key={key} className="leading-relaxed">
+          {renderedChildren}
+        </li>
+      )
 
     case 'quote':
       return (
-        <blockquote 
-          key={key} 
+        <blockquote
+          key={key}
           className="mb-4 border-l-4 border-neutral-300 pl-4 italic text-neutral-700 dark:border-neutral-600 dark:text-neutral-300"
         >
           {renderedChildren}
@@ -135,12 +147,12 @@ function renderNode(node: any, key: number): React.ReactNode {
 export default function RichTextRender({ content, value }: { content?: any; value?: any }) {
   // Support both 'content' and 'value' prop names for flexibility
   const data = content || value
-  
+
   if (!data) return null
 
   // Extract the blocks array from Lexical's root structure
   let blocks: any[] = []
-  
+
   if (data?.root?.children) {
     // Standard Lexical format: { root: { children: [...] } }
     blocks = data.root.children

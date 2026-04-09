@@ -39,7 +39,7 @@ export default function MobileMenu() {
         }
       `}</style>
 
-      <div className="mobile-menu-overlay"></div>
+      <div className="mobile-menu-overlay" />
 
       <div className="fixed top-3 right-3 z-50 lg:hidden flex items-center gap-1">
         <StaggeredMenu

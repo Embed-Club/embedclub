@@ -1,14 +1,14 @@
-import Link from "next/link";
-import { SidebarShell, MainbarShell } from "@/components/FrontendShell";
+import { MainbarShell, SidebarShell } from '@/components/FrontendShell'
+import Link from 'next/link'
 
 interface ResourceDetailPageProps {
   params: Promise<{
-    slug: string;
-  }>;
+    slug: string
+  }>
 }
 
 export default async function ResourceDetailPage({ params }: ResourceDetailPageProps) {
-  const { slug } = await params;
+  const { slug } = await params
 
   return (
     <SidebarShell>
@@ -27,15 +27,13 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
               Resource details coming soon
             </h1>
             <p className="mt-3 text-base text-zinc-300 md:text-lg">
-              This page is a placeholder while we set up the full resource
-              content. We will load details from Payload CMS later.
+              This page is a placeholder while we set up the full resource content. We will load
+              details from Payload CMS later.
             </p>
-            <p className="mt-6 text-sm text-zinc-500">
-              Slug: {slug}
-            </p>
+            <p className="mt-6 text-sm text-zinc-500">Slug: {slug}</p>
           </div>
         </div>
       </MainbarShell>
     </SidebarShell>
-  );
+  )
 }

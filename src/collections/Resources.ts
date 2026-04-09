@@ -1,4 +1,4 @@
-import type { CollectionConfig, Block } from 'payload'
+import type { Block, CollectionConfig } from 'payload'
 
 /**
  * Generate a URL-friendly slug from text
@@ -9,9 +9,9 @@ function generateSlug(text: string): string {
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')      // Replace spaces with hyphens
-    .replace(/-+/g, '-')       // Replace multiple hyphens with single hyphen
-    .replace(/^-+|-+$/g, '')   // Remove leading/trailing hyphens
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
 }
 
 /**
@@ -328,7 +328,8 @@ export const Resources: CollectionConfig = {
               required: true,
               unique: true,
               admin: {
-                description: 'URL-friendly version (auto-generated from title, but you can edit it)',
+                description:
+                  'URL-friendly version (auto-generated from title, but you can edit it)',
                 placeholder: 'Will auto-generate when you type the title',
               },
             },
@@ -420,7 +421,8 @@ export const Resources: CollectionConfig = {
               minRows: 0,
               blocks: [TextBlock, CodeBlock, TableBlock, GraphBlock, ImageBlock, RowBlock],
               admin: {
-                description: 'Build your resource with flexible content blocks. Add text, code, tables, images, diagrams, and more.',
+                description:
+                  'Build your resource with flexible content blocks. Add text, code, tables, images, diagrams, and more.',
               },
             },
           ],

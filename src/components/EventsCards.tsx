@@ -1,36 +1,29 @@
-"use client";
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  createContext,
-  useContext,
-} from "react";
-import {
-  X,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "motion/react";
-import { ImageProps } from "next/image";
-import { useOutsideClick } from "@/hooks/use-outside-click";
-import { EventDetails } from "@/components/EventDetails";
-import type { Event } from "@/payload-types";
+'use client'
+import { EventDetails } from '@/components/EventDetails'
+import { useOutsideClick } from '@/hooks/use-outside-click'
+import { cn } from '@/lib/utils'
+import type { Event } from '@/payload-types'
+import { X } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import type { ImageProps } from 'next/image'
+import type React from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 type EventCardData = {
-  src: string;
-  title: string;
-  category: string;
-  content: React.ReactNode;
-  isFallback?: boolean;
-};
+  src: string
+  title: string
+  category: string
+  content: React.ReactNode
+  isFallback?: boolean
+}
 
 export const CarouselContext = createContext<{
-  onCardClose: (index: number) => void;
-  currentIndex: number;
+  onCardClose: (index: number) => void
+  currentIndex: number
 }>({
   onCardClose: () => {},
   currentIndex: 0,
-});
+})
 
 export const Card = ({
   card,
@@ -38,42 +31,42 @@ export const Card = ({
   layout = false,
   event,
 }: {
-  card: EventCardData;
-  index: number;
-  layout?: boolean;
-  event?: Event;
+  card: EventCardData
+  index: number
+  layout?: boolean
+  event?: Event
 }) => {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { onCardClose } = useContext(CarouselContext);
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { onCardClose } = useContext(CarouselContext)
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        handleClose();
+      if (event.key === 'Escape') {
+        handleClose()
       }
     }
 
     if (open) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto'
     }
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open])
 
-  useOutsideClick(containerRef, () => handleClose());
+  useOutsideClick(containerRef, () => handleClose())
 
   const handleOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleClose = () => {
-    setOpen(false);
-    onCardClose(index);
-  };
+    setOpen(false)
+    onCardClose(index)
+  }
 
   return (
     <>
@@ -85,7 +78,7 @@ export const Card = ({
         containerRef={containerRef}
         layoutId={layout ? `card-${card.title}` : undefined}
       />
-      
+
       {/* Carousel Card Preview - Vertical Layout (Original) */}
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
@@ -121,8 +114,8 @@ export const Card = ({
         />
       </motion.button>
     </>
-  );
-};
+  )
+}
 
 export const EventModal = ({
   open,
@@ -132,14 +125,14 @@ export const EventModal = ({
   containerRef,
   layoutId,
 }: {
-  open: boolean;
-  onClose: () => void;
-  card: EventCardData;
-  event?: Event;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
-  layoutId?: string;
+  open: boolean
+  onClose: () => void
+  card: EventCardData
+  event?: Event
+  containerRef?: React.RefObject<HTMLDivElement | null>
+  layoutId?: string
 }) => {
-  const isFallback = Boolean(card.isFallback);
+  const isFallback = Boolean(card.isFallback)
 
   return (
     <AnimatePresence>
@@ -187,12 +180,7 @@ export const EventModal = ({
                 {/* Image Section */}
                 <div className="flex h-full items-stretch justify-center">
                   <div className="relative h-full w-full overflow-hidden rounded-2xl">
-                    <BlurImage
-                      src={card.src}
-                      alt={card.title}
-                      fill
-                      className="object-cover"
-                    />
+                    <BlurImage src={card.src} alt={card.title} fill className="object-cover" />
                   </div>
                 </div>
 
@@ -228,24 +216,16 @@ export const EventModal = ({
         </div>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export const BlurImage = ({
-  height,
-  width,
-  src,
-  className,
-  alt,
-  fill,
-  ...rest
-}: ImageProps) => {
-  const [isLoading, setLoading] = useState(true);
+export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }: ImageProps) => {
+  const [isLoading, setLoading] = useState(true)
   return (
     <img
       className={cn(
-        "h-full w-full transition duration-300",
-        isLoading ? "blur-sm" : "blur-0",
+        'h-full w-full transition duration-300',
+        isLoading ? 'blur-sm' : 'blur-0',
         className,
       )}
       onLoad={() => setLoading(false)}
@@ -254,13 +234,13 @@ export const BlurImage = ({
       height={height}
       loading="lazy"
       decoding="async"
-      alt={alt ? alt : "Background of a beautiful view"}
+      alt={alt ? alt : 'Background of a beautiful view'}
       {...rest}
     />
-  );
-};
+  )
+}
 
-export type { EventCardData };
+export type { EventCardData }
 
 /**
  * Helper function to convert Event data to Card type
@@ -268,17 +248,17 @@ export type { EventCardData };
  */
 export const eventToCard = (event: Event): EventCardData => {
   const imageUrl =
-    typeof event.image === "object" && event.image !== null && "url" in event.image
-      ? event.image.url || "/placeholder/placeholder.jpg"
-      : "/placeholder/placeholder.jpg";
+    typeof event.image === 'object' && event.image !== null && 'url' in event.image
+      ? event.image.url || '/placeholder/placeholder.jpg'
+      : '/placeholder/placeholder.jpg'
 
   return {
     src: imageUrl,
-    title: event.title || "Untitled Event",
-    category: event.category || "Event",
+    title: event.title || 'Untitled Event',
+    category: event.category || 'Event',
     content: <EventDetails event={event} />,
-  };
-};
+  }
+}
 
 /**
  * EventCard - Reusable card component for displaying event information
@@ -289,11 +269,11 @@ export const EventCard = ({
   index,
   layout = false,
 }: {
-  event: Event;
-  index: number;
-  layout?: boolean;
+  event: Event
+  index: number
+  layout?: boolean
 }) => {
-  const card = eventToCard(event);
+  const card = eventToCard(event)
 
-  return <Card card={card} index={index} layout={layout} event={event} />;
-};
+  return <Card card={card} index={index} layout={layout} event={event} />
+}

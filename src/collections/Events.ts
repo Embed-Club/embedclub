@@ -9,9 +9,9 @@ function generateSlug(text: string): string {
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')      // Replace spaces with hyphens
-    .replace(/-+/g, '-')       // Replace multiple hyphens with single hyphen
-    .replace(/^-+|-+$/g, '')   // Remove leading/trailing hyphens
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
 }
 
 export const Events: CollectionConfig = {
@@ -34,7 +34,7 @@ export const Events: CollectionConfig = {
     ],
   },
   fields: [
-    { 
+    {
       type: 'tabs',
       tabs: [
         {
@@ -61,7 +61,8 @@ export const Events: CollectionConfig = {
               required: true,
               unique: true,
               admin: {
-                description: 'URL-friendly version (auto-generated from title, but you can edit it)',
+                description:
+                  'URL-friendly version (auto-generated from title, but you can edit it)',
                 placeholder: 'Will auto-generate when you type the title',
               },
             },
@@ -108,7 +109,7 @@ export const Events: CollectionConfig = {
                   type: 'text',
                   label: 'Room/Hall Name',
                   required: false,
-                  admin: { 
+                  admin: {
                     placeholder: 'e.g., Main Auditorium, Room 204',
                   },
                 },
@@ -117,7 +118,7 @@ export const Events: CollectionConfig = {
                   type: 'text',
                   label: 'Floor',
                   required: false,
-                  admin: { 
+                  admin: {
                     placeholder: 'e.g., 2nd Floor, Ground Floor',
                   },
                 },
@@ -133,7 +134,7 @@ export const Events: CollectionConfig = {
                   type: 'email',
                   label: 'Contact Email',
                   required: false,
-                  admin: { 
+                  admin: {
                     placeholder: 'events@embedclub.org',
                     description: 'Email for questions about this event',
                   },
@@ -143,7 +144,7 @@ export const Events: CollectionConfig = {
                   type: 'text',
                   label: 'Contact Phone',
                   required: false,
-                  admin: { 
+                  admin: {
                     placeholder: '+1-234-567-8900',
                     description: 'Phone number for event inquiries',
                   },
@@ -164,7 +165,7 @@ export const Events: CollectionConfig = {
                   type: 'text',
                   label: 'Event Address',
                   required: false,
-                  admin: { 
+                  admin: {
                     description: 'Full street address (e.g., "123 Main St, City, Country")',
                     placeholder: '123 University Ave, City, State',
                   },
@@ -202,7 +203,7 @@ export const Events: CollectionConfig = {
                   defaultValue: 17,
                   min: 1,
                   max: 18,
-                  admin: { 
+                  admin: {
                     description: 'Zoom level for the embedded map (1=world view, 18=street level)',
                     step: 1,
                   },
