@@ -91,6 +91,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
                     ease: 'easeOut',
                   },
                 }}
+                // biome-ignore lint/suspicious/noArrayIndexKey: valid for items list
                 key={`card${index}`}
                 className="rounded-3xl last:pr-[5%] md:last:pr-[33%]"
               >
@@ -101,6 +102,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
         </div>
         <div className="mr-10 flex justify-end gap-2">
           <button
+            type="button"
             className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 disabled:opacity-50"
             onClick={scrollLeft}
             disabled={!canScrollLeft}
@@ -108,6 +110,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
             <ArrowLeft className="h-6 w-6 text-gray-500" />
           </button>
           <button
+            type="button"
             className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 disabled:opacity-50"
             onClick={scrollRight}
             disabled={!canScrollRight}

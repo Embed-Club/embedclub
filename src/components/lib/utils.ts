@@ -5,7 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 // Utility function to format a number with currency
-export function formatCurrency(amount, currency, options) {
+export function formatCurrency(
+  amount: number,
+  currency: string = 'USD',
+  options?: Intl.NumberFormatOptions,
+) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
@@ -13,27 +17,27 @@ export function formatCurrency(amount, currency, options) {
   }).format(amount)
 }
 // Utility function to generate a unique ID
-export function generateUniqueId(prefix = 'id') {
+export function generateUniqueId(prefix: string = 'id') {
   return `${prefix}-${Math.random().toString(36).substring(2, 9)}`
 }
 // Utility function to truncate text
-export function truncateText(text, maxLength) {
+export function truncateText(text: string, maxLength: number) {
   if (text.length <= maxLength) return text
   return `${text.substring(0, maxLength)}...`
 }
 // Utility function to format date
-export function formatDate(date, options) {
+export function formatDate(date: string | number | Date, options?: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
     ...options,
-  }).format(date)
+  }).format(new Date(date))
 }
 // Utility function to debounce function calls
-export function debounce(func, wait) {
-  let timeout = null
-  return (...args) => {
+export function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+  return (...args: Parameters<T>) => {
     const later = () => {
       timeout = null
       func(...args)
@@ -45,9 +49,9 @@ export function debounce(func, wait) {
   }
 }
 // Utility function to throttle function calls
-export function throttle(func, limit) {
+export function throttle<T extends (...args: unknown[]) => void>(func: T, limit: number) {
   let inThrottle = false
-  return (...args) => {
+  return (...args: Parameters<T>) => {
     if (!inThrottle) {
       func(...args)
       inThrottle = true

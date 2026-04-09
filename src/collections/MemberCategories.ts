@@ -53,14 +53,14 @@ export const MemberCategories: CollectionConfig = {
 
         const sortOrderMap = new Map<number, string[]>()
         for (const cat of allCategories.docs) {
-          const sortOrder = Number((cat as Record<string, unknown>)?.sortOrder)
+          const sortOrder = Number((cat as unknown as Record<string, unknown>)?.sortOrder)
           if (!Number.isNaN(sortOrder)) {
             if (!sortOrderMap.has(sortOrder)) {
               sortOrderMap.set(sortOrder, [])
             }
             sortOrderMap
               .get(sortOrder)
-              ?.push(((cat as Record<string, unknown>)?.name as string) || 'Unnamed')
+              ?.push(((cat as unknown as Record<string, unknown>)?.name as string) || 'Unnamed')
           }
         }
 
