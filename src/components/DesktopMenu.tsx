@@ -126,7 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   React.useEffect(() => {
     if (mounted) {
     }
-  }, [resolvedTheme, mounted])
+  }, [mounted])
 
   // Wait for theme to hydrate
   if (!mounted) {
@@ -143,10 +143,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild isActive>
-              <a
+              <button
+                type="button"
                 onClick={toggleSidebar}
-                href="#"
-                className="flex items-center justify-center gap-2 w-full"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    toggleSidebar()
+                  }
+                }}
+                className="flex items-center justify-center gap-2 w-full cursor-pointer bg-transparent border-none p-0"
               >
                 <div className="relative w-[180px] h-[61px] transition-all duration-300">
                   <Image
@@ -172,7 +178,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     }`}
                   />
                 </div>
-              </a>
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -198,10 +204,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {data.navSecondary.map((item) => (
                 <SidebarMenuItem className="w-full" key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a className="flex items-center gap-1 w-full py-3 text-center">
+                    <button
+                      type="button"
+                      className="flex items-center gap-1 w-full py-3 text-center bg-transparent border-none p-0 cursor-default"
+                    >
                       <item.icon />
                       <span className="font-semibold text-2xl">{item.title}</span>
-                    </a>
+                    </button>
                   </SidebarMenuButton>
                   {item.items?.length ? (
                     <SidebarMenuSub>

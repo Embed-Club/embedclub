@@ -98,7 +98,7 @@ function FocusCardsSkeleton({ count = 9 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 gap-10 w-full md:px-8 md:grid-cols-3">
       {Array.from({ length: count }).map((_, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: valid for placeholders
+        // biome-ignore lint/suspicious/noArrayIndexKey: valid for placeholders
         <Skeleton key={index} className="h-60 w-full rounded-lg md:h-96" />
       ))}
     </div>

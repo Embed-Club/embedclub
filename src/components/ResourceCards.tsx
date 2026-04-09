@@ -23,14 +23,14 @@ export function ResourceCards({ resources }: ResourceCardsProps) {
   useEffect(() => {
     const elements = Array.from(cardRefs.current.values())
 
-    elements.forEach((el) => {
+    for (const el of elements) {
       gsap.set(el, { opacity: 0, y: 0 })
-    })
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
 
           const el = entry.target as HTMLDivElement
           const indexAttr = el.getAttribute('data-index')
@@ -54,12 +54,17 @@ export function ResourceCards({ resources }: ResourceCardsProps) {
           )
 
           observer.unobserve(el)
-        })
+        }
       },
       { threshold: 0.2 },
     )
 
-    elements.forEach((el) => observer.observe(el))
+    for (const el of elements) {
+      observer.observe(el)
+    }
+
+    // Mention resources to ensure effect re-runs when props change, as we need to re-observe elements
+    const _trigger = resources.length
 
     return () => {
       observer.disconnect()

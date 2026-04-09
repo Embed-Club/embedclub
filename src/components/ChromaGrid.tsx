@@ -202,14 +202,7 @@ export interface ChromaGridProps {
   ease?: string
 }
 
-const ChromaGrid: React.FC<ChromaGridProps> = ({
-  items,
-  className = '',
-  radius,
-  damping,
-  fadeOut,
-  ease,
-}) => {
+const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '' }) => {
   const { theme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -313,7 +306,8 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
 
         return (
           <article
-            key={i}
+            // biome-ignore lint/suspicious/noArrayIndexKey: safe for fixed layout
+            key={c.title + i}
             onMouseMove={(e) => {
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
               ;(e.currentTarget as HTMLElement).style.setProperty(
@@ -326,6 +320,14 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
               )
             }}
             onClick={() => handleCardClick(c.url)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                handleCardClick(c.url)
+              }
+            }}
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: making article clickable
+            tabIndex={0}
             className="group relative flex flex-col w-full sm:w-[300px] md:w-[320px] cursor-pointer"
             style={
               {
