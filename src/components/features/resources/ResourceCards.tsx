@@ -1,7 +1,7 @@
 'use client'
 
 import type { ResourceCardData } from '@/app/(frontend)/resources/ResourcesPageContent'
-import { ResourceCard } from '@/components/ResourceCard'
+import { ResourceCard } from '@/components/features/resources/ResourceCard'
 import { gsap } from 'gsap'
 import { useCallback, useEffect, useRef } from 'react'
 

@@ -3,22 +3,29 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { gsap } from 'gsap'
 import type React from 'react'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
-const useMedia = (queries: string[], values: number[], defaultValue: number): number => {
-  const get = () => {
+const useMedia = <T,>(queries: string[], values: T[], defaultValue: T): T => {
+  const get = useCallback(() => {
     if (typeof window === 'undefined') return defaultValue
-    return values[queries.findIndex((q) => window.matchMedia(q).matches)] ?? defaultValue
-  }
+    const index = queries.findIndex((q) => window.matchMedia(q).matches)
+    return values[index] ?? defaultValue
+  }, [queries, values, defaultValue])
 
-  const [value, setValue] = useState<number>(get)
+  const [value, setValue] = useState<T>(get)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     const handler = () => setValue(get)
-    queries.forEach((q) => matchMedia(q).addEventListener('change', handler))
-    return () => queries.forEach((q) => window.matchMedia(q).removeEventListener('change', handler))
-  }, [queries])
+    for (const q of queries) {
+      window.matchMedia(q).addEventListener('change', handler)
+    }
+    return () => {
+      for (const q of queries) {
+        window.matchMedia(q).removeEventListener('change', handler)
+      }
+    }
+  }, [get, queries])
 
   return value
 }
@@ -101,34 +108,36 @@ const Masonry: React.FC<MasonryProps> = ({
   const [imagesReady, setImagesReady] = useState(false)
   const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set())
 
-  const getInitialPosition = (item: GridItem) => {
-    const containerRect = containerRef.current?.getBoundingClientRect()
-    if (!containerRect) return { x: item.x, y: item.y }
+  const getInitialPosition = useCallback(
+    (item: GridItem, containerRect: DOMRect | undefined) => {
+      if (!containerRect) return { x: item.x, y: item.y }
 
-    let direction = animateFrom
-    if (animateFrom === 'random') {
-      const dirs = ['top', 'bottom', 'left', 'right']
-      direction = dirs[Math.floor(Math.random() * dirs.length)] as typeof animateFrom
-    }
+      let direction = animateFrom
+      if (animateFrom === 'random') {
+        const dirs = ['top', 'bottom', 'left', 'right']
+        direction = dirs[Math.floor(Math.random() * dirs.length)] as typeof animateFrom
+      }
 
-    switch (direction) {
-      case 'top':
-        return { x: item.x, y: -200 }
-      case 'bottom':
-        return { x: item.x, y: window.innerHeight + 200 }
-      case 'left':
-        return { x: -200, y: item.y }
-      case 'right':
-        return { x: window.innerWidth + 200, y: item.y }
-      case 'center':
-        return {
-          x: containerRect.width / 2 - item.w / 2,
-          y: containerRect.height / 2 - item.h / 2,
-        }
-      default:
-        return { x: item.x, y: item.y + 100 }
-    }
-  }
+      switch (direction) {
+        case 'top':
+          return { x: item.x, y: -200 }
+        case 'bottom':
+          return { x: item.x, y: window.innerHeight + 200 }
+        case 'left':
+          return { x: -200, y: item.y }
+        case 'right':
+          return { x: window.innerWidth + 200, y: item.y }
+        case 'center':
+          return {
+            x: containerRect.width / 2 - item.w / 2,
+            y: containerRect.height / 2 - item.h / 2,
+          }
+        default:
+          return { x: item.x, y: item.y + 100 }
+      }
+    },
+    [animateFrom],
+  )
 
   useEffect(() => {
     preloadImages(items.map((i) => i.img)).then(() => setImagesReady(true))
@@ -136,7 +145,7 @@ const Masonry: React.FC<MasonryProps> = ({
 
   useEffect(() => {
     setLoadedIds(new Set())
-    items.forEach((item) => {
+    for (const item of items) {
       const img = new Image()
       img.src = item.img
       img.onload = img.onerror = () => {
@@ -147,7 +156,7 @@ const Masonry: React.FC<MasonryProps> = ({
           return next
         })
       }
-    })
+    }
   }, [items])
 
   const { grid, containerHeight } = useMemo(() => {
@@ -156,42 +165,43 @@ const Masonry: React.FC<MasonryProps> = ({
     const baseHeight = Math.max(160, Math.min(320, (width / itemsPerRow) * 0.6))
     const gridItems: GridItem[] = []
 
-    let row: Item[] = []
+    let rowBase: Item[] = []
     let rowAspectSum = 0
     let y = 0
 
-    const flushRow = (isLastRow: boolean) => {
-      if (!row.length) return
-      const gaps = gap * (row.length - 1)
+    const flushRow = (rowItems: Item[], currentAspectSum: number, isLastRow: boolean) => {
+      if (!rowItems.length) return
+      const gaps = gap * (rowItems.length - 1)
       const rowWidth = width - gaps
-      const scale = isLastRow ? 1 : rowWidth / (rowAspectSum * baseHeight)
+      const scale = isLastRow ? 1 : rowWidth / (currentAspectSum * baseHeight)
       const rowHeight = baseHeight * scale
       let x = 0
 
-      row.forEach((item) => {
+      for (const item of rowItems) {
         const aspect = item.width > 0 && item.height > 0 ? item.width / item.height : 1
         const w = aspect * rowHeight
         gridItems.push({ ...item, x, y, w, h: rowHeight })
         x += w + gap
-      })
+      }
 
       y += rowHeight + gap
-      row = []
-      rowAspectSum = 0
     }
 
-    items.forEach((item, index) => {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
       const aspect = item.width > 0 && item.height > 0 ? item.width / item.height : 1
-      const nextWidth = (rowAspectSum + aspect) * baseHeight + gap * row.length
-      if (nextWidth > width && row.length > 0) {
-        flushRow(false)
+      const nextWidth = (rowAspectSum + aspect) * baseHeight + gap * rowBase.length
+      if (nextWidth > width && rowBase.length > 0) {
+        flushRow(rowBase, rowAspectSum, false)
+        rowBase = []
+        rowAspectSum = 0
       }
-      row.push(item)
+      rowBase.push(item)
       rowAspectSum += aspect
-      if (index === items.length - 1) {
-        flushRow(true)
+      if (i === items.length - 1) {
+        flushRow(rowBase, rowAspectSum, true)
       }
-    })
+    }
 
     const height = Math.max(0, y - gap)
     return { grid: gridItems, containerHeight: height }
@@ -201,13 +211,15 @@ const Masonry: React.FC<MasonryProps> = ({
 
   useLayoutEffect(() => {
     if (!imagesReady) return
+    const containerRect = containerRef.current?.getBoundingClientRect()
 
-    grid.forEach((item, index) => {
+    for (let i = 0; i < grid.length; i++) {
+      const item = grid[i]
       const selector = `[data-key="${item.id}"]`
       const animProps = { x: item.x, y: item.y, width: item.w, height: item.h }
 
       if (!hasMounted.current) {
-        const start = getInitialPosition(item)
+        const start = getInitialPosition(item, containerRect)
         gsap.fromTo(
           selector,
           {
@@ -223,50 +235,56 @@ const Masonry: React.FC<MasonryProps> = ({
             ...animProps,
             ...(blurToFocus && { filter: 'blur(0px)' }),
             duration: 0.8,
-            ease: 'power3.out',
-            delay: index * stagger,
+            ease: ease,
+            delay: i * stagger,
           },
         )
       } else {
         gsap.to(selector, {
           ...animProps,
           duration,
-          ease,
+          ease: ease,
           overwrite: 'auto',
         })
       }
-    })
+    }
 
     hasMounted.current = true
-  }, [grid, imagesReady, stagger, animateFrom, blurToFocus, duration, ease])
+  }, [grid, imagesReady, stagger, blurToFocus, duration, ease, getInitialPosition, containerRef])
 
-  const handleMouseEnter = (id: string, element: HTMLElement) => {
-    if (scaleOnHover) {
-      gsap.to(`[data-key="${id}"]`, {
-        scale: hoverScale,
-        duration: 0.3,
-        ease: 'power2.out',
-      })
-    }
-    if (colorShiftOnHover) {
-      const overlay = element.querySelector('.color-overlay') as HTMLElement
-      if (overlay) gsap.to(overlay, { opacity: 0.3, duration: 0.3 })
-    }
-  }
+  const handleMouseEnter = useCallback(
+    (id: string, element: HTMLElement) => {
+      if (scaleOnHover) {
+        gsap.to(`[data-key="${id}"]`, {
+          scale: hoverScale,
+          duration: 0.3,
+          ease: 'power2.out',
+        })
+      }
+      if (colorShiftOnHover) {
+        const overlay = element.querySelector('.color-overlay') as HTMLElement
+        if (overlay) gsap.to(overlay, { opacity: 0.3, duration: 0.3 })
+      }
+    },
+    [scaleOnHover, hoverScale, colorShiftOnHover],
+  )
 
-  const handleMouseLeave = (id: string, element: HTMLElement) => {
-    if (scaleOnHover) {
-      gsap.to(`[data-key="${id}"]`, {
-        scale: 1,
-        duration: 0.3,
-        ease: 'power2.out',
-      })
-    }
-    if (colorShiftOnHover) {
-      const overlay = element.querySelector('.color-overlay') as HTMLElement
-      if (overlay) gsap.to(overlay, { opacity: 0, duration: 0.3 })
-    }
-  }
+  const handleMouseLeave = useCallback(
+    (id: string, element: HTMLElement) => {
+      if (scaleOnHover) {
+        gsap.to(`[data-key="${id}"]`, {
+          scale: 1,
+          duration: 0.3,
+          ease: 'power2.out',
+        })
+      }
+      if (colorShiftOnHover) {
+        const overlay = element.querySelector('.color-overlay') as HTMLElement
+        if (overlay) gsap.to(overlay, { opacity: 0, duration: 0.3 })
+      }
+    },
+    [scaleOnHover, colorShiftOnHover],
+  )
 
   return (
     <div
@@ -275,10 +293,11 @@ const Masonry: React.FC<MasonryProps> = ({
       style={{ height: containerHeight || 'auto' }}
     >
       {grid.map((item) => (
-        <div
+        <button
+          type="button"
           key={item.id}
           data-key={item.id}
-          className="absolute box-content"
+          className="absolute box-content cursor-pointer bg-transparent border-none p-0 outline-none"
           style={{ willChange: 'transform, width, height, opacity' }}
           onClick={() => window.open(item.url, '_blank', 'noopener')}
           onMouseEnter={(e) => handleMouseEnter(item.id, e.currentTarget)}
@@ -297,7 +316,7 @@ const Masonry: React.FC<MasonryProps> = ({
               <div className="color-overlay absolute inset-0 rounded-[10px] bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
             )}
           </div>
-        </div>
+        </button>
       ))}
     </div>
   )

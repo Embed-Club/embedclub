@@ -61,16 +61,16 @@ function RadialIntro({ orbitItems, stageSize = 320, imageSize = 60 }: ComponentP
 
     // build sequence for orbit placement
     const orbitPlacementSequence: AnimationSequence = [
-      ...arms.map((el): [Element, Record<string, any>, any] => [
+      ...arms.map((el): [Element, Record<string, unknown>, Record<string, unknown>] => [
         el,
         { rotate: angleOf(el) },
         { ...transition, at: 0 },
       ]),
-      ...imgs.map((img): [Element, Record<string, any>, any] => [
-        img,
-        { rotate: -angleOf(armOfImg(img)!), opacity: 1 },
-        { ...transition, at: 0 },
-      ]),
+      ...imgs.map((img): [Element, Record<string, unknown>, Record<string, unknown>] => {
+        const arm = armOfImg(img)
+        const angle = arm ? angleOf(arm) : 0
+        return [img, { rotate: -angle, opacity: 1 }, { ...transition, at: 0 }]
+      }),
     ]
 
     // play placement sequence
@@ -79,23 +79,27 @@ function RadialIntro({ orbitItems, stageSize = 320, imageSize = 60 }: ComponentP
     // start continuous spin for arms and images
     delay(() => {
       // arms spin clockwise
-      arms.forEach((el) => {
+      for (const el of arms) {
         const angle = angleOf(el)
         const ctrl = animate(el, { rotate: [angle, angle + 360] }, spinConfig)
         stops.push(() => ctrl.cancel())
-      })
+      }
 
       // images counter-spin to stay upright
-      imgs.forEach((img) => {
+      for (const img of imgs) {
         const arm = armOfImg(img)
         const angle = arm ? angleOf(arm) : 0
         const ctrl = animate(img, { rotate: [-angle, -angle - 360] }, spinConfig)
         stops.push(() => ctrl.cancel())
-      })
+      }
     }, 1300)
 
-    return () => stops.forEach((stop) => stop())
-  }, [])
+    return () => {
+      for (const stop of stops) {
+        stop()
+      }
+    }
+  }, [animate, scope])
 
   return (
     <LayoutGroup>

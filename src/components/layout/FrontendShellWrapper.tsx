@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 
-const FrontendShell = dynamic(() => import('@/components/FrontendShell'), {
+const FrontendShell = dynamic(() => import('@/components/layout/FrontendShell'), {
   ssr: false,
 })
 

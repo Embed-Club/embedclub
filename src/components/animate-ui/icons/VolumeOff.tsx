@@ -52,6 +52,8 @@ function IconComponent({ size, ...props }: VolumeOffProps) {
 
   return (
     <motion.svg
+      aria-label="Volume off icon"
+      role="img"
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
@@ -66,6 +68,7 @@ function IconComponent({ size, ...props }: VolumeOffProps) {
       animate={controls}
       {...props}
     >
+      <title>Volume off icon</title>
       <motion.path
         d="M16 9a5 5 0 0 1 .95 2.293"
         variants={variants.path1}

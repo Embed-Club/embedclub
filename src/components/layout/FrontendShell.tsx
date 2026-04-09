@@ -1,9 +1,9 @@
 'use client'
 
-import { ContentPanel } from '@/components/ContentPanel'
-import { AppSidebar } from '@/components/DesktopMenu'
-import MobileMenu from '@/components/MobileMenu'
-import { ModeToggle } from '@/components/ThemeToggle'
+import { ContentPanel } from '@/components/layout/ContentPanel'
+import { AppSidebar } from '@/components/layout/DesktopMenu'
+import MobileMenu from '@/components/layout/MobileMenu'
+import { ModeToggle } from '@/components/theme/ThemeToggle'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { useIsMobile } from '@/hooks/use-mobile'
 import React, { useState } from 'react'

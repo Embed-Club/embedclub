@@ -1,9 +1,9 @@
 'use client'
 
-import { EventModal, eventToCard } from '@/components/EventsCards'
+import { EventModal, eventToCard } from '@/components/features/events/EventsCards'
 import { useOutsideClick } from '@/hooks/use-outside-click'
 import { cn } from '@/lib/utils'
-import type { Event } from '@/payload-types'
+import type { Event } from '@/payload/payload-types'
 import React, { useMemo, useRef, useState } from 'react'
 
 export const Card = React.memo(
@@ -20,21 +20,13 @@ export const Card = React.memo(
     setHovered: React.Dispatch<React.SetStateAction<number | null>>
     onClick: () => void
   }) => (
-    // biome-ignore lint/a11y/useSemanticElements: Needs to be a div for layout
-    <div
+    <button
+      type="button"
       onMouseEnter={() => setHovered(index)}
       onMouseLeave={() => setHovered(null)}
       onClick={onClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onClick()
-        }
-      }}
-      tabIndex={0}
-      role="button"
       className={cn(
-        'cursor-pointer rounded-lg relative bg-gray-100 dark:bg-neutral-900 overflow-hidden h-60 md:h-96 w-full transition-all duration-300 ease-out',
+        'cursor-pointer rounded-lg relative bg-gray-100 dark:bg-neutral-900 overflow-hidden h-60 md:h-96 w-full transition-all duration-300 ease-out border-none p-0 outline-none',
         hovered !== null && hovered !== index && 'md:blur-sm md:scale-[0.98]',
       )}
     >
@@ -53,7 +45,7 @@ export const Card = React.memo(
           {card.title}
         </div>
       </div>
-    </div>
+    </button>
   ),
 )
 
