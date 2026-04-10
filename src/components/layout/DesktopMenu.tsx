@@ -120,10 +120,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [mounted, setMounted] = React.useState(false)
   const { resolvedTheme } = useTheme()
   const { toggleSidebar, state } = useSidebar()
-  const { isIntroFinished, isExpanded } = React.useContext(IntroContext)
-  
-  // Show logo during expansion/glide or after intro is finished
-  const showLogo = isIntroFinished || isExpanded
+  const { isIntroFinished } = React.useContext(IntroContext)
 
   React.useEffect(() => {
     setMounted(true)
@@ -148,7 +145,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               >
                 <div className="relative w-full h-[61px] flex items-center justify-center overflow-hidden">
                   <AnimatePresence mode="wait">
-                    {showLogo && !collapsed ? (
+                    {isIntroFinished && !collapsed ? (
                       <motion.div
                         key="expanded"
                         layoutId="master-logo"
@@ -171,7 +168,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           className="object-contain"
                         />
                       </motion.div>
-                    ) : showLogo && collapsed ? (
+                    ) : isIntroFinished && collapsed ? (
                       <motion.div
                         key="collapsed"
                         layoutId="master-logo"
