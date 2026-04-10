@@ -32,9 +32,13 @@ export default function MobileMenu() {
             );
             z-index: 40;
             pointer-events: none;
+            --sm-toggle-color: #111111;
+            --sm-toggle-open-color: #000000;
           }
           :global(.dark) .mobile-menu-overlay {
             background: linear-gradient(135deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.95) 100%);
+            --sm-toggle-color: #ffffff;
+            --sm-toggle-open-color: #ffffff;
           }
         }
       `}</style>
@@ -48,10 +52,10 @@ export default function MobileMenu() {
           displaySocials={false}
           displayItemNumbering={false}
           isFixed
-          logoLightUrl="/embedClubLogo-Light.png"
-          logoDarkUrl="/embedClubLogo-Dark.png"
-          menuButtonColor="#fff"
-          openMenuButtonColor="#111"
+          logoLightUrl="/embedClubLogo-Light.svg"
+          logoDarkUrl="/embedClubLogo-Dark.svg"
+          menuButtonColor="var(--sm-toggle-color, #111)"
+          openMenuButtonColor="var(--sm-toggle-open-color, #fff)"
           colors={['#111', '#1f1f1f', '#5227FF']}
           accentColor="#5227FF"
           closeOnClickAway

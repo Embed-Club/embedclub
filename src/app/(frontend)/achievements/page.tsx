@@ -103,6 +103,7 @@ async function fetchAchievements(): Promise<Achievement[]> {
   // Use Payload REST `sort` param: prefix with - to sort descending (newest first)
   url.searchParams.set('depth', '1')
   url.searchParams.set('sort', '-date') // Sort by date descending: newest achievements first
+  url.searchParams.set('limit', '500') // Increase limit to fetch more achievements
 
   const res = await fetch(url.toString(), { cache: 'no-store' })
   if (!res.ok) {
