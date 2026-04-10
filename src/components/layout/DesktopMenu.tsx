@@ -120,7 +120,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [mounted, setMounted] = React.useState(false)
   const { resolvedTheme } = useTheme()
   const { toggleSidebar, state } = useSidebar()
-  const { stage } = React.useContext(IntroContext)
+  const { isIntroFinished } = React.useContext(IntroContext)
 
   React.useEffect(() => {
     setMounted(true)
@@ -145,7 +145,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               >
                 <div className="relative w-full h-[61px] flex items-center justify-center">
                   <AnimatePresence mode="wait">
-                    {(stage === 'gliding' || stage === 'complete') && !collapsed ? (
+                    {isIntroFinished && !collapsed ? (
                       <motion.div
                         key="expanded"
                         layoutId="master-logo"
@@ -166,7 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           className="object-contain"
                         />
                       </motion.div>
-                    ) : (stage === 'gliding' || stage === 'complete') && collapsed ? (
+                    ) : isIntroFinished && collapsed ? (
                       <motion.div
                         key="collapsed"
                         layoutId="master-logo"
