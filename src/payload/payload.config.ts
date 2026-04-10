@@ -1,7 +1,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { cloudStorage } from '@payloadcms/plugin-cloud-storage'
-import { s3Adapter } from '@payloadcms/plugin-cloud-storage/s3'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { mcpPlugin } from '@payloadcms/plugin-mcp'
@@ -24,19 +23,6 @@ import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
-const storageAdapter = s3Adapter({
-  config: {
-    endpoint: process.env.S3_ENDPOINT || '',
-    region: process.env.S3_REGION || 'ap-southeast-1',
-    credentials: {
-      accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
-    },
-    forcePathStyle: true,
-  },
-  bucket: process.env.S3_BUCKET || '',
-})
 
 export default buildConfig({
   admin: {
@@ -72,20 +58,22 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
-    cloudStorage({
+    s3Storage({
       collections: {
-        media: {
-          adapter: storageAdapter,
+        media: true,
+        'member-photo': true,
+        gallery: true,
+        'audio-files': true,
+      },
+      bucket: process.env.S3_BUCKET || '',
+      config: {
+        endpoint: process.env.S3_ENDPOINT || '',
+        region: process.env.S3_REGION || 'ap-southeast-1',
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
         },
-        'member-photo': {
-          adapter: storageAdapter,
-        },
-        gallery: {
-          adapter: storageAdapter,
-        },
-        'audio-files': {
-          adapter: storageAdapter,
-        },
+        forcePathStyle: true,
       },
     }),
     mcpPlugin({
