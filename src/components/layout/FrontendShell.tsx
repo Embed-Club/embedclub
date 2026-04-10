@@ -161,19 +161,28 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
   const isMobile = useIsMobile()
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
   const { isIntroFinished } = React.useContext(IntroContext)
+  const [isContentVisible, setIsContentVisible] = useState(false)
+
+  React.useEffect(() => {
+    if (isIntroFinished || isMobile) {
+      // Delay content fade-in by another 600ms to let the logo glide finish
+      const timer = setTimeout(() => setIsContentVisible(true), isMobile ? 0 : 600)
+      return () => clearTimeout(timer)
+    }
+  }, [isIntroFinished, isMobile])
 
   return (
     <ScrollContainerContext.Provider value={scrollEl}>
       <ContentPanel ref={setScrollEl} borderless={borderless || isMobile}>
         <div className="h-full w-full relative">
           <AnimatePresence>
-            {!isIntroFinished && !isMobile ? (
+            {!isContentVisible && !isMobile ? (
               <motion.div
                 key="intro-overlay"
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
-                className="absolute inset-0 bg-background z-50 flex items-center justify-center"
+                className="absolute inset-0 bg-background z-50 flex items-center justify-center pointer-events-none"
               >
                 {/* Visual placeholder for the main content area during glide */}
                 <div className="text-[10px] tracking-[0.4em] uppercase opacity-20 font-bold">
@@ -184,8 +193,8 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
           </AnimatePresence>
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: isIntroFinished || isMobile ? 1 : 0 }}
-            transition={{ duration: 0.8 }}
+            animate={{ opacity: isContentVisible || isMobile ? 1 : 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="h-full w-full"
           >
             {children}
