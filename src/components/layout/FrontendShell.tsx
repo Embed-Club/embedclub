@@ -13,9 +13,11 @@ import { motion, AnimatePresence } from 'motion/react'
 export const IntroContext = React.createContext<{
   isIntroFinished: boolean
   setIntroFinished: (finished: boolean) => void
+  isExpanded: boolean
 }>({
   isIntroFinished: false,
   setIntroFinished: () => {},
+  isExpanded: false,
 })
 
 export function SidebarShell({ children }: { children?: React.ReactNode }) {
@@ -57,7 +59,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   }, [isLandingPage])
 
   return (
-    <IntroContext.Provider value={{ isIntroFinished, setIntroFinished }}>
+    <IntroContext.Provider value={{ isIntroFinished, setIntroFinished, isExpanded }}>
       <SidebarProvider>
         {/* The Evolving Intro Logo - Matches prompt requirements */}
         <AnimatePresence>
