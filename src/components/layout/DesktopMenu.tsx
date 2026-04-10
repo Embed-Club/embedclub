@@ -120,7 +120,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [mounted, setMounted] = React.useState(false)
   const { resolvedTheme } = useTheme()
   const { toggleSidebar, state } = useSidebar()
-  const { isIntroFinished } = React.useContext(IntroContext)
+  const { isIntroFinished, fillProgress, isExpanded } = React.useContext(IntroContext)
 
   React.useEffect(() => {
     setMounted(true)
@@ -143,43 +143,103 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 onClick={toggleSidebar}
                 className="flex items-center justify-center gap-2 w-full cursor-pointer bg-transparent border-none p-0 focus-visible:ring-0"
               >
-                <div className="relative w-full h-[61px] flex items-center justify-center">
-                    {isIntroFinished && !collapsed ? (
+                <div className="relative w-full h-[61px] flex items-center justify-center group/logo">
                       <motion.div
-                        key="expanded"
+                        key="master-animated-logo"
                         layoutId="master-logo"
+                        initial={!isIntroFinished ? {
+                            position: 'fixed',
+                            top: '50%',
+                            left: '50%',
+                            x: '-50%',
+                            y: '-50%',
+                            width: 144,
+                            height: 144,
+                            zIndex: 2000
+                        } : false}
+                        animate={isIntroFinished ? {
+                            position: 'relative',
+                            top: '0%',
+                            left: '0%',
+                            x: '0%',
+                            y: '0%',
+                            width: collapsed ? 32 : 180,
+                            height: collapsed ? 32 : 61,
+                            zIndex: 50
+                        } : {
+                            position: 'fixed',
+                            top: '50%',
+                            left: '50%',
+                            x: '-50%',
+                            y: '-50%',
+                            width: isExpanded ? 420 : 144,
+                            height: 144,
+                            zIndex: 2000
+                        }}
                         transition={{ 
-                            duration: 1.0,
+                            duration: 1.4,
                             ease: [0.16, 1, 0.3, 1]
                         }}
-                        className="relative w-[180px] h-full"
+                        className="flex items-center"
                       >
-                         <Image
-                          src={isDark ? '/embedClubBanner-Dark.svg' : '/embedClubBanner-Light.svg'}
-                          alt="Expanded Logo"
-                          fill
-                          priority
-                          unoptimized
-                          className="object-contain"
-                        />
+                         {/* 1. Shield (Icon) */}
+                         <div 
+                          className="relative shrink-0 flex items-center justify-center"
+                          style={{ 
+                            width: (isIntroFinished && collapsed) ? 32 : 144, 
+                            height: (isIntroFinished && collapsed) ? 32 : 144,
+                            transform: (isIntroFinished && !collapsed) ? 'scale(0.42)' : 'none',
+                            transformOrigin: 'left center'
+                          }}
+                         >
+                            {/* Greyscale Base */}
+                            <img 
+                            src="/embedClubLogo-Dark.svg" 
+                            className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 hidden dark:block" 
+                            />
+                            <img 
+                            src="/embedClubLogo-Light.svg" 
+                            className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 dark:hidden" 
+                            />
+                            
+                            {/* Colored Fill */}
+                            <div 
+                            className="absolute inset-0 overflow-hidden" 
+                            style={{ clipPath: `inset(${(1 - (isIntroFinished ? 1 : fillProgress)) * 100}% 0 0 0)` }}
+                            >
+                                <img 
+                                src="/embedClubLogo-Dark.svg" 
+                                className="w-full h-full object-contain hidden dark:block" 
+                                />
+                                <img 
+                                src="/embedClubLogo-Light.svg" 
+                                className="w-full h-full object-contain dark:hidden" 
+                                />
+                            </div>
+                         </div>
+
+                         {/* 2. Banner Text - Slides out */}
+                         <AnimatePresence>
+                            {(!collapsed || !isIntroFinished) && (
+                                <motion.div 
+                                    initial={{ x: -280, opacity: 0 }}
+                                    animate={(isExpanded || isIntroFinished) ? { x: 0, opacity: 1 } : { x: -280, opacity: 0 }}
+                                    transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                                    className="absolute left-0 top-0 h-full overflow-hidden pointer-events-none"
+                                    style={{ 
+                                        width: isIntroFinished ? 180 : 420,
+                                        zIndex: -1,
+                                        clipPath: isIntroFinished ? 'none' : 'inset(0 0 0 144px)'
+                                    }}
+                                >
+                                     <div className="w-full h-full relative" style={{ transform: isIntroFinished ? 'scale(0.42)' : 'none', transformOrigin: 'left center' }}>
+                                        <img src="/embedClubBanner-Dark.svg" className="w-full h-full object-contain hidden dark:block" />
+                                        <img src="/embedClubBanner-Light.svg" className="w-full h-full object-contain dark:hidden" />
+                                     </div>
+                                </motion.div>
+                            )}
+                         </AnimatePresence>
                       </motion.div>
-                    ) : isIntroFinished && collapsed ? (
-                      <motion.div
-                        key="collapsed"
-                        layoutId="master-logo"
-                        transition={{ duration: 0.3 }}
-                        className="relative w-8 h-8"
-                      >
-                        <Image
-                          src={isDark ? '/embedClubLogo-Dark.svg' : '/embedClubLogo-Light.svg'}
-                          alt="Collapsed Logo"
-                          fill
-                          priority
-                          unoptimized
-                          className="object-contain"
-                        />
-                      </motion.div>
-                    ) : null}
                 </div>
               </button>
             </SidebarMenuButton>
