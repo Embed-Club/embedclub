@@ -120,14 +120,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [mounted, setMounted] = React.useState(false)
   const { resolvedTheme } = useTheme()
   const { toggleSidebar, state } = useSidebar()
-  const { isIntroFinished, isExpanded } = React.useContext(IntroContext)
+  const { isIntroFinished } = React.useContext(IntroContext)
 
   React.useEffect(() => {
     setMounted(true)
   }, [])
 
 
-  // Removed hydration guard to fix 'ghost frame' in shared element animations
+  if (!mounted) return null
 
   const isDark = resolvedTheme === 'dark'
   const collapsed = state === 'collapsed'
@@ -144,13 +144,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 className="flex items-center justify-center gap-2 w-full cursor-pointer bg-transparent border-none p-0 focus-visible:ring-0"
               >
                 <div className="relative w-full h-[61px] flex items-center justify-center">
-                  <AnimatePresence mode="wait">
-                    {(isIntroFinished || isExpanded) && !collapsed ? (
+                  <AnimatePresence>
+                    {!collapsed ? (
                       <motion.div
                         key="expanded"
                         layoutId="master-logo"
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        animate={{ opacity: isIntroFinished ? 1 : 0 }}
                         transition={{ 
                             duration: 1.0,
                             ease: [0.16, 1, 0.3, 1]
@@ -166,12 +165,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           className="object-contain"
                         />
                       </motion.div>
-                    ) : (isIntroFinished || isExpanded) && collapsed ? (
+                    ) : (
                       <motion.div
                         key="collapsed"
                         layoutId="master-logo"
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: isIntroFinished ? 1 : 0, scale: isIntroFinished ? 1 : 0.5 }}
                         transition={{ duration: 0.3 }}
                         className="relative w-8 h-8"
                       >
@@ -184,7 +182,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           className="object-contain"
                         />
                       </motion.div>
-                    ) : null}
+                    )}
                   </AnimatePresence>
                 </div>
               </button>
