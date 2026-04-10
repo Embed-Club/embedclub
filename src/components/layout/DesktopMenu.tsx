@@ -144,13 +144,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 className="flex items-center justify-center gap-2 w-full cursor-pointer bg-transparent border-none p-0 focus-visible:ring-0"
               >
                 <div className="relative w-full h-[61px] flex items-center justify-center">
-                  <AnimatePresence mode="wait">
                     {isIntroFinished && !collapsed ? (
                       <motion.div
                         key="expanded"
                         layoutId="master-logo"
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
                         transition={{ 
                             duration: 1.0,
                             ease: [0.16, 1, 0.3, 1]
@@ -170,9 +167,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <motion.div
                         key="collapsed"
                         layoutId="master-logo"
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.5 }}
                         transition={{ duration: 0.3 }}
                         className="relative w-8 h-8"
                       >
@@ -186,7 +180,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         />
                       </motion.div>
                     ) : null}
-                  </AnimatePresence>
                 </div>
               </button>
             </SidebarMenuButton>
