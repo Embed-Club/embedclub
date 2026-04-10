@@ -2,6 +2,7 @@
 
 import { ResourceCards } from '@/components/features/resources/ResourceCards'
 import { SearchBar } from '@/components/common/SearchBar'
+import { XSSHoneypot } from '@/components/features/resources/XSSHoneypot'
 import { useEffect, useMemo, useState } from 'react'
 
 export interface ResourceCardData {
@@ -80,6 +81,18 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
 
   const hasSearched = debouncedQuery.trim().length > 0
 
+  // Humorous XSS Detection
+  const isXSSAttempt = useMemo(() => {
+    const p = debouncedQuery.toLowerCase()
+    return p.includes('<script') || 
+           p.includes('alert(') || 
+           p.includes('onerror=') || 
+           p.includes('onload=') ||
+           p.includes('javascript:') ||
+           p.includes('document.cookie') ||
+           p.includes('windows.location')
+  }, [debouncedQuery])
+
   if (resources.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -110,7 +123,9 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
         />
       </div>
 
-      {filteredResources.length === 0 && hasSearched ? (
+      <XSSHoneypot isDetected={isXSSAttempt} />
+
+      {isXSSAttempt ? null : filteredResources.length === 0 && hasSearched ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <p className="text-lg md:text-xl text-zinc-400 mb-2">No resources found</p>
           <p className="text-sm md:text-base text-zinc-500">

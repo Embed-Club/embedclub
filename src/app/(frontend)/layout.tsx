@@ -5,7 +5,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning className={avantGarde.variable}>
       <head />
-      <body className={`${avantGarde.className} font-medium`}>
+      <body className={`${avantGarde.className} font-medium`} suppressHydrationWarning>
         <ThemeWrapper>{children}</ThemeWrapper>
       </body>
     </html>

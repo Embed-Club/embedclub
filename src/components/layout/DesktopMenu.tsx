@@ -16,6 +16,7 @@ import {
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import * as React from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 
 import {
   Sidebar,
@@ -32,13 +33,15 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { ModeToggle } from '../theme/ThemeToggle'
+import { IntroContext } from './FrontendShell'
 
 // This is sample data.
 const data = {
   navMain: [
     {
       title: 'HOE',
-      url: '/dashboard',
+      url: '/',
       icon: LucideHome,
     },
   ],
@@ -117,23 +120,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [mounted, setMounted] = React.useState(false)
   const { resolvedTheme } = useTheme()
   const { toggleSidebar, state } = useSidebar()
+  const { isIntroFinished } = React.useContext(IntroContext)
 
   React.useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Debug: Log theme changes
-  React.useEffect(() => {
-    if (mounted) {
-    }
-  }, [mounted])
 
-  // Wait for theme to hydrate
-  if (!mounted) {
-    return null
-  }
+  if (!mounted) return null
 
-  // Use resolvedTheme which handles system theme automatically
   const isDark = resolvedTheme === 'dark'
   const collapsed = state === 'collapsed'
 
@@ -146,37 +141,54 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <button
                 type="button"
                 onClick={toggleSidebar}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    toggleSidebar()
-                  }
-                }}
-                className="flex items-center justify-center gap-2 w-full cursor-pointer bg-transparent border-none p-0"
+                className="flex items-center justify-center gap-2 w-full cursor-pointer bg-transparent border-none p-0 focus-visible:ring-0"
               >
-                <div className="relative w-[180px] h-[61px] transition-all duration-300">
-                  <Image
-                    key={`expanded-${isDark}-${collapsed}`}
-                    src={isDark ? '/embedClubBanner-Dark.png' : '/embedClubBanner-Light.png'}
-                    alt="Expanded Logo"
-                    fill
-                    priority
-                    unoptimized
-                    className={`object-contain absolute transition-opacity duration-300 ${
-                      collapsed ? 'opacity-0' : 'opacity-100'
-                    }`}
-                  />
-                  <Image
-                    key={`collapsed-${isDark}-${collapsed}`}
-                    src={isDark ? '/embedClubLogo-Dark.png' : '/embedClubLogo-Light.png'}
-                    alt="Collapsed Logo"
-                    fill
-                    priority
-                    unoptimized
-                    className={`object-contain absolute transition-opacity duration-300 ${
-                      collapsed ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  />
+                <div className="relative w-full h-[61px] flex items-center justify-center overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    {isIntroFinished && !collapsed ? (
+                      <motion.div
+                        key="expanded"
+                        layoutId="master-logo"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ 
+                            delay: 0,
+                            duration: 1.0,
+                            ease: [0.16, 1, 0.3, 1]
+                        }}
+                        className="relative w-[180px] h-full"
+                      >
+                         <Image
+                          src={isDark ? '/embedClubBanner-Dark.svg' : '/embedClubBanner-Light.svg'}
+                          alt="Expanded Logo"
+                          fill
+                          priority
+                          unoptimized
+                          className="object-contain"
+                        />
+                      </motion.div>
+                    ) : isIntroFinished && collapsed ? (
+                      <motion.div
+                        key="collapsed"
+                        layoutId="master-logo"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        transition={{ duration: 0.3 }}
+                        className="relative w-8 h-8"
+                      >
+                        <Image
+                          src={isDark ? '/embedClubLogo-Dark.svg' : '/embedClubLogo-Light.svg'}
+                          alt="Collapsed Logo"
+                          fill
+                          priority
+                          unoptimized
+                          className="object-contain"
+                        />
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
                 </div>
               </button>
             </SidebarMenuButton>

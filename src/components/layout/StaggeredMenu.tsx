@@ -43,10 +43,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/embedClubLogo-Light.png',
-  logoLightUrl = '/embedClubLogo-Light.png',
-  logoDarkUrl = '/embedClubLogo-Dark.png',
+  logoUrl = '/embedClubLogo-Light.svg',
+  logoLightUrl = '/embedClubLogo-Light.svg',
+  logoDarkUrl = '/embedClubLogo-Dark.svg',
   menuButtonColor = '#fff',
+  openMenuButtonColor = '#000',
   changeMenuColorOnOpen = true,
   accentColor = '#5227FF',
   isFixed = false,
@@ -111,9 +112,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       const offscreen = position === 'left' ? -100 : 100
       gsap.set([panel, ...preLayers], { xPercent: offscreen })
 
-      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 })
-      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 })
-      gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' })
+      gsap.set(plusH, { transformOrigin: '50% 50%', rotation: 0, xPercent: -50, yPercent: -50 })
+      gsap.set(plusV, { transformOrigin: '50% 50%', rotation: 90, xPercent: -50, yPercent: -50 })
+      gsap.set(icon, { rotation: 0, transformOrigin: '50% 50%' })
 
       gsap.set(textInner, { yPercent: 0 })
 
@@ -291,17 +292,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     spinTweenRef.current?.kill()
 
     if (opening) {
-      gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' })
-      spinTweenRef.current = gsap
-        .timeline({ defaults: { ease: 'power4.out' } })
-        .to(h, { rotate: 45, duration: 0.5 }, 0)
-        .to(v, { rotate: -45, duration: 0.5 }, 0)
+      gsap.to(h, { rotation: 45, xPercent: -50, yPercent: -50, duration: 0.5, ease: 'power4.out' })
+      gsap.to(v, { rotation: -45, xPercent: -50, yPercent: -50, duration: 0.5, ease: 'power4.out' })
     } else {
-      spinTweenRef.current = gsap
-        .timeline({ defaults: { ease: 'power3.inOut' } })
-        .to(h, { rotate: 0, duration: 0.35 }, 0)
-        .to(v, { rotate: 90, duration: 0.35 }, 0)
-        .to(icon, { rotate: 0, duration: 0.001 }, 0)
+      gsap.to(h, { rotation: 0, xPercent: -50, yPercent: -50, duration: 0.35, ease: 'power3.inOut' })
+      gsap.to(v, { rotation: 90, xPercent: -50, yPercent: -50, duration: 0.35, ease: 'power3.inOut' })
     }
   }, [])
 
@@ -498,12 +493,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             type="button"
             style={{
               color: open
-                ? mounted && isDark
-                  ? '#ffffff'
-                  : '#000000'
-                : mounted && isDark
-                  ? '#e9e9ef'
-                  : '#111111',
+                ? (openMenuButtonColor || (mounted && isDark ? '#ffffff' : '#111111'))
+                : (menuButtonColor || (mounted && isDark ? '#e9e9ef' : '#111111')),
             }}
           >
             <span
@@ -528,11 +519,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             >
               <span
                 ref={plusHRef}
-                className="sm-icon-line absolute left-1/2 top-1/2 w-full h-[2px] bg-current rounded-[2px] -translate-x-1/2 -translate-y-1/2 [will-change:transform]"
+                className="sm-icon-line absolute left-1/2 top-1/2 w-full h-[2.5px] bg-current rounded-[2px] [will-change:transform]"
               />
               <span
                 ref={plusVRef}
-                className="sm-icon-line sm-icon-line-v absolute left-1/2 top-1/2 w-full h-[2px] bg-current rounded-[2px] -translate-x-1/2 -translate-y-1/2 [will-change:transform]"
+                className="sm-icon-line sm-icon-line-v absolute left-1/2 top-1/2 w-full h-[2.5px] bg-current rounded-[2px] [will-change:transform]"
               />
             </span>
           </button>
@@ -647,7 +638,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-toggle-line { display: block; height: 1em; line-height: 1; }
 .sm-scope .sm-icon { position: relative; width: 14px; height: 14px; flex: 0 0 14px; display: inline-flex; align-items: center; justify-content: center; will-change: transform; }
 .sm-scope .sm-panel-itemWrap { position: relative; overflow: hidden; line-height: 1; }
-.sm-scope .sm-icon-line { position: absolute; left: 50%; top: 50%; width: 100%; height: 2px; background: currentColor; border-radius: 2px; transform: translate(-50%, -50%); will-change: transform; }
+.sm-scope .sm-icon-line { position: absolute; left: 50%; top: 50%; width: 100%; height: 2px; background: currentColor; border-radius: 2px; will-change: transform; }
 .sm-scope .sm-line { display: none !important; }
 .sm-scope .staggered-menu-panel { position: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 420px); height: 100%; background: var(--sm-bg,#ffffff); color: var(--sm-fg,#000000); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; padding: 6em 2em 2em 2em; overflow-y: auto; z-index: 10; }
 .sm-scope [data-position='left'] .staggered-menu-panel { right: auto; left: 0; }
