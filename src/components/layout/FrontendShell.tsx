@@ -47,9 +47,9 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
         
         if (progress >= 1) {
             clearInterval(fillTimer)
-            setTimeout(() => setIsExpanded(true), 100)
+            setTimeout(() => setIsExpanded(true), 200)
             // Wait for expansion + glide (1s) + tiny buffer
-            setTimeout(() => setIntroFinished(true), 1200)
+            setTimeout(() => setIntroFinished(true), 1300)
         }
     }, 16)
     
@@ -126,7 +126,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
         </AnimatePresence>
 
 
-        <div className="hidden lg:block relative z-40">
+        <div className="hidden lg:block relative z-[50]">
           <AppSidebar />
         </div>
         <MobileMenu />
