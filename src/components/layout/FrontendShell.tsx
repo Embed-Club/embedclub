@@ -38,7 +38,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
     setIsExpanded(false)
     setFillProgress(0)
 
-    const duration = 800
+    const duration = 1200 // Slower fill for more impact
     const start = Date.now()
     
     const fillTimer = setInterval(() => {
@@ -48,16 +48,15 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
         
         if (progress >= 1) {
             clearInterval(fillTimer)
-            // Wait for fill to settle
             setTimeout(() => {
                 setIsExpanded(true)
-                // Start Glide Phase
+                // Start Glide Phase with a more deliberate pause
                 setTimeout(() => {
                     setStage('gliding')
-                    // Final transition to complete after glide (1s duration)
-                    setTimeout(() => setStage('complete'), 1100)
-                }, 400) // Small pause at center before glide
-            }, 200)
+                    // Glide takes 1s, we wait 1.2s to be safe
+                    setTimeout(() => setStage('complete'), 1200)
+                }, 600)
+            }, 300)
         }
     }, 16)
     
@@ -172,13 +171,9 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
                 key="intro-overlay"
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.8 }}
                 className="absolute inset-0 bg-background z-50 flex items-center justify-center pointer-events-none"
-              >
-                <div className="text-[10px] tracking-[0.4em] uppercase opacity-20 font-bold">
-                  Synchronizing System
-                </div>
-              </motion.div>
+              />
             ) : null}
           </AnimatePresence>
           <motion.div
