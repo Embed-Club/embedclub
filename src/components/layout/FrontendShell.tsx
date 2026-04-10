@@ -12,11 +12,9 @@ import { motion, AnimatePresence } from 'motion/react'
 
 export const IntroContext = React.createContext<{
   isIntroFinished: boolean
-  isExpanded: boolean
   setIntroFinished: (finished: boolean) => void
 }>({
   isIntroFinished: false,
-  isExpanded: false,
   setIntroFinished: () => {},
 })
 
@@ -50,8 +48,8 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
         if (progress >= 1) {
             clearInterval(fillTimer)
             setTimeout(() => setIsExpanded(true), 200)
-            // Wait for expansion + glide (1s) + tiny buffer
-            setTimeout(() => setIntroFinished(true), 1300)
+            // Wait for expansion + glide (1s) + tiny buffer for handoff
+            setTimeout(() => setIntroFinished(true), 1500)
         }
     }, 16)
     
@@ -59,7 +57,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   }, [isLandingPage])
 
   return (
-    <IntroContext.Provider value={{ isIntroFinished, isExpanded, setIntroFinished }}>
+    <IntroContext.Provider value={{ isIntroFinished, setIntroFinished }}>
       <SidebarProvider>
         {/* The Evolving Intro Logo - Matches prompt requirements */}
         <AnimatePresence>
