@@ -62,7 +62,13 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
         {/* The Evolving Intro Logo - Matches prompt requirements */}
         <AnimatePresence>
           {!isIntroFinished && (
-            <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-background pointer-events-none">
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none">
+              <motion.div 
+                initial={{ opacity: 1 }}
+                animate={isExpanded ? { opacity: 0 } : { opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 bg-background"
+              />
               <motion.div
                 layoutId="master-logo"
                 className="relative flex items-center"
@@ -74,7 +80,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                 }}
               >
                 {/* 1. Shield (Icon) - Always the anchor */}
-                <div className="relative w-[144px] h-[144px] shrink-0 z-20 bg-background">
+                <div className="relative w-[144px] h-[144px] shrink-0 z-20">
                     {/* Greyscale Base */}
                     <img 
                     src="/embedClubLogo-Dark.svg" 
