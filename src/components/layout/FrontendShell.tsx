@@ -13,13 +13,9 @@ import { motion, AnimatePresence } from 'motion/react'
 export const IntroContext = React.createContext<{
   isIntroFinished: boolean
   setIntroFinished: (finished: boolean) => void
-  fillProgress: number
-  isExpanded: boolean
 }>({
   isIntroFinished: false,
   setIntroFinished: () => {},
-  fillProgress: 0,
-  isExpanded: false,
 })
 
 export function SidebarShell({ children }: { children?: React.ReactNode }) {
@@ -61,25 +57,82 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   }, [isLandingPage])
 
   return (
-    <IntroContext.Provider value={{ isIntroFinished, setIntroFinished, fillProgress, isExpanded }}>
+    <IntroContext.Provider value={{ isIntroFinished, setIntroFinished }}>
       <SidebarProvider>
         {/* The Evolving Intro Logo - Matches prompt requirements */}
-        {/* The Intro Background - Decoupled from logo for smooth reveal */}
         <AnimatePresence>
           {!isIntroFinished && (
             <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none">
               <motion.div 
                 initial={{ opacity: 1 }}
                 animate={isExpanded ? { opacity: 0 } : { opacity: 1 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
+                transition={{ duration: 0.5 }}
                 className="absolute inset-0 bg-background"
               />
+              <motion.div
+                layoutId="master-logo"
+                className="relative flex items-center"
+                initial={false}
+                animate={isExpanded ? { width: 420 } : { width: 144 }}
+                transition={{ 
+                    duration: 1.0, 
+                    ease: [0.16, 1, 0.3, 1] 
+                }}
+              >
+                {/* 1. Shield (Icon) - Always the anchor */}
+                <div className="relative w-[144px] h-[144px] shrink-0 z-20">
+                    {/* Greyscale Base */}
+                    <img 
+                    src="/embedClubLogo-Dark.svg" 
+                    className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 hidden dark:block" 
+                    />
+                    <img 
+                    src="/embedClubLogo-Light.svg" 
+                    className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 dark:hidden" 
+                    />
+                    
+                    {/* Colored Fill */}
+                    <div 
+                    className="absolute inset-0 overflow-hidden" 
+                    style={{ clipPath: `inset(${(1 - fillProgress) * 100}% 0 0 0)` }}
+                    >
+                        <img 
+                        src="/embedClubLogo-Dark.svg" 
+                        className="w-full h-full object-contain hidden dark:block" 
+                        />
+                        <img 
+                        src="/embedClubLogo-Light.svg" 
+                        className="w-full h-full object-contain dark:hidden" 
+                        />
+                    </div>
+                </div>
+
+                {/* 2. Banner Text - Slides out from behind */}
+                <div className="absolute left-0 top-0 h-full w-[420px] pointer-events-none z-10 overflow-hidden">
+                    <motion.div
+                        initial={{ x: -280, opacity: 0 }}
+                        animate={isExpanded ? { x: 0, opacity: 1 } : { x: -280, opacity: 0 }}
+                        transition={{ 
+                            duration: 1.2, 
+                            ease: [0.22, 1, 0.36, 1],
+                            delay: 0.2 // Slight delay for weighted feel
+                        }}
+                        className="w-full h-full"
+                    >
+                        {/* We use the full banner but clip the shield part so it doesn't overlap weirdly */}
+                        <div className="w-full h-full" style={{ clipPath: 'inset(0 0 0 144px)' }}>
+                             <img src="/embedClubBanner-Dark.svg" className="w-full h-full object-contain hidden dark:block" />
+                             <img src="/embedClubBanner-Light.svg" className="w-full h-full object-contain dark:hidden" />
+                        </div>
+                    </motion.div>
+                </div>
+              </motion.div>
             </div>
           )}
         </AnimatePresence>
 
 
-        <div className={`${isIntroFinished ? 'hidden lg:block' : ''} relative z-[50]`}>
+        <div className="hidden lg:block relative z-[50]">
           <AppSidebar />
         </div>
         <MobileMenu />
