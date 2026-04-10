@@ -13,9 +13,11 @@ import { motion, AnimatePresence } from 'motion/react'
 export const IntroContext = React.createContext<{
   isIntroFinished: boolean
   setIntroFinished: (finished: boolean) => void
+  isContentVisible: boolean
 }>({
   isIntroFinished: false,
   setIntroFinished: () => {},
+  isContentVisible: false,
 })
 
 export function SidebarShell({ children }: { children?: React.ReactNode }) {
@@ -23,16 +25,19 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   const isLandingPage = pathname === '/' || pathname === '/home' // Adjust as needed
   
   const [isIntroFinished, setIntroFinished] = React.useState(!isLandingPage)
+  const [isContentVisible, setContentVisible] = React.useState(!isLandingPage)
   const [fillProgress, setFillProgress] = React.useState(0)
   const [isExpanded, setIsExpanded] = React.useState(false)
 
   React.useEffect(() => {
     if (!isLandingPage) {
         setIntroFinished(true)
+        setContentVisible(true)
         return
     }
 
     setIntroFinished(false)
+    setContentVisible(false)
     setIsExpanded(false)
     setFillProgress(0)
 
@@ -47,9 +52,14 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
         
         if (progress >= 1) {
             clearInterval(fillTimer)
-            setTimeout(() => setIsExpanded(true), 100)
-            // Wait for expansion + glide (1s) + tiny buffer
-            setTimeout(() => setIntroFinished(true), 1200)
+            // 1. Immediately swap logos to trigger the shared layout "Glide"
+            setTimeout(() => {
+              setIsExpanded(true)
+              setIntroFinished(true)
+            }, 100)
+            
+            // 2. Wait for the glide to finish before revealing content
+            setTimeout(() => setContentVisible(true), 1300)
         }
     }, 16)
     
@@ -57,7 +67,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   }, [isLandingPage])
 
   return (
-    <IntroContext.Provider value={{ isIntroFinished, setIntroFinished }}>
+    <IntroContext.Provider value={{ isIntroFinished, setIntroFinished, isContentVisible }}>
       <SidebarProvider>
         {/* The Evolving Intro Logo - Matches prompt requirements */}
         <AnimatePresence>
@@ -154,14 +164,14 @@ export const ScrollContainerContext = React.createContext<HTMLDivElement | null>
 export function MainbarShell({ children, borderless }: MainbarShellProps) {
   const isMobile = useIsMobile()
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
-  const { isIntroFinished } = React.useContext(IntroContext)
+  const { isContentVisible } = React.useContext(IntroContext)
 
   return (
     <ScrollContainerContext.Provider value={scrollEl}>
       <ContentPanel ref={setScrollEl} borderless={borderless || isMobile}>
         <div className="h-full w-full relative">
           <AnimatePresence>
-            {!isIntroFinished && !isMobile ? (
+            {!isContentVisible && !isMobile ? (
               <motion.div
                 key="intro-overlay"
                 initial={{ opacity: 1 }}
@@ -169,7 +179,6 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
                 transition={{ duration: 0.5 }}
                 className="absolute inset-0 bg-background z-50 flex items-center justify-center"
               >
-                {/* Visual placeholder for the main content area during glide */}
                 <div className="text-[10px] tracking-[0.4em] uppercase opacity-20 font-bold">
                   Synchronizing System
                 </div>
@@ -178,7 +187,7 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
           </AnimatePresence>
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: isIntroFinished || isMobile ? 1 : 0 }}
+            animate={{ opacity: isContentVisible || isMobile ? 1 : 0 }}
             transition={{ duration: 0.8 }}
             className="h-full w-full"
           >
