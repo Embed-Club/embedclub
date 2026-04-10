@@ -1,6 +1,8 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-// storage-adapter-import-placeholder
+import { cloudStorage } from '@payloadcms/plugin-cloud-storage'
+import { s3Adapter } from '@payloadcms/plugin-cloud-storage/s3'
+
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { mcpPlugin } from '@payloadcms/plugin-mcp'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -22,6 +24,19 @@ import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+const storageAdapter = s3Adapter({
+  config: {
+    endpoint: process.env.S3_ENDPOINT || '',
+    region: process.env.S3_REGION || 'ap-southeast-1',
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+    },
+    forcePathStyle: true,
+  },
+  bucket: process.env.S3_BUCKET || '',
+})
 
 export default buildConfig({
   admin: {
@@ -52,11 +67,27 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
+      connectionString: process.env.DATABASE_URL || '',
     },
   }),
   sharp,
   plugins: [
+    cloudStorage({
+      collections: {
+        media: {
+          adapter: storageAdapter,
+        },
+        'member-photo': {
+          adapter: storageAdapter,
+        },
+        gallery: {
+          adapter: storageAdapter,
+        },
+        'audio-files': {
+          adapter: storageAdapter,
+        },
+      },
+    }),
     mcpPlugin({
       collections: {
         // Enable MCP for Users collection
