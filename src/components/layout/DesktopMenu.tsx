@@ -144,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 className="flex items-center justify-center gap-2 w-full cursor-pointer bg-transparent border-none p-0 focus-visible:ring-0"
               >
                 <div className="relative w-full h-[61px] flex items-center justify-center overflow-hidden">
-                  <AnimatePresence>
+                  <AnimatePresence mode="wait">
                     {isIntroFinished && !collapsed ? (
                       <motion.div
                         key="expanded"
@@ -159,10 +159,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         }}
                         className="relative w-[180px] h-full"
                       >
-                         <img
+                         <Image
                           src={isDark ? '/embedClubBanner-Dark.svg' : '/embedClubBanner-Light.svg'}
                           alt="Expanded Logo"
-                          className="w-full h-full object-contain"
+                          fill
+                          priority
+                          unoptimized
+                          className="object-contain"
                         />
                       </motion.div>
                     ) : isIntroFinished && collapsed ? (
@@ -175,10 +178,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         transition={{ duration: 0.3 }}
                         className="relative w-8 h-8"
                       >
-                        <img
+                        <Image
                           src={isDark ? '/embedClubLogo-Dark.svg' : '/embedClubLogo-Light.svg'}
                           alt="Collapsed Logo"
-                          className="w-full h-full object-contain"
+                          fill
+                          priority
+                          unoptimized
+                          className="object-contain"
                         />
                       </motion.div>
                     ) : null}
