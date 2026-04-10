@@ -25,7 +25,19 @@ export const Gallery: CollectionConfig = {
         width: 1200,
         withoutEnlargement: true,
       },
+      {
+        name: 'card',
+        width: 600,
+        height: 400,
+        position: 'centre',
+      },
     ],
+    formatOptions: {
+      format: 'webp',
+      options: {
+        quality: 80,
+      },
+    },
   },
 }
 
