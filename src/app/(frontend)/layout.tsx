@@ -1,6 +1,6 @@
 import './globals.css'
 import ThemeWrapper from '@/components/theme/ThemeWrapper'
-import { avantGarde } from './fonts'
+import { avantGarde, gobold, sportBreak } from './fonts'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -17,7 +17,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={avantGarde.variable}>
+    <html 
+      lang="en" 
+      suppressHydrationWarning 
+      className={`${avantGarde.variable} ${gobold.variable} ${sportBreak.variable}`}
+    >
       <head />
       <body className={`${avantGarde.className} font-medium`} suppressHydrationWarning>
         <ThemeWrapper>{children}</ThemeWrapper>
