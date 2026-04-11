@@ -12,22 +12,23 @@ interface ResourceCardProps {
 export const ResourceCard = React.memo(({ card }: ResourceCardProps) => {
   return (
     <div
-        className="group relative h-60 md:h-96 w-full cursor-pointer rounded-lg overflow-hidden lg:overflow-visible"
+        className="group relative h-60 md:h-96 w-full cursor-pointer rounded-lg"
     >
         <BorderGlow
             borderRadius={8}
-            glowRadius={50}
-            glowColor="220 30 90"
+            glowRadius={60}
+            glowIntensity={1.5}
+            glowColor="220 70 80"
             backgroundColor="transparent"
-            className="w-full h-full border-none shadow-none"
+            className="w-full h-full border-white/20 shadow-none z-10"
         >
-            <div className="w-full h-full relative">
+            <div className="w-full h-full relative z-20">
         
         <Link
             href={`/resources/${card.slug}`}
             aria-label={`Open resource: ${card.title}`}
             className={cn(
-                'block h-full w-full rounded-lg relative bg-gray-100 dark:bg-neutral-900 overflow-hidden transition-all duration-300 ease-out hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black border border-white/10 group-hover:border-white/20 z-10',
+                'block h-full w-full rounded-lg relative bg-transparent overflow-hidden transition-all duration-300 ease-out hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black border border-white/5 group-hover:border-white/10 z-10',
             )}
         >
             {/* Spotlight hover effect */}
