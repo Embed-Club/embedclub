@@ -13,7 +13,9 @@ export const ContentPanel = forwardRef<HTMLDivElement, ContentPanelProps>(
         ref={ref}
         data-scroll-container
         className={`flex-1 overflow-auto relative pt-16 lg:pt-0 ${
-          !borderless ? 'bg-sidebar m-2 ml-0 rounded-lg border' : 'bg-transparent m-0'
+          borderless
+            ? 'bg-transparent m-0'
+            : 'bg-transparent m-0 lg:bg-sidebar lg:m-2 lg:ml-0 lg:rounded-lg lg:border'
         }`}
         style={borderless ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : undefined}
       >
