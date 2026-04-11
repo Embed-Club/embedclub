@@ -1,4 +1,4 @@
-import { GlowingEffect } from '@/components/common/ChromaGrid'
+import BorderGlow from '@/components/ui/BorderGlow'
 import type { ResourceCardData } from '@/app/(frontend)/resources/ResourcesPageContent'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -12,34 +12,15 @@ interface ResourceCardProps {
 export const ResourceCard = React.memo(({ card }: ResourceCardProps) => {
   return (
     <div
-        className="group relative h-60 md:h-96 w-full cursor-pointer rounded-lg"
-        onMouseMove={(e) => {
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-            ;(e.currentTarget as HTMLElement).style.setProperty(
-                '--mouse-x',
-                `${e.clientX - rect.left}px`,
-            )
-            ;(e.currentTarget as HTMLElement).style.setProperty(
-                '--mouse-y',
-                `${e.clientY - rect.top}px`,
-            )
-        }}
-        style={{
-            '--mouse-x': '50%',
-            '--mouse-y': '50%',
-            '--spotlight-color': 'rgba(255,255,255,0.2)',
-        } as React.CSSProperties}
+        className="group relative h-60 md:h-96 w-full cursor-pointer rounded-lg overflow-hidden lg:overflow-visible"
     >
-        <GlowingEffect
-            variant="default"
-            glow
-            spread={40}
-            proximity={64}
-            inactiveZone={0.01}
-            disabled={false}
-            borderWidth={3}
-            className="z-30 rounded-lg pointer-events-none inset-[1px]"
-        />
+        <BorderGlow
+            borderRadius={8}
+            glowRadius={50}
+            glowColor="220 30 90"
+            backgroundColor="transparent"
+            className="z-0 border-none shadow-none"
+        >
         
         <Link
             href={`/resources/${card.slug}`}
@@ -83,6 +64,7 @@ export const ResourceCard = React.memo(({ card }: ResourceCardProps) => {
                 </div>
             </div>
         </Link>
+        </BorderGlow>
     </div>
   )
 })

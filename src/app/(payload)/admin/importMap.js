@@ -25,6 +25,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { default as default_267f13d635f8152edce24d802314b3f7 } from '@/components/admin/LeafletLocationField'
 import { default as default_108882ba9645db00e1242873327a405b } from '@/components/admin/SortOrderSelectCategory'
 import { default as default_cf794f13ac1b6af3bb5f17e741547fa5 } from '@/components/admin/SortOrderSelectRole'
+import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
   "@/components/admin/AudioSliderField#default": default_9543e7895c59e938b6447a04807a55a6,
@@ -53,5 +54,6 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/LeafletLocationField#default": default_267f13d635f8152edce24d802314b3f7,
   "@/components/admin/SortOrderSelectCategory#default": default_108882ba9645db00e1242873327a405b,
-  "@/components/admin/SortOrderSelectRole#default": default_cf794f13ac1b6af3bb5f17e741547fa5
+  "@/components/admin/SortOrderSelectRole#default": default_cf794f13ac1b6af3bb5f17e741547fa5,
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

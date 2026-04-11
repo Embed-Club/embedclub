@@ -58,24 +58,28 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
-    s3Storage({
-      collections: {
-        media: true,
-        'member-photo': true,
-        gallery: true,
-        'audio-files': true,
-      },
-      bucket: process.env.S3_BUCKET || '',
-      config: {
-        endpoint: process.env.S3_ENDPOINT || '',
-        region: process.env.S3_REGION || 'ap-southeast-1',
-        credentials: {
-          accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
-        },
-        forcePathStyle: true,
-      },
-    }),
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          s3Storage({
+            collections: {
+              media: true,
+              'member-photo': true,
+              gallery: true,
+              'audio-files': true,
+            },
+            bucket: process.env.S3_BUCKET || '',
+            config: {
+              endpoint: process.env.S3_ENDPOINT || '',
+              region: process.env.S3_REGION || 'ap-southeast-1',
+              credentials: {
+                accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+                secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+              },
+              forcePathStyle: true,
+            },
+          }),
+        ]
+      : []),
     mcpPlugin({
       collections: {
         // Enable MCP for Users collection
