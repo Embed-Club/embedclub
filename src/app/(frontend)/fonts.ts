@@ -29,7 +29,7 @@ export const gobold = localFont({
 })
 
 export const sportBreak = localFont({
-  src: '../../styles/fonts/Sport Break.otf',
+  src: '../../styles/fonts/Sport Break Free Version.otf',
   variable: '--font-sport-break',
   display: 'swap',
 })
