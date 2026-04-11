@@ -2,6 +2,7 @@
 
 import { ContentPanel } from '@/components/layout/ContentPanel'
 import { AppSidebar } from '@/components/layout/DesktopMenu'
+import { InlineSVG } from '@/components/layout/InlineSVG'
 import MobileMenu from '@/components/layout/MobileMenu'
 import { ModeToggle } from '@/components/theme/ThemeToggle'
 import { SidebarProvider } from '@/components/ui/sidebar'
@@ -73,7 +74,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                 layoutId="master-logo"
                 className="relative flex items-center"
                 initial={false}
-                animate={isExpanded ? { width: 420 } : { width: 144 }}
+                animate={isExpanded ? { width: 440 } : { width: 144 }}
                 transition={{ 
                     duration: 1.0, 
                     ease: [0.16, 1, 0.3, 1] 
@@ -107,22 +108,24 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                     </div>
                 </div>
 
-                {/* 2. Banner Text - Slides out from behind */}
-                <div className="absolute left-0 top-0 h-full w-[420px] pointer-events-none z-10 overflow-hidden">
+                {/* 2. Banner Text - Slides out from behind the icon */}
+                {/* w-[440px] + clip at 120px = 320px of visible text area */}
+                {/* Clip at 120px (not 144) so the "E" in EMBED isn't cut off */}
+                <div className="absolute left-0 top-0 h-full w-[460px] pointer-events-none z-10 overflow-hidden">
                     <motion.div
-                        initial={{ x: -280, opacity: 0 }}
-                        animate={isExpanded ? { x: 0, opacity: 1 } : { x: -280, opacity: 0 }}
+                        initial={{ x: -296, opacity: 0 }}
+                        animate={isExpanded ? { x: 0, opacity: 1 } : { x: -296, opacity: 0 }}
                         transition={{ 
                             duration: 1.2, 
                             ease: [0.22, 1, 0.36, 1],
-                            delay: 0.2 // Slight delay for weighted feel
+                            delay: 0.2
                         }}
                         className="w-full h-full"
                     >
-                        {/* We use the full banner but clip the shield part so it doesn't overlap weirdly */}
-                        <div className="w-full h-full" style={{ clipPath: 'inset(0 0 0 144px)' }}>
-                             <img src="/embedClubBanner-Dark.svg" className="w-full h-full object-contain hidden dark:block" />
-                             <img src="/embedClubBanner-Light.svg" className="w-full h-full object-contain dark:hidden" />
+                        {/* InlineSVG injects SVG inline so @font-face rules work */}
+                        <div className="w-full h-full" style={{ clipPath: 'inset(0 0 0 120px)' }}>
+                             <InlineSVG src="/EmbedClubBanner-Dark.svg" className="w-full h-full hidden dark:block [&>svg]:w-full [&>svg]:h-full" />
+                             <InlineSVG src="/EmbedClubBanner-Light.svg" className="w-full h-full block dark:hidden [&>svg]:w-full [&>svg]:h-full" />
                         </div>
                     </motion.div>
                 </div>
