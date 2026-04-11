@@ -19,8 +19,9 @@ export const ResourceCard = React.memo(({ card }: ResourceCardProps) => {
             glowRadius={50}
             glowColor="220 30 90"
             backgroundColor="transparent"
-            className="z-0 border-none shadow-none"
+            className="w-full h-full border-none shadow-none"
         >
+            <div className="w-full h-full relative">
         
         <Link
             href={`/resources/${card.slug}`}
@@ -64,6 +65,7 @@ export const ResourceCard = React.memo(({ card }: ResourceCardProps) => {
                 </div>
             </div>
         </Link>
+        </div>
         </BorderGlow>
     </div>
   )
