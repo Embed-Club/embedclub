@@ -90,8 +90,8 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
           const idy = Math.abs(mouseY - cy);
           const kx = cx / idx;
           const ky = cy / idy;
-          const 🦆 = Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
-          setEdgeProximity(🦆);
+          const proximityValue = Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
+          setEdgeProximity(proximityValue);
           setProximityOpacity(1);
       } else {
           // Nearby logic
