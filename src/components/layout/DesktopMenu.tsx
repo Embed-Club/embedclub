@@ -14,9 +14,9 @@ import {
   UsersRound,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import Image from 'next/image'
 import * as React from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import { InlineSVG } from '@/components/layout/InlineSVG'
 
 import {
   Sidebar,
@@ -155,15 +155,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             duration: 1.0,
                             ease: [0.16, 1, 0.3, 1]
                         }}
-                        className="relative w-[180px] h-full"
+                        className="relative w-[180px] h-full overflow-hidden"
                       >
-                         <Image
-                          src={isDark ? '/embedClubBanner-Dark.svg' : '/embedClubBanner-Light.svg'}
-                          alt="Expanded Logo"
-                          fill
-                          priority
-                          unoptimized
-                          className="object-contain"
+                        {/* Full banner SVG — logo + text. InlineSVG so Gobold @font-face loads */}
+                        <InlineSVG
+                          src="/EmbedClubBanner-Dark.svg"
+                          className="w-full h-full hidden dark:block [&>svg]:w-full [&>svg]:h-full"
+                        />
+                        <InlineSVG
+                          src="/EmbedClubBanner-Light.svg"
+                          className="w-full h-full block dark:hidden [&>svg]:w-full [&>svg]:h-full"
                         />
                       </motion.div>
                     ) : isIntroFinished && collapsed ? (
@@ -176,13 +177,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         transition={{ duration: 0.3 }}
                         className="relative w-8 h-8"
                       >
-                        <Image
+                        {/* Logo-only SVG is simple paths, no font needed — Image is fine here */}
+                        <img
                           src={isDark ? '/embedClubLogo-Dark.svg' : '/embedClubLogo-Light.svg'}
-                          alt="Collapsed Logo"
-                          fill
-                          priority
-                          unoptimized
-                          className="object-contain"
+                          alt="EmbedClub"
+                          className="w-full h-full object-contain"
                         />
                       </motion.div>
                     ) : null}
