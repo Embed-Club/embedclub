@@ -64,7 +64,6 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
       const rect = card.getBoundingClientRect();
       const cardCenter = [rect.left + rect.width / 2, rect.top + rect.height / 2];
       
-      // Calculate angle from center
       const dx = e.clientX - cardCenter[0];
       const dy = e.clientY - cardCenter[1];
       const radians = Math.atan2(dy, dx);
@@ -72,18 +71,14 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
       if (degrees < 0) degrees += 360;
       setCursorAngle(degrees);
 
-      // Distance-based proximity (Magnetic Effect)
-      const nearbyRange = 300; // How far away the "magnetic" field reaches
+      const nearbyRange = 300; 
       const dist = Math.sqrt(dx * dx + dy * dy);
-      
-      // Calculate how "inside" or "near" the mouse is
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
       
       const isInside = mouseX >= 0 && mouseX <= rect.width && mouseY >= 0 && mouseY <= rect.height;
       
       if (isInside) {
-          // Inner proximity logic (original)
           const cx = rect.width / 2;
           const cy = rect.height / 2;
           const idx = Math.abs(mouseX - cx);
@@ -94,9 +89,8 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
           setEdgeProximity(proximityValue);
           setProximityOpacity(1);
       } else {
-          // Nearby logic
           const outerProximity = Math.max(0, 1 - (dist - Math.min(rect.width, rect.height) / 2) / nearbyRange);
-          setEdgeProximity(outerProximity * 0.5); // Lower intensity when outside
+          setEdgeProximity(outerProximity * 0.5); 
           setProximityOpacity(outerProximity);
       }
     };
@@ -128,14 +122,17 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
         background: backgroundColor,
         borderRadius: `${borderRadius}px`,
         transform: 'translate3d(0, 0, 0.01px)',
+        // biome-ignore lint/style/usePropertySignature: shadow
+        boxShadow: 'rgba(0,0,0,0.1) 0 1px 2px, rgba(0,0,0,0.1) 0 2px 4px, rgba(0,0,0,0.1) 0 4px 8px, rgba(0,0,0,0.1) 0 8px 16px, rgba(0,0,0,0.1) 0 16px 32px, rgba(0,0,0,0.1) 0 32px 64px',
       }}
     >
+      {/* mesh gradient border - Moved to Z-INDEX 20 to sit ABOVE image */}
       <div
-        className="absolute inset-0 rounded-[inherit] -z-[1]"
+        className="absolute inset-[1px] rounded-[inherit] z-20 pointer-events-none"
         style={{
           border: '1px solid transparent',
           background: [
-            `linear-gradient(${backgroundColor} 0 100%) padding-box`,
+            // No backgroundColor here so it's transparent inside the border line
             'linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box',
             ...meshGradients.map(g => `${g} border-box`),
           ].join(', '),
@@ -146,8 +143,9 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
         }}
       />
 
+      {/* outer glow - High Z-index to avoid clipping */}
       <span
-        className="absolute pointer-events-none z-[1] rounded-[inherit]"
+        className="absolute pointer-events-none z-30 rounded-[inherit]"
         style={{
           inset: `${-glowRadius}px`,
           maskImage: `conic-gradient(from ${angleDeg} at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
@@ -166,7 +164,8 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
         />
       </span>
 
-      <div className="flex flex-col relative overflow-hidden z-[1] w-full h-full">
+      {/* Content Container - Lower Z-index (10) so border is visible over it */}
+      <div className="flex flex-col relative overflow-hidden z-10 w-full h-full rounded-[inherit]">
         {children}
       </div>
     </div>
