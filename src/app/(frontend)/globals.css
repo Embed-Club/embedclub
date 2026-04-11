@@ -1,6 +1,36 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Custom brand fonts (Gobold Bold · Sport Break Free Version)
+   These are declared here so inline SVGs rendered via <InlineSVG> can inherit
+   them from the document — unlike <img>, inline SVGs share the page's CSS.
+   ──────────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Gobold';
+  src: url('/fonts/GoboldBold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'GoboldBold';
+  src: url('/fonts/GoboldBold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'SportBreak-FreeVersion';
+  src: url('/fonts/SportBreakFreeVersion.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 @custom-variant dark (&:is(.dark *));
 
