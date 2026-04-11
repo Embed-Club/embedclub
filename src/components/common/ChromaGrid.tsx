@@ -192,4 +192,3 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '' }) => {
 }
 
 export default ChromaGrid
-export { GlowingEffect }
