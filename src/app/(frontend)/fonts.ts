@@ -21,3 +21,15 @@ export const avantGarde = localFont({
   variable: '--font-avant-garde',
   display: 'swap',
 })
+
+export const gobold = localFont({
+  src: '../../styles/fonts/Gobold Bold.otf',
+  variable: '--font-gobold',
+  display: 'swap',
+})
+
+export const sportBreak = localFont({
+  src: '../../styles/fonts/Sport Break.otf',
+  variable: '--font-sport-break',
+  display: 'swap',
+})
