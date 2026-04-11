@@ -123,7 +123,7 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   return (
     <div
       ref={cardRef}
-      className={`relative grid isolate border border-white/10 ${className}`}
+      className={`relative grid isolate ${className}`}
       style={{
         background: backgroundColor,
         borderRadius: `${borderRadius}px`,
