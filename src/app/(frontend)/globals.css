@@ -4,21 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* SVG Support: Explicit Font Names */
-@font-face {
-  font-family: 'Gobold Bold';
-  src: url('../../styles/fonts/Gobold Bold.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Sport Break';
-  src: url('../../styles/fonts/Sport Break.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
