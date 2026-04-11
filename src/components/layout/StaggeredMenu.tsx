@@ -505,7 +505,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
                 {textLines.map((l, i) => (
                   // biome-ignore lint/suspicious/noArrayIndexKey: stable text stack
-                  <span className="sm-toggle-line block h-[1em] leading-none" key={i}>
+                  <span className="sm-toggle-line block h-[1em] overflow-hidden leading-none" key={i}>
                     {l}
                   </span>
                 ))}
@@ -634,8 +634,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-toggle:focus-visible { outline: 2px solid #ffffffaa; outline-offset: 4px; border-radius: 4px; }
 .sm-scope .sm-line:last-of-type { margin-top: 6px; }
 .sm-scope .sm-toggle-textWrap { position: relative; margin-right: 0.5em; display: inline-block; height: 1em; overflow: hidden; white-space: nowrap; width: var(--sm-toggle-width, auto); min-width: var(--sm-toggle-width, auto); }
-.sm-scope .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1; }
-.sm-scope .sm-toggle-line { display: block; height: 1em; line-height: 1; }
+.sm-scope .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1 !important; height: auto; }
+.sm-scope .sm-toggle-line { display: block; height: 1em; line-height: 1 !important; overflow: hidden; }
 .sm-scope .sm-icon { position: relative; width: 14px; height: 14px; flex: 0 0 14px; display: inline-flex; align-items: center; justify-content: center; will-change: transform; }
 .sm-scope .sm-panel-itemWrap { position: relative; overflow: hidden; line-height: 1; }
 .sm-scope .sm-icon-line { position: absolute; left: 50%; top: 50%; width: 100%; height: 2px; background: currentColor; border-radius: 2px; will-change: transform; }
