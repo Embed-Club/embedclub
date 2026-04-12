@@ -64,6 +64,7 @@ next-env.d.ts
 /public/media
 /public/gallery
 /public/audio-files
+/src/styles/fonts
 
 # Playwright
 /test-results/
