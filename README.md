@@ -27,6 +27,15 @@ Embed Club was inaugurated on **14th November 2018 at PACE**. The club was found
 - **Innovation**: Connecting like-minded technocrats to generate ideas, products, and technologies.
 - **Open Lab**: Creating an Open Lab with the latest hardware and tools through community contributions.
 
+### ⚡ Activities
+To meet the requirements from research and industry, we focus on six types of activities:
+1.  **Discussion**: Sharing experiences among students to form a technology community.
+2.  **Training**: Hands-on sessions to master knowledge consciously and actively.
+3.  **Lecture**: Supplements to class, featuring specialists and senior engineers.
+4.  **Project**: Collaborative work on real-world engineering challenges.
+5.  **Contest**: Participating in and hosting technical competitions.
+6.  **Research**: Opportunities for senior members to join advanced research groups.
+
 ---
 
 ## 💎 Project Overview
