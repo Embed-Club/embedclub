@@ -40,30 +40,30 @@ import { IntroContext } from './FrontendShell'
 const data = {
   navMain: [
     {
-      title: 'HOE',
+      title: 'HOME',
       url: '/',
       icon: LucideHome,
     },
   ],
   navSecondary: [
     {
-      title: 'CTIITIES',
+      title: 'ACTIVITIES',
       icon: SquareChartGantt,
       items: [
         {
-          title: 'EENTS',
+          title: 'EVENTS',
           url: '/events',
           icon: CalendarRange,
         },
         {
-          title: 'CHIEEENTS',
+          title: 'ACHIEVEMENTS',
           url: '/achievements',
           icon: Trophy,
         },
       ],
     },
     {
-      title: 'LERNING',
+      title: 'LEARNING',
       icon: LibraryBig,
       items: [
         {
@@ -72,12 +72,12 @@ const data = {
           icon: Boxes,
         },
         {
-          title: 'TUTORILS',
+          title: 'TUTORIALS',
           url: '/tutorials',
           icon: School,
         },
         {
-          title: 'SIULTORS',
+          title: 'SIMULATORS',
           url: '/simulators',
           icon: Bot,
         },
@@ -86,20 +86,20 @@ const data = {
   ],
   navThird: [
     {
-      title: 'GLLERY',
+      title: 'GALLERY',
       url: '/gallery',
       icon: Images,
     },
 
     {
-      title: 'EBERS',
+      title: 'MEMBERS',
       url: '/members',
       icon: UsersRound,
     },
   ],
   navBottom: [
     {
-      title: 'FEEDBCK',
+      title: 'FEEDBACK',
       url: '/feedback',
       icon: SquareTerminal,
     },
@@ -109,12 +109,12 @@ const data = {
       icon: Settings2,
     },
     {
-      title: 'BOUT',
+      title: 'ABOUT',
       url: '/about',
       icon: School,
     },
     {
-      title: 'CONTCT',
+      title: 'CONTACT',
       url: '/contact',
       icon: SquareTerminal,
     },

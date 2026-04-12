@@ -202,7 +202,7 @@ export default function AchievementsPage() {
       <MainbarShell>
         {/* Mobile heading only - desktop heading is inside Timeline component */}
         {isMobile && !isLoading && (
-          <h1 className="absolute left-5 top-5 text-2xl font-medium md:text-5xl">CHIEEENTS</h1>
+          <h1 className="absolute left-5 top-5 text-2xl font-medium md:text-5xl">ACHIEVEMENTS</h1>
         )}
 
         {isLoading ? (
@@ -211,7 +211,7 @@ export default function AchievementsPage() {
           <>
             {!isMobile && (
               <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-5xl">
-                CHIEEENTS
+                ACHIEVEMENTS
               </h1>
             )}
             <div className="flex h-full w-full flex-col items-center justify-center gap-6">
@@ -241,7 +241,7 @@ export default function AchievementsPage() {
               items={timelineAchievements}
               fillDistance={100}
               showHeader={!isMobile}
-              headerText="CHIEEENTS"
+              headerText="ACHIEVEMENTS"
               mobilePosition="right"
               className="w-full h-full"
             />

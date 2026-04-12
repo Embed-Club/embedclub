@@ -17,7 +17,7 @@ export default function AboutPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-6xl font-bold tracking-tight"
             >
-              BOUT US
+              ABOUT US
             </motion.h1>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
