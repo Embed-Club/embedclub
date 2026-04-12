@@ -93,7 +93,7 @@ interface MainbarShellProps {
 
 export const ScrollContainerContext = React.createContext<HTMLDivElement | null>(null)
 
-export function MainbarShell({ children, borderless }: MainbarShellProps) {
+export function MainbarShell({ children, borderless }: MainbarShellProps): React.ReactElement {
   const isMobile = useIsMobile()
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
   const { isIntroFinished } = React.useContext(IntroContext)
@@ -139,7 +139,7 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
 }
 
 
-export default function FrontendShell({ children }: { children?: React.ReactNode }) {
+export default function FrontendShell({ children }: { children?: React.ReactNode }): React.ReactElement {
   return (
     <SidebarShell>
       <MainbarShell>{children}</MainbarShell>
@@ -147,7 +147,7 @@ export default function FrontendShell({ children }: { children?: React.ReactNode
   )
 }
 
-function IntroLogo({ isExpanded, fillProgress }: { isExpanded: boolean; fillProgress: number }) {
+function IntroLogo({ isExpanded, fillProgress }: { isExpanded: boolean; fillProgress: number }): React.ReactElement {
   return (
     <motion.div 
       key="intro-overlay"
