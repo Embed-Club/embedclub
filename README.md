@@ -65,7 +65,11 @@ The build command in `package.json` includes critical steps for Payload 3.x:
 Ensure the following are set in production:
 - `DATABASE_URL`: Neon/Postgres connection string.
 - `PAYLOAD_SECRET`: A secure random string.
-- `S3_*`: AWS/S3 credentials for media storage.
+## Contributing
+
+1.  **Create a Branch**: `git checkout -b feature/your-feature-name`
+2.  **Make Changes**: Follow the coding standards (Biome for linting/formatting).
+3.  **Submit a PR**: Detailed description of changes.
 
 ---
 
