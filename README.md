@@ -34,6 +34,9 @@ We are dedicated to advancing knowledge and expertise in embedded systems and Io
 ### 🔭 Vision
 Our vision is to be a leading hub for innovation in embedded systems and IoT. We aim to inspire and educate the next generation of engineers and problem solvers who will shape the future of technology.
 
+### 🌐 Get Connected!
+Embed Club connects over **100+ members** who share a passion for embedded systems and innovation. Collaborate on groundbreaking projects, host tech events, and network with professionals in fields like Embedded AI, Real-time Systems, and IoT. Join us and be a part of something big!
+
 ## Project Structure
 
 ```text
