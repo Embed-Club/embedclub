@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import * as SVGAssets from './SVGAssets'
 
 interface InlineSVGProps {
   src: string
@@ -9,40 +10,44 @@ interface InlineSVGProps {
 }
 
 /**
- * Fetches an SVG file and renders it inline in the DOM.
- * This is required so that @font-face rules embedded in the SVG's <style>
- * are actually applied — <img> tags sandbox SVG resources and ignore embedded fonts.
+ * Injects SVG markup directly into the DOM so it can inherit parent CSS (like @font-face).
+ * Optimized to use static assets synchronously to prevent layout shifts during transitions.
  */
 export function InlineSVG({ src, className, style }: InlineSVGProps) {
-  const [content, setContent] = useState<string | null>(null)
+  // Try to get static content first for instant render
+  const getInitialContent = () => {
+    const s = src.toLowerCase()
+    if (s.includes('banner-dark')) return SVGAssets.BANNER_DARK
+    if (s.includes('banner-light')) return SVGAssets.BANNER_LIGHT
+    if (s.includes('logo-dark')) return SVGAssets.LOGO_DARK
+    if (s.includes('logo-light')) return SVGAssets.LOGO_LIGHT
+    return null
+  }
+
+  const [content, setContent] = useState<string | null>(getInitialContent())
 
   useEffect(() => {
+    // If we already have content from static assets, don't fetch
+    if (content) return
+
     let cancelled = false
     fetch(src)
       .then((r) => r.text())
       .then((rawSvg) => {
         if (cancelled) return
 
-        // Strip embedded @font-face blocks from the SVG's own <style> section.
-        // The Base64-encoded font data inside the SVG may be incomplete/corrupted
-        // (causing missing glyphs like the "O" in Gobold). By removing it, the
-        // inline SVG inherits the @font-face declarations in globals.css which
-        // load from the actual .otf files on disk.
-        //
-        // We target specifically @font-face rules that use data: URIs (base64 embedded).
-        // The style block looks like: @font-face { ... src: url(data:font/...) ... }
-        // We replace the entire style element content to wipe all embedded fonts cleanly.
-        const cleaned = rawSvg
-          // Remove all data:-URI @font-face declarations (handles nested parens in base64 blobs)
-          .replace(/@font-face\{[^@]*/g, (match) =>
-            match.includes('data:') ? '' : match,
-          )
+        // Strip embedded @font-face blocks that use data: URIs (corrupted Base64)
+        const cleaned = rawSvg.replace(/@font-face\s?\{[^@]*\}/g, (match) =>
+          match.includes('data:') ? '' : match,
+        )
 
         setContent(cleaned)
       })
-      .catch(() => {/* silently fail – fallback is an empty div */})
+      .catch((err) => {
+        console.error('Error loading SVG:', err)
+      })
     return () => { cancelled = true }
-  }, [src])
+  }, [src, content])
 
   if (!content) return <div className={className} style={style} />
 
@@ -52,7 +57,6 @@ export function InlineSVG({ src, className, style }: InlineSVGProps) {
       style={{
         ...style,
         lineHeight: 0,
-        // Make the inner <svg> element fill this wrapper div
       }}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: SVG files are our own local assets
       dangerouslySetInnerHTML={{ __html: content }}
