@@ -27,6 +27,14 @@
   font-display: block;
 }
 
+@font-face {
+  font-family: 'Sport Break';
+  src: url('/fonts/SportBreakFreeVersion.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
