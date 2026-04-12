@@ -33,7 +33,7 @@ export const BANNER_DARK = `
     <g transform="matrix(0.151785,0,0,0.151785,-90.095852,-117.972344)">
         <g transform="matrix(164.70703,0,0,164.70703,2514.892131,1069.775484)">
         </g>
-        <text x="1214.86px" y="1069.775px" style="font-family:'Sport Break', 'SportBreak-FreeVersion';font-size:164.707px;fill:white;">EMBED CL<tspan x="2231.102px " y="1069.775px ">U</tspan>B</text>
+        <text x="1214.86px" y="1069.775px" style="font-family:'SportBreak-FreeVersion', 'Sport Break';font-size:164.707px;fill:white;">EMBED CL<tspan x="2231.102px " y="1069.775px ">U</tspan>B</text>
     </g>
     <g transform="matrix(0.087581,0.000105,0.000105,0.151784,21.345713,-137.999053)">
         <path d="M851.75,1240.157L3136.545,1236.424" style="fill:none;stroke:white;stroke-width:33.6px;"/>
@@ -42,7 +42,7 @@ export const BANNER_DARK = `
         <g transform="matrix(1.08,0,0,1,-88.188007,0)">
             <g transform="matrix(109.804687,0,0,109.804687,2170.621084,1397.539437)">
             </g>
-            <text x="1102.35px" y="1397.539px" style="font-family:'Gobold', 'GoboldBold';font-size:109.805px;fill:white;">I<tspan x="1138.039px 1201.608px 1263.032px 1322.633px 1358.322px 1420.335px 1456.024px 1519.593px 1581.017px 1614.293px 1649.982px 1713.55px 1777.119px 1838.543px 1900.933px 1960.988px 2015.979px 2051.667px 2113.092px " y="1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px ">nspiring Innovation</tspan></text>
+            <text x="1102.35px" y="1397.539px" style="font-family:'Gobold';font-size:109.805px;fill:white;">I<tspan x="1138.039px 1201.608px 1263.032px 1322.633px 1358.322px 1420.335px 1456.024px 1519.593px 1581.017px 1614.293px 1649.982px 1713.55px 1777.119px 1838.543px 1900.933px 1960.988px 2015.979px 2051.667px 2113.092px " y="1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px ">nspiring Innovation</tspan></text>
         </g>
     </g>
 </svg>
@@ -81,7 +81,7 @@ export const BANNER_LIGHT = `
     <g transform="matrix(0.151785,0,0,0.151785,-90.095852,-117.972344)">
         <g transform="matrix(164.70703,0,0,164.70703,2514.892131,1069.775484)">
         </g>
-        <text x="1214.86px" y="1069.775px" style="font-family:'Sport Break', 'SportBreak-FreeVersion';font-size:164.707px;fill:white;">EMBED CL<tspan x="2231.102px " y="1069.775px ">U</tspan>B</text>
+        <text x="1214.86px" y="1069.775px" style="font-family:'SportBreak-FreeVersion', 'Sport Break';font-size:164.707px;">EMBED CL<tspan x="2231.102px " y="1069.775px ">U</tspan>B</text>
     </g>
     <g transform="matrix(0.087581,0.000105,0.000105,0.151784,21.345713,-137.999053)">
         <path d="M851.75,1240.157L3136.545,1236.424" style="fill:none;stroke:black;stroke-width:33.6px;"/>
@@ -90,7 +90,7 @@ export const BANNER_LIGHT = `
         <g transform="matrix(1.08,0,0,1,-88.188007,0)">
             <g transform="matrix(109.804687,0,0,109.804687,2170.621084,1397.539437)">
             </g>
-            <text x="1102.35px" y="1397.539px" style="font-family:'Gobold', 'GoboldBold';font-size:109.805px;fill:white;">I<tspan x="1138.039px 1201.608px 1263.032px 1322.633px 1358.322px 1420.335px 1456.024px 1519.593px 1581.017px 1614.293px 1649.982px 1713.55px 1777.119px 1838.543px 1900.933px 1960.988px 2015.979px 2051.667px 2113.092px " y="1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px ">nspiring Innovation</tspan></text>
+            <text x="1102.35px" y="1397.539px" style="font-family:'Gobold';font-size:109.805px;">I<tspan x="1138.039px 1201.608px 1263.032px 1322.633px 1358.322px 1420.335px 1456.024px 1519.593px 1581.017px 1614.293px 1649.982px 1713.55px 1777.119px 1838.543px 1900.933px 1960.988px 2015.979px 2051.667px 2113.092px " y="1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px 1397.539px ">nspiring Innovation</tspan></text>
         </g>
     </g>
 </svg>
