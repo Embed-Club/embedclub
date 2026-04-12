@@ -16,7 +16,13 @@
 
 ## 💎 Project Overview
 
-**Embed Club** is a high-performance, content-driven platform designed to empower innovation through structured community engagement. Built on the cutting-edge **Next.js 15** and **Payload CMS 3.0** stack, the application provides a seamless bridge between administrative control and premium user experience.
+**Embed Club** is the IoT and Embedded Systems Club at **P.A. College of Engineering (PACE)**. We are a community of student tech enthusiasts dedicated to self-learning, collaboration, and hands-on innovation in the fields of embedded systems and computer science.
+
+### 🎯 Mission
+We are dedicated to advancing knowledge and expertise in embedded systems and IoT. Our mission is to foster a community of passionate learners and innovators who collaborate, create, and make a positive impact through technology.
+
+### 🔭 Vision
+Our vision is to be a leading hub for innovation in embedded systems and IoT. We aim to inspire and educate the next generation of engineers and problem solvers who will shape the future of technology.
 
 ## Project Structure
 
