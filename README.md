@@ -1,7 +1,7 @@
 # Embed Club | P.A. College of Engineering
 
 <div align="center">
-  <img src="public/EmbedClub-Banner-Dark.png" alt="Embed Club Logo" width="600" />
+  <img src="public/EmbedClub-Banner-Dark-High.png" alt="Embed Club Logo" width="600" />
   <p align="center">
     <strong>A student-led self-learning club dedicated to Embedded Systems and IoT at PACE</strong>
   </p>
