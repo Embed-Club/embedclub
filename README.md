@@ -1,4 +1,4 @@
-# 🚀 Embed Club | P.A. College of Engineering
+# Embed Club | P.A. College of Engineering
 
 <div align="center">
   <img src="public/embedClubBanner-Dark.svg" alt="Embed Club Logo" width="600" />
