@@ -39,6 +39,22 @@
 | **Motion** | Framer Motion & GSAP | High-fidelity UI animations and transitions |
 | **Styling** | Vanilla CSS + Tailwind | Custom design tokens and modern utility layout |
 
+## Deployment
+
+This project is optimized for deployment on Vercel or similar platforms. 
+
+### Build Process
+The build command in `package.json` includes critical steps for Payload 3.x:
+1.  **Database Migrations**: `pnpm run payload migrate` runs automatically to sync the database schema.
+2.  **Import Map Generation**: `pnpm run generate:importmap` creates the component mappings required for the Admin Panel.
+3.  **Next.js Build**: Standard `next build` for the application.
+
+### Environment Variables
+Ensure the following are set in production:
+- `DATABASE_URL`: Neon/Postgres connection string.
+- `PAYLOAD_SECRET`: A secure random string.
+- `S3_*`: AWS/S3 credentials for media storage.
+
 ---
 
 ## 🚀 Development Quick-Start
