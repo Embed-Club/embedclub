@@ -63,74 +63,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
         {/* The Evolving Intro Logo - Matches prompt requirements */}
         <AnimatePresence>
           {!isIntroFinished && (
-            <motion.div 
-              key="intro-overlay"
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="fixed inset-0 z-[1000] flex items-center justify-center bg-background pointer-events-none"
-            >
-              <motion.div
-                layoutId="master-logo"
-                className="relative flex items-center"
-                initial={false}
-                animate={isExpanded ? { width: 440 } : { width: 144 }}
-                transition={{ 
-                    duration: 1.0, 
-                    ease: [0.16, 1, 0.3, 1] 
-                }}
-              >
-                {/* 1. Shield (Icon) - Always the anchor */}
-                <div className="relative w-[144px] h-[144px] shrink-0 z-20 bg-background">
-                    {/* Greyscale Base */}
-                    <img 
-                    src="/embedClubLogo-Dark.svg" 
-                    className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 hidden dark:block" 
-                    />
-                    <img 
-                    src="/embedClubLogo-Light.svg" 
-                    className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 dark:hidden" 
-                    />
-                    
-                    {/* Colored Fill */}
-                    <div 
-                    className="absolute inset-0 overflow-hidden" 
-                    style={{ clipPath: `inset(${(1 - fillProgress) * 100}% 0 0 0)` }}
-                    >
-                        <img 
-                        src="/embedClubLogo-Dark.svg" 
-                        className="w-full h-full object-contain hidden dark:block" 
-                        />
-                        <img 
-                        src="/embedClubLogo-Light.svg" 
-                        className="w-full h-full object-contain dark:hidden" 
-                        />
-                    </div>
-                </div>
-
-                {/* 2. Banner Text - Slides out from behind the icon */}
-                {/* w-[440px] + clip at 120px = 320px of visible text area */}
-                {/* Clip at 120px (not 144) so the "E" in EMBED isn't cut off */}
-                <div className="absolute left-0 top-0 h-full w-[460px] pointer-events-none z-10 overflow-hidden">
-                    <motion.div
-                        initial={{ x: -296, opacity: 0 }}
-                        animate={isExpanded ? { x: 0, opacity: 1 } : { x: -296, opacity: 0 }}
-                        transition={{ 
-                            duration: 1.2, 
-                            ease: [0.22, 1, 0.36, 1],
-                            delay: 0.2
-                        }}
-                        className="w-full h-full"
-                    >
-                        {/* InlineSVG injects SVG inline so @font-face rules work */}
-                        <div className="w-full h-full" style={{ clipPath: 'inset(0 0 0 120px)' }}>
-                             <InlineSVG src="/EmbedClubBanner-Dark.svg" className="w-full h-full hidden dark:block [&>svg]:w-full [&>svg]:h-full" />
-                             <InlineSVG src="/EmbedClubBanner-Light.svg" className="w-full h-full block dark:hidden [&>svg]:w-full [&>svg]:h-full" />
-                        </div>
-                    </motion.div>
-                </div>
-              </motion.div>
-            </motion.div>
+            <IntroLogo isExpanded={isExpanded} fillProgress={fillProgress} />
           )}
         </AnimatePresence>
 
@@ -211,5 +144,71 @@ export default function FrontendShell({ children }: { children?: React.ReactNode
     <SidebarShell>
       <MainbarShell>{children}</MainbarShell>
     </SidebarShell>
+  )
+}
+
+function IntroLogo({ isExpanded, fillProgress }: { isExpanded: boolean; fillProgress: number }) {
+  return (
+    <motion.div 
+      key="intro-overlay"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-background pointer-events-none"
+    >
+      <motion.div
+        layoutId="master-logo"
+        className="relative flex items-center"
+        initial={false}
+        animate={isExpanded ? { width: 440 } : { width: 144 }}
+        transition={{ 
+            duration: 1.0, 
+            ease: [0.16, 1, 0.3, 1] 
+        }}
+      >
+        <div className="relative w-[144px] h-[144px] shrink-0 z-20 bg-background">
+            <img 
+            src="/embedClubLogo-Dark.svg" 
+            className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 hidden dark:block" 
+            />
+            <img 
+            src="/embedClubLogo-Light.svg" 
+            className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 dark:hidden" 
+            />
+            
+            <div 
+            className="absolute inset-0 overflow-hidden" 
+            style={{ clipPath: `inset(${(1 - fillProgress) * 100}% 0 0 0)` }}
+            >
+                <img 
+                src="/embedClubLogo-Dark.svg" 
+                className="w-full h-full object-contain hidden dark:block" 
+                />
+                <img 
+                src="/embedClubLogo-Light.svg" 
+                className="w-full h-full object-contain dark:hidden" 
+                />
+            </div>
+        </div>
+
+        <div className="absolute left-0 top-0 h-full w-[460px] pointer-events-none z-10 overflow-hidden">
+            <motion.div
+                initial={{ x: -296, opacity: 0 }}
+                animate={isExpanded ? { x: 0, opacity: 1 } : { x: -296, opacity: 0 }}
+                transition={{ 
+                    duration: 1.2, 
+                    ease: [0.22, 1, 0.36, 1],
+                    delay: 0.2
+                }}
+                className="w-full h-full"
+            >
+                <div className="w-full h-full" style={{ clipPath: 'inset(0 0 0 120px)' }}>
+                     <InlineSVG src="/EmbedClubBanner-Dark.svg" className="w-full h-full hidden dark:block [&>svg]:w-full [&>svg]:h-full" />
+                     <InlineSVG src="/EmbedClubBanner-Light.svg" className="w-full h-full block dark:hidden [&>svg]:w-full [&>svg]:h-full" />
+                </div>
+            </motion.div>
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }
