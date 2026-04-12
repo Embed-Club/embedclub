@@ -12,6 +12,16 @@
   [![Supabase](https://img.shields.io/badge/Supabase-S3_Storage-emerald?style=for-the-badge&logo=supabase)](https://supabase.com/)
 </div>
 
+## 📖 About Us
+Welcome to the IoT and Embedded Systems Club at **P.A. College of Engineering**. We are a group of passionate students and tech enthusiasts who share a common interest in embedded systems, IoT, and computer science. Our club provides a platform for students to explore, experiment, and create with technology through events, workshops, and projects.
+
+### 🏛️ History
+Embed Club was inaugurated on **14th November 2018 at PACE**. The club was founded with these core objectives:
+- **Infrastructure**: Creating a community with infrastructure to help technical minds.
+- **Knowledge Transfer**: Connecting experienced mentors and newbies to transfer knowledge.
+- **Innovation**: Connecting like-minded technocrats to generate ideas, products, and technologies.
+- **Open Lab**: Creating an Open Lab with the latest hardware and tools through community contributions.
+
 ---
 
 ## 💎 Project Overview
