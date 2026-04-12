@@ -109,6 +109,11 @@ const data = {
       icon: Settings2,
     },
     {
+      title: 'BOUT',
+      url: '/about',
+      icon: School,
+    },
+    {
       title: 'CONTCT',
       url: '/contact',
       icon: SquareTerminal,
