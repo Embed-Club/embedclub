@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import {
   Bot,
   Boxes,
@@ -12,11 +12,11 @@ import {
   SquareTerminal,
   Trophy,
   UsersRound,
-} from "lucide-react";
-import { useTheme } from "next-themes";
-import * as React from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { InlineSVG } from "@/components/layout/InlineSVG";
+} from 'lucide-react'
+import { useTheme } from 'next-themes'
+import * as React from 'react'
+import { motion, AnimatePresence } from 'motion/react'
+import { InlineSVG } from '@/components/layout/InlineSVG'
 
 import {
   Sidebar,
@@ -32,9 +32,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { ModeToggle } from "../theme/ThemeToggle";
-import { IntroContext } from "./FrontendShell";
+} from '@/components/ui/sidebar'
+import { ModeToggle } from '../theme/ThemeToggle'
+import { IntroContext } from './FrontendShell'
 
 // This is sample data.
 const data = {
@@ -67,8 +67,8 @@ const data = {
       icon: LibraryBig,
       items: [
         {
-          title: "RESOURCES",
-          url: "/resources",
+          title: 'RESOURCES',
+          url: '/resources',
           icon: Boxes,
         },
         {
@@ -77,8 +77,8 @@ const data = {
           icon: School,
         },
         {
-          title: "SIMULATORS",
-          url: "/simulators",
+          title: 'SIULTORS',
+          url: '/simulators',
           icon: Bot,
         },
       ],
@@ -86,55 +86,56 @@ const data = {
   ],
   navThird: [
     {
-      title: "GALLERY",
-      url: "/gallery",
+      title: 'GLLERY',
+      url: '/gallery',
       icon: Images,
     },
 
     {
-      title: "MEMBERS",
-      url: "/members",
+      title: 'EBERS',
+      url: '/members',
       icon: UsersRound,
     },
   ],
   navBottom: [
     {
-      title: "FEEDBACK",
-      url: "/feedback",
+      title: 'FEEDBCK',
+      url: '/feedback',
       icon: SquareTerminal,
     },
     {
-      title: "SUPPORT",
-      url: "/support",
+      title: 'SUPPORT',
+      url: '/support',
       icon: Settings2,
     },
     {
-      title: "ABOUT",
-      url: "/about",
+      title: 'BOUT',
+      url: '/about',
       icon: School,
     },
     {
-      title: "CONTACT",
-      url: "/contact",
+      title: 'CONTCT',
+      url: '/contact',
       icon: SquareTerminal,
     },
   ],
-};
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [mounted, setMounted] = React.useState(false);
-  const { resolvedTheme } = useTheme();
-  const { toggleSidebar, state } = useSidebar();
-  const { isIntroFinished } = React.useContext(IntroContext);
+  const [mounted, setMounted] = React.useState(false)
+  const { resolvedTheme } = useTheme()
+  const { toggleSidebar, state } = useSidebar()
+  const { isIntroFinished } = React.useContext(IntroContext)
 
   React.useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
-  if (!mounted) return null;
 
-  const isDark = resolvedTheme === "dark";
-  const collapsed = state === "collapsed";
+  if (!mounted) return null
+
+  const isDark = resolvedTheme === 'dark'
+  const collapsed = state === 'collapsed'
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
@@ -155,9 +156,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         layoutId="master-logo"
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{
-                          duration: 1.0,
-                          ease: [0.16, 1, 0.3, 1],
+                        transition={{ 
+                            duration: 1.0,
+                            ease: [0.16, 1, 0.3, 1]
                         }}
                         className="relative w-[180px] h-full overflow-hidden"
                       >
@@ -183,11 +184,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       >
                         {/* Logo-only SVG is simple paths, no font needed — Image is fine here */}
                         <img
-                          src={
-                            isDark
-                              ? "/embedClubLogo-Dark.svg"
-                              : "/embedClubLogo-Light.svg"
-                          }
+                          src={isDark ? '/embedClubLogo-Dark.svg' : '/embedClubLogo-Light.svg'}
                           alt="EmbedClub"
                           className="w-full h-full object-contain"
                         />
@@ -207,14 +204,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {data.navMain.map((item) => (
                 <SidebarMenuItem className="w-full" key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a
-                      href={item.url}
-                      className="flex items-center gap-1 w-full py-3 text-center"
-                    >
+                    <a href={item.url} className="flex items-center gap-1 w-full py-3 text-center">
                       <item.icon />
-                      <span className="font-semibold text-2xl">
-                        {item.title}
-                      </span>
+                      <span className="font-semibold text-2xl">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -231,9 +223,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       className="flex items-center gap-1 w-full py-3 text-center bg-transparent border-none p-0 cursor-default"
                     >
                       <item.icon />
-                      <span className="font-semibold text-2xl">
-                        {item.title}
-                      </span>
+                      <span className="font-semibold text-2xl">{item.title}</span>
                     </button>
                   </SidebarMenuButton>
                   {item.items?.length ? (
@@ -242,11 +232,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenuSubItem key={item.title}>
                           <SidebarMenuSubButton asChild>
                             <a href={item.url}>
-                              {" "}
-                              <item.icon />{" "}
-                              <span className="font-semibold text-md">
-                                {item.title}
-                              </span>
+                              {' '}
+                              <item.icon />{' '}
+                              <span className="font-semibold text-md">{item.title}</span>
                             </a>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -262,14 +250,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {data.navThird.map((item) => (
                 <SidebarMenuItem className="w-full" key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a
-                      href={item.url}
-                      className="flex items-center gap-1 w-full py-3 text-center"
-                    >
+                    <a href={item.url} className="flex items-center gap-1 w-full py-3 text-center">
                       <item.icon />
-                      <span className="font-semibold text-2xl">
-                        {item.title}
-                      </span>
+                      <span className="font-semibold text-2xl">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -284,10 +267,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {data.navBottom.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild size="sm">
-                  <a
-                    href={item.url}
-                    className="flex items-center justify-center gap-2 w-full py-2"
-                  >
+                  <a href={item.url} className="flex items-center justify-center gap-2 w-full py-2">
                     <item.icon />
                     <span className="text-xs font-semibold">{item.title}</span>
                   </a>
@@ -298,5 +278,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }
