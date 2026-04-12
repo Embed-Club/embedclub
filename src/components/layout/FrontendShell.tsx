@@ -188,9 +188,6 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
                 className="absolute inset-0 bg-background z-50 flex items-center justify-center pointer-events-none"
               >
                 {/* Visual placeholder for the main content area during glide */}
-                <div className="text-[10px] tracking-[0.4em] uppercase opacity-20 font-bold">
-                  Synchronizing System
-                </div>
               </motion.div>
             ) : null}
           </AnimatePresence>
