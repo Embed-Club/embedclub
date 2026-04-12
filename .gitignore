@@ -1,49 +1,71 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
+# Dependency directories
+node_modules/
+jspm_packages/
+.pnp/
 .pnp.js
 .yarn/install-state.gz
 
-/.idea/*
-!/.idea/runConfigurations
+# Next.js build output
+.next/
+out/
+build/
+dist/
 
-# testing
-/coverage
+# Payload CMS generated files
+importMap.js
+payload-types.ts
+.payload/
 
-# next.js
-/.next/
-/out/
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+migration_log.txt
 
-# local env files
-.env*.local
+# Local development / Agent files
+.claude/
+.claude-flow/
+.agent/
+.agents/
+.gemini/
+scratch/
+antigravity-restructure-prompt.md
+example.html
 
-# vercel
-.vercel
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
 
-# typescript
+# OS files
+.DS_Store
+Thumbs.db
+
+# Typescript build info
 *.tsbuildinfo
 next-env.d.ts
 
-.env
-
+# Uploads / Dynamic Media (do not commit user uploads)
 /media
+/gallery
+/audio-files
+/public/media
+/public/gallery
+/public/audio-files
 
 # Playwright
-node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
