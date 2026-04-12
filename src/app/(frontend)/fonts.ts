@@ -3,17 +3,17 @@ import localFont from 'next/font/local'
 export const avantGarde = localFont({
   src: [
     {
-      path: '../../styles/fonts/ITCAvantGardeStd-XLt.woff2',
+      path: '../../../public/fonts/ITCAvantGardeStd-XLt.woff2',
       weight: '200',
       style: 'normal',
     },
     {
-      path: '../../styles/fonts/ITCAvantGardeStd-Md.woff2',
+      path: '../../../public/fonts/ITCAvantGardeStd-Md.woff2',
       weight: '500',
       style: 'normal',
     },
     {
-      path: '../../styles/fonts/ITCAvantGardeStd-Bold.woff2',
+      path: '../../../public/fonts/ITCAvantGardeStd-Bold.woff2',
       weight: '700',
       style: 'normal',
     },
@@ -23,13 +23,13 @@ export const avantGarde = localFont({
 })
 
 export const gobold = localFont({
-  src: '../../styles/fonts/Gobold Bold.otf',
+  src: '../../../public/fonts/GoboldBold.otf',
   variable: '--font-gobold',
   display: 'swap',
 })
 
 export const sportBreak = localFont({
-  src: '../../styles/fonts/Sport Break Free Version.otf',
+  src: '../../../public/fonts/SportBreakFreeVersion.otf',
   variable: '--font-sport-break',
   display: 'swap',
 })
