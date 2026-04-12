@@ -15,6 +15,11 @@
 ## 📖 About Us
 Welcome to the IoT and Embedded Systems Club at **P.A. College of Engineering**. We are a group of passionate students and tech enthusiasts who share a common interest in embedded systems, IoT, and computer science. Our club provides a platform for students to explore, experiment, and create with technology through events, workshops, and projects.
 
+### 👥 Foundational Team & Alumni
+Embed Club emerged from the collective vision of its founding members: **Habeeb Ur Rehman**, **Nishant Narayanan**, and **Mohammed Saifuddin**. Our alumni play a vital role, leveraging industry experience to train current students in advanced technologies through workshops and mentorship.
+
+Embedded system education is a challenge because it sits at the intersection of many disciplines. Embed Club is planned and managed by the students themselves, ensuring we stay close to industry requirements while learning consciously and actively.
+
 ### 🏛️ History
 Embed Club was inaugurated on **14th November 2018 at PACE**. The club was founded with these core objectives:
 - **Infrastructure**: Creating a community with infrastructure to help technical minds.
