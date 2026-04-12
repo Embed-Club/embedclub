@@ -18,6 +18,18 @@
 
 **Embed Club** is a high-performance, content-driven platform designed to empower innovation through structured community engagement. Built on the cutting-edge **Next.js 15** and **Payload CMS 3.0** stack, the application provides a seamless bridge between administrative control and premium user experience.
 
+## Project Structure
+
+```text
+/public       - Static assets (fonts, brand logos, etc.)
+/src
+  /app        - Next.js 15 App Router (Frontend & Payload Admin)
+  /components - Reusable React components & Layouts
+  /payload    - Payload CMS Config & Collections
+  /lib        - Shared utilities and type-safe helpers
+  /hooks      - Custom React hooks
+```
+
 ### 🌟 High-Fidelity Features
 
 - **Intro Visual Identity**: A specialized **Shared Element Transition** (Logo Glide) that persists across page loads for a premium "App-like" feel.
