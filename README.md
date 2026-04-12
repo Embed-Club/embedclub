@@ -1,9 +1,9 @@
-# 🚀 Embed Club | Next-Gen Innovation Platform
+# 🚀 Embed Club | P.A. College of Engineering
 
 <div align="center">
   <img src="public/embedClubBanner-Dark.svg" alt="Embed Club Logo" width="600" />
   <p align="center">
-    <strong>An Enterprise-Grade Digital Ecosystem for Modern Innovators</strong>
+    <strong>A student-led self-learning club dedicated to Embedded Systems and IoT at PACE</strong>
   </p>
 
   [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
