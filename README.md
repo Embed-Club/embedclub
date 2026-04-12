@@ -12,22 +12,22 @@
   [![Supabase](https://img.shields.io/badge/Supabase-S3_Storage-emerald?style=for-the-badge&logo=supabase)](https://supabase.com/)
 </div>
 
-## 📖 About Us
+## About Us
 Welcome to the IoT and Embedded Systems Club at **P.A. College of Engineering**. We are a group of passionate students and tech enthusiasts who share a common interest in embedded systems, IoT, and computer science. Our club provides a platform for students to explore, experiment, and create with technology through events, workshops, and projects.
 
-### 👥 Foundational Team & Alumni
+### Foundational Team & Alumni
 Embed Club emerged from the collective vision of its founding members: **Habeeb Ur Rehman**, **Nishant Narayanan**, and **Mohammed Saifuddin**. Our alumni play a vital role, leveraging industry experience to train current students in advanced technologies through workshops and mentorship.
 
 Embedded system education is a challenge because it sits at the intersection of many disciplines. Embed Club is planned and managed by the students themselves, ensuring we stay close to industry requirements while learning consciously and actively.
 
-### 🏛️ History
+### History
 Embed Club was inaugurated on **14th November 2018 at PACE**. The club was founded with these core objectives:
 - **Infrastructure**: Creating a community with infrastructure to help technical minds.
 - **Knowledge Transfer**: Connecting experienced mentors and newbies to transfer knowledge.
 - **Innovation**: Connecting like-minded technocrats to generate ideas, products, and technologies.
 - **Open Lab**: Creating an Open Lab with the latest hardware and tools through community contributions.
 
-### ⚡ Activities
+### Activities
 To meet the requirements from research and industry, we focus on six types of activities:
 1.  **Discussion**: Sharing experiences among students to form a technology community.
 2.  **Training**: Hands-on sessions to master knowledge consciously and actively.
@@ -38,17 +38,17 @@ To meet the requirements from research and industry, we focus on six types of ac
 
 ---
 
-## 💎 Project Overview
+## Project Overview
 
 **Embed Club** is the IoT and Embedded Systems Club at **P.A. College of Engineering (PACE)**. We are a community of student tech enthusiasts dedicated to self-learning, collaboration, and hands-on innovation in the fields of embedded systems and computer science.
 
-### 🎯 Mission
+### Mission
 We are dedicated to advancing knowledge and expertise in embedded systems and IoT. Our mission is to foster a community of passionate learners and innovators who collaborate, create, and make a positive impact through technology.
 
-### 🔭 Vision
+### Vision
 Our vision is to be a leading hub for innovation in embedded systems and IoT. We aim to inspire and educate the next generation of engineers and problem solvers who will shape the future of technology.
 
-### 🌐 Get Connected!
+### Get Connected!
 Embed Club connects over **100+ members** who share a passion for embedded systems and innovation. Collaborate on groundbreaking projects, host tech events, and network with professionals in fields like Embedded AI, Real-time Systems, and IoT. Join us and be a part of something big!
 
 ## Project Structure
@@ -63,7 +63,7 @@ Embed Club connects over **100+ members** who share a passion for embedded syste
   /hooks      - Custom React hooks
 ```
 
-### 🌟 High-Fidelity Features
+### High-Fidelity Features
 
 - **Intro Visual Identity**: A specialized **Shared Element Transition** (Logo Glide) that persists across page loads for a premium "App-like" feel.
 - **Automated Media Engine**: Integrated **Sharp-powered WebP compression** and responsive image generation hosted on Supabase S3.
@@ -73,7 +73,7 @@ Embed Club connects over **100+ members** who share a passion for embedded syste
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## Architecture & Tech Stack
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
@@ -98,6 +98,8 @@ The build command in `package.json` includes critical steps for Payload 3.x:
 Ensure the following are set in production:
 - `DATABASE_URL`: Neon/Postgres connection string.
 - `PAYLOAD_SECRET`: A secure random string.
+- `S3_*`: AWS/S3 credentials for media storage.
+
 ## Contributing
 
 1.  **Create a Branch**: `git checkout -b feature/your-feature-name`
@@ -106,7 +108,7 @@ Ensure the following are set in production:
 
 ---
 
-## 🚀 Development Quick-Start
+## Development Quick-Start
 
 ### 1. Prerequisites
 - **Node.js**: >= 20.9.0
@@ -139,21 +141,21 @@ pnpm dev
 
 ---
 
-## 📤 Production Deployment
+## Production Deployment
 
 This project is optimized for **Vercel** and **Neon**.
 
-1.  **Database Migration**: Ensure your Neon project is configured with the correct schema. For fresh starts, utilize the `CASCADE` drop to allow Payload to recreate the optimized schema.
+1.  **Database Migration**: Ensure your Neon project is configured with the correct schema.
 2.  **Storage Access**: Ensure the Supabase bucket is set to **Public** to allow the frontend to serve WebP assets.
 3.  **Deployment**: Pushing to the `main` branch triggers an automated CI/CD pipeline.
 
 ---
 
-## 🛡️ Engineering Standards
+## Engineering Standards
 
-- **Asset Optimization**: All images are automatically transcoded to WebP with an 80% quality threshold to minimize LCP (Largest Contentful Paint).
-- **Responsive Systems**: Grid-based layouts ensure parity across 4K displays and mobile palmtop devices.
-- **Persistence**: Intro animations utilize specialized state management to prevent visual flickering during navigation.
+- **Asset Optimization**: All images are automatically compressed to minimize LCP.
+- **Responsive Systems**: Grid-based layouts ensure parity across devices.
+- **Persistence**: Intro animations utilize specialized state management to prevent visual flickering.
 
 ---
 
