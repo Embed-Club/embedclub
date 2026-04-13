@@ -14,6 +14,7 @@ export interface StaggeredMenuSocialItem {
   label: string
   link: string
 }
+
 export interface StaggeredMenuProps {
   position?: 'left' | 'right'
   colors?: string[]
