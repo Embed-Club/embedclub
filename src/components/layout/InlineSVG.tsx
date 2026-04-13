@@ -10,16 +10,8 @@ interface InlineSVGProps {
 }
 
 /**
- * Injects SVG markup directly into the DOM (Synchronous where possible).
- * 
- * WHY THIS EXISTS:
- * <img> tags create a sandboxed context which ignores global @font-face rules.
- * InlineSVG allows SVG text elements to inherit brand fonts (Gobold, Sport Break)
- * declared in globals.css.
- * 
- * PERFORMANCE:
- * Uses pre-defined assets from SVGAssets.tsx to avoid 'flicker' or 'missing logo'
- * states during Client-Side Navigation and Intro transitions.
+ * Injects SVG markup directly into the DOM so it can inherit parent CSS (like @font-face).
+ * Optimized to use static assets synchronously to prevent layout shifts during transitions.
  */
 export function InlineSVG({ src, className, style }: InlineSVGProps) {
   // Try to get static content first for instant render
