@@ -6,11 +6,11 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell>
-        <div className="max-w-4xl mx-auto py-16 px-6 space-y-16">
-          
-          {/* Header Section */}
+        <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl">
+          BOUT EBED CLUB
+        </h1>
+        <div className="max-w-5xl mx-auto px-4 md:px-8 pt-24 md:pt-40 pb-20 space-y-16">
           <section className="space-y-4">
-            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">About Embed Club</h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Inaugurated on 14th November 2018 at PACE.
             </p>
