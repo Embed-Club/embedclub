@@ -5,13 +5,22 @@ import { Timeline } from '@/components/features/timeline/UnifiedTimeline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { motion } from 'motion/react'
-import RichTextRender from '@/components/common/RichTextRender'
 import React from 'react'
 
 type Achievement = {
   id: number
   title: string
-  summary: any // Keep simple for use
+  summary: {
+    root: {
+      children: Array<{
+        text?: string
+        children?: Array<{ text?: string; [key: string]: unknown }>
+        [key: string]: unknown
+      }>
+      [key: string]: unknown
+    }
+    [key: string]: unknown
+  }
   date: string
   image?:
     | (number | null)
@@ -25,8 +34,31 @@ type Achievement = {
 type TimelineAchievement = {
   id: string
   title: string
-  text: React.ReactNode
+  text: string
   image: string | null
+}
+
+/**
+ * Extract plain text from Lexical rich text structure
+ */
+function extractTextFromLexical(summary: Achievement['summary']): string {
+  if (!summary?.root?.children) return ''
+
+  const extractText = (node: Record<string, unknown>): string => {
+    if (typeof node === 'string') return node
+    if (node.text) return node.text as string
+    if (node.children && Array.isArray(node.children)) {
+      return (node.children as Record<string, unknown>[])
+        .map((child: Record<string, unknown>) => extractText(child))
+        .join('')
+    }
+    return ''
+  }
+
+  return (summary.root.children as Record<string, unknown>[])
+    .map((child: Record<string, unknown>) => extractText(child))
+    .join(' ')
+    .trim()
 }
 
 /**
@@ -34,13 +66,18 @@ type TimelineAchievement = {
  */
 function transformAchievements(achievements: Achievement[]): TimelineAchievement[] {
   // Sort by date descending (newest first) as a safety measure
+  // This ensures achievements are always displayed with the latest date at the top
   const sortedAchievements = [...achievements].sort((a, b) => {
     const dateA = a.date ? new Date(a.date).getTime() : 0
     const dateB = b.date ? new Date(b.date).getTime() : 0
+    // Descending order: newest dates (larger timestamps) come first
     return dateB - dateA
   })
 
   return sortedAchievements.map((achievement) => {
+    // Extract text from lexical rich text
+    const text = extractTextFromLexical(achievement.summary)
+
     // Get image URL from relationship
     let imageUrl: string | null = null
     if (achievement.image && typeof achievement.image === 'object' && 'url' in achievement.image) {
@@ -50,7 +87,7 @@ function transformAchievements(achievements: Achievement[]): TimelineAchievement
     return {
       id: achievement.id.toString(),
       title: achievement.title,
-      text: <RichTextRender value={achievement.summary} />,
+      text,
       image: imageUrl,
     }
   })

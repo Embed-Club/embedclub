@@ -16,8 +16,8 @@ function cn(...classes: (string | undefined | null | false)[]) {
 export interface TimelineItemData {
   id: string
   title: string
-  text?: React.ReactNode
-  description?: React.ReactNode
+  text?: string
+  description?: string
   image: string | null
   imageUrl?: string
   [key: string]: unknown
@@ -348,7 +348,7 @@ function TimelineItemDesktop({
             <h3 className="text-card-foreground dark:text-white text-xl font-semibold mb-3">
               {item.title}
             </h3>
-            <div className="text-card-foreground/90 dark:text-white/90 leading-relaxed">{text}</div>
+            <p className="text-card-foreground/90 dark:text-white/90 leading-relaxed">{text}</p>
           </div>
         ) : hasImage ? (
           // Image on left (when card is on right)
@@ -381,7 +381,7 @@ function TimelineItemDesktop({
             <h3 className="text-card-foreground dark:text-white text-xl font-semibold mb-3">
               {item.title}
             </h3>
-            <div className="text-card-foreground/90 dark:text-white/90 leading-relaxed">{text}</div>
+            <p className="text-card-foreground/90 dark:text-white/90 leading-relaxed">{text}</p>
           </div>
         ) : hasImage ? (
           // Image on right (when card is on left)
@@ -505,9 +505,9 @@ function TimelineContentMobile({
             <h3 className="text-card-foreground dark:text-white font-semibold text-lg mb-3">
               {item.title}
             </h3>
-            <div className="text-card-foreground/90 dark:text-white/90 text-sm leading-relaxed mb-3">
+            <p className="text-card-foreground/90 dark:text-white/90 text-sm leading-relaxed mb-3">
               {text}
-            </div>
+            </p>
             {imageUrl && (
               <div className="relative w-full aspect-square max-w-[280px] rounded-lg overflow-hidden">
                 <img src={imageUrl} alt={item.title} className="w-full h-full object-cover" />
