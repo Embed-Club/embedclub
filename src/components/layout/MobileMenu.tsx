@@ -4,6 +4,7 @@ import StaggeredMenu from '@/components/layout/StaggeredMenu'
 
 const navItems = [
   { label: 'HOE', ariaLabel: 'Home', link: '/' },
+  { label: 'BOUT', ariaLabel: 'About', link: '/about' },
   { label: 'CHIEEENTS', ariaLabel: 'Achievements', link: '/achievements' },
   { label: 'EENTS', ariaLabel: 'Events', link: '/events' },
   { label: 'RESOURCES', ariaLabel: 'Resources', link: '/resources' },
