@@ -1,7 +1,7 @@
 # 🚀 Embed Club | Next-Gen Innovation Platform
 
 <div align="center">
-  <img src="public/embedClubBanner-Dark.svg" alt="Embed Club Logo" width="600" />
+  <img src="public/EmbedClub-Banner-Dark-High.png" alt="Embed Club Logo" width="600" />
   <p align="center">
     <strong>An Enterprise-Grade Digital Ecosystem for Modern Innovators</strong>
   </p>
