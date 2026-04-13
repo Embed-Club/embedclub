@@ -12,7 +12,7 @@ export default async function Page() {
         <div className="max-w-5xl mx-auto px-4 md:px-8 pt-24 md:pt-40 pb-20 space-y-16">
           <section className="space-y-4">
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Inaugurated on 14th November 2018 at PACE.
+              Established on 14th November 2018 at PACE.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
                <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20 text-xs font-bold text-primary tracking-widest uppercase">
