@@ -99,6 +99,11 @@ const data = {
   ],
   navBottom: [
     {
+      title: 'BOUT',
+      url: '/about',
+      icon: UsersRound,
+    },
+    {
       title: 'FEEDBCK',
       url: '/feedback',
       icon: SquareTerminal,
