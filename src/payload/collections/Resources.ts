@@ -259,6 +259,37 @@ const ImageBlock: Block = {
 }
 
 /**
+ * SimulatorLinkBlock: Link to an interactive simulator
+ */
+const SimulatorLinkBlock: Block = {
+  slug: 'simulatorLinkBlock',
+  interfaceName: 'SimulatorLinkBlock',
+  labels: {
+    singular: 'Simulator Link Block',
+    plural: 'Simulator Link Blocks',
+  },
+  fields: [
+    {
+      name: 'simulator',
+      type: 'relationship',
+      relationTo: 'simulators',
+      required: true,
+      admin: {
+        description: 'Select the simulator to link to',
+      },
+    },
+    {
+      name: 'buttonText',
+      type: 'text',
+      defaultValue: 'Launch Simulator',
+      admin: {
+        description: 'Text to display on the action button',
+      },
+    },
+  ],
+}
+
+/**
  * RowBlock: Layout container for horizontal grouping of other blocks
  * Note: Does NOT include nested RowBlocks to avoid infinite recursion
  */
@@ -288,7 +319,7 @@ const RowBlock: Block = {
       name: 'blocks',
       type: 'blocks',
       required: false,
-      blocks: [TextBlock, CodeBlock, TableBlock, GraphBlock, ImageBlock],
+      blocks: [TextBlock, CodeBlock, TableBlock, GraphBlock, ImageBlock, SimulatorLinkBlock],
       admin: {
         description: 'Blocks to display in this row (nested RowBlocks not supported)',
       },
@@ -419,7 +450,15 @@ export const Resources: CollectionConfig = {
               type: 'blocks',
               required: false,
               minRows: 0,
-              blocks: [TextBlock, CodeBlock, TableBlock, GraphBlock, ImageBlock, RowBlock],
+              blocks: [
+                TextBlock,
+                CodeBlock,
+                TableBlock,
+                GraphBlock,
+                ImageBlock,
+                RowBlock,
+                SimulatorLinkBlock,
+              ],
               admin: {
                 description:
                   'Build your resource with flexible content blocks. Add text, code, tables, images, diagrams, and more.',
