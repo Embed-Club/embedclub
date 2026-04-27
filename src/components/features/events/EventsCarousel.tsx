@@ -123,4 +123,8 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   )
 }
 
-export { Card, BlurImage, type EventCardData as CardType } from '@/components/features/events/EventsCards'
+export {
+  Card,
+  BlurImage,
+  type EventCardData as CardType,
+} from '@/components/features/events/EventsCards'

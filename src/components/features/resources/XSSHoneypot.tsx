@@ -1,21 +1,21 @@
-import React from 'react'
-import { motion, AnimatePresence } from 'motion/react'
 import { Info } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import React from 'react'
 
 interface XSSHoneypotProps {
   isDetected: boolean
 }
 
 const MESSAGES = [
-  "Bhai, Kya Kar Raha Hai Tu?",
-  "Bilkul Ricks Nahi Lene Ka!",
-  "Choti Bachi Ho Kya?",
-  "Nice Try, Par System Pagal Nahi Hai.",
-  "Abhi Hum Zinda Hai!",
-  "Control Uday Control...",
-  "Abhe Chutiye",
-  "Tere toothpaste mein namak hai?",
-  "Bolo zubaan kesari"
+  'Bhai, Kya Kar Raha Hai Tu?',
+  'Bilkul Ricks Nahi Lene Ka!',
+  'Choti Bachi Ho Kya?',
+  'Nice Try, Par System Pagal Nahi Hai.',
+  'Abhi Hum Zinda Hai!',
+  'Control Uday Control...',
+  'Abhe Chutiye',
+  'Tere toothpaste mein namak hai?',
+  'Bolo zubaan kesari',
 ]
 
 export function XSSHoneypot({ isDetected }: XSSHoneypotProps) {
@@ -45,4 +45,3 @@ export function XSSHoneypot({ isDetected }: XSSHoneypotProps) {
     </AnimatePresence>
   )
 }
-

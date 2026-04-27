@@ -19,7 +19,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Event } from '@/payload/payload-types'
 import React from 'react'
-import { motion } from 'motion/react'
 
 function getBaseUrl() {
   return typeof window !== 'undefined'
@@ -252,7 +251,6 @@ export default function Page() {
                 ))}
               />
             </div>
-
 
             <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
               <h2 className="relative text-2xl font-medium md:text-4xl">LL EENTS</h2>

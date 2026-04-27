@@ -1,5 +1,5 @@
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import ComingSoon from '@/components/common/ComingSoon'
+import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 
 export default async function Page() {
   return (

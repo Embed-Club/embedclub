@@ -1,5 +1,5 @@
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import Masonry from '@/components/features/gallery/Masonry'
+import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import type { Gallery } from '@/payload/payload-types'
 
 function getBaseUrl() {
