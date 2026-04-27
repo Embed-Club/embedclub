@@ -18,6 +18,7 @@ import { MemberPhoto } from './collections/MemberPhoto'
 import { MemberRoles } from './collections/MemberRoles'
 import { Members } from './collections/Members'
 import { Resources } from './collections/Resources'
+import { Simulators } from './collections/Simulators'
 import { Tags } from './collections/Tags'
 import { Users } from './collections/Users'
 
@@ -44,6 +45,7 @@ export default buildConfig({
     Members,
     Gallery,
     Resources,
+    Simulators,
     Tags,
   ],
   editor: lexicalEditor(),
