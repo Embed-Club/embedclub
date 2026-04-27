@@ -1,35 +1,36 @@
 import React from 'react'
 import RichTextRender from '@/components/common/RichTextRender'
-import { Resource } from '@/payload/payload-types'
+import { Resource, CodeBlock, ImageBlock, TableBlock, GraphBlock, RowBlock, SimulatorLinkBlock as SimulatorLinkBlockType, TextBlock } from '@/payload/payload-types'
 import { CodeBlockServer } from './blocks/CodeBlockServer'
-import { ImageBlock } from './blocks/ImageBlock'
-import { TableBlock } from './blocks/TableBlock'
-import { GraphBlock } from './blocks/GraphBlock'
-import { RowBlock } from './blocks/RowBlock'
-import { SimulatorLinkBlock } from './blocks/SimulatorLinkBlock'
+import { ImageBlock as ImageBlockComp } from './blocks/ImageBlock'
+import { TableBlock as TableBlockComp } from './blocks/TableBlock'
+import { GraphBlock as GraphBlockComp } from './blocks/GraphBlock'
+import { RowBlock as RowBlockComp } from './blocks/RowBlock'
+import { SimulatorLinkBlock as SimulatorLinkBlockComp } from './blocks/SimulatorLinkBlock'
 
 type Block = NonNullable<Resource['content']>[number]
 
-export function BlockMapper({ block, index }: { block: Block; index: number }) {
-  switch (block.blockType) {
+export function BlockMapper({ block, index }: { block: any; index: number }) {
+  const b = block as Block
+  switch (b.blockType) {
     case 'textBlock':
       return (
-        <section key={block.id || index} className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75">
-          <RichTextRender content={block.text} />
+        <section key={b.id || index} className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75">
+          <RichTextRender content={b.text} />
         </section>
       )
     case 'codeBlock':
-      return <CodeBlockServer key={block.id || index} block={block} />
+      return <CodeBlockServer key={b.id || index} block={b as CodeBlock} />
     case 'imageBlock':
-      return <ImageBlock key={block.id || index} block={block} />
+      return <ImageBlockComp key={b.id || index} block={b as ImageBlock} />
     case 'tableBlock':
-      return <TableBlock key={block.id || index} block={block} />
+      return <TableBlockComp key={b.id || index} block={b as TableBlock} />
     case 'graphBlock':
-      return <GraphBlock key={block.id || index} block={block} />
+      return <GraphBlockComp key={b.id || index} block={b as GraphBlock} />
     case 'rowBlock':
-      return <RowBlock key={block.id || index} block={block} />
+      return <RowBlockComp key={b.id || index} block={b as RowBlock} />
     case 'simulatorLinkBlock':
-      return <SimulatorLinkBlock key={block.id || index} block={block} />
+      return <SimulatorLinkBlockComp key={b.id || index} block={b as SimulatorLinkBlockType} />
     default:
       return null
   }
