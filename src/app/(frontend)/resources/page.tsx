@@ -1,77 +1,49 @@
-import {
-  type ResourceCardData,
-  ResourcesPageContent,
-} from '@/app/(frontend)/resources/ResourcesPageContent'
+import { ResourcesPageContent, type ResourceCardData } from '@/app/(frontend)/resources/ResourcesPageContent'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 
 async function getResources(): Promise<ResourceCardData[]> {
-  console.time('[Resources] getResources')
   try {
     const payload = await getPayload({ config })
 
     const resources = await payload.find({
       collection: 'resources',
       depth: 1, 
-      limit: 100, // Reduced from 1000 for better initial load
+      limit: 100,
       pagination: false,
-      select: {
-        title: true,
-        description: true,
-        thumbnail: true,
-        tags: true,
-        slug: true,
-        category: true,
-        createdAt: true,
-      },
     })
 
     if (!resources.docs || resources.docs.length === 0) {
-      console.log('[Resources] No resources found in database')
       return []
     }
 
-    console.log(`[Resources] Found ${resources.docs.length} resources`)
-
     // Transform Payload resources to ResourceCardData format
-    return (resources.docs as unknown as Record<string, unknown>[]).map((resource) => {
-      // Get thumbnail URL
-      let imageUrl =
-        'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop' // fallback
+    return (resources.docs as any[]).map((resource) => {
+      let imageUrl = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop' // fallback
 
       if (resource.thumbnail) {
-        const thumbnail = resource.thumbnail
-
-        // If thumbnail is an object with url property
-        if (typeof thumbnail === 'object' && thumbnail !== null && 'url' in thumbnail) {
-          imageUrl = (thumbnail as { url: string }).url
-        }
-        // If thumbnail is an ID (string), construct the API URL
-        else if (typeof thumbnail === 'string') {
-          imageUrl = `/api/media/file/${thumbnail}`
+        if (typeof resource.thumbnail === 'object' && resource.thumbnail !== null && 'url' in resource.thumbnail) {
+          imageUrl = resource.thumbnail.url
+        } else if (typeof resource.thumbnail === 'string') {
+          imageUrl = `/api/media/file/${resource.thumbnail}`
         }
       }
 
-      // Get tag names
       const tags = Array.isArray(resource.tags)
         ? resource.tags
-            .map((tag: unknown) => {
-              if (typeof tag === 'object' && tag !== null && 'name' in tag) {
-                return (tag as { name: string }).name
-              }
-              return typeof tag === 'string' ? tag : ''
-            })
+            .map((tag: any) => (typeof tag === 'object' ? tag.name : tag))
             .filter(Boolean)
         : []
 
       return {
-        id: resource.id as string,
-        title: (resource.title as string) || '',
-        description: (resource.description as string) || '',
+        id: resource.id,
+        title: resource.title || '',
+        description: resource.description || '',
         image: imageUrl,
         tags,
-        slug: (resource.slug as string) || '',
+        category: resource.category || '',
+        slug: resource.slug || '',
       }
     })
   } catch (error) {
@@ -85,10 +57,8 @@ export default async function Page() {
 
   try {
     resources = await getResources()
-    console.timeEnd('[Resources] getResources')
   } catch (error) {
     console.error('[Resources Page] Error:', error)
-    // Silently fail and show empty state
   }
 
   return (

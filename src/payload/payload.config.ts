@@ -84,49 +84,10 @@ export default buildConfig({
           }),
         ]
       : []),
-    mcpPlugin({
-      collections: {
-        // Enable MCP for Users collection
-        users: {
-          enabled: {
-            find: true, // Allow reading users
-            create: true, // Allow creating users
-            update: true, // Allow updating users
-            delete: false, // Disable deleting users (for safety)
-          },
-          description: 'User accounts and authentication data for the Embed Club members',
-        },
-        // Enable MCP for Media collection
-        media: {
-          enabled: {
-            find: true,
-            create: true,
-            update: true,
-            delete: false,
-          },
-          description: 'Media files including images and documents uploaded to the Embed Club',
-        },
-        // Enable MCP for Achievements collection
-        achievements: {
-          enabled: {
-            find: true,
-            create: true,
-            update: true,
-            delete: false,
-          },
-          description: 'Member achievements and milestones in the Embed Club',
-        },
-        // Enable MCP for Events collection
-        events: {
-          enabled: {
-            find: true,
-            create: true,
-            update: true,
-            delete: false,
-          },
-          description: 'Embed Club events including workshops, meetings, and activities',
-        },
-      },
-    }),
+    // mcpPlugin({
+    //   collections: {
+    //     ...
+    //   },
+    // }),
   ],
 })
