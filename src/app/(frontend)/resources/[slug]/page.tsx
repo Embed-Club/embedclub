@@ -71,13 +71,13 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
       <MainbarShell>
         <div className="w-full min-h-screen bg-[#09090b] text-zinc-100 pb-24">
           {/* Hero Section */}
-          <div className="relative w-full py-20 md:py-32 overflow-hidden">
+          <div className="relative w-full py-16 md:py-32 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
             
-            <div className="container relative z-10 mx-auto px-6 max-w-5xl">
+            <div className="container relative z-10 mx-auto px-4 md:px-6 max-w-5xl">
               <Link
                 href="/resources"
-                className="group inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors mb-8"
+                className="group inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors mb-6 md:mb-10"
               >
                 <div className="p-1 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
                   <ChevronLeft className="h-4 w-4" />
