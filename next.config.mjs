@@ -11,6 +11,7 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+    serverExternalPackages: ['payload', 'shiki'],
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

@@ -12,17 +12,6 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
       depth: 1,
       limit: 100,
       pagination: false,
-      select: {
-        title: true,
-        description: true,
-        thumbnail: true,
-        tags: true,
-        slug: true,
-        category: true,
-        difficulty: true,
-        estimatedTime: true,
-        createdAt: true,
-      }
     })
 
     if (!simulators.docs || simulators.docs.length === 0) {
@@ -30,7 +19,7 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
     }
 
     // Transform Payload simulators to SimulatorCardData format
-    return (simulators.docs as unknown as any[]).map((simulator) => {
+    return (simulators.docs as any[]).map((simulator) => {
       let imageUrl = 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=400&h=300&fit=crop' // fallback
 
       if (simulator.thumbnail) {
