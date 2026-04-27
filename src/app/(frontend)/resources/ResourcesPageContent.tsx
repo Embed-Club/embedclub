@@ -1,7 +1,7 @@
 'use client'
 
-import { ResourceCards } from '@/components/features/resources/ResourceCards'
 import { SearchBar } from '@/components/common/SearchBar'
+import { ResourceCards } from '@/components/features/resources/ResourceCards'
 import { XSSHoneypot } from '@/components/features/resources/XSSHoneypot'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -23,7 +23,9 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [sortBy, setSortBy] = useState<string>('title')
+  const [sortBy, setSortBy] = useState<string>('relevant')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({})
 
   // Debounce: wait 300ms after user stops typing before updating the filtered query
   useEffect(() => {
@@ -49,6 +51,13 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
       })
     }
 
+    // Tag filter (AND logic)
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter((resource) =>
+        selectedTags.every((tag) => resource.tags.includes(tag)),
+      )
+    }
+
     // Category filter
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(
@@ -56,22 +65,50 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
       )
     }
 
+    // Date range filter
+    if (dateRange.from || dateRange.to) {
+      filtered = filtered.filter((resource) => {
+        // Assuming resource has createdAt, if not we skip
+        const date = (resource as any).createdAt ? new Date((resource as any).createdAt) : null
+        if (!date) return true
+        if (dateRange.from && date < dateRange.from) return false
+        if (dateRange.to && date > dateRange.to) return false
+        return true
+      })
+    }
+
     // Sorting
     const sorted = [...filtered].sort((a, b) => {
       switch (sortBy) {
+        case 'relevant':
+          if (normalized) {
+            const aTitle = a.title.toLowerCase()
+            const bTitle = b.title.toLowerCase()
+            const aPos = aTitle.indexOf(normalized)
+            const bPos = bTitle.indexOf(normalized)
+            if (aPos !== bPos) {
+              if (aPos === -1) return 1
+              if (bPos === -1) return -1
+              return aPos - bPos
+            }
+          }
+          return 0
         case 'title':
           return a.title.localeCompare(b.title)
         case 'title-desc':
           return b.title.localeCompare(a.title)
-        case 'category':
-          return (a.category || '').localeCompare(b.category || '')
+        case 'newest':
+          return (
+            new Date((b as any).createdAt || 0).getTime() -
+            new Date((a as any).createdAt || 0).getTime()
+          )
         default:
           return 0
       }
     })
 
     return sorted
-  }, [debouncedQuery, resources, selectedCategory, sortBy])
+  }, [debouncedQuery, resources, selectedCategory, sortBy, selectedTags, dateRange])
 
   // Get unique categories from resources (memoized)
   const categories = useMemo(
@@ -79,18 +116,26 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
     [resources],
   )
 
-  const hasSearched = debouncedQuery.trim().length > 0
+  const activeTags = useMemo(
+    () => Array.from(new Set(resources.flatMap((r) => r.tags))).filter(Boolean) as string[],
+    [resources],
+  )
+
+  const hasSearched =
+    debouncedQuery.trim().length > 0 || selectedTags.length > 0 || selectedCategory !== 'all'
 
   // Humorous XSS Detection
   const isXSSAttempt = useMemo(() => {
     const p = debouncedQuery.toLowerCase()
-    return p.includes('<script') || 
-           p.includes('alert(') || 
-           p.includes('onerror=') || 
-           p.includes('onload=') ||
-           p.includes('javascript:') ||
-           p.includes('document.cookie') ||
-           p.includes('windows.location')
+    return (
+      p.includes('<script') ||
+      p.includes('alert(') ||
+      p.includes('onerror=') ||
+      p.includes('onload=') ||
+      p.includes('javascript:') ||
+      p.includes('document.cookie') ||
+      p.includes('windows.location')
+    )
   }, [debouncedQuery])
 
   if (resources.length === 0) {
@@ -120,6 +165,10 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
           onCategoryChange={setSelectedCategory}
           sortBy={sortBy}
           onSortChange={setSortBy}
+          activeTags={activeTags}
+          selectedTags={selectedTags}
+          onTagsChange={setSelectedTags}
+          onDateRangeChange={setDateRange}
         />
       </div>
 
