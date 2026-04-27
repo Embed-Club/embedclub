@@ -46,7 +46,9 @@ export function InlineSVG({ src, className, style }: InlineSVGProps) {
       .catch((err) => {
         console.error('Error loading SVG:', err)
       })
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [src, content])
 
   if (!content) return <div className={className} style={style} />

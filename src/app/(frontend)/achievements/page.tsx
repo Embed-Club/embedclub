@@ -1,7 +1,7 @@
 'use client'
 
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import { Timeline } from '@/components/features/timeline/UnifiedTimeline'
+import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { motion } from 'motion/react'

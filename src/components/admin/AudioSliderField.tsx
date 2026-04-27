@@ -1,7 +1,7 @@
 'use client'
-import ElasticSlider from '@/components/common/ElasticSlider'
 import { Volume2Icon } from '@/components/animate-ui/icons/Volume2'
 import { VolumeOffIcon } from '@/components/animate-ui/icons/VolumeOff'
+import ElasticSlider from '@/components/common/ElasticSlider'
 import { useField } from '@payloadcms/ui'
 import type { NumberFieldClientComponent } from 'payload'
 

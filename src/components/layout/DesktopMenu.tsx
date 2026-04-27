@@ -1,4 +1,5 @@
 'use client'
+import { InlineSVG } from '@/components/layout/InlineSVG'
 import {
   Bot,
   Boxes,
@@ -13,10 +14,9 @@ import {
   Trophy,
   UsersRound,
 } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { InlineSVG } from '@/components/layout/InlineSVG'
 
 import {
   Sidebar,
@@ -33,7 +33,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { ModeToggle } from '../theme/ThemeToggle'
 import { IntroContext } from './FrontendShell'
 
 // This is sample data.
@@ -131,7 +130,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     setMounted(true)
   }, [])
 
-
   if (!mounted) return null
 
   const isDark = resolvedTheme === 'dark'
@@ -156,9 +154,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         layoutId="master-logo"
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ 
-                            duration: 1.0,
-                            ease: [0.16, 1, 0.3, 1]
+                        transition={{
+                          duration: 1.0,
+                          ease: [0.16, 1, 0.3, 1],
                         }}
                         className="relative w-[180px] h-full overflow-hidden"
                       >

@@ -296,8 +296,20 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       gsap.to(h, { rotation: 45, xPercent: -50, yPercent: -50, duration: 0.5, ease: 'power4.out' })
       gsap.to(v, { rotation: -45, xPercent: -50, yPercent: -50, duration: 0.5, ease: 'power4.out' })
     } else {
-      gsap.to(h, { rotation: 0, xPercent: -50, yPercent: -50, duration: 0.35, ease: 'power3.inOut' })
-      gsap.to(v, { rotation: 90, xPercent: -50, yPercent: -50, duration: 0.35, ease: 'power3.inOut' })
+      gsap.to(h, {
+        rotation: 0,
+        xPercent: -50,
+        yPercent: -50,
+        duration: 0.35,
+        ease: 'power3.inOut',
+      })
+      gsap.to(v, {
+        rotation: 90,
+        xPercent: -50,
+        yPercent: -50,
+        duration: 0.35,
+        ease: 'power3.inOut',
+      })
     }
   }, [])
 
@@ -494,8 +506,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             type="button"
             style={{
               color: open
-                ? (openMenuButtonColor || (mounted && isDark ? '#ffffff' : '#111111'))
-                : (menuButtonColor || (mounted && isDark ? '#e9e9ef' : '#111111')),
+                ? openMenuButtonColor || (mounted && isDark ? '#ffffff' : '#111111')
+                : menuButtonColor || (mounted && isDark ? '#e9e9ef' : '#111111'),
             }}
           >
             <span
@@ -506,7 +518,10 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
                 {textLines.map((l, i) => (
                   // biome-ignore lint/suspicious/noArrayIndexKey: stable text stack
-                  <span className="sm-toggle-line block h-[1em] overflow-hidden leading-none" key={i}>
+                  <span
+                    className="sm-toggle-line block h-[1em] overflow-hidden leading-none"
+                    key={i}
+                  >
                     {l}
                   </span>
                 ))}
