@@ -7,14 +7,24 @@ import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 
 async function getResources(): Promise<ResourceCardData[]> {
+  console.time('[Resources] getResources')
   try {
     const payload = await getPayload({ config })
 
     const resources = await payload.find({
       collection: 'resources',
-      depth: 2, // Populate relationships like tags and thumbnail
-      limit: 1000,
+      depth: 1, 
+      limit: 100, // Reduced from 1000 for better initial load
       pagination: false,
+      select: {
+        title: true,
+        description: true,
+        thumbnail: true,
+        tags: true,
+        slug: true,
+        category: true,
+        createdAt: true,
+      },
     })
 
     if (!resources.docs || resources.docs.length === 0) {
@@ -75,6 +85,7 @@ export default async function Page() {
 
   try {
     resources = await getResources()
+    console.timeEnd('[Resources] getResources')
   } catch (error) {
     console.error('[Resources Page] Error:', error)
     // Silently fail and show empty state

@@ -9,9 +9,20 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
 
     const simulators = await payload.find({
       collection: 'simulators',
-      depth: 2,
-      limit: 1000,
+      depth: 1,
+      limit: 100,
       pagination: false,
+      select: {
+        title: true,
+        description: true,
+        thumbnail: true,
+        tags: true,
+        slug: true,
+        category: true,
+        difficulty: true,
+        estimatedTime: true,
+        createdAt: true,
+      }
     })
 
     if (!simulators.docs || simulators.docs.length === 0) {

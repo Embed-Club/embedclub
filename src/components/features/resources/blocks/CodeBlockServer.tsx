@@ -1,8 +1,7 @@
 import React from 'react'
 import { CodeBlock } from '@/payload/payload-types'
 import { CopyButton } from './CopyButton'
-import { codeToHtml } from 'shiki'
-
+import { highlightCode } from '@/lib/shiki'
 import { CodeTabs } from '@/components/animate-ui/components/code-tabs'
 
 interface CodeBlockProps {
@@ -14,10 +13,7 @@ export async function CodeBlockServer({ block }: CodeBlockProps) {
 
   let highlightedCode = ''
   try {
-    highlightedCode = await codeToHtml(code, {
-      lang: language || 'text',
-      theme: 'github-dark',
-    })
+    highlightedCode = await highlightCode(code, language || 'text')
   } catch (error) {
     console.error('Shiki error:', error)
     highlightedCode = `<pre><code>${code}</code></pre>`
