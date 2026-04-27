@@ -1,21 +1,10 @@
 'use client'
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { useMediaQuery } from '@/hooks/useMediaQuery' // Need to check if this exists
 import { cn } from '@/lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
-import React, { useState, useRef, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface TagOverflowProps {
   tags: string[]
@@ -26,7 +15,7 @@ export function TagOverflow({ tags, className }: TagOverflowProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [side, setSide] = useState<'top' | 'bottom'>('bottom')
   const triggerRef = useRef<HTMLButtonElement>(null)
-  
+
   // Use media query hook for better responsive handling
   const isDesktop = useMediaQuery('(min-width: 768px)')
 
@@ -46,9 +35,10 @@ export function TagOverflow({ tags, className }: TagOverflowProps) {
   const Trigger = (
     <button
       ref={triggerRef}
+      type="button"
       className={cn(
-        "px-2 py-0.5 text-[10px] md:text-xs bg-primary/10 text-primary border border-primary/20 rounded-full font-medium hover:bg-primary/20 transition-colors",
-        className
+        'px-2 py-0.5 text-[10px] md:text-xs bg-primary/10 text-primary border border-primary/20 rounded-full font-medium hover:bg-primary/20 transition-colors',
+        className,
       )}
     >
       +{overflowCount}
@@ -58,16 +48,11 @@ export function TagOverflow({ tags, className }: TagOverflowProps) {
   if (isDesktop) {
     return (
       <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <div 
-          onMouseEnter={() => setIsOpen(true)}
-          onMouseLeave={() => setIsOpen(false)}
-        >
-          <PopoverTrigger asChild>
-            {Trigger}
-          </PopoverTrigger>
+        <div onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+          <PopoverTrigger asChild>{Trigger}</PopoverTrigger>
         </div>
-        <PopoverContent 
-          side={side} 
+        <PopoverContent
+          side={side}
           className="w-auto p-2 bg-zinc-900/90 backdrop-blur-md border-zinc-800 shadow-2xl z-[100]"
         >
           <div className="flex flex-wrap gap-1.5 max-w-[200px]">
@@ -87,9 +72,7 @@ export function TagOverflow({ tags, className }: TagOverflowProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        {Trigger}
-      </SheetTrigger>
+      <SheetTrigger asChild>{Trigger}</SheetTrigger>
       <SheetContent side="bottom" className="bg-zinc-900 border-zinc-800 rounded-t-2xl h-[40vh]">
         <SheetHeader>
           <SheetTitle className="text-zinc-100 text-left">All Tags</SheetTitle>
