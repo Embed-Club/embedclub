@@ -11,6 +11,7 @@ import sharp from 'sharp'
 import { Achievements } from './collections/Achievements'
 import { Audio, AudioFiles } from './collections/Audio'
 import { Events } from './collections/Events'
+import { FeedbackForms } from './collections/FeedbackForms'
 import { Gallery } from './collections/Gallery'
 import { Media } from './collections/Media'
 import { MemberCategories } from './collections/MemberCategories'
@@ -44,6 +45,7 @@ export default buildConfig({
     MemberRoles,
     Members,
     Gallery,
+    FeedbackForms,
     Resources,
     Simulators,
     Tags,
