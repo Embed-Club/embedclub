@@ -14,19 +14,24 @@ interface ResourceDetailPageProps {
 }
 
 async function getResource(slug: string) {
-  const payload = await getPayload({ config })
-  
-  const result = await payload.find({
-    collection: 'resources',
-    where: {
-      slug: {
-        equals: slug,
+  try {
+    const payload = await getPayload({ config })
+    
+    const result = await payload.find({
+      collection: 'resources',
+      where: {
+        slug: {
+          equals: slug,
+        },
       },
-    },
-    depth: 2,
-  })
-  
-  return result.docs[0] || null
+      depth: 2,
+    })
+    
+    return result.docs[0] || null
+  } catch (error) {
+    console.error('[Resource Detail] Error fetching resource:', error)
+    return null
+  }
 }
 
 export async function generateMetadata({ params }: ResourceDetailPageProps): Promise<Metadata> {

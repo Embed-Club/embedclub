@@ -90,7 +90,7 @@ export const Simulators: CollectionConfig = {
         ImageBlock,
         RowBlock,
         SimulatorLinkBlock,
-      ],
+      ].filter(Boolean), // Remove any undefined blocks
     },
     {
       name: 'iframeUrl',
