@@ -13,19 +13,24 @@ interface FeedbackPageProps {
 }
 
 async function getFeedbackForm(slug: string) {
-  const payload = await getPayload({ config })
-  
-  const result = await payload.find({
-    collection: 'feedback-forms',
-    where: {
-      slug: {
-        equals: slug,
+  try {
+    const payload = await getPayload({ config })
+    
+    const result = await payload.find({
+      collection: 'feedback-forms',
+      where: {
+        slug: {
+          equals: slug,
+        },
       },
-    },
-    depth: 1,
-  })
-  
-  return result.docs[0] || null
+      depth: 1,
+    })
+    
+    return result.docs[0] || null
+  } catch (error) {
+    console.error('[Feedback] Error fetching form:', error)
+    return null
+  }
 }
 
 export default async function FeedbackPage({ params }: FeedbackPageProps) {

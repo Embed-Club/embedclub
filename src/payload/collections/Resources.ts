@@ -17,7 +17,7 @@ function generateSlug(text: string): string {
 /**
  * TextBlock: Rich formatted content with text styling
  */
-const TextBlock: Block = {
+export const TextBlock: Block = {
   slug: 'textBlock',
   interfaceName: 'TextBlock',
   labels: {
@@ -39,7 +39,7 @@ const TextBlock: Block = {
 /**
  * CodeBlock: Syntax-highlighted code snippets
  */
-const CodeBlock: Block = {
+export const CodeBlock: Block = {
   slug: 'codeBlock',
   interfaceName: 'CodeBlock',
   labels: {
@@ -99,7 +99,7 @@ const CodeBlock: Block = {
 /**
  * TableBlock: Structured data in rows and columns
  */
-const TableBlock: Block = {
+export const TableBlock: Block = {
   slug: 'tableBlock',
   interfaceName: 'TableBlock',
   labels: {
@@ -155,7 +155,7 @@ const TableBlock: Block = {
 /**
  * GraphBlock: Charts and diagrams via Mermaid or JSON data
  */
-const GraphBlock: Block = {
+export const GraphBlock: Block = {
   slug: 'graphBlock',
   interfaceName: 'GraphBlock',
   labels: {
@@ -217,7 +217,7 @@ const GraphBlock: Block = {
 /**
  * ImageBlock: Images with captions and metadata
  */
-const ImageBlock: Block = {
+export const ImageBlock: Block = {
   slug: 'imageBlock',
   interfaceName: 'ImageBlock',
   labels: {
@@ -261,7 +261,7 @@ const ImageBlock: Block = {
 /**
  * SimulatorLinkBlock: Link to an interactive simulator
  */
-const SimulatorLinkBlock: Block = {
+export const SimulatorLinkBlock: Block = {
   slug: 'simulatorLinkBlock',
   interfaceName: 'SimulatorLinkBlock',
   labels: {
@@ -293,7 +293,7 @@ const SimulatorLinkBlock: Block = {
  * RowBlock: Layout container for horizontal grouping of other blocks
  * Note: Does NOT include nested RowBlocks to avoid infinite recursion
  */
-const RowBlock: Block = {
+export const RowBlock: Block = {
   slug: 'rowBlock',
   interfaceName: 'RowBlock',
   labels: {

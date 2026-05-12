@@ -83,7 +83,9 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900"
+        whileHover={{ scale: 1.05, y: -8 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900 shadow-lg hover:shadow-2xl transition-shadow duration-300"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
         <div className="relative z-40 p-8">
@@ -165,15 +167,15 @@ export const EventModal = ({
               <div className="flex h-full w-full flex-col items-center justify-center gap-6 p-6 md:p-10">
                 <img
                   src="/placeholder/NoNetwork.svg"
-                  alt="No network"
-                  className="h-40 w-40 md:h-56 md:w-56 dark:invert"
+                  alt="Service unavailable"
+                  className="h-40 w-40 md:h-56 md:w-56 dark:invert opacity-60"
                 />
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-neutral-900 dark:text-white">
-                    No network
+                <div className="text-center max-w-sm">
+                  <p className="text-2xl font-bold text-neutral-900 dark:text-white">
+                    Service Temporarily Unavailable
                   </p>
-                  <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                    Unable to load event details right now.
+                  <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                    We're unable to load event details at the moment. This could be due to a temporary database connection issue. Please try again in a few moments, or contact support if the problem persists.
                   </p>
                 </div>
               </div>
