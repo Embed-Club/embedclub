@@ -12,6 +12,7 @@ const navItems = [
   { label: 'SIULTORS', ariaLabel: 'Simulators', link: '/simulators' },
   { label: 'GLLERY', ariaLabel: 'Gallery', link: '/gallery' },
   { label: 'EBERS', ariaLabel: 'Members', link: '/members' },
+  { label: 'FEEDBCK', ariaLabel: 'Feedback', link: '/feedback' },
 ]
 
 export default function MobileMenu() {
