@@ -140,10 +140,10 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
 
   if (resources.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-lg md:text-xl text-zinc-300 mb-2">No resources yet</p>
-        <p className="text-sm md:text-base text-zinc-500">
-          Resources will appear here once they are added.
+      <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+        <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">No Resources Available</p>
+        <p className="text-neutral-600 dark:text-neutral-400">
+          We're experiencing a temporary issue loading resources. Please refresh the page or try again in a few moments.
         </p>
       </div>
     )
@@ -175,10 +175,10 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
       <XSSHoneypot isDetected={isXSSAttempt} />
 
       {isXSSAttempt ? null : filteredResources.length === 0 && hasSearched ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-lg md:text-xl text-zinc-400 mb-2">No resources found</p>
-          <p className="text-sm md:text-base text-zinc-500">
-            Try searching with different keywords or tags
+        <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+          <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">No Results Found</p>
+          <p className="text-neutral-600 dark:text-neutral-400">
+            Try adjusting your search filters or using different keywords
           </p>
         </div>
       ) : (

@@ -117,8 +117,8 @@ export default function Page() {
   const fallbackCarouselCards = React.useMemo<CarouselCardData[]>(
     () =>
       Array.from({ length: 4 }).map(() => ({
-        title: 'No Network',
-        category: 'Event',
+        title: 'Event Unavailable',
+        category: 'Database Error',
         src: '/placeholder/placeholder.jpg',
         content: null,
         isFallback: true,
@@ -129,7 +129,7 @@ export default function Page() {
   const fallbackGridCards = React.useMemo(
     () =>
       Array.from({ length: pageSize }).map(() => ({
-        title: 'No Network',
+        title: 'Event Unavailable',
         src: '/placeholder/placeholder.jpg',
         isFallback: true,
       })),
@@ -222,38 +222,50 @@ export default function Page() {
           </>
         ) : useFallback ? (
           <>
-            <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl">
-              RECENT EENTS
+            <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
+              RECENT EVENTS
             </h1>
             <div className="w-full py-6 md:py-12">
-              <Carousel
-                items={fallbackCarouselCards.map((card, index) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: fixed fallbacks
-                  <CarouselCard key={`fallback-${index}`} card={card} index={index} />
-                ))}
-              />
+              <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-6 py-16 md:py-24 px-4">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Unable to Load Events</h2>
+                  <p className="text-neutral-600 dark:text-neutral-400 mb-4">We're experiencing temporary database connectivity issues. Events will be available shortly.</p>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-500">Please refresh the page or try again in a few moments.</p>
+                </div>
+              </div>
             </div>
 
             <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
-              <h2 className="relative text-2xl font-medium md:text-4xl">LL EENTS</h2>
-              <FocusCards cards={fallbackGridCards} />
+              <h2 className="relative text-2xl font-bold md:text-4xl mb-8">ALL EVENTS</h2>
+              <div className="text-center py-16">
+                <p className="text-neutral-600 dark:text-neutral-400">Events are currently unavailable due to a temporary service issue.</p>
+              </div>
             </div>
           </>
         ) : (
           <>
-            <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl">
-              RECENT EENTS
+            <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
+              RECENT EVENTS
             </h1>
             <div className="w-full py-6 md:py-12">
-              <Carousel
-                items={events.map((event, index) => (
-                  <EventCard key={event.id ?? index} event={event} index={index} />
-                ))}
-              />
+              {events.length === 0 ? (
+                <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-6 py-16 md:py-24 px-4">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">No Events Yet</h2>
+                    <p className="text-neutral-600 dark:text-neutral-400">Check back soon for upcoming events!</p>
+                  </div>
+                </div>
+              ) : (
+                <Carousel
+                  items={events.map((event, index) => (
+                    <EventCard key={event.id ?? index} event={event} index={index} />
+                  ))}
+                />
+              )}
             </div>
 
             <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
-              <h2 className="relative text-2xl font-medium md:text-4xl">LL EENTS</h2>
+              <h2 className="relative text-2xl font-bold md:text-4xl mb-8">ALL EVENTS</h2>
               {totalPages > 1 && (
                 <div className="mt-6 flex w-full justify-end pb-6">
                   <Pagination className="justify-end">
@@ -297,13 +309,22 @@ export default function Page() {
                   </Pagination>
                 </div>
               )}
-              <FocusCards
-                cards={visibleEvents.map((event) => ({
-                  title: event.title || 'Untitled Event',
-                  src: getEventImageUrl(event),
-                  event,
-                }))}
-              />
+              {allEvents.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
+                  <p className="text-lg font-semibold text-neutral-900 dark:text-white">No Events Available</p>
+                  <p className="text-neutral-600 dark:text-neutral-400">There are currently no events to display. Come back later!</p>
+                </div>
+              ) : (
+                <>
+                  <FocusCards
+                    cards={visibleEvents.map((event) => ({
+                      title: event.title || 'Untitled Event',
+                      src: getEventImageUrl(event),
+                      event,
+                    }))}
+                  />
+                </>
+              )}
               {totalPages > 1 && (
                 <div className="mt-6 flex w-full justify-end">
                   <Pagination className="justify-end">

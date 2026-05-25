@@ -17,14 +17,20 @@ function getBaseUrl() {
 }
 
 async function getMembers(base: string): Promise<MemberDoc[]> {
-  const res = await fetch(`${base}/api/members?depth=2&limit=200&sort=-startYear`, {
-    cache: 'no-store',
-  })
-  if (!res.ok) {
-    throw new Error(`Failed to load members: ${res.status}`)
+  try {
+    const res = await fetch(`${base}/api/members?depth=2&limit=200&sort=-startYear`, {
+      cache: 'no-store',
+    })
+    if (!res.ok) {
+      console.error('Failed to fetch members:', res.status, res.statusText)
+      return []
+    }
+    const data = (await res.json()) as { docs: MemberDoc[] }
+    return data.docs || []
+  } catch (error) {
+    console.error('[Members] Error fetching from Payload:', error)
+    return []
   }
-  const data = (await res.json()) as { docs: MemberDoc[] }
-  return data.docs
 }
 
 function getPrimaryRoleSortOrder(member: MemberDoc) {
@@ -223,13 +229,16 @@ export default function Page() {
           {isLoading ? (
             <MembersSkeleton />
           ) : error ? (
-            <div className="flex h-full items-center justify-center">
-              <p className="text-destructive">{error}</p>
+            <div className="flex h-full w-full items-center justify-center px-4">
+              <div className="text-center max-w-sm">
+                <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Members Unavailable</p>
+                <p className="text-neutral-600 dark:text-neutral-400">We're experiencing a temporary issue loading member information. Please refresh the page or try again in a few moments.</p>
+              </div>
             </div>
           ) : (
             <div className="px-4 py-8 md:px-8 lg:px-12">
-              <h1 className="mb-30 left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl text-foreground">
-                EBERS
+              <h1 className="mb-30 left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl text-foreground">
+                MEMBERS
               </h1>
 
               {grouped.map(({ category, items }) => {
