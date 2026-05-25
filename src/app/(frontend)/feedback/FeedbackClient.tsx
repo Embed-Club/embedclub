@@ -1,9 +1,7 @@
 'use client'
 
 import BorderGlow from '@/components/ui/BorderGlow'
-import { Button } from '@/components/ui/button'
-import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronRight, Clock, ExternalLink, FileText, Loader2, Lock } from 'lucide-react'
+import { Clock, ExternalLink, Lock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 interface SectionConfig {
@@ -43,8 +41,6 @@ const SECTIONS: SectionConfig[] = [
 ]
 
 export default function FeedbackClient() {
-  const [selectedSection, setSelectedSection] = useState<string | null>(null)
-  const [loadingForm, setLoadingForm] = useState<boolean>(false)
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
 
   // Sync clock to prevent hydration mismatch
@@ -74,21 +70,18 @@ export default function FeedbackClient() {
     }
   }
 
-  const handleSelectSection = (id: string) => {
-    setSelectedSection(selectedSection === id ? null : id)
-    setLoadingForm(true)
+  const handleLaunchForm = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
-
-  const activeSectionObj = SECTIONS.find((s) => s.id === selectedSection)
-  const activeSectionStatus = activeSectionObj ? getStatus(activeSectionObj) : null
 
   return (
     <div className="space-y-12">
       {/* Header Info */}
       <div className="space-y-4">
         <p className="text-muted-foreground text-lg max-w-2xl leading-relaxed">
-          Access your classroom evaluation forms. Select your designated academic section to
-          proceed. Please make sure to complete the feedback before the expiration deadline.
+          Access your classroom evaluation forms. Select your designated academic section to proceed
+          to the secure Google Form in a new tab. Please complete the feedback before the expiration
+          deadline.
         </p>
       </div>
 
@@ -96,7 +89,6 @@ export default function FeedbackClient() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {SECTIONS.map((section) => {
           const status = getStatus(section)
-          const isSelected = selectedSection === section.id
 
           return (
             <div
@@ -104,11 +96,11 @@ export default function FeedbackClient() {
               // biome-ignore lint/a11y/useSemanticElements: interactive grid card wrapper
               role="button"
               tabIndex={status.active ? 0 : -1}
-              onClick={() => status.active && handleSelectSection(section.id)}
+              onClick={() => status.active && handleLaunchForm(section.formUrl)}
               onKeyDown={(e) => {
                 if (status.active && (e.key === 'Enter' || e.key === ' ')) {
                   e.preventDefault()
-                  handleSelectSection(section.id)
+                  handleLaunchForm(section.formUrl)
                 }
               }}
               className={`cursor-pointer transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded-2xl ${
@@ -119,8 +111,8 @@ export default function FeedbackClient() {
                 glowColor={section.glowColor}
                 colors={section.colors}
                 borderRadius={16}
-                glowIntensity={isSelected ? 1.5 : 0.8}
-                glowRadius={isSelected ? 50 : 30}
+                glowIntensity={0.8}
+                glowRadius={30}
                 backgroundColor="rgba(9, 9, 11, 0.8)"
               >
                 <div className="p-6 space-y-6 flex flex-col justify-between min-h-[220px] relative overflow-hidden">
@@ -182,21 +174,14 @@ export default function FeedbackClient() {
 
                     <div className="flex items-center justify-between pt-2">
                       <span className="text-xs text-muted-foreground">
-                        {status.active ? 'Click to fill feedback' : 'No longer accepting inputs'}
+                        {status.active ? 'Click to open Google Form' : 'No longer accepting inputs'}
                       </span>
                       {status.active && (
-                        <div
-                          className={`p-2 rounded-full border transition-all duration-300 ${
-                            isSelected
-                              ? 'bg-white text-black border-white'
-                              : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
-                          }`}
-                        >
-                          <ChevronRight
-                            className={`w-4 h-4 transition-transform duration-300 ${
-                              isSelected ? 'rotate-90' : ''
-                            }`}
-                          />
+                        <div className="p-2 rounded-full border bg-white/5 border-white/10 text-white hover:bg-white/10 transition-colors flex items-center justify-center gap-1.5">
+                          <span className="text-xs font-semibold uppercase tracking-wider pl-1 pr-0.5">
+                            Open
+                          </span>
+                          <ExternalLink className="w-3.5 h-3.5" />
                         </div>
                       )}
                     </div>
@@ -207,105 +192,6 @@ export default function FeedbackClient() {
           )
         })}
       </div>
-
-      {/* Selected Google Form Display Section */}
-      <AnimatePresence mode="wait">
-        {selectedSection && activeSectionObj && (
-          <motion.div
-            key={selectedSection}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="space-y-6 pt-6 border-t border-white/5"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="flex items-start gap-3">
-                <div
-                  className={`p-2.5 rounded-lg ${
-                    selectedSection === 'A'
-                      ? 'bg-violet-500/10 border border-violet-500/20'
-                      : 'bg-rose-500/10 border border-rose-500/20'
-                  }`}
-                >
-                  <FileText
-                    className={`w-6 h-6 ${
-                      selectedSection === 'A' ? 'text-violet-400' : 'text-rose-400'
-                    }`}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-lg font-bold text-white uppercase tracking-wider">
-                    {activeSectionObj.name} Form
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    Complete the questions in the embedded view below, or launch the form in a new
-                    window.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    window.open(activeSectionObj.formUrl, '_blank', 'noopener,noreferrer')
-                  }}
-                  className="bg-white/5 hover:bg-white/10 border-white/10 text-white font-medium text-xs rounded-full py-1.5 px-4 h-9 tracking-wide uppercase inline-flex items-center gap-1.5"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  Open in New Tab
-                </Button>
-
-                <Button
-                  onClick={() => setSelectedSection(null)}
-                  className="bg-white hover:bg-white/90 text-black font-bold text-xs rounded-full py-1.5 px-4 h-9 tracking-wide uppercase"
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-
-            {/* Check Live Expiration again inside dynamic area */}
-            {activeSectionStatus?.active ? (
-              <div className="relative w-full aspect-[4/5] md:aspect-[16/10] rounded-2xl overflow-hidden border border-white/10 bg-[#0c0c0e] shadow-2xl">
-                {loadingForm && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm z-30 space-y-4">
-                    <Loader2 className="w-8 h-8 text-white animate-spin" />
-                    <p className="text-sm text-zinc-400 animate-pulse font-mono tracking-widest uppercase">
-                      Loading Google Form...
-                    </p>
-                  </div>
-                )}
-                <iframe
-                  src={activeSectionObj.formUrl}
-                  className="absolute inset-0 w-full h-full border-0 z-20"
-                  title={`${activeSectionObj.name} Google Form`}
-                  onLoad={() => setLoadingForm(false)}
-                >
-                  Loading…
-                </iframe>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center p-12 text-center border border-white/10 rounded-2xl bg-white/5 space-y-4">
-                <div className="p-4 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400">
-                  <Lock className="w-8 h-8" />
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold uppercase tracking-wider text-white">
-                    Form Expired
-                  </h3>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    Feedback submission for this section was only allowed until{' '}
-                    {activeSectionObj.deadlineStr}. The time limit has expired and responses are no
-                    longer being collected.
-                  </p>
-                </div>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }
