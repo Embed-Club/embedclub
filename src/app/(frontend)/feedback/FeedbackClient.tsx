@@ -126,17 +126,6 @@ export default function FeedbackClient() {
                       <span className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">
                         Embed Club
                       </span>
-                      {status.active ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 animate-pulse">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                          Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                          Closed
-                        </span>
-                      )}
                     </div>
 
                     <h3 className="text-xl font-bold uppercase tracking-wide text-white">
