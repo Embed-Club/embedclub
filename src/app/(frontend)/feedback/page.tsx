@@ -5,7 +5,7 @@ import FeedbackClient from './FeedbackClient'
 export const metadata: Metadata = {
   title: 'Feedback | Embed Club',
   description:
-    'Submit your end-term academic feedback and evaluations for Section A and Section B courses at PACE Embed Club.',
+    'Submit your feedback for the IoT Application Design Workshop (Section A and Section B) at PACE Embed Club.',
 }
 
 export default async function Page() {

@@ -18,8 +18,8 @@ interface SectionConfig {
 const SECTIONS: SectionConfig[] = [
   {
     id: 'A',
-    name: 'Section A - Feedback',
-    description: 'Submit your end-term academic feedback for Section A courses.',
+    name: 'Section A - Workshop',
+    description: 'Submit your feedback for the IoT Application Design Workshop (Section A).',
     deadlineStr: '27/05/2026 00:00 (IST)',
     deadlineDate: new Date('2026-05-27T00:00:00+05:30'),
     formUrl:
@@ -29,8 +29,8 @@ const SECTIONS: SectionConfig[] = [
   },
   {
     id: 'B',
-    name: 'Section B - Feedback',
-    description: 'Submit your end-term academic feedback for Section B courses.',
+    name: 'Section B - Workshop',
+    description: 'Submit your feedback for the IoT Application Design Workshop (Section B).',
     deadlineStr: '26/05/2026 00:00 (IST)',
     deadlineDate: new Date('2026-05-26T00:00:00+05:30'),
     formUrl:
@@ -79,9 +79,9 @@ export default function FeedbackClient() {
       {/* Header Info */}
       <div className="space-y-4">
         <p className="text-muted-foreground text-lg max-w-2xl leading-relaxed">
-          Access your classroom evaluation forms. Select your designated academic section to proceed
-          to the secure Google Form in a new tab. Please complete the feedback before the expiration
-          deadline.
+          Access the feedback forms for the IoT Application Design Workshop. Select your designated
+          section to proceed to the secure Google Form in a new tab. Please complete the feedback
+          before the expiration deadline.
         </p>
       </div>
 
