@@ -51,6 +51,7 @@
     "lightswind": "^3.1.18",
     "lucide-react": "^0.553.0",
     "mcp-remote": "^0.1.37",
+    "mermaid": "^11.15.0",
     "motion": "^12.23.12",
     "next": "15.4.8",
     "next-themes": "^0.4.6",
@@ -94,6 +95,10 @@
     "pnpm": "^9 || ^10"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["sharp", "esbuild", "unrs-resolver"]
+    "onlyBuiltDependencies": [
+      "sharp",
+      "esbuild",
+      "unrs-resolver"
+    ]
   }
 }
