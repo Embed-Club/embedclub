@@ -17,7 +17,7 @@ export const FeedbackForms: CollectionConfig = {
     },
     {
       name: 'slug',
-      type: 'slug',
+      type: 'text',
       required: true,
       unique: true,
       admin: {

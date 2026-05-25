@@ -1,12 +1,12 @@
 import type { CollectionConfig } from 'payload'
 import {
-  TextBlock,
   CodeBlock,
-  TableBlock,
   GraphBlock,
   ImageBlock,
   RowBlock,
   SimulatorLinkBlock,
+  TableBlock,
+  TextBlock,
 } from './Resources'
 
 export const Simulators: CollectionConfig = {
@@ -26,7 +26,7 @@ export const Simulators: CollectionConfig = {
     },
     {
       name: 'slug',
-      type: 'slug',
+      type: 'text',
       required: true,
       unique: true,
       admin: {
