@@ -1,5 +1,6 @@
 'use client'
 
+import { EmptyState } from '@/components/common/EmptyState'
 import { SearchBar } from '@/components/common/SearchBar'
 import { ResourceCards } from '@/components/features/resources/ResourceCards'
 import { XSSHoneypot } from '@/components/features/resources/XSSHoneypot'
@@ -21,9 +22,14 @@ export interface ResourceCardData {
 
 interface ResourcesPageContentProps {
   resources?: ResourceCardData[]
+  /** Title of the shared empty state — the Tutorials page passes its own. */
+  emptyTitle?: string
 }
 
-export function ResourcesPageContent({ resources = [] }: ResourcesPageContentProps) {
+export function ResourcesPageContent({
+  resources = [],
+  emptyTitle = 'No Resources Yet',
+}: ResourcesPageContentProps) {
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -143,17 +149,7 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
   }, [debouncedQuery])
 
   if (resources.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-        <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
-          No Resources Available
-        </p>
-        <p className="text-neutral-600 dark:text-neutral-400">
-          We're experiencing a temporary issue loading resources. Please refresh the page or try
-          again in a few moments.
-        </p>
-      </div>
-    )
+    return <EmptyState title={emptyTitle} />
   }
 
   return (

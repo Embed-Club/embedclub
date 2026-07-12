@@ -1,6 +1,7 @@
 'use client'
 
 import ChromaScene from '@/components/common/ChromaScene'
+import { EmptyState } from '@/components/common/EmptyState'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import { Skeleton } from '@/components/ui/skeleton'
 import React from 'react'
@@ -230,15 +231,7 @@ export default function Page() {
             <MembersSkeleton />
           ) : error ? (
             <div className="flex h-full w-full items-center justify-center px-4">
-              <div className="text-center max-w-sm">
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
-                  Members Unavailable
-                </p>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  We're experiencing a temporary issue loading member information. Please refresh
-                  the page or try again in a few moments.
-                </p>
-              </div>
+              <EmptyState title="No Members Yet" />
             </div>
           ) : (
             <div className="px-4 py-8 md:px-8 lg:px-12">
@@ -246,16 +239,7 @@ export default function Page() {
                 MEMBERS
               </h1>
 
-              {grouped.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-                  <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
-                    No Members Yet
-                  </p>
-                  <p className="text-neutral-600 dark:text-neutral-400">
-                    Member profiles are on their way — check back soon!
-                  </p>
-                </div>
-              )}
+              {grouped.length === 0 && <EmptyState title="No Members Yet" />}
 
               {grouped.map(({ category, items }) => {
                 const currentMembers = items.filter((m) => !m.endYear)

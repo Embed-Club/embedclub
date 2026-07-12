@@ -1,3 +1,4 @@
+import { EmptyState } from '@/components/common/EmptyState'
 import Masonry from '@/components/features/gallery/Masonry'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import type { Gallery } from '@/payload/payload-types'
@@ -37,15 +38,7 @@ export default async function Page() {
             GALLERY
           </h1>
           <div className="h-full w-full px-2 pt-16 md:pt-32 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
-                Gallery Unavailable
-              </p>
-              <p className="text-neutral-600 dark:text-neutral-400">
-                We're experiencing a temporary issue loading gallery items. Please refresh the page
-                or try again in a few moments.
-              </p>
-            </div>
+            <EmptyState title="No Photos Yet" />
           </div>
         </MainbarShell>
       </SidebarShell>
