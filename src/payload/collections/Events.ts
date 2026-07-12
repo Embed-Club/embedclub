@@ -67,6 +67,15 @@ export const Events: CollectionConfig = {
               },
             },
             {
+              name: 'registrationForm',
+              type: 'relationship',
+              relationTo: 'forms',
+              admin: {
+                description:
+                  'Optional — when set, the event shows a Register button linking to this form',
+              },
+            },
+            {
               name: 'image',
               type: 'upload',
               relationTo: 'media',
