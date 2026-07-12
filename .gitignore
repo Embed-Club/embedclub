@@ -12,8 +12,9 @@ build/
 dist/
 
 # Payload CMS generated files
+# (importMap.js is regenerated during the build; payload-types.ts is committed
+#  because next build type-checks against it)
 importMap.js
-payload-types.ts
 .payload/
 
 # Environment variables
