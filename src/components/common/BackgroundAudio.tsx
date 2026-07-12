@@ -123,6 +123,27 @@ export function BackgroundAudio() {
 }
 
 /**
+ * Compact round play/pause button for small screens (desktop uses AudioToggle
+ * next to the theme toggle). Renders nothing on pages without background audio.
+ */
+export function AudioToggleMini() {
+  const { available, playing } = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+
+  if (!available) return null
+
+  return (
+    <button
+      type="button"
+      onClick={toggleBackgroundAudio}
+      aria-label={playing ? 'Pause background music' : 'Play background music'}
+      className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/60 text-foreground backdrop-blur-sm transition-colors hover:text-primary hover:border-primary/60"
+    >
+      {playing ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+    </button>
+  )
+}
+
+/**
  * Tiny mute/unmute button. Renders nothing on pages without background audio.
  * Styled to sit next to ModeToggle.
  */

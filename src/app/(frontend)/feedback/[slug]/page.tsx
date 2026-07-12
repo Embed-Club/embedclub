@@ -1,7 +1,7 @@
 import { CertificateGenerator } from '@/components/features/feedback/CertificateGenerator'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import config from '@/payload/payload.config'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
@@ -70,6 +70,20 @@ export default async function FeedbackPage({ params }: FeedbackPageProps) {
                 <p className="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
                   {form.description}
                 </p>
+              </div>
+
+              {/* Direct link — primary action on mobile where the embedded form
+                  scrolls-within-scroll; also handy on desktop */}
+              <div className="flex justify-center">
+                <a
+                  href={form.googleFormUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-full hover:bg-primary/90 transition-all shadow-[0_0_24px_hsl(var(--primary)/0.3)]"
+                >
+                  Open form in new tab
+                  <ExternalLink className="h-4 w-4" />
+                </a>
               </div>
 
               {/* Google Form Iframe */}

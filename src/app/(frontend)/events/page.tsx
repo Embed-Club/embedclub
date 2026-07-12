@@ -26,33 +26,8 @@ function getBaseUrl() {
 }
 
 /**
- * Server-side fetch of events from Payload REST.
- * depth=1 expands the linked media so you get image.url directly.
- * sort=-createdAt shows the newest first.
- * next.revalidate controls ISR; bump or use { cache: "no-store" } if you need true SSR.
- */
-async function getEvents(baseUrl: string) {
-  const res = await fetch(`${baseUrl}/api/events?depth=1&sort=-createdAt&limit=5`, {
-    cache: 'no-store',
-  })
-
-  if (!res.ok) {
-    const errorText = await res.text()
-    console.error('Failed to fetch events:', {
-      status: res.status,
-      statusText: res.statusText,
-      error: errorText,
-      url: `${baseUrl}/api/events?depth=1&sort=-createdAt`,
-    })
-    throw new Error(`Failed to load events: ${res.status} ${res.statusText}`)
-  }
-
-  const data = (await res.json()) as { docs: Event[] }
-  return data.docs
-}
-
-/**
- * Fetch all events for the gallery (with pagination support).
+ * Fetch all events once — the carousel takes the first 5, the gallery paginates
+ * the full list. depth=1 expands linked media; sort=-createdAt = newest first.
  */
 async function getAllEvents(baseUrl: string) {
   const res = await fetch(`${baseUrl}/api/events?depth=1&sort=-createdAt&limit=200`, {
@@ -141,14 +116,15 @@ export default function Page() {
     const minLoadingMs = 600
 
     Promise.all([
-      getEvents(baseUrl),
       getAllEvents(baseUrl),
       new Promise((resolve) => setTimeout(resolve, minLoadingMs)),
     ])
-      .then(([eventsData, allEventsData]) => {
+      .then(([allEventsData]) => {
         if (!isMounted) return
-        setEvents(eventsData as Event[])
-        setAllEvents(allEventsData as Event[])
+        const all = allEventsData as Event[]
+        setAllEvents(all)
+        // Carousel shows the 5 newest — same list, no second request needed
+        setEvents(all.slice(0, 5))
         setIsLoading(false)
       })
       .catch((err) => {
