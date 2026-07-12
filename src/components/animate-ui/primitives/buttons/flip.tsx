@@ -2,7 +2,7 @@
 import { type HTMLMotionProps, type Variant, motion } from 'motion/react'
 
 import { Slot, type WithAsChild } from '@/components/animate-ui/primitives/animate/slot'
-import { getStrictContext } from '@/lib/get-strict-context'
+import { getStrictContext } from '@/lib/getStrictContext'
 
 const buildVariant = ({
   opacity,

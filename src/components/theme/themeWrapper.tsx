@@ -1,5 +1,5 @@
 'use client'
-import { ThemeProvider } from '@/components/theme/theme-provider'
+import { ThemeProvider } from '@/components/theme/themeProvider'
 
 export default function ThemeWrapper({ children }: { children: React.ReactNode }) {
   return (

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
-import DecryptedText from './decrypted-text'
+import DecryptedText from './decryptedText'
 
 interface ComingSoonProps {
   title: string

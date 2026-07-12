@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
-import { useMediaQuery } from '@/hooks/use-media-query'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ArrowUpDown, Calendar, Filter, X } from 'lucide-react'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'

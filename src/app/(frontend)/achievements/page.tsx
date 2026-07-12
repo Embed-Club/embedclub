@@ -1,10 +1,10 @@
 'use client'
 
-import { EmptyState } from '@/components/common/empty-state'
-import { Timeline } from '@/components/features/timeline/unified-timeline'
-import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
+import { EmptyState } from '@/components/common/emptyState'
+import { Timeline } from '@/components/features/timeline/unifiedTimeline'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { useIsMobile } from '@/hooks/useMobile'
 import React from 'react'
 
 type Achievement = {

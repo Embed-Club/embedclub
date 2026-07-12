@@ -89,7 +89,7 @@ export const MemberCategories: CollectionConfig = {
         description:
           'Order in which this category appears. Lower numbers appear first. Occupied positions will be automatically reassigned.',
         components: {
-          Field: '@/components/admin/sort-order-select-category',
+          Field: '@/components/admin/sortOrderSelectCategory',
         },
       },
     },

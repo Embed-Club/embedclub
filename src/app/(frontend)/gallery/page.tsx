@@ -1,6 +1,6 @@
-import { EmptyState } from '@/components/common/empty-state'
+import { EmptyState } from '@/components/common/emptyState'
 import Masonry from '@/components/features/gallery/masonry'
-import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import type { Gallery } from '@/payload/payload-types'
 
 function getBaseUrl() {

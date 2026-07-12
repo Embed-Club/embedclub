@@ -1,4 +1,4 @@
-import type { ResourceCardData } from '@/app/(frontend)/resources/resources-page-content'
+import type { ResourceCardData } from '@/app/(frontend)/resources/resourcesPageContent'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 

@@ -1,7 +1,7 @@
 'use client'
 
-import { EventModal, eventToCard } from '@/components/features/events/events-cards'
-import { useOutsideClick } from '@/hooks/use-outside-click'
+import { EventModal, eventToCard } from '@/components/features/events/eventsCards'
+import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
 import React, { useMemo, useRef, useState } from 'react'

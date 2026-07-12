@@ -1,5 +1,5 @@
 'use client'
-import { InlineSVG } from '@/components/layout/inline-svg'
+import { InlineSVG } from '@/components/layout/inlineSvg'
 import {
   Bot,
   Boxes,
@@ -33,7 +33,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { IntroContext } from './frontend-shell'
+import { IntroContext } from './frontendShell'
 
 // This is sample data.
 const data = {

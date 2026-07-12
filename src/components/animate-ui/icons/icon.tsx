@@ -12,7 +12,7 @@ import {
 import * as React from 'react'
 
 import { Slot, type WithAsChild } from '@/components/animate-ui/primitives/animate/slot'
-import { useIsInView } from '@/hooks/use-is-in-view'
+import { useIsInView } from '@/hooks/useIsInView'
 import { cn } from '@/lib/utils'
 
 const staticAnimations = {

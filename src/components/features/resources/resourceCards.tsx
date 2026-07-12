@@ -1,7 +1,7 @@
 'use client'
 
-import type { ResourceCardData } from '@/app/(frontend)/resources/resources-page-content'
-import { ResourceCutoutCard } from '@/components/features/resources/resource-cutout-card'
+import type { ResourceCardData } from '@/app/(frontend)/resources/resourcesPageContent'
+import { ResourceCutoutCard } from '@/components/features/resources/resourceCutoutCard'
 import { gsap } from 'gsap'
 import { useCallback, useEffect, useRef } from 'react'
 
