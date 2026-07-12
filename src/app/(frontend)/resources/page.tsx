@@ -1,7 +1,13 @@
-import { ResourcesPageContent, type ResourceCardData } from '@/app/(frontend)/resources/ResourcesPageContent'
+import {
+  type ResourceCardData,
+  ResourcesPageContent,
+} from '@/app/(frontend)/resources/ResourcesPageContent'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
+
+// ISR: rebuild this page at most every 60s so CMS edits show up without a redeploy
+export const revalidate = 60
 
 async function getResources(): Promise<ResourceCardData[]> {
   try {
@@ -9,7 +15,7 @@ async function getResources(): Promise<ResourceCardData[]> {
 
     const resources = await payload.find({
       collection: 'resources',
-      depth: 1, 
+      depth: 1,
       limit: 100,
       pagination: false,
     })
@@ -20,10 +26,15 @@ async function getResources(): Promise<ResourceCardData[]> {
 
     // Transform Payload resources to ResourceCardData format
     return (resources.docs as any[]).map((resource) => {
-      let imageUrl = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop' // fallback
+      let imageUrl =
+        'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop' // fallback
 
       if (resource.thumbnail) {
-        if (typeof resource.thumbnail === 'object' && resource.thumbnail !== null && 'url' in resource.thumbnail) {
+        if (
+          typeof resource.thumbnail === 'object' &&
+          resource.thumbnail !== null &&
+          'url' in resource.thumbnail
+        ) {
           imageUrl = resource.thumbnail.url
         } else if (typeof resource.thumbnail === 'string') {
           imageUrl = `/api/media/file/${resource.thumbnail}`

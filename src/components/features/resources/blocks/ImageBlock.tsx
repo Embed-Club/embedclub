@@ -1,6 +1,5 @@
-import React from 'react'
+import type { ImageBlock as ImageBlockType, Media } from '@/payload/payload-types'
 import Image from 'next/image'
-import { ImageBlock as ImageBlockType, Media } from '@/payload/payload-types'
 
 interface ImageBlockProps {
   block: ImageBlockType
@@ -8,9 +7,9 @@ interface ImageBlockProps {
 
 export function ImageBlock({ block }: ImageBlockProps) {
   const { image, caption, size } = block
-  
+
   if (!image || typeof image === 'number') return null
-  
+
   const media = image as Media
   if (!media.url) return null
 
@@ -21,7 +20,9 @@ export function ImageBlock({ block }: ImageBlockProps) {
   }
 
   return (
-    <figure className={`my-12 flex flex-col gap-3 ${sizeClasses[size || 'large']} animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200`}>
+    <figure
+      className={`my-12 flex flex-col gap-3 ${sizeClasses[size || 'large']} animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200`}
+    >
       <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 group">
         <Image
           src={media.url}

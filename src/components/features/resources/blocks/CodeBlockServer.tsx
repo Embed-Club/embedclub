@@ -1,8 +1,6 @@
-import React from 'react'
-import { CodeBlock } from '@/payload/payload-types'
-import { CopyButton } from './CopyButton'
-import { highlightCode } from '@/lib/shiki'
 import { CodeTabs } from '@/components/animate-ui/components/code-tabs'
+import { highlightCode } from '@/lib/shiki'
+import type { CodeBlock } from '@/payload/payload-types'
 
 interface CodeBlockProps {
   block: CodeBlock

@@ -141,9 +141,12 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
   if (resources.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-        <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">No Resources Available</p>
+        <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+          No Resources Available
+        </p>
         <p className="text-neutral-600 dark:text-neutral-400">
-          We're experiencing a temporary issue loading resources. Please refresh the page or try again in a few moments.
+          We're experiencing a temporary issue loading resources. Please refresh the page or try
+          again in a few moments.
         </p>
       </div>
     )
@@ -176,7 +179,9 @@ export function ResourcesPageContent({ resources = [] }: ResourcesPageContentPro
 
       {isXSSAttempt ? null : filteredResources.length === 0 && hasSearched ? (
         <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-          <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">No Results Found</p>
+          <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+            No Results Found
+          </p>
           <p className="text-neutral-600 dark:text-neutral-400">
             Try adjusting your search filters or using different keywords
           </p>

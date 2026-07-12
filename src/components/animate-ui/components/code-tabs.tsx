@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
 import { CopyButton } from '@/components/features/resources/blocks/CopyButton'
+import { cn } from '@/lib/utils'
+import { AnimatePresence, motion } from 'motion/react'
+import { useState } from 'react'
 
 interface CodeTabsProps {
   codes: Record<string, { code: string; language: string; highlightedHtml?: string }>
@@ -17,7 +17,12 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
   if (tabs.length === 0) return null
 
   return (
-    <div className={cn("group relative my-8 w-full overflow-hidden rounded-xl bg-zinc-950/50 border border-white/5 shadow-2xl", className)}>
+    <div
+      className={cn(
+        'group relative my-8 w-full overflow-hidden rounded-xl bg-zinc-950/50 border border-white/5 shadow-2xl',
+        className,
+      )}
+    >
       {/* Tab Headers */}
       <div className="flex items-center justify-between px-2 bg-white/5 border-b border-white/5 overflow-x-auto no-scrollbar">
         <div className="flex items-center">
@@ -27,8 +32,8 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
               type="button"
               onClick={() => setActiveTab(tab)}
               className={cn(
-                "relative px-4 py-3 text-xs font-medium transition-colors outline-none",
-                activeTab === tab ? "text-white" : "text-zinc-500 hover:text-zinc-300"
+                'relative px-4 py-3 text-xs font-medium transition-colors outline-none',
+                activeTab === tab ? 'text-white' : 'text-zinc-500 hover:text-zinc-300',
               )}
             >
               {tab}
@@ -36,7 +41,7 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
                 <motion.div
                   layoutId="activeTab"
                   className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
               )}
             </button>
@@ -46,7 +51,7 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
           <CopyButton code={codes[activeTab].code} />
         </div>
       </div>
-      
+
       {/* Tab Content */}
       <div className="relative min-h-[100px]">
         <AnimatePresence mode="wait">
@@ -61,7 +66,9 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
             {codes[activeTab].highlightedHtml ? (
               <div dangerouslySetInnerHTML={{ __html: codes[activeTab].highlightedHtml }} />
             ) : (
-              <pre><code>{codes[activeTab].code}</code></pre>
+              <pre>
+                <code>{codes[activeTab].code}</code>
+              </pre>
             )}
           </motion.div>
         </AnimatePresence>

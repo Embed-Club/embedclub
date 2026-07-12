@@ -231,8 +231,13 @@ export default function Page() {
           ) : error ? (
             <div className="flex h-full w-full items-center justify-center px-4">
               <div className="text-center max-w-sm">
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Members Unavailable</p>
-                <p className="text-neutral-600 dark:text-neutral-400">We're experiencing a temporary issue loading member information. Please refresh the page or try again in a few moments.</p>
+                <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                  Members Unavailable
+                </p>
+                <p className="text-neutral-600 dark:text-neutral-400">
+                  We're experiencing a temporary issue loading member information. Please refresh
+                  the page or try again in a few moments.
+                </p>
               </div>
             </div>
           ) : (

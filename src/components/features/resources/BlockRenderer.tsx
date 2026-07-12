@@ -1,5 +1,4 @@
-import React from 'react'
-import { Resource } from '@/payload/payload-types'
+import type { Resource } from '@/payload/payload-types'
 import { BlockMapper } from './BlockMapper'
 
 type Block = NonNullable<Resource['content']>[number]

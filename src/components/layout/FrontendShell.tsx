@@ -1,5 +1,6 @@
 'use client'
 
+import { AudioToggle } from '@/components/common/BackgroundAudio'
 import { ContentPanel } from '@/components/layout/ContentPanel'
 import { AppSidebar } from '@/components/layout/DesktopMenu'
 import { InlineSVG } from '@/components/layout/InlineSVG'
@@ -144,7 +145,8 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
           <AppSidebar />
         </div>
         <MobileMenu />
-        <div className="absolute right-8 top-6 z-40 hidden lg:block">
+        <div className="absolute right-8 top-6 z-40 hidden lg:flex items-center gap-2">
+          <AudioToggle />
           <ModeToggle />
         </div>
         {children}

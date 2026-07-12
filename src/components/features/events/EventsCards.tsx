@@ -175,7 +175,9 @@ export const EventModal = ({
                     Service Temporarily Unavailable
                   </p>
                   <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                    We're unable to load event details at the moment. This could be due to a temporary database connection issue. Please try again in a few moments, or contact support if the problem persists.
+                    We're unable to load event details at the moment. This could be due to a
+                    temporary database connection issue. Please try again in a few moments, or
+                    contact support if the problem persists.
                   </p>
                 </div>
               </div>
