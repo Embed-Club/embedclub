@@ -1,9 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 import { Button } from '@/components/ui/button'
 import { Download, Loader2 } from 'lucide-react'
+import { useState } from 'react'
 
 interface CertificateGeneratorProps {
   templateUrl: string
@@ -16,7 +15,11 @@ interface CertificateGeneratorProps {
   defaultName?: string
 }
 
-export function CertificateGenerator({ templateUrl, config, defaultName = '' }: CertificateGeneratorProps) {
+export function CertificateGenerator({
+  templateUrl,
+  config,
+  defaultName = '',
+}: CertificateGeneratorProps) {
   const [name, setName] = useState(defaultName)
   const [generating, setGenerating] = useState(false)
 
@@ -28,27 +31,32 @@ export function CertificateGenerator({ templateUrl, config, defaultName = '' }: 
 
     setGenerating(true)
     try {
+      // pdf-lib is only needed on click — dynamic import keeps it out of the page bundle
+      const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib')
+
       // Fetch the template
-      const templateBytes = await fetch(templateUrl).then(res => res.arrayBuffer())
-      
+      const templateBytes = await fetch(templateUrl).then((res) => res.arrayBuffer())
+
       // Load the PDF
       const pdfDoc = await PDFDocument.load(templateBytes)
       const pages = pdfDoc.getPages()
       const firstPage = pages[0]
-      
+
       // Load a font
       const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
-      
+
       // Hex to RGB
       const hexToRgb = (hex: string) => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-        return result ? {
-          r: parseInt(result[1], 16) / 255,
-          g: parseInt(result[2], 16) / 255,
-          b: parseInt(result[3], 16) / 255
-        } : { r: 0, g: 0, b: 0 }
+        return result
+          ? {
+              r: Number.parseInt(result[1], 16) / 255,
+              g: Number.parseInt(result[2], 16) / 255,
+              b: Number.parseInt(result[3], 16) / 255,
+            }
+          : { r: 0, g: 0, b: 0 }
       }
-      
+
       const color = hexToRgb(config.color)
 
       // Draw the name
@@ -62,7 +70,7 @@ export function CertificateGenerator({ templateUrl, config, defaultName = '' }: 
 
       // Serialize the PDF to bytes
       const pdfBytes = await pdfDoc.save()
-      
+
       // Download it
       const blob = new Blob([pdfBytes], { type: 'application/pdf' })
       const link = document.createElement('a')
@@ -85,7 +93,7 @@ export function CertificateGenerator({ templateUrl, config, defaultName = '' }: 
           Once you&apos;ve submitted the form, enter your name below to download your certificate.
         </p>
       </div>
-      
+
       <div className="space-y-4">
         <input
           type="text"
@@ -94,7 +102,7 @@ export function CertificateGenerator({ templateUrl, config, defaultName = '' }: 
           placeholder="Enter your full name"
           className="w-full px-4 py-3 bg-zinc-900 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all"
         />
-        
+
         <Button
           onClick={generatePDF}
           disabled={generating || !name.trim()}

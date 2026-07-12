@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url'
 import { s3Storage } from '@payloadcms/storage-s3'
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { mcpPlugin } from '@payloadcms/plugin-mcp'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'

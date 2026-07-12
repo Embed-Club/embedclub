@@ -3,10 +3,10 @@
 import type { SimulatorCardData } from '@/app/(frontend)/simulators/SimulatorsPageContent'
 import { GlowingEffect } from '@/components/common/ChromaGrid'
 import { cn } from '@/lib/utils'
+import { Play } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import { TagOverflow } from '../resources/TagOverflow'
-import { Play } from 'lucide-react'
 
 interface SimulatorCardProps {
   card: SimulatorCardData
@@ -68,7 +68,7 @@ export const SimulatorCard = React.memo(({ card }: SimulatorCardProps) => {
           alt={card.title}
           className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
         />
-        
+
         {/* Play Icon Overlay */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           <div className="w-16 h-16 rounded-full bg-primary/20 backdrop-blur-md border border-primary/40 flex items-center justify-center text-primary scale-90 group-hover:scale-100 transition-transform duration-300">
@@ -79,8 +79,10 @@ export const SimulatorCard = React.memo(({ card }: SimulatorCardProps) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col items-end justify-end py-6 px-4 transition-all duration-300 z-10">
           <div className="w-full">
             <div className="flex items-center justify-between mb-1">
-               <span className="text-[10px] uppercase tracking-widest text-primary font-bold">{card.category}</span>
-               <span className="text-[10px] text-zinc-400">{card.estimatedTime} min</span>
+              <span className="text-[10px] uppercase tracking-widest text-primary font-bold">
+                {card.category}
+              </span>
+              <span className="text-[10px] text-zinc-400">{card.estimatedTime} min</span>
             </div>
             <div className="text-sm md:text-lg font-bold text-white group-hover:text-primary transition-colors">
               {card.title}

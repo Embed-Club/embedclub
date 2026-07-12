@@ -1,10 +1,10 @@
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import { CertificateGenerator } from '@/components/features/feedback/CertificateGenerator'
+import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import config from '@/payload/payload.config'
-import { getPayload } from 'payload'
-import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
 
 interface FeedbackPageProps {
   params: Promise<{
@@ -15,7 +15,7 @@ interface FeedbackPageProps {
 async function getFeedbackForm(slug: string) {
   try {
     const payload = await getPayload({ config })
-    
+
     const result = await payload.find({
       collection: 'feedback-forms',
       where: {
@@ -25,7 +25,7 @@ async function getFeedbackForm(slug: string) {
       },
       depth: 1,
     })
-    
+
     return result.docs[0] || null
   } catch (error) {
     console.error('[Feedback] Error fetching form:', error)
@@ -42,9 +42,10 @@ export default async function FeedbackPage({ params }: FeedbackPageProps) {
   }
 
   // Extract certificate info
-  const certificateTemplate = form.certificateTemplate && typeof form.certificateTemplate === 'object' 
-    ? (form.certificateTemplate as any).url 
-    : null
+  const certificateTemplate =
+    form.certificateTemplate && typeof form.certificateTemplate === 'object'
+      ? (form.certificateTemplate as any).url
+      : null
 
   return (
     <SidebarShell>
@@ -73,18 +74,18 @@ export default async function FeedbackPage({ params }: FeedbackPageProps) {
 
               {/* Google Form Iframe */}
               <div className="relative w-full aspect-[4/5] md:aspect-[4/3] rounded-2xl overflow-hidden border border-white/5 bg-white/5 shadow-2xl">
-                 <iframe
-                   src={form.googleFormUrl}
-                   className="absolute inset-0 w-full h-full border-0"
-                   title={form.title}
-                 >
-                   Loading…
-                 </iframe>
+                <iframe
+                  src={form.googleFormUrl}
+                  className="absolute inset-0 w-full h-full border-0"
+                  title={form.title}
+                >
+                  Loading…
+                </iframe>
               </div>
 
               {/* Certificate Section */}
               {form.showCertificate && certificateTemplate && (
-                <CertificateGenerator 
+                <CertificateGenerator
                   templateUrl={certificateTemplate}
                   config={{
                     nameX: form.certificateConfig?.nameX || 400,

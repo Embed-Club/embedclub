@@ -1,5 +1,4 @@
-import React from 'react'
-import { GraphBlock as GraphBlockType } from '@/payload/payload-types'
+import type { GraphBlock as GraphBlockType } from '@/payload/payload-types'
 import { MermaidRenderer } from './MermaidRenderer'
 
 interface GraphBlockProps {
@@ -15,27 +14,23 @@ export function GraphBlock({ block }: GraphBlockProps) {
         {graphType === 'mermaid' && mermaidDefinition && (
           <MermaidRenderer definition={mermaidDefinition} />
         )}
-        
+
         {graphType === 'chartData' && (
           <div className="bg-zinc-900/50 p-6 rounded-xl border border-white/5 flex items-center justify-center min-h-[300px]">
-             <p className="text-zinc-500 italic">Chart rendering coming soon...</p>
-             {/* Future: Add Chart.js or Recharts here */}
+            <p className="text-zinc-500 italic">Chart rendering coming soon...</p>
+            {/* Future: Add Chart.js or Recharts here */}
           </div>
         )}
 
         {graphType === 'html' && html && (
-          <div 
+          <div
             className="w-full rounded-xl overflow-hidden border border-white/5"
-            dangerouslySetInnerHTML={{ __html: html }} 
+            dangerouslySetInnerHTML={{ __html: html }}
           />
         )}
       </div>
-      
-      {caption && (
-        <p className="text-center text-sm text-zinc-500 font-medium italic">
-          {caption}
-        </p>
-      )}
+
+      {caption && <p className="text-center text-sm text-zinc-500 font-medium italic">{caption}</p>}
     </div>
   )
 }

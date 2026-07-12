@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  Card as CarouselCard,
   type EventCardData as CarouselCardData,
   EventCard,
 } from '@/components/features/events/EventsCards'
@@ -228,9 +227,16 @@ export default function Page() {
             <div className="w-full py-6 md:py-12">
               <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-6 py-16 md:py-24 px-4">
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Unable to Load Events</h2>
-                  <p className="text-neutral-600 dark:text-neutral-400 mb-4">We're experiencing temporary database connectivity issues. Events will be available shortly.</p>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-500">Please refresh the page or try again in a few moments.</p>
+                  <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                    Unable to Load Events
+                  </h2>
+                  <p className="text-neutral-600 dark:text-neutral-400 mb-4">
+                    We're experiencing temporary database connectivity issues. Events will be
+                    available shortly.
+                  </p>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-500">
+                    Please refresh the page or try again in a few moments.
+                  </p>
                 </div>
               </div>
             </div>
@@ -238,7 +244,9 @@ export default function Page() {
             <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
               <h2 className="relative text-2xl font-bold md:text-4xl mb-8">ALL EVENTS</h2>
               <div className="text-center py-16">
-                <p className="text-neutral-600 dark:text-neutral-400">Events are currently unavailable due to a temporary service issue.</p>
+                <p className="text-neutral-600 dark:text-neutral-400">
+                  Events are currently unavailable due to a temporary service issue.
+                </p>
               </div>
             </div>
           </>
@@ -251,8 +259,12 @@ export default function Page() {
               {events.length === 0 ? (
                 <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-6 py-16 md:py-24 px-4">
                   <div className="text-center">
-                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">No Events Yet</h2>
-                    <p className="text-neutral-600 dark:text-neutral-400">Check back soon for upcoming events!</p>
+                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                      No Events Yet
+                    </h2>
+                    <p className="text-neutral-600 dark:text-neutral-400">
+                      Check back soon for upcoming events!
+                    </p>
                   </div>
                 </div>
               ) : (
@@ -311,8 +323,12 @@ export default function Page() {
               )}
               {allEvents.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
-                  <p className="text-lg font-semibold text-neutral-900 dark:text-white">No Events Available</p>
-                  <p className="text-neutral-600 dark:text-neutral-400">There are currently no events to display. Come back later!</p>
+                  <p className="text-lg font-semibold text-neutral-900 dark:text-white">
+                    No Events Available
+                  </p>
+                  <p className="text-neutral-600 dark:text-neutral-400">
+                    There are currently no events to display. Come back later!
+                  </p>
                 </div>
               ) : (
                 <>

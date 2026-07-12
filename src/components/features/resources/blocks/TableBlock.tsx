@@ -1,5 +1,4 @@
-import React from 'react'
-import { TableBlock as TableBlockType } from '@/payload/payload-types'
+import type { TableBlock as TableBlockType } from '@/payload/payload-types'
 
 interface TableBlockProps {
   block: TableBlockType

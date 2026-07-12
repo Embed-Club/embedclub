@@ -1,7 +1,13 @@
-import { SimulatorsPageContent, type SimulatorCardData } from '@/app/(frontend)/simulators/SimulatorsPageContent'
+import {
+  type SimulatorCardData,
+  SimulatorsPageContent,
+} from '@/app/(frontend)/simulators/SimulatorsPageContent'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
+
+// ISR: rebuild this page at most every 60s so CMS edits show up without a redeploy
+export const revalidate = 60
 
 async function getSimulators(): Promise<SimulatorCardData[]> {
   try {
@@ -20,10 +26,15 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
 
     // Transform Payload simulators to SimulatorCardData format
     return (simulators.docs as any[]).map((simulator) => {
-      let imageUrl = 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=400&h=300&fit=crop' // fallback
+      let imageUrl =
+        'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=400&h=300&fit=crop' // fallback
 
       if (simulator.thumbnail) {
-        if (typeof simulator.thumbnail === 'object' && simulator.thumbnail !== null && 'url' in simulator.thumbnail) {
+        if (
+          typeof simulator.thumbnail === 'object' &&
+          simulator.thumbnail !== null &&
+          'url' in simulator.thumbnail
+        ) {
           imageUrl = simulator.thumbnail.url
         } else if (typeof simulator.thumbnail === 'string') {
           imageUrl = `/api/media/file/${simulator.thumbnail}`

@@ -30,7 +30,7 @@ export const Media: CollectionConfig = {
       {
         name: 'tablet',
         width: 1024,
-        height: null,
+        height: undefined,
       },
     ],
     adminThumbnail: 'thumbnail',

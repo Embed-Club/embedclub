@@ -28,7 +28,7 @@ async function getGallery(base: string): Promise<Gallery[]> {
 
 export default async function Page() {
   const gallery = await getGallery(getBaseUrl())
-  
+
   if (gallery.length === 0) {
     return (
       <SidebarShell>
@@ -38,15 +38,20 @@ export default async function Page() {
           </h1>
           <div className="h-full w-full px-2 pt-16 md:pt-32 flex items-center justify-center">
             <div className="text-center">
-              <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Gallery Unavailable</p>
-              <p className="text-neutral-600 dark:text-neutral-400">We're experiencing a temporary issue loading gallery items. Please refresh the page or try again in a few moments.</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                Gallery Unavailable
+              </p>
+              <p className="text-neutral-600 dark:text-neutral-400">
+                We're experiencing a temporary issue loading gallery items. Please refresh the page
+                or try again in a few moments.
+              </p>
             </div>
           </div>
         </MainbarShell>
       </SidebarShell>
     )
   }
-  
+
   const items = gallery.map((g) => ({
     id: g.id.toString(),
     img: g.url ?? '',
