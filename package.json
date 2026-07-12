@@ -21,7 +21,7 @@
     "verify": "pnpm run check:ci && pnpm run typecheck && pnpm run test:int",
     "verify:full": "pnpm run verify && pnpm run build:app && pnpm run test:e2e",
     "test": "pnpm run test:int && pnpm run test:e2e",
-    "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
+    "test:e2e": "cross-env NODE_OPTIONS=--no-deprecation pnpm exec playwright test",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {

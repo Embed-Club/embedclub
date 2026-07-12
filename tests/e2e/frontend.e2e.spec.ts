@@ -28,7 +28,10 @@ test.describe('Frontend', () => {
   test('events page renders content or empty state', async ({ page }) => {
     await page.goto('http://localhost:3000/events')
     await expect(
-      page.getByRole('heading', { name: 'RECENT EVENTS' }).or(page.getByText('No Events Yet')),
+      page
+        .getByRole('heading', { name: 'RECENT EVENTS' })
+        .or(page.getByText('No Events Yet'))
+        .first(),
     ).toBeVisible({ timeout: 20_000 })
   })
 })

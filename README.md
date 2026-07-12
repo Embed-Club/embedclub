@@ -66,10 +66,12 @@ Embed Club connects over **100+ members** who share a passion for embedded syste
 ### High-Fidelity Features
 
 - **Intro Visual Identity**: A specialized **Shared Element Transition** (Logo Glide) that persists across page loads for a premium "App-like" feel.
+- **"Solder & Copper" design system**: copper-on-graphite theme with a fabric texture, documented in `DESIGN.md` / `PRODUCT.md`.
+- **Native Form Builder**: multi-step wizard forms built in Payload admin; submissions are stored locally AND forwarded to Google Forms so organizers keep working in Sheets.
 - **Automated Media Engine**: Integrated **Sharp-powered WebP compression** and responsive image generation hosted on Supabase S3.
 - **Relational Directory**: Sophisticated member profiles with hierarchical roles, categories, and achievement tracking.
-- **Resource Hub**: A curated repository of tools, tutorials, and simulators with advanced tagging and search capabilities.
-- **Event Orchestration**: Full lifecycle management for workshops, meetings, and club activities.
+- **Resource Hub**: A curated repository of tools, tutorials, and simulators with advanced tagging, search, and cutout-card UI.
+- **Event Orchestration**: Full lifecycle management for workshops, meetings, and club activities — with optional registration forms.
 
 ---
 
@@ -79,10 +81,10 @@ Embed Club connects over **100+ members** who share a passion for embedded syste
 | :--- | :--- | :--- |
 | **Frontend** | Next.js 15 (App Router) | Core application routing and SSR/ISR |
 | **Backend/CMS** | Payload CMS 3.0 | Headless content management & headless API |
-| **Database** | Neon (PostgreSQL) | Serverless relational database hosting |
-| **Storage** | Supabase (S3 Compatible) | Persistent cloud storage for media & member photos |
-| **Motion** | Framer Motion & GSAP | High-fidelity UI animations and transitions |
-| **Styling** | Vanilla CSS + Tailwind | Custom design tokens and modern utility layout |
+| **Database** | Neon (PostgreSQL) | Serverless relational database, migration-managed |
+| **Storage** | Supabase (S3 Compatible) | Cloud media storage (prod only, via `USE_S3_STORAGE`) |
+| **Motion** | Motion (motion/react) & GSAP | High-fidelity UI animations and transitions |
+| **Styling** | Tailwind CSS 3 | Copper design tokens + utility layout |
 
 ## Deployment
 
@@ -100,62 +102,35 @@ Ensure the following are set in production:
 - `PAYLOAD_SECRET`: A secure random string.
 - `S3_*`: AWS/S3 credentials for media storage.
 
+## Getting Started
+
+Full instructions live in **[SETUP.md](SETUP.md)** — environment, database
+migrations, content model, deployment, and troubleshooting. TLDR:
+
+```bash
+pnpm install
+# create .env (see SETUP.md §3)
+pnpm payload migrate
+pnpm dev            # http://localhost:3000  (+ /admin)
+```
+
+### Daily commands
+
+| Command | Purpose |
+|---|---|
+| `pnpm verify` | biome + typecheck + integration tests — run before every commit |
+| `pnpm verify:full` | verify + production build + Playwright e2e — run before merging |
+| `pnpm generate:types` | regenerate Payload types after schema changes |
+
 ## Contributing
 
-1.  **Create a Branch**: `git checkout -b feature/your-feature-name`
-2.  **Make Changes**: Follow the coding standards (Biome for linting/formatting).
-3.  **Submit a PR**: Detailed description of changes.
-
----
-
-## Development Quick-Start
-
-### 1. Prerequisites
-- **Node.js**: >= 20.9.0
-- **pnpm**: Latest version (preferred)
-
-### 2. Environment Configuration
-Clone the repository and create a `.env` file based on the enterprise configuration:
-
-```bash
-# Database & Authentication
-DATABASE_URL=postgresql://...
-PAYLOAD_SECRET=your_secret_key
-
-# Supabase S3 Storage (Required for Media)
-S3_ENDPOINT=https://your-proj.supabase.co/storage/v1/s3
-S3_ACCESS_KEY_ID=your_id
-S3_SECRET_ACCESS_KEY=your_secret
-S3_BUCKET=media
-S3_REGION=ap-southeast-2
-```
-
-### 3. Installation & Boot
-```bash
-# Install dependencies
-pnpm install
-
-# Start development server
-pnpm dev
-```
-
----
-
-## Production Deployment
-
-This project is optimized for **Vercel** and **Neon**.
-
-1.  **Database Migration**: Ensure your Neon project is configured with the correct schema.
-2.  **Storage Access**: Ensure the Supabase bucket is set to **Public** to allow the frontend to serve WebP assets.
-3.  **Deployment**: Pushing to the `main` branch triggers an automated CI/CD pipeline.
-
----
-
-## Engineering Standards
-
-- **Asset Optimization**: All images are automatically compressed to minimize LCP.
-- **Responsive Systems**: Grid-based layouts ensure parity across devices.
-- **Persistence**: Intro animations utilize specialized state management to prevent visual flickering.
+1. Read **[AGENTS.md](AGENTS.md)** first — it defines the design language,
+   naming conventions, and hard rules. It applies to humans and to any AI
+   coding assistant you use.
+2. Branch from `main`: `git checkout -b feature/your-feature-name`
+3. `pnpm verify` before every commit; `pnpm verify:full` before the PR.
+4. Never push directly to `main` — it auto-deploys and migrates the production
+   database.
 
 ---
 
