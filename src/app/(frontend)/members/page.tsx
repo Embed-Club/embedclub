@@ -1,13 +1,13 @@
 'use client'
 
-import ChromaScene from '@/components/common/ChromaScene'
-import { EmptyState } from '@/components/common/EmptyState'
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
+import ChromaScene from '@/components/common/chroma-scene'
+import { EmptyState } from '@/components/common/empty-state'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
 import { Skeleton } from '@/components/ui/skeleton'
 import React from 'react'
 
 // Local ChromaGrid component (client-side wrapper)
-import ChromaGridWrapper from '@/components/common/ChromaGridWrapper'
+import ChromaGridWrapper from '@/components/common/chroma-grid-wrapper'
 
 import type { Member as MemberDoc, MemberPhoto as MemberPhotoDoc } from '@/payload/payload-types'
 

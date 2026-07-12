@@ -1,5 +1,5 @@
-import { CertificateGenerator } from '@/components/features/feedback/CertificateGenerator'
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
+import { CertificateGenerator } from '@/components/features/feedback/certificate-generator'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
 import config from '@/payload/payload.config'
 import { ChevronLeft, ExternalLink } from 'lucide-react'
 import Link from 'next/link'

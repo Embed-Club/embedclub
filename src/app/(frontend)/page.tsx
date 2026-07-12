@@ -1,6 +1,6 @@
-import { AudioToggleMini, BackgroundAudio } from '@/components/common/BackgroundAudio'
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
-import { ThemedStarsBackground } from '@/components/theme/ThemedStarsBackground'
+import { AudioToggleMini, BackgroundAudio } from '@/components/common/background-audio'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
+import { ThemedStarsBackground } from '@/components/theme/themed-stars-background'
 import DashboardTitle from './title'
 
 export default async function Page() {
