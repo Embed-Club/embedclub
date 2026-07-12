@@ -18,7 +18,6 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
 
-import { PanelTexture } from '@/components/ui/bg-image-texture'
 import {
   Sidebar,
   SidebarContent,
@@ -138,7 +137,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
-      <PanelTexture />
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
