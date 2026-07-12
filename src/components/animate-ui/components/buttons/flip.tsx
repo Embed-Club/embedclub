@@ -9,7 +9,7 @@ import {
   FlipButton as FlipButtonPrimitive,
   type FlipButtonProps as FlipButtonPrimitiveProps,
 } from '@/components/animate-ui/primitives/buttons/flip'
-import { getStrictContext } from '@/lib/get-strict-context'
+import { getStrictContext } from '@/lib/getStrictContext'
 import { cn } from '@/lib/utils'
 
 type FlipButtonContextType = VariantProps<typeof buttonVariants>

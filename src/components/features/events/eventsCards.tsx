@@ -1,6 +1,6 @@
 'use client'
-import { EventDetails } from '@/components/features/events/event-details'
-import { useOutsideClick } from '@/hooks/use-outside-click'
+import { EventDetails } from '@/components/features/events/eventDetails'
+import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
 import { X } from 'lucide-react'

@@ -2,7 +2,7 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { useMediaQuery } from '@/hooks/use-media-query' // Need to check if this exists
+import { useMediaQuery } from '@/hooks/useMediaQuery' // Need to check if this exists
 import { cn } from '@/lib/utils'
 import { useEffect, useRef, useState } from 'react'
 

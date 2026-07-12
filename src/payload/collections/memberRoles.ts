@@ -89,7 +89,7 @@ export const MemberRoles: CollectionConfig = {
         description:
           'Order in which this role appears. Lower numbers appear first. Occupied positions will be automatically reassigned.',
         components: {
-          Field: '@/components/admin/sort-order-select-role',
+          Field: '@/components/admin/sortOrderSelectRole',
         },
       },
     },

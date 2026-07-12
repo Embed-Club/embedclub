@@ -1,7 +1,7 @@
 'use client'
 
-import type { SimulatorCardData } from '@/app/(frontend)/simulators/simulators-page-content'
-import { SimulatorCard } from '@/components/features/simulators/simulator-card'
+import type { SimulatorCardData } from '@/app/(frontend)/simulators/simulatorsPageContent'
+import { SimulatorCard } from '@/components/features/simulators/simulatorCard'
 import { gsap } from 'gsap'
 import { useCallback, useEffect, useRef } from 'react'
 

@@ -7,7 +7,7 @@ import type React from 'react'
 import { Suspense } from 'react'
 
 // Dynamically import LeafletMap to avoid SSR issues
-const LeafletMap = dynamic(() => import('@/components/admin/leaflet-map'), {
+const LeafletMap = dynamic(() => import('@/components/admin/leafletMap'), {
   ssr: false,
   loading: () => <Skeleton className="h-[600px] w-full rounded-lg" />,
 })

@@ -1,5 +1,5 @@
 'use client'
-import { CarouselContext } from '@/components/features/events/events-cards'
+import { CarouselContext } from '@/components/features/events/eventsCards'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { motion } from 'motion/react'
@@ -127,4 +127,4 @@ export {
   Card,
   BlurImage,
   type EventCardData as CardType,
-} from '@/components/features/events/events-cards'
+} from '@/components/features/events/eventsCards'

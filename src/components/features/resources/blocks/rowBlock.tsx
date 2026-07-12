@@ -1,5 +1,5 @@
 import type { RowBlock as RowBlockType } from '@/payload/payload-types'
-import { BlockMapper } from '../block-mapper'
+import { BlockMapper } from '../blockMapper'
 
 interface RowBlockProps {
   block: RowBlockType

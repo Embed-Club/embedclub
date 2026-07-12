@@ -1,6 +1,6 @@
 'use client'
 
-import { useTimelineScroll } from '@/hooks/use-timeline-scroll'
+import { useTimelineScroll } from '@/hooks/useTimelineScroll'
 import { motion, useTransform } from 'motion/react'
 import * as React from 'react'
 

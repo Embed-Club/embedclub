@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import * as SVGAssets from './svg-assets'
+import * as SVGAssets from './svgAssets'
 
 interface InlineSVGProps {
   src: string

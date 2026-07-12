@@ -5,7 +5,7 @@ import {
   FlipButtonBack,
   FlipButtonFront,
 } from '@/components/animate-ui/components/buttons/flip'
-import { IntroContext } from '@/components/layout/frontend-shell'
+import { IntroContext } from '@/components/layout/frontendShell'
 import { Volume2, VolumeX } from 'lucide-react'
 import { useContext, useEffect, useSyncExternalStore } from 'react'
 

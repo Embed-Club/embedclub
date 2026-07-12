@@ -1,6 +1,6 @@
 'use client'
 
-import { CopyButton } from '@/components/features/resources/blocks/copy-button'
+import { CopyButton } from '@/components/features/resources/blocks/copyButton'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
 import { useState } from 'react'

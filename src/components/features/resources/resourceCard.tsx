@@ -1,9 +1,9 @@
-import type { ResourceCardData } from '@/app/(frontend)/resources/resources-page-content'
-import { GlowingEffect } from '@/components/common/chroma-grid'
+import type { ResourceCardData } from '@/app/(frontend)/resources/resourcesPageContent'
+import { GlowingEffect } from '@/components/common/chromaGrid'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import React from 'react'
-import { TagOverflow } from './tag-overflow'
+import { TagOverflow } from './tagOverflow'
 
 interface ResourceCardProps {
   card: ResourceCardData

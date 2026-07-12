@@ -98,7 +98,7 @@ export const Audio: CollectionConfig = {
         position: 'sidebar',
         description: 'Base volume for this sound.',
         components: {
-          Field: '@/components/admin/audio-slider-field',
+          Field: '@/components/admin/audioSliderField',
         },
       },
     },
@@ -123,7 +123,7 @@ export const Audio: CollectionConfig = {
         position: 'sidebar',
         description: '1 = normal speed. Lower is slower, higher is faster.',
         components: {
-          Field: '@/components/admin/audio-slider-field',
+          Field: '@/components/admin/audioSliderField',
         },
       },
     },
@@ -137,7 +137,7 @@ export const Audio: CollectionConfig = {
       admin: {
         step: 50,
         components: {
-          Field: '@/components/admin/audio-slider-field',
+          Field: '@/components/admin/audioSliderField',
         },
       },
     },
@@ -151,7 +151,7 @@ export const Audio: CollectionConfig = {
       admin: {
         step: 50,
         components: {
-          Field: '@/components/admin/audio-slider-field',
+          Field: '@/components/admin/audioSliderField',
         },
       },
     },
@@ -166,7 +166,7 @@ export const Audio: CollectionConfig = {
         step: 0.05,
         description: 'Optional boost multiplier applied by the frontend.',
         components: {
-          Field: '@/components/admin/audio-slider-field',
+          Field: '@/components/admin/audioSliderField',
         },
       },
     },
@@ -195,7 +195,7 @@ export const Audio: CollectionConfig = {
               admin: {
                 step: 10,
                 components: {
-                  Field: '@/components/admin/audio-slider-field',
+                  Field: '@/components/admin/audioSliderField',
                 },
               },
             },
@@ -209,7 +209,7 @@ export const Audio: CollectionConfig = {
               admin: {
                 step: 0.05,
                 components: {
-                  Field: '@/components/admin/audio-slider-field',
+                  Field: '@/components/admin/audioSliderField',
                 },
               },
             },
@@ -223,7 +223,7 @@ export const Audio: CollectionConfig = {
               admin: {
                 step: 0.05,
                 components: {
-                  Field: '@/components/admin/audio-slider-field',
+                  Field: '@/components/admin/audioSliderField',
                 },
               },
             },
@@ -249,7 +249,7 @@ export const Audio: CollectionConfig = {
               admin: {
                 step: 0.05,
                 components: {
-                  Field: '@/components/admin/audio-slider-field',
+                  Field: '@/components/admin/audioSliderField',
                 },
               },
             },
@@ -263,7 +263,7 @@ export const Audio: CollectionConfig = {
               admin: {
                 step: 100,
                 components: {
-                  Field: '@/components/admin/audio-slider-field',
+                  Field: '@/components/admin/audioSliderField',
                 },
               },
             },

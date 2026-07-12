@@ -1,5 +1,5 @@
 import './globals.css'
-import ThemeWrapper from '@/components/theme/theme-wrapper'
+import ThemeWrapper from '@/components/theme/themeWrapper'
 import type { Metadata } from 'next'
 import { avantGarde, gobold, sportBreak } from './fonts'
 

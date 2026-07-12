@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import type { ResourceCardData } from '@/app/(frontend)/resources/resources-page-content'
+import type { ResourceCardData } from '@/app/(frontend)/resources/resourcesPageContent'
 import {
   CutoutCard,
   CutoutCardContent,

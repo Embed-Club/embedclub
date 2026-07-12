@@ -1,5 +1,5 @@
 'use client'
-import DecryptedTextProps from '@/components/common/decrypted-text'
+import DecryptedTextProps from '@/components/common/decryptedText'
 
 export default function DashboardTitle() {
   return (

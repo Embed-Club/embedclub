@@ -1,12 +1,12 @@
 'use client'
 
-import type { SimulatorCardData } from '@/app/(frontend)/simulators/simulators-page-content'
-import { GlowingEffect } from '@/components/common/chroma-grid'
+import type { SimulatorCardData } from '@/app/(frontend)/simulators/simulatorsPageContent'
+import { GlowingEffect } from '@/components/common/chromaGrid'
 import { cn } from '@/lib/utils'
 import { Play } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
-import { TagOverflow } from '../resources/tag-overflow'
+import { TagOverflow } from '../resources/tagOverflow'
 
 interface SimulatorCardProps {
   card: SimulatorCardData

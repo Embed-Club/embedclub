@@ -1,5 +1,5 @@
-import { BlockRenderer } from '@/components/features/resources/block-renderer'
-import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
+import { BlockRenderer } from '@/components/features/resources/blockRenderer'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import config from '@/payload/payload.config'
 import { BarChart, Calendar, ChevronLeft, Clock } from 'lucide-react'
 import type { Metadata } from 'next'

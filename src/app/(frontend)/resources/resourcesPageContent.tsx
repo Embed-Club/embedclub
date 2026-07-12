@@ -1,9 +1,9 @@
 'use client'
 
-import { EmptyState } from '@/components/common/empty-state'
-import { SearchBar } from '@/components/common/search-bar'
-import { ResourceCards } from '@/components/features/resources/resource-cards'
-import { XSSHoneypot } from '@/components/features/resources/xss-honeypot'
+import { EmptyState } from '@/components/common/emptyState'
+import { SearchBar } from '@/components/common/searchBar'
+import { ResourceCards } from '@/components/features/resources/resourceCards'
+import { XSSHoneypot } from '@/components/features/resources/xssHoneypot'
 import { useEffect, useMemo, useState } from 'react'
 
 export interface ResourceCardData {

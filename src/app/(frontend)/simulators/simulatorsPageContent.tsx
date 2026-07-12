@@ -1,8 +1,8 @@
 'use client'
 
-import { EmptyState } from '@/components/common/empty-state'
-import { SearchBar } from '@/components/common/search-bar'
-import { SimulatorCards } from '@/components/features/simulators/simulator-cards'
+import { EmptyState } from '@/components/common/emptyState'
+import { SearchBar } from '@/components/common/searchBar'
+import { SimulatorCards } from '@/components/features/simulators/simulatorCards'
 import { useEffect, useMemo, useState } from 'react'
 
 export interface SimulatorCardData {

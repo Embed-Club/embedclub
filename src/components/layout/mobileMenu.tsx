@@ -1,6 +1,6 @@
 'use client'
 
-import StaggeredMenu from '@/components/layout/staggered-menu'
+import StaggeredMenu from '@/components/layout/staggeredMenu'
 
 const navItems = [
   { label: 'HOE', ariaLabel: 'Home', link: '/' },

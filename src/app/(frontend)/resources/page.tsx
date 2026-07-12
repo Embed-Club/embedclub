@@ -1,6 +1,6 @@
-import { getResourceCards } from '@/app/(frontend)/resources/get-resource-cards'
-import { ResourcesPageContent } from '@/app/(frontend)/resources/resources-page-content'
-import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
+import { getResourceCards } from '@/app/(frontend)/resources/getResourceCards'
+import { ResourcesPageContent } from '@/app/(frontend)/resources/resourcesPageContent'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 
 // ISR: rebuild this page at most every 60s so CMS edits show up without a redeploy
 export const revalidate = 60

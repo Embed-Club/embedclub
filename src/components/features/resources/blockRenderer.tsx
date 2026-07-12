@@ -1,5 +1,5 @@
 import type { Resource } from '@/payload/payload-types'
-import { BlockMapper } from './block-mapper'
+import { BlockMapper } from './blockMapper'
 
 type Block = NonNullable<Resource['content']>[number]
 

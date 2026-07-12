@@ -1,9 +1,9 @@
 'use client'
 
-import { EmptyState } from '@/components/common/empty-state'
-import { EventCard } from '@/components/features/events/events-cards'
-import { Carousel } from '@/components/features/events/events-carousel'
-import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
+import { EmptyState } from '@/components/common/emptyState'
+import { EventCard } from '@/components/features/events/eventsCards'
+import { Carousel } from '@/components/features/events/eventsCarousel'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import { FocusCards } from '@/components/ui/focus-cards'
 import {
   Pagination,

@@ -7,7 +7,7 @@ import type React from 'react'
 import { Suspense, useEffect, useRef, useState } from 'react'
 
 // Import with ssr: false to prevent server-side rendering of Leaflet
-const LeafletMap = dynamic(() => import('./leaflet-map'), { ssr: false })
+const LeafletMap = dynamic(() => import('./leafletMap'), { ssr: false })
 
 const LeafletLocationField: FieldClientComponent = (props) => {
   const { path } = props

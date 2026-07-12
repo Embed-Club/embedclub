@@ -1,4 +1,4 @@
-import RichTextRender from '@/components/common/rich-text-render'
+import RichTextRender from '@/components/common/richTextRender'
 import type {
   CodeBlock,
   GraphBlock,
@@ -8,12 +8,12 @@ import type {
   SimulatorLinkBlock as SimulatorLinkBlockType,
   TableBlock,
 } from '@/payload/payload-types'
-import { CodeBlockServer } from './blocks/code-block-server'
-import { GraphBlock as GraphBlockComp } from './blocks/graph-block'
-import { ImageBlock as ImageBlockComp } from './blocks/image-block'
-import { RowBlock as RowBlockComp } from './blocks/row-block'
-import { SimulatorLinkBlock as SimulatorLinkBlockComp } from './blocks/simulator-link-block'
-import { TableBlock as TableBlockComp } from './blocks/table-block'
+import { CodeBlockServer } from './blocks/codeBlockServer'
+import { GraphBlock as GraphBlockComp } from './blocks/graphBlock'
+import { ImageBlock as ImageBlockComp } from './blocks/imageBlock'
+import { RowBlock as RowBlockComp } from './blocks/rowBlock'
+import { SimulatorLinkBlock as SimulatorLinkBlockComp } from './blocks/simulatorLinkBlock'
+import { TableBlock as TableBlockComp } from './blocks/tableBlock'
 
 type Block = NonNullable<Resource['content']>[number]
 

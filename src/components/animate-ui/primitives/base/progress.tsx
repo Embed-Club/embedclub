@@ -8,7 +8,7 @@ import {
   CountingNumber,
   type CountingNumberProps,
 } from '@/components/animate-ui/primitives/texts/counting-number'
-import { getStrictContext } from '@/lib/get-strict-context'
+import { getStrictContext } from '@/lib/getStrictContext'
 
 type ProgressContextType = {
   value: number

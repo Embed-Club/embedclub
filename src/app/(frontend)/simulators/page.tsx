@@ -1,8 +1,8 @@
 import {
   type SimulatorCardData,
   SimulatorsPageContent,
-} from '@/app/(frontend)/simulators/simulators-page-content'
-import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
+} from '@/app/(frontend)/simulators/simulatorsPageContent'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 
