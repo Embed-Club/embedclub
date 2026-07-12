@@ -38,6 +38,15 @@ export const FeedbackForms: CollectionConfig = {
       },
     },
     {
+      name: 'deadline',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        date: { pickerAppearance: 'dayAndTime' },
+        description: 'Optional — after this time the form is shown as closed on the feedback page',
+      },
+    },
+    {
       name: 'certificateTemplate',
       type: 'upload',
       relationTo: 'media',

@@ -25,9 +25,9 @@ export function MermaidRenderer({ definition }: MermaidRendererProps) {
         theme: 'dark',
         securityLevel: 'strict',
         themeVariables: {
-          primaryColor: '#0070f3',
+          primaryColor: '#d98e4a',
           primaryTextColor: '#fff',
-          primaryBorderColor: '#0070f3',
+          primaryBorderColor: '#d98e4a',
           lineColor: '#52525b',
           secondaryColor: '#18181b',
           tertiaryColor: '#27272a',

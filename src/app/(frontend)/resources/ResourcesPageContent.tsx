@@ -13,6 +13,10 @@ export interface ResourceCardData {
   tags: string[]
   category?: string
   slug: string
+  badge?: string | null
+  createdAt?: string
+  difficulty?: string
+  readTime?: number | null
 }
 
 interface ResourcesPageContentProps {

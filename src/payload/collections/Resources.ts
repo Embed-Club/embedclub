@@ -433,6 +433,35 @@ export const Resources: CollectionConfig = {
               },
             },
             {
+              name: 'type',
+              type: 'select',
+              required: true,
+              defaultValue: 'resource',
+              options: [
+                { label: 'Resource', value: 'resource' },
+                { label: 'Tutorial', value: 'tutorial' },
+              ],
+              admin: {
+                position: 'sidebar',
+                description: 'Tutorials appear on the Tutorials page, resources on Resources',
+              },
+            },
+            {
+              name: 'badge',
+              type: 'select',
+              required: false,
+              options: [
+                { label: 'Featured', value: 'featured' },
+                { label: 'Popular', value: 'popular' },
+                { label: 'Essential', value: 'essential' },
+              ],
+              admin: {
+                position: 'sidebar',
+                description:
+                  'Optional label shown on the card. "New" is added automatically for the first 14 days',
+              },
+            },
+            {
               name: 'lastUpdated',
               type: 'date',
               required: false,

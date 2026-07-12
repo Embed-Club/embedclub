@@ -1,7 +1,7 @@
 'use client'
 
 import type { ResourceCardData } from '@/app/(frontend)/resources/ResourcesPageContent'
-import { ResourceCard } from '@/components/features/resources/ResourceCard'
+import { ResourceCutoutCard } from '@/components/features/resources/ResourceCutoutCard'
 import { gsap } from 'gsap'
 import { useCallback, useEffect, useRef } from 'react'
 
@@ -36,19 +36,17 @@ export function ResourceCards({ resources }: ResourceCardsProps) {
           const indexAttr = el.getAttribute('data-index')
           const index = indexAttr ? Number(indexAttr) : 0
 
-          const startY = window.innerHeight + 200
-
           gsap.fromTo(
             el,
             {
               opacity: 0,
-              y: startY,
+              y: 48,
             },
             {
               opacity: 1,
               y: 0,
-              duration: 0.8,
-              ease: 'power3.in',
+              duration: 0.6,
+              ease: 'power3.out',
               delay: index * 0.05,
             },
           )
@@ -74,7 +72,7 @@ export function ResourceCards({ resources }: ResourceCardsProps) {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-6 w-full">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 md:gap-6 w-full">
         {resources.map((resource, index) => (
           <div
             key={resource.id}
@@ -82,7 +80,7 @@ export function ResourceCards({ resources }: ResourceCardsProps) {
             ref={(el) => setCardRef(resource.id, el)}
             className="w-full"
           >
-            <ResourceCard card={resource} index={index} />
+            <ResourceCutoutCard card={resource} />
           </div>
         ))}
       </div>
