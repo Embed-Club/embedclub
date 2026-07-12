@@ -18,6 +18,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
 
+import { PanelTexture } from '@/components/ui/bg-image-texture'
 import {
   Sidebar,
   SidebarContent,
@@ -137,6 +138,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
+      <PanelTexture />
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -261,17 +263,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup {...props}>
+          {/* Same markup as the middle sub-navs (RESOURCES, TUTORILS, …) so both
+              sections share alignment, size, and hover styling */}
           <SidebarMenu>
-            {data.navBottom.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild size="sm">
-                  <a href={item.url} className="flex items-center justify-center gap-2 w-full py-2">
-                    <item.icon />
-                    <span className="text-xs font-semibold">{item.title}</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            <SidebarMenuItem className="w-full">
+              <SidebarMenuSub>
+                {data.navBottom.map((item) => (
+                  <SidebarMenuSubItem key={item.title}>
+                    <SidebarMenuSubButton asChild>
+                      <a href={item.url}>
+                        {' '}
+                        <item.icon /> <span className="font-semibold text-md">{item.title}</span>
+                      </a>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarFooter>

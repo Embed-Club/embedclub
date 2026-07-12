@@ -55,18 +55,20 @@ export function BackgroundImageTexture({
 }
 
 /**
- * Site-wide texture: fixed, full-viewport fabric-of-squares grain over the whole
- * UI. The PNG is light-gray-on-white, so dark mode inverts it and blends with
- * `screen`; light mode multiplies. Opacity lives in the classes so each theme
- * gets its own strength.
+ * Panel texture: fabric-of-squares grain scoped to a container (sidebar box,
+ * main content panel) instead of the whole viewport — the gaps between panels
+ * stay clean. Mount as the first child of a `relative` container; it stretches
+ * to the container's full content height and inherits its rounding.
+ *
+ * The PNG is light-gray-on-white, so dark mode inverts it and blends with
+ * `screen`; light mode multiplies.
  */
-export function SiteTexture() {
+export function PanelTexture() {
   return (
-    <BackgroundImageTexture
-      variant="fabric-of-squares"
-      opacity={1}
-      className="pointer-events-none fixed inset-0 z-[100]"
-      textureClassName="opacity-[0.35] mix-blend-multiply dark:opacity-[0.05] dark:mix-blend-screen dark:invert"
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-0 rounded-[inherit] bg-repeat opacity-[0.28] mix-blend-multiply dark:opacity-[0.05] dark:mix-blend-screen dark:invert"
+      style={{ backgroundImage: "url(/textures/fabric-of-squares.png)" }}
     />
   )
 }

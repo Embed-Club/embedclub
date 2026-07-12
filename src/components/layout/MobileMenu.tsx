@@ -58,8 +58,8 @@ export default function MobileMenu() {
           logoDarkUrl="/embedClubLogo-Dark.svg"
           menuButtonColor="var(--sm-toggle-color, #111)"
           openMenuButtonColor="var(--sm-toggle-open-color, #fff)"
-          colors={['#111', '#1f1f1f', '#5227FF']}
-          accentColor="#5227FF"
+          colors={['#111', '#1f1f1f', '#d98e4a']}
+          accentColor="#d98e4a"
           closeOnClickAway
         />
       </div>

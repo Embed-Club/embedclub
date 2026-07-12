@@ -1,6 +1,5 @@
 import './globals.css'
 import ThemeWrapper from '@/components/theme/ThemeWrapper'
-import { SiteTexture } from '@/components/ui/bg-image-texture'
 import type { Metadata } from 'next'
 import { avantGarde, gobold, sportBreak } from './fonts'
 
@@ -22,10 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <head />
       <body className={`${avantGarde.className} font-medium`} suppressHydrationWarning>
-        <ThemeWrapper>
-          {children}
-          <SiteTexture />
-        </ThemeWrapper>
+        <ThemeWrapper>{children}</ThemeWrapper>
       </body>
     </html>
   )
