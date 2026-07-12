@@ -1,5 +1,13 @@
 # Claude Code Configuration - RuFlo V3
 
+## PROJECT RULES — READ FIRST
+
+**AGENTS.md at the repo root is mandatory reading before any code or design
+change.** It locks the design language (Solder & Copper theme, fonts, signature
+elements), naming conventions (camelCase files; vendor ui/ stays kebab), the
+migration workflow, and the quality gates (`pnpm verify` / `pnpm verify:full`).
+PRODUCT.md and DESIGN.md define the brand. These override anything below.
+
 ## Behavioral Rules (Always Enforced)
 
 - Do what has been asked; nothing more, nothing less
