@@ -64,6 +64,7 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
             className="p-4 overflow-x-auto text-[13px] leading-relaxed shiki-container"
           >
             {codes[activeTab].highlightedHtml ? (
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: shiki-highlighted code generated server-side from CMS content
               <div dangerouslySetInnerHTML={{ __html: codes[activeTab].highlightedHtml }} />
             ) : (
               <pre>

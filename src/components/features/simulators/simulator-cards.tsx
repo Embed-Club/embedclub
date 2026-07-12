@@ -63,6 +63,9 @@ export function SimulatorCards({ simulators }: SimulatorCardsProps) {
       observer.observe(el)
     }
 
+    // Reference simulators so the effect re-runs (and re-observes) when the list changes
+    const _retrigger = simulators.length
+
     return () => {
       observer.disconnect()
       cardRefs.current.clear()

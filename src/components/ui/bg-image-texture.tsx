@@ -1,14 +1,14 @@
-import type React from "react"
+import type React from 'react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 export type TextureVariant =
-  | "fabric-of-squares"
-  | "grid-noise"
-  | "inflicted"
-  | "debut-light"
-  | "groovepaper"
-  | "none"
+  | 'fabric-of-squares'
+  | 'grid-noise'
+  | 'inflicted'
+  | 'debut-light'
+  | 'groovepaper'
+  | 'none'
 
 interface BackgroundImageTextureProps {
   variant?: TextureVariant
@@ -19,32 +19,32 @@ interface BackgroundImageTextureProps {
   children?: React.ReactNode
 }
 
-const textureMap: Record<Exclude<TextureVariant, "none">, string> = {
-  "fabric-of-squares": "/textures/fabric-of-squares.png",
-  "grid-noise": "/textures/grid-noise.png",
-  inflicted: "/textures/inflicted.png",
-  "debut-light": "/textures/debut-light.png",
-  groovepaper: "/textures/groovepaper.png",
+const textureMap: Record<Exclude<TextureVariant, 'none'>, string> = {
+  'fabric-of-squares': '/textures/fabric-of-squares.png',
+  'grid-noise': '/textures/grid-noise.png',
+  inflicted: '/textures/inflicted.png',
+  'debut-light': '/textures/debut-light.png',
+  groovepaper: '/textures/groovepaper.png',
 }
 
 export function BackgroundImageTexture({
-  variant = "fabric-of-squares",
+  variant = 'fabric-of-squares',
   opacity = 0.5,
   className,
   textureClassName,
   children,
 }: BackgroundImageTextureProps) {
-  const textureUrl = variant !== "none" ? textureMap[variant] : null
+  const textureUrl = variant !== 'none' ? textureMap[variant] : null
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn('relative', className)}>
       {textureUrl && (
         <div
           aria-hidden="true"
-          className={cn("pointer-events-none absolute inset-0", textureClassName)}
+          className={cn('pointer-events-none absolute inset-0', textureClassName)}
           style={{
             backgroundImage: `url(${textureUrl})`,
-            backgroundRepeat: "repeat",
+            backgroundRepeat: 'repeat',
             opacity,
           }}
         />

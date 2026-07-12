@@ -72,6 +72,7 @@ export const ResourceCard = React.memo(({ card }: ResourceCardProps) => {
             </div>
             <p className="text-xs md:text-sm text-gray-200 mt-2 line-clamp-2">{card.description}</p>
             {card.tags.length > 0 && (
+              // biome-ignore lint/a11y/useKeyWithClickEvents: click handler only stops link navigation bubbling; not interactive
               <div className="flex flex-wrap gap-1.5 mt-4" onClick={(e) => e.stopPropagation()}>
                 {card.tags.slice(0, 2).map((tag) => (
                   <span

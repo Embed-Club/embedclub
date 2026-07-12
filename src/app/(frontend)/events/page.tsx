@@ -1,10 +1,7 @@
 'use client'
 
 import { EmptyState } from '@/components/common/empty-state'
-import {
-  type EventCardData as CarouselCardData,
-  EventCard,
-} from '@/components/features/events/events-cards'
+import { EventCard } from '@/components/features/events/events-cards'
 import { Carousel } from '@/components/features/events/events-carousel'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
 import { FocusCards } from '@/components/ui/focus-cards'
@@ -88,28 +85,6 @@ export default function Page() {
   const [useFallback, setUseFallback] = React.useState(false)
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(9)
-
-  const fallbackCarouselCards = React.useMemo<CarouselCardData[]>(
-    () =>
-      Array.from({ length: 4 }).map(() => ({
-        title: 'Event Unavailable',
-        category: 'Database Error',
-        src: '/placeholder/placeholder.jpg',
-        content: null,
-        isFallback: true,
-      })),
-    [],
-  )
-
-  const fallbackGridCards = React.useMemo(
-    () =>
-      Array.from({ length: pageSize }).map(() => ({
-        title: 'Event Unavailable',
-        src: '/placeholder/placeholder.jpg',
-        isFallback: true,
-      })),
-    [pageSize],
-  )
 
   React.useEffect(() => {
     let isMounted = true

@@ -61,9 +61,7 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   glowRadius = 40,
   glowIntensity = 1.0,
   coneSpread = 25,
-  animated = false,
   colors = ['#c084fc', '#f472b6', '#38bdf8'],
-  fillOpacity = 0.5,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null)
   const [cursorAngle, setCursorAngle] = useState(45)
@@ -146,7 +144,6 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
         background: backgroundColor,
         borderRadius: `${borderRadius}px`,
         transform: 'translate3d(0, 0, 0.01px)',
-        // biome-ignore lint/style/usePropertySignature: shadow
         boxShadow:
           'rgba(0,0,0,0.1) 0 1px 2px, rgba(0,0,0,0.1) 0 2px 4px, rgba(0,0,0,0.1) 0 4px 8px, rgba(0,0,0,0.1) 0 8px 16px, rgba(0,0,0,0.1) 0 16px 32px, rgba(0,0,0,0.1) 0 32px 64px',
       }}
@@ -179,7 +176,7 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
             opacity: glowOpacity,
             mixBlendMode: 'plus-lighter',
             transition: 'opacity 0.4s ease-out',
-          } as any
+          } as React.CSSProperties
         }
       >
         <span
