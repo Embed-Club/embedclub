@@ -246,6 +246,17 @@ export default function Page() {
                 MEMBERS
               </h1>
 
+              {grouped.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+                  <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                    No Members Yet
+                  </p>
+                  <p className="text-neutral-600 dark:text-neutral-400">
+                    Member profiles are on their way — check back soon!
+                  </p>
+                </div>
+              )}
+
               {grouped.map(({ category, items }) => {
                 const currentMembers = items.filter((m) => !m.endYear)
                 const pastMembers = items.filter((m) => m.endYear)
