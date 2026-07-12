@@ -1,6 +1,6 @@
-import { ResourcesPageContent } from '@/app/(frontend)/resources/ResourcesPageContent'
-import { getResourceCards } from '@/app/(frontend)/resources/getResourceCards'
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
+import { getResourceCards } from '@/app/(frontend)/resources/get-resource-cards'
+import { ResourcesPageContent } from '@/app/(frontend)/resources/resources-page-content'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
 import type { Metadata } from 'next'
 
 // ISR: rebuild this page at most every 60s so CMS edits show up without a redeploy

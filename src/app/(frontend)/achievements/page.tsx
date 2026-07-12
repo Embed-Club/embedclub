@@ -1,8 +1,8 @@
 'use client'
 
-import { EmptyState } from '@/components/common/EmptyState'
-import { Timeline } from '@/components/features/timeline/UnifiedTimeline'
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
+import { EmptyState } from '@/components/common/empty-state'
+import { Timeline } from '@/components/features/timeline/unified-timeline'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsMobile } from '@/hooks/use-mobile'
 import React from 'react'
