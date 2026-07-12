@@ -46,9 +46,15 @@ export default async function Page() {
           {page?.intro && <RichTextRender content={page.intro} />}
 
           {forms.length === 0 ? (
-            <p className="text-muted-foreground text-center py-20">
-              No feedback forms right now — forms are managed in the CMS under Feedback Forms.
-            </p>
+            <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+              <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                No Feedback Forms Open
+              </p>
+              <p className="text-neutral-600 dark:text-neutral-400">
+                There's nothing to fill out right now — forms appear here when a workshop or event
+                needs your feedback.
+              </p>
+            </div>
           ) : (
             <ul className="space-y-4">
               {forms.map((form) => {

@@ -280,7 +280,7 @@ export default function AchievementsPage() {
               </h1>
             )}
             <div className="flex h-full w-full items-center justify-center px-4">
-              <div className="text-center">
+              <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
                 <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
                   No Achievements Yet
                 </p>
