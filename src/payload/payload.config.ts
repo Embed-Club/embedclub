@@ -12,6 +12,8 @@ import { Audio, AudioFiles } from './collections/Audio'
 import { Events } from './collections/Events'
 import { FeedbackForms } from './collections/FeedbackForms'
 import { Gallery } from './collections/Gallery'
+import { AboutPage } from './globals/AboutPage'
+import { FeedbackPage } from './globals/FeedbackPage'
 import { Media } from './collections/Media'
 import { MemberCategories } from './collections/MemberCategories'
 import { MemberPhoto } from './collections/MemberPhoto'
@@ -49,6 +51,7 @@ export default buildConfig({
     Simulators,
     Tags,
   ],
+  globals: [AboutPage, FeedbackPage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

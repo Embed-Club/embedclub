@@ -27,6 +27,16 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   const [isIntroFinished, setIntroFinished] = React.useState(!isLandingPage)
   const [fillProgress, setFillProgress] = React.useState(0)
   const [isExpanded, setIsExpanded] = React.useState(false)
+  // Full expanded lockup is 460px wide; scale it down so it never overflows
+  // small viewports (e.g. 414px phones cut the banner off otherwise).
+  const [introScale, setIntroScale] = React.useState(1)
+
+  React.useEffect(() => {
+    const compute = () => setIntroScale(Math.min(1, (window.innerWidth - 32) / 460))
+    compute()
+    window.addEventListener('resize', compute)
+    return () => window.removeEventListener('resize', compute)
+  }, [])
 
   React.useEffect(() => {
     if (!isLandingPage) {
@@ -76,6 +86,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                 className="relative flex items-center"
                 initial={false}
                 animate={isExpanded ? { width: 440 } : { width: 144 }}
+                style={{ scale: introScale }}
                 transition={{
                   duration: 1.0,
                   ease: [0.16, 1, 0.3, 1],
