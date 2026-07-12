@@ -78,7 +78,8 @@ export interface Config {
     'member-roles': MemberRole;
     members: Member;
     gallery: Gallery;
-    'feedback-forms': FeedbackForm;
+    forms: Form;
+    'form-submissions': FormSubmission;
     resources: Resource;
     simulators: Simulator;
     tags: Tag;
@@ -100,7 +101,8 @@ export interface Config {
     'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
-    'feedback-forms': FeedbackFormsSelect<false> | FeedbackFormsSelect<true>;
+    forms: FormsSelect<false> | FormsSelect<true>;
+    'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
     simulators: SimulatorsSelect<false> | SimulatorsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
@@ -364,6 +366,10 @@ export interface Event {
    */
   slug: string;
   /**
+   * Optional — when set, the event shows a Register button linking to this form
+   */
+  registrationForm?: (number | null) | Form;
+  /**
    * Main image shown in carousel and modal
    */
   image: number | Media;
@@ -419,6 +425,83 @@ export interface Event {
      * Zoom level for the embedded map (1=world view, 18=street level)
      */
     zoom?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Forms shown on the website. Answers are saved here and forwarded to the linked Google Form.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms".
+ */
+export interface Form {
+  id: number;
+  title: string;
+  slug: string;
+  type: 'registration' | 'feedback' | 'general';
+  /**
+   * Inactive forms show a closed message instead of the form
+   */
+  active?: boolean | null;
+  /**
+   * Optional — the form closes automatically after this time
+   */
+  deadline?: string | null;
+  /**
+   * Shown under the form title
+   */
+  description?: string | null;
+  /**
+   * The Google Form link (viewform URL). Submissions are forwarded to it so responses appear in the linked Sheet.
+   */
+  googleFormUrl: string;
+  /**
+   * Each step is one screen of the wizard
+   */
+  steps: {
+    stepTitle: string;
+    stepDescription?: string | null;
+    fields: {
+      label: string;
+      fieldType: 'text' | 'email' | 'phone' | 'number' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'date';
+      required?: boolean | null;
+      /**
+       * Half-width fields pair up side by side on desktop
+       */
+      width?: ('full' | 'half') | null;
+      placeholder?: string | null;
+      /**
+       * Choices — must match the Google Form options exactly
+       */
+      options?:
+        | {
+            option: string;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * From the Google Form pre-filled link, e.g. entry.123456789 (digits alone also work)
+       */
+      googleEntryId: string;
+      id?: string | null;
+    }[];
+    id?: string | null;
+  }[];
+  confirmationMessage?: string | null;
+  /**
+   * Offer a certificate download after submitting (feedback forms)
+   */
+  showCertificate?: boolean | null;
+  /**
+   * Background image/PDF for the generated certificate
+   */
+  certificateTemplate?: (number | null) | Media;
+  certificateConfig?: {
+    nameX?: number | null;
+    nameY?: number | null;
+    fontSize?: number | null;
+    color?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -572,36 +655,30 @@ export interface Gallery {
   };
 }
 /**
+ * Read-only log of website form submissions
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "feedback-forms".
+ * via the `definition` "form-submissions".
  */
-export interface FeedbackForm {
+export interface FormSubmission {
   id: number;
-  title: string;
-  slug: string;
-  description: string;
+  form: number | Form;
   /**
-   * The URL of the Google Form to embed
+   * Label → answer map exactly as submitted
    */
-  googleFormUrl: string;
+  answers:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   /**
-   * Optional — after this time the form is shown as closed on the feedback page
+   * Whether the answers reached the Google Form / Sheet
    */
-  deadline?: string | null;
-  /**
-   * Background image for the generated certificate
-   */
-  certificateTemplate?: (number | null) | Media;
-  /**
-   * Whether to show a certificate download button after submission
-   */
-  showCertificate?: boolean | null;
-  certificateConfig?: {
-    nameX?: number | null;
-    nameY?: number | null;
-    fontSize?: number | null;
-    color?: string | null;
-  };
+  googleForwardStatus: 'forwarded' | 'failed' | 'pending';
   updatedAt: string;
   createdAt: string;
 }
@@ -957,8 +1034,12 @@ export interface PayloadLockedDocument {
         value: number | Gallery;
       } | null)
     | ({
-        relationTo: 'feedback-forms';
-        value: number | FeedbackForm;
+        relationTo: 'forms';
+        value: number | Form;
+      } | null)
+    | ({
+        relationTo: 'form-submissions';
+        value: number | FormSubmission;
       } | null)
     | ({
         relationTo: 'resources';
@@ -1177,6 +1258,7 @@ export interface EventsSelect<T extends boolean = true> {
   category?: T;
   title?: T;
   slug?: T;
+  registrationForm?: T;
   image?: T;
   shortDescription?: T;
   description?: T;
@@ -1351,16 +1433,43 @@ export interface GallerySelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "feedback-forms_select".
+ * via the `definition` "forms_select".
  */
-export interface FeedbackFormsSelect<T extends boolean = true> {
+export interface FormsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  type?: T;
+  active?: T;
+  deadline?: T;
   description?: T;
   googleFormUrl?: T;
-  deadline?: T;
-  certificateTemplate?: T;
+  steps?:
+    | T
+    | {
+        stepTitle?: T;
+        stepDescription?: T;
+        fields?:
+          | T
+          | {
+              label?: T;
+              fieldType?: T;
+              required?: T;
+              width?: T;
+              placeholder?: T;
+              options?:
+                | T
+                | {
+                    option?: T;
+                    id?: T;
+                  };
+              googleEntryId?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  confirmationMessage?: T;
   showCertificate?: T;
+  certificateTemplate?: T;
   certificateConfig?:
     | T
     | {
@@ -1369,6 +1478,17 @@ export interface FeedbackFormsSelect<T extends boolean = true> {
         fontSize?: T;
         color?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions_select".
+ */
+export interface FormSubmissionsSelect<T extends boolean = true> {
+  form?: T;
+  answers?: T;
+  googleForwardStatus?: T;
   updatedAt?: T;
   createdAt?: T;
 }

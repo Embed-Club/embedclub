@@ -21,7 +21,8 @@ async function getFeedbackData() {
     const [page, forms] = await Promise.all([
       payload.findGlobal({ slug: 'feedback-page' }),
       payload.find({
-        collection: 'feedback-forms',
+        collection: 'forms',
+        where: { and: [{ type: { equals: 'feedback' } }, { active: { equals: true } }] },
         sort: '-createdAt',
         limit: 50,
       }),
@@ -79,7 +80,7 @@ export default async function Page() {
                       </div>
                     ) : (
                       <Link
-                        href={`/feedback/${form.slug}`}
+                        href={`/forms/${form.slug}`}
                         className="group flex items-center justify-between gap-4 p-5 rounded-xl border border-border bg-card hover:border-primary/60 hover:shadow-[0_0_24px_hsl(var(--primary)/0.15)] transition-all"
                       >
                         <div className="min-w-0">

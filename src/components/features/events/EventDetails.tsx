@@ -34,9 +34,23 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
   const hasLocation = event.location?.address || event.location?.coords
   const hasContact = event.contact?.email || event.contact?.phone
   const hasVenue = event.venue?.roomName || event.venue?.floor
+  const registrationSlug =
+    event.registrationForm && typeof event.registrationForm === 'object'
+      ? event.registrationForm.slug
+      : null
 
   return (
     <div className="space-y-6">
+      {/* Registration */}
+      {registrationSlug && (
+        <a
+          href={`/forms/${registrationSlug}`}
+          className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-all shadow-[0_0_24px_hsl(var(--primary)/0.25)]"
+        >
+          Register for this event
+        </a>
+      )}
+
       {/* Quick Info Section */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Venue Information */}

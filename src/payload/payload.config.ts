@@ -10,7 +10,8 @@ import sharp from 'sharp'
 import { Achievements } from './collections/Achievements'
 import { Audio, AudioFiles } from './collections/Audio'
 import { Events } from './collections/Events'
-import { FeedbackForms } from './collections/FeedbackForms'
+import { FormSubmissions } from './collections/form-submissions'
+import { Forms } from './collections/forms'
 import { Gallery } from './collections/Gallery'
 import { AboutPage } from './globals/AboutPage'
 import { FeedbackPage } from './globals/FeedbackPage'
@@ -46,7 +47,8 @@ export default buildConfig({
     MemberRoles,
     Members,
     Gallery,
-    FeedbackForms,
+    Forms,
+    FormSubmissions,
     Resources,
     Simulators,
     Tags,
