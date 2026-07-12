@@ -1,12 +1,12 @@
 'use client'
 
+import { EmptyState } from '@/components/common/empty-state'
 import {
   type EventCardData as CarouselCardData,
   EventCard,
-} from '@/components/features/events/EventsCards'
-import { EmptyState } from '@/components/common/EmptyState'
-import { Carousel } from '@/components/features/events/EventsCarousel'
-import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
+} from '@/components/features/events/events-cards'
+import { Carousel } from '@/components/features/events/events-carousel'
+import { MainbarShell, SidebarShell } from '@/components/layout/frontend-shell'
 import { FocusCards } from '@/components/ui/focus-cards'
 import {
   Pagination,
