@@ -272,6 +272,24 @@ export default function AchievementsPage() {
               </div>
             </div>
           </>
+        ) : timelineAchievements.length === 0 ? (
+          <>
+            {!isMobile && (
+              <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-5xl">
+                CHIEEENTS
+              </h1>
+            )}
+            <div className="flex h-full w-full items-center justify-center px-4">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                  No Achievements Yet
+                </p>
+                <p className="text-neutral-600 dark:text-neutral-400">
+                  Check back soon for new club milestones!
+                </p>
+              </div>
+            </div>
+          </>
         ) : (
           <div className={isMobile ? 'w-full h-full' : 'absolute inset-0'}>
             <Timeline
