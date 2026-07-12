@@ -517,9 +517,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             >
               <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
                 {textLines.map((l, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: stable text stack
                   <span
                     className="sm-toggle-line block h-[1em] overflow-hidden leading-none"
+                    // biome-ignore lint/suspicious/noArrayIndexKey: fixed two-line toggle text stack
                     key={i}
                   >
                     {l}

@@ -17,8 +17,8 @@ import { TableBlock as TableBlockComp } from './blocks/table-block'
 
 type Block = NonNullable<Resource['content']>[number]
 
-export function BlockMapper({ block, index }: { block: any; index: number }) {
-  const b = block as Block
+export function BlockMapper({ block, index }: { block: Block; index: number }) {
+  const b = block
   switch (b.blockType) {
     case 'textBlock':
       return (

@@ -29,10 +29,12 @@ export default function Loading() {
       <div className="relative w-36 h-36">
         {/* Greyscale Base */}
         <img
+          alt=""
           src="/embedClubLogo-Dark.svg"
           className="absolute inset-0 w-full h-full object-contain grayscale opacity-20 hidden dark:block"
         />
         <img
+          alt=""
           src="/embedClubLogo-Light.svg"
           className="absolute inset-0 w-full h-full object-contain grayscale opacity-20 dark:hidden"
         />
@@ -43,10 +45,12 @@ export default function Loading() {
           style={{ clipPath: `inset(${(1 - fillProgress) * 100}% 0 0 0)` }}
         >
           <img
+            alt=""
             src="/embedClubLogo-Dark.svg"
             className="w-full h-full object-contain hidden dark:block"
           />
           <img
+            alt=""
             src="/embedClubLogo-Light.svg"
             className="w-full h-full object-contain dark:hidden"
           />

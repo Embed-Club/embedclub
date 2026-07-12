@@ -33,11 +33,7 @@ export default async function Page() {
           {about?.title || 'About Embed Club'}
         </h1>
         <div className="max-w-3xl mx-auto px-4 md:px-8 pt-24 md:pt-40 pb-20">
-          {about?.content ? (
-            <RichTextRender content={about.content} />
-          ) : (
-            <EmptyState />
-          )}
+          {about?.content ? <RichTextRender content={about.content} /> : <EmptyState />}
         </div>
       </MainbarShell>
     </SidebarShell>

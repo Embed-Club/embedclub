@@ -113,8 +113,9 @@ async function fetchAchievements(): Promise<Achievement[]> {
   return json.docs as Achievement[]
 }
 
+const SKELETON_KEYS = ['sk-a', 'sk-b', 'sk-c', 'sk-d']
+
 function AchievementsSkeleton({ isMobile }: { isMobile: boolean }) {
-  const items = 4
   const barPositionClass = isMobile ? 'right-[16px] translate-x-1/2' : 'left-1/2 -translate-x-1/2'
 
   return (
@@ -129,13 +130,12 @@ function AchievementsSkeleton({ isMobile }: { isMobile: boolean }) {
         </div>
 
         <div className={`relative ${isMobile ? 'space-y-10 px-4' : 'space-y-16 px-8'}`}>
-          {Array.from({ length: items }).map((_, index) => {
+          {SKELETON_KEYS.map((skeletonKey, index) => {
             const isLeft = index % 2 === 0
 
             if (isMobile) {
               return (
-                // biome-ignore lint/suspicious/noArrayIndexKey: safe for static placeholder
-                <div key={`achievement-skeleton-${index}`} className="relative">
+                <div key={skeletonKey} className="relative">
                   <div className="flex items-start gap-2 flex-row-reverse pr-0 pl-2">
                     <div className="flex-shrink-0 w-[32px]" />
                     <div className="flex-1 max-w-[92%]">
@@ -158,11 +158,7 @@ function AchievementsSkeleton({ isMobile }: { isMobile: boolean }) {
             }
 
             return (
-              // biome-ignore lint/suspicious/noArrayIndexKey: safe for static placeholder
-              <div
-                key={`achievement-skeleton-${index}`}
-                className="flex items-center gap-16 px-8 max-w-7xl mx-auto"
-              >
+              <div key={skeletonKey} className="flex items-center gap-16 px-8 max-w-7xl mx-auto">
                 <div className="flex-1">
                   {isLeft ? (
                     <div className="rounded-lg border border-border/60 bg-card/60 shadow-sm p-6">

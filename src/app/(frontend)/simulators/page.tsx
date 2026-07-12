@@ -25,7 +25,7 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
     }
 
     // Transform Payload simulators to SimulatorCardData format
-    return (simulators.docs as any[]).map((simulator) => {
+    return simulators.docs.map((simulator) => {
       let imageUrl =
         'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=400&h=300&fit=crop' // fallback
 
@@ -33,30 +33,31 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
         if (
           typeof simulator.thumbnail === 'object' &&
           simulator.thumbnail !== null &&
-          'url' in simulator.thumbnail
+          simulator.thumbnail.url
         ) {
           imageUrl = simulator.thumbnail.url
-        } else if (typeof simulator.thumbnail === 'string') {
+        } else if (typeof simulator.thumbnail === 'number') {
           imageUrl = `/api/media/file/${simulator.thumbnail}`
         }
       }
 
       const tags = Array.isArray(simulator.tags)
         ? simulator.tags
-            .map((tag: any) => (typeof tag === 'object' ? tag.name : tag))
-            .filter(Boolean)
+            .map((tag) => (typeof tag === 'object' && tag !== null ? tag.name : null))
+            .filter((name): name is string => Boolean(name))
         : []
 
       return {
-        id: simulator.id,
+        id: String(simulator.id),
         title: simulator.title || '',
         description: simulator.description || '',
         image: imageUrl,
         tags,
         category: simulator.category || '',
         slug: simulator.slug || '',
-        difficulty: simulator.difficulty,
-        estimatedTime: simulator.estimatedTime,
+        difficulty: simulator.difficulty || undefined,
+        estimatedTime: simulator.estimatedTime ?? undefined,
+        createdAt: simulator.createdAt,
       }
     })
   } catch (error) {

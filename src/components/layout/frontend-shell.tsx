@@ -96,10 +96,12 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                 <div className="relative w-[144px] h-[144px] shrink-0 z-20 bg-background">
                   {/* Greyscale Base */}
                   <img
+                    alt=""
                     src="/embedClubLogo-Dark.svg"
                     className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 hidden dark:block"
                   />
                   <img
+                    alt=""
                     src="/embedClubLogo-Light.svg"
                     className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 dark:hidden"
                   />
@@ -110,10 +112,12 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                     style={{ clipPath: `inset(${(1 - fillProgress) * 100}% 0 0 0)` }}
                   >
                     <img
+                      alt=""
                       src="/embedClubLogo-Dark.svg"
                       className="w-full h-full object-contain hidden dark:block"
                     />
                     <img
+                      alt=""
                       src="/embedClubLogo-Light.svg"
                       className="w-full h-full object-contain dark:hidden"
                     />

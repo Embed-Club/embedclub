@@ -95,7 +95,9 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
       setErrors(res.fieldErrors)
       // jump back to the first step containing an error
       const errKeys = Object.keys(res.fieldErrors)
-      const idx = steps.findIndex((s) => (s.fields ?? []).some((f) => errKeys.includes(entryKey(f))))
+      const idx = steps.findIndex((s) =>
+        (s.fields ?? []).some((f) => errKeys.includes(entryKey(f))),
+      )
       if (idx >= 0) setStepIndex(idx)
     } else {
       setResult(res)
@@ -185,9 +187,7 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
       </nav>
 
       {/* ── Step card ──────────────────────────────────────────────────── */}
-      <div
-        className={cn('rounded-2xl bg-card p-6 md:p-10', cutoutCardSurfaceShadowClassName)}
-      >
+      <div className={cn('rounded-2xl bg-card p-6 md:p-10', cutoutCardSurfaceShadowClassName)}>
         <div className="mb-8 space-y-1">
           <h2 className="text-xl md:text-2xl font-bold">{step?.stepTitle}</h2>
           {step?.stepDescription && (

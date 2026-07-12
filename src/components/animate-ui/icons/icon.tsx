@@ -605,7 +605,6 @@ function getVariants<
   V extends { default: T; [key: string]: T },
   T extends Record<string, Variants>,
 >(animations: V): T {
-  // biome-ignore lint/correctness/useHookAtTopLevel: getVariants is always called at the top of render — rule is a false-positive here
   const { animation: animationType } = useAnimateIconContext()
 
   let result: T

@@ -1,19 +1,19 @@
-"use client"
+'use client'
 
+import { useControllableState } from '@radix-ui/react-use-controllable-state'
+import { motion, useReducedMotion } from 'motion/react'
+import Image from 'next/image'
 import {
+  type ComponentProps,
+  type HTMLAttributes,
+  type MouseEventHandler,
   createContext,
   useCallback,
   useContext,
   useMemo,
-  type ComponentProps,
-  type HTMLAttributes,
-  type MouseEventHandler,
-} from "react"
-import Image from "next/image"
-import { useControllableState } from "@radix-ui/react-use-controllable-state"
-import { motion, useReducedMotion } from "motion/react"
+} from 'react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 // ============================================================================
 // Tokens — optional chrome for demos / quick styling
@@ -23,15 +23,15 @@ import { cn } from "@/lib/utils"
  *  (Rewritten from the cult-ui original: this project is Tailwind 3, whose tokens
  *  are HSL triplets, so color-mix(var(--foreground)) is invalid here.) */
 export const cutoutCardSurfaceShadowClassName = cn(
-  "border border-border/80 dark:border-border/60",
-  "shadow-[0px_1px_2px_-1px_hsl(var(--foreground)/0.08),0px_4px_8px_-2px_hsl(var(--foreground)/0.06)]",
-  "transition-[box-shadow,border-color] duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]",
-  "hover:border-primary/50 hover:shadow-[0px_2px_4px_-1px_hsl(var(--foreground)/0.1),0px_8px_16px_-4px_hsl(var(--primary)/0.15)]"
+  'border border-border/80 dark:border-border/60',
+  'shadow-[0px_1px_2px_-1px_hsl(var(--foreground)/0.08),0px_4px_8px_-2px_hsl(var(--foreground)/0.06)]',
+  'transition-[box-shadow,border-color] duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]',
+  'hover:border-primary/50 hover:shadow-[0px_2px_4px_-1px_hsl(var(--foreground)/0.1),0px_8px_16px_-4px_hsl(var(--primary)/0.15)]',
 )
 
 export const cutoutCardSurfaceClassName = cn(
-  "group/cutout relative cursor-pointer overflow-hidden rounded-2xl bg-card text-card-foreground",
-  cutoutCardSurfaceShadowClassName
+  'group/cutout relative cursor-pointer overflow-hidden rounded-2xl bg-card text-card-foreground',
+  cutoutCardSurfaceShadowClassName,
 )
 
 /** Staggered text/footer entrance inside `CutoutCardContent` — use with `motion.div` children. */
@@ -65,19 +65,19 @@ export function useCutoutContentStaggerVariants() {
         },
       },
       item: {
-        hidden: { opacity: 0, y: 12, filter: "blur(5px)" },
+        hidden: { opacity: 0, y: 12, filter: 'blur(5px)' },
         show: {
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
-          transition: { type: "spring", duration: 0.48, bounce: 0.14 },
+          filter: 'blur(0px)',
+          transition: { type: 'spring', duration: 0.48, bounce: 0.14 },
         },
       },
     } as const
   }, [reduceMotion])
 }
 
-const CORNER_PATH = "M0 200C155.996 199.961 200.029 156.308 200 0V200H0Z"
+const CORNER_PATH = 'M0 200C155.996 199.961 200.029 156.308 200 0V200H0Z'
 
 // ============================================================================
 // Context
@@ -93,7 +93,7 @@ const CutoutCardContext = createContext<CutoutCardContextValue | null>(null)
 export function useCutoutCard() {
   const ctx = useContext(CutoutCardContext)
   if (!ctx) {
-    throw new Error("useCutoutCard must be used within <CutoutCard>")
+    throw new Error('useCutoutCard must be used within <CutoutCard>')
   }
   return ctx
 }
@@ -106,10 +106,7 @@ export function useOptionalCutoutCard() {
 // Root
 // ============================================================================
 
-export type CutoutCardProps = Omit<
-  ComponentProps<typeof motion.div>,
-  "defaultValue"
-> & {
+export type CutoutCardProps = Omit<ComponentProps<typeof motion.div>, 'defaultValue'> & {
   /** When set, hover state is controlled by the parent. */
   hovered?: boolean
   /** Initial hover state when uncontrolled. */
@@ -145,7 +142,7 @@ export function CutoutCard({
     (next: boolean) => {
       setHovered(next)
     },
-    [setHovered]
+    [setHovered],
   )
 
   const ctx = useMemo<CutoutCardContextValue>(
@@ -153,7 +150,7 @@ export function CutoutCard({
       hovered: hovered ?? false,
       setHovered: setHoveredStable,
     }),
-    [hovered, setHoveredStable]
+    [hovered, setHoveredStable],
   )
 
   const handleMouseEnter: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -178,7 +175,7 @@ export function CutoutCard({
         animate={{ opacity: 1 }}
         className={cn(className)}
         data-slot="cutout-card"
-        data-state={ctx.hovered ? "hovered" : "idle"}
+        data-state={ctx.hovered ? 'hovered' : 'idle'}
         initial={{ opacity: 0 }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -204,7 +201,7 @@ export type CutoutCardMediaProps = HTMLAttributes<HTMLDivElement>
 export function CutoutCardMedia({ className, ...props }: CutoutCardMediaProps) {
   return (
     <div
-      className={cn("relative overflow-hidden", className)}
+      className={cn('relative overflow-hidden', className)}
       data-slot="cutout-card-media"
       {...props}
     />
@@ -216,18 +213,18 @@ export type CutoutCardImageProps = ComponentProps<typeof Image>
 /** Uses `fill` by default; parent `CutoutCardMedia` should be `relative` with a defined block size. */
 export function CutoutCardImage({
   className,
-  alt = "",
+  alt = '',
   fill = true,
-  sizes = "(max-width: 768px) 100vw, 28rem",
+  sizes = '(max-width: 768px) 100vw, 28rem',
   ...props
 }: CutoutCardImageProps) {
   return (
     <Image
       alt={alt}
       className={cn(
-        "object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] group-hover/cutout:scale-105",
-        fill && "h-full w-full",
-        className
+        'object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] group-hover/cutout:scale-105',
+        fill && 'h-full w-full',
+        className,
       )}
       data-slot="cutout-card-image"
       {...props}
@@ -239,15 +236,12 @@ export function CutoutCardImage({
 
 export type CutoutCardOverlayProps = HTMLAttributes<HTMLDivElement>
 
-export function CutoutCardOverlay({
-  className,
-  ...props
-}: CutoutCardOverlayProps) {
+export function CutoutCardOverlay({ className, ...props }: CutoutCardOverlayProps) {
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent dark:from-background/50",
-        className
+        'pointer-events-none absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent dark:from-background/50',
+        className,
       )}
       data-slot="cutout-card-overlay"
       {...props}
@@ -257,28 +251,16 @@ export function CutoutCardOverlay({
 
 export type CutoutCardContentProps = HTMLAttributes<HTMLDivElement>
 
-export function CutoutCardContent({
-  className,
-  ...props
-}: CutoutCardContentProps) {
-  return (
-    <div
-      className={cn("p-6", className)}
-      data-slot="cutout-card-content"
-      {...props}
-    />
-  )
+export function CutoutCardContent({ className, ...props }: CutoutCardContentProps) {
+  return <div className={cn('p-6', className)} data-slot="cutout-card-content" {...props} />
 }
 
 export type CutoutCardFooterProps = HTMLAttributes<HTMLDivElement>
 
-export function CutoutCardFooter({
-  className,
-  ...props
-}: CutoutCardFooterProps) {
+export function CutoutCardFooter({ className, ...props }: CutoutCardFooterProps) {
   return (
     <div
-      className={cn("flex items-center justify-between", className)}
+      className={cn('flex items-center justify-between', className)}
       data-slot="cutout-card-footer"
       {...props}
     />
@@ -289,7 +271,7 @@ export function CutoutCardFooter({
 // Cutout geometry
 // ============================================================================
 
-export type CutoutCornerProps = ComponentProps<"svg"> & {
+export type CutoutCornerProps = ComponentProps<'svg'> & {
   /** Pixel width/height of the SVG viewBox (square). */
   size?: number
 }
@@ -297,7 +279,7 @@ export type CutoutCornerProps = ComponentProps<"svg"> & {
 export function CutoutCorner({
   className,
   size = 32,
-  viewBox = "0 0 200 200",
+  viewBox = '0 0 200 200',
   ...props
 }: CutoutCornerProps) {
   return (
@@ -322,16 +304,9 @@ export function CutoutCorner({
 export type CutoutCardInsetLabelProps = HTMLAttributes<HTMLDivElement>
 
 /** Absolutely positioned strip (e.g. bottom-left Featured); add corners as siblings inside. Static (no entrance motion) to avoid compositing seams next to the media edge. */
-export function CutoutCardInsetLabel({
-  className,
-  ...props
-}: CutoutCardInsetLabelProps) {
+export function CutoutCardInsetLabel({ className, ...props }: CutoutCardInsetLabelProps) {
   return (
-    <div
-      className={cn("absolute", className)}
-      data-slot="cutout-card-inset-label"
-      {...props}
-    />
+    <div className={cn('absolute', className)} data-slot="cutout-card-inset-label" {...props} />
   )
 }
 
@@ -339,13 +314,7 @@ export type CutoutCardPinProps = HTMLAttributes<HTMLDivElement>
 
 /** Corner badge shell (e.g. top-right New); add corners as siblings inside. Static (no entrance motion). */
 export function CutoutCardPin({ className, ...props }: CutoutCardPinProps) {
-  return (
-    <div
-      className={cn("absolute", className)}
-      data-slot="cutout-card-pin"
-      {...props}
-    />
-  )
+  return <div className={cn('absolute', className)} data-slot="cutout-card-pin" {...props} />
 }
 
 // ============================================================================
@@ -373,15 +342,11 @@ export function CutoutCardAction({
     <motion.div
       animate={
         visible
-          ? { opacity: 1, transform: "translateY(0px)" }
-          : { opacity: 0, transform: "translateY(8px)" }
+          ? { opacity: 1, transform: 'translateY(0px)' }
+          : { opacity: 0, transform: 'translateY(8px)' }
       }
-      className={cn(
-        "absolute",
-        revealOnHover && !visible && "pointer-events-none",
-        className
-      )}
-      data-reveal={revealOnHover ? "hover" : "always"}
+      className={cn('absolute', revealOnHover && !visible && 'pointer-events-none', className)}
+      data-reveal={revealOnHover ? 'hover' : 'always'}
       data-slot="cutout-card-action"
       transition={
         reduceMotion

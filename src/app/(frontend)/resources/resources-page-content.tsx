@@ -79,7 +79,7 @@ export function ResourcesPageContent({
     if (dateRange.from || dateRange.to) {
       filtered = filtered.filter((resource) => {
         // Assuming resource has createdAt, if not we skip
-        const date = (resource as any).createdAt ? new Date((resource as any).createdAt) : null
+        const date = resource.createdAt ? new Date(resource.createdAt) : null
         if (!date) return true
         if (dateRange.from && date < dateRange.from) return false
         if (dateRange.to && date > dateRange.to) return false
@@ -108,10 +108,7 @@ export function ResourcesPageContent({
         case 'title-desc':
           return b.title.localeCompare(a.title)
         case 'newest':
-          return (
-            new Date((b as any).createdAt || 0).getTime() -
-            new Date((a as any).createdAt || 0).getTime()
-          )
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
         default:
           return 0
       }

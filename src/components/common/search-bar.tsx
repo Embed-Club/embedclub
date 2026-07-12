@@ -156,6 +156,7 @@ export function SearchBar({
           onChange?.({
             ...e,
             target: { ...e.target, value: newValue },
+            // biome-ignore lint/suspicious/noExplicitAny: synthetic passthrough of the original change event with a rewritten value
           } as any)
           return
         }

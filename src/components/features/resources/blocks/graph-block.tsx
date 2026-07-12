@@ -6,7 +6,7 @@ interface GraphBlockProps {
 }
 
 export function GraphBlock({ block }: GraphBlockProps) {
-  const { graphType, mermaidDefinition, chartData, html, caption } = block
+  const { graphType, mermaidDefinition, html, caption } = block
 
   return (
     <div className="my-12 w-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
@@ -24,8 +24,9 @@ export function GraphBlock({ block }: GraphBlockProps) {
 
         {graphType === 'html' && html && (
           <div
-            className="w-full rounded-xl overflow-hidden border border-white/5"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: html graph blocks are authored by trusted CMS admins only
             dangerouslySetInnerHTML={{ __html: html }}
+            className="w-full rounded-xl overflow-hidden border border-white/5"
           />
         )}
       </div>

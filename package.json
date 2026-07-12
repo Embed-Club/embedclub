@@ -95,10 +95,6 @@
     "pnpm": "^9 || ^10"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "esbuild",
-      "unrs-resolver"
-    ]
+    "onlyBuiltDependencies": ["sharp", "esbuild", "unrs-resolver"]
   }
 }

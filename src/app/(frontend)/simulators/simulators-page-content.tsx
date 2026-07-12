@@ -15,6 +15,7 @@ export interface SimulatorCardData {
   slug: string
   difficulty?: string
   estimatedTime?: number
+  createdAt?: string
 }
 
 interface SimulatorsPageContentProps {
@@ -65,7 +66,7 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
 
     if (dateRange.from || dateRange.to) {
       filtered = filtered.filter((simulator) => {
-        const date = (simulator as any).createdAt ? new Date((simulator as any).createdAt) : null
+        const date = simulator.createdAt ? new Date(simulator.createdAt) : null
         if (!date) return true
         if (dateRange.from && date < dateRange.from) return false
         if (dateRange.to && date > dateRange.to) return false
@@ -93,10 +94,7 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
         case 'title-desc':
           return b.title.localeCompare(a.title)
         case 'newest':
-          return (
-            new Date((b as any).createdAt || 0).getTime() -
-            new Date((a as any).createdAt || 0).getTime()
-          )
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
         default:
           return 0
       }

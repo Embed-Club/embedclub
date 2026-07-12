@@ -1,7 +1,7 @@
-import * as migration_20260412_045828_initial_setup from './20260412_045828_initial_setup';
-import * as migration_20260711_180904_add_simulators_feedback_forms from './20260711_180904_add_simulators_feedback_forms';
-import * as migration_20260712_005246_add_globals_badges_deadline from './20260712_005246_add_globals_badges_deadline';
-import * as migration_20260712_203058_add_native_forms from './20260712_203058_add_native_forms';
+import * as migration_20260412_045828_initial_setup from './20260412_045828_initial_setup'
+import * as migration_20260711_180904_add_simulators_feedback_forms from './20260711_180904_add_simulators_feedback_forms'
+import * as migration_20260712_005246_add_globals_badges_deadline from './20260712_005246_add_globals_badges_deadline'
+import * as migration_20260712_203058_add_native_forms from './20260712_203058_add_native_forms'
 
 export const migrations = [
   {
@@ -22,6 +22,6 @@ export const migrations = [
   {
     up: migration_20260712_203058_add_native_forms.up,
     down: migration_20260712_203058_add_native_forms.down,
-    name: '20260712_203058_add_native_forms'
+    name: '20260712_203058_add_native_forms',
   },
-];
+]
