@@ -64,7 +64,10 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
-    ...(process.env.NODE_ENV === 'production'
+    // S3 is opt-in via env, not tied to NODE_ENV — so a local production build
+    // (`next build && next start`) still stores uploads on disk. Set
+    // USE_S3_STORAGE=true in the real deployment environment.
+    ...(process.env.USE_S3_STORAGE === 'true'
       ? [
           s3Storage({
             collections: {
