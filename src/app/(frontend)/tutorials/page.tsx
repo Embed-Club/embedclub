@@ -21,7 +21,7 @@ export default async function Page() {
           TUTORIALS
         </h1>
         <div className="h-full w-full px-2 pt-16 md:pt-32">
-          <ResourcesPageContent resources={tutorials} />
+          <ResourcesPageContent resources={tutorials} emptyTitle="No Tutorials Yet" />
         </div>
       </MainbarShell>
     </SidebarShell>

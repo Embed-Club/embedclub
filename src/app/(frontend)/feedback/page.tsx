@@ -1,3 +1,4 @@
+import { EmptyState } from '@/components/common/EmptyState'
 import RichTextRender from '@/components/common/RichTextRender'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import config from '@/payload/payload.config'
@@ -46,15 +47,7 @@ export default async function Page() {
           {page?.intro && <RichTextRender content={page.intro} />}
 
           {forms.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-              <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
-                No Feedback Forms Open
-              </p>
-              <p className="text-neutral-600 dark:text-neutral-400">
-                There's nothing to fill out right now — forms appear here when a workshop or event
-                needs your feedback.
-              </p>
-            </div>
+            <EmptyState title="No Feedback Forms Yet" />
           ) : (
             <ul className="space-y-4">
               {forms.map((form) => {

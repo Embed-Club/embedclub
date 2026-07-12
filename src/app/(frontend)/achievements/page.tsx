@@ -1,10 +1,10 @@
 'use client'
 
+import { EmptyState } from '@/components/common/EmptyState'
 import { Timeline } from '@/components/features/timeline/UnifiedTimeline'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { motion } from 'motion/react'
 import React from 'react'
 
 type Achievement = {
@@ -251,25 +251,8 @@ export default function AchievementsPage() {
                 CHIEEENTS
               </h1>
             )}
-            <div className="flex h-full w-full flex-col items-center justify-center gap-6">
-              <motion.svg
-                aria-label="No network icon"
-                role="img"
-                viewBox="0 0 24 24"
-                className="h-40 w-40 md:h-56 md:w-56 dark:invert"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill="currentColor"
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-2.9L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"
-                />
-              </motion.svg>
-              <div className="text-center">
-                <p className="text-lg font-semibold text-neutral-900 dark:text-white">No network</p>
-                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                  Failed to load achievements right now.
-                </p>
-              </div>
+            <div className="flex h-full w-full items-center justify-center px-4">
+              <EmptyState title="No Achievements Yet" />
             </div>
           </>
         ) : timelineAchievements.length === 0 ? (
@@ -280,14 +263,7 @@ export default function AchievementsPage() {
               </h1>
             )}
             <div className="flex h-full w-full items-center justify-center px-4">
-              <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-                <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
-                  No Achievements Yet
-                </p>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  Check back soon for new club milestones!
-                </p>
-              </div>
+              <EmptyState title="No Achievements Yet" />
             </div>
           </>
         ) : (

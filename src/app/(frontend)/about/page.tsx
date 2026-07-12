@@ -1,3 +1,4 @@
+import { EmptyState } from '@/components/common/EmptyState'
 import RichTextRender from '@/components/common/RichTextRender'
 import { MainbarShell, SidebarShell } from '@/components/layout/FrontendShell'
 import config from '@/payload/payload.config'
@@ -35,15 +36,7 @@ export default async function Page() {
           {about?.content ? (
             <RichTextRender content={about.content} />
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-              <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
-                Nothing Here Yet
-              </p>
-              <p className="text-neutral-600 dark:text-neutral-400">
-                This page is managed in the CMS — add content under Globals → About Page in the
-                admin panel.
-              </p>
-            </div>
+            <EmptyState />
           )}
         </div>
       </MainbarShell>
