@@ -1,6 +1,6 @@
 'use client'
 
-import { EventModal, eventToCard } from '@/components/features/events/EventsCards'
+import { EventModal, eventToCard } from '@/components/features/events/events-cards'
 import { useOutsideClick } from '@/hooks/use-outside-click'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
