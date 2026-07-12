@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils"
 export const cutoutCardSurfaceShadowClassName = cn(
   "border border-border/80 dark:border-border/60",
   "shadow-[0px_1px_2px_-1px_hsl(var(--foreground)/0.08),0px_4px_8px_-2px_hsl(var(--foreground)/0.06)]",
-  "transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
+  "transition-[box-shadow,border-color] duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)]",
   "hover:border-primary/50 hover:shadow-[0px_2px_4px_-1px_hsl(var(--foreground)/0.1),0px_8px_16px_-4px_hsl(var(--primary)/0.15)]"
 )
 
@@ -225,7 +225,7 @@ export function CutoutCardImage({
     <Image
       alt={alt}
       className={cn(
-        "object-cover transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover/cutout:scale-105",
+        "object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] group-hover/cutout:scale-105",
         fill && "h-full w-full",
         className
       )}
@@ -321,7 +321,7 @@ export function CutoutCorner({
 
 export type CutoutCardInsetLabelProps = HTMLAttributes<HTMLDivElement>
 
-/** Absolutely positioned strip (e.g. bottom-left “Featured”); add corners as siblings inside. Static (no entrance motion) to avoid compositing seams next to the media edge. */
+/** Absolutely positioned strip (e.g. bottom-left Featured); add corners as siblings inside. Static (no entrance motion) to avoid compositing seams next to the media edge. */
 export function CutoutCardInsetLabel({
   className,
   ...props
@@ -337,7 +337,7 @@ export function CutoutCardInsetLabel({
 
 export type CutoutCardPinProps = HTMLAttributes<HTMLDivElement>
 
-/** Corner badge shell (e.g. top-right “New”); add corners as siblings inside. Static (no entrance motion). */
+/** Corner badge shell (e.g. top-right New); add corners as siblings inside. Static (no entrance motion). */
 export function CutoutCardPin({ className, ...props }: CutoutCardPinProps) {
   return (
     <div
