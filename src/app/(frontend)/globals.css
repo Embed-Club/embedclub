@@ -124,6 +124,20 @@
   }
 }
 
+/* Fabric-of-squares grain as a real background layer: zero layout impact,
+   scrolls with content (attachment: local), tiles infinitely. Light mode
+   multiplies the pattern into the surface at full strength; dark mode uses
+   overlay so the pattern reads as a subtle lift instead of vanishing. */
+.texture-panel {
+  background-image: url("/textures/fabric-of-squares.png");
+  background-repeat: repeat;
+  background-attachment: local;
+  background-blend-mode: multiply;
+}
+.dark .texture-panel {
+  background-blend-mode: overlay;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--primary)) hsl(var(--background));

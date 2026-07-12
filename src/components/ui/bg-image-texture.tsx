@@ -54,42 +54,6 @@ export function BackgroundImageTexture({
   )
 }
 
-const panelTextureBlendClasses =
-  "bg-repeat opacity-[0.28] mix-blend-multiply dark:opacity-[0.05] dark:mix-blend-screen dark:invert"
-
-/**
- * Panel texture: fabric-of-squares grain scoped to a fixed-height container
- * (the sidebar box). Mount as the first child of a `relative` container.
- *
- * The PNG is light-gray-on-white, so dark mode inverts it and blends with
- * `screen`; light mode multiplies.
- */
-export function PanelTexture() {
-  return (
-    <div
-      aria-hidden="true"
-      className={cn(
-        "pointer-events-none absolute inset-0 z-0 rounded-[inherit]",
-        panelTextureBlendClasses,
-      )}
-      style={{ backgroundImage: "url(/textures/fabric-of-squares.png)" }}
-    />
-  )
-}
-
-/**
- * Texture for SCROLLING panels (the main content panel): a zero-height sticky
- * shell pins a viewport-tall texture layer to the visible area of the scroll
- * container, so the grain covers the whole panel at any scroll position
- * without adding layout height (children keep their h-full behavior).
- */
-export function ScrollPanelTexture() {
-  return (
-    <div aria-hidden="true" className="pointer-events-none sticky top-0 z-0 h-0">
-      <div
-        className={cn("h-screen w-full", panelTextureBlendClasses)}
-        style={{ backgroundImage: "url(/textures/fabric-of-squares.png)" }}
-      />
-    </div>
-  )
-}
+// Panel texturing lives in globals.css as the `.texture-panel` class — a real
+// background layer (attachment: local, blend multiply/overlay) with no extra
+// DOM and no layout impact. This component stays for ad-hoc texture sections.

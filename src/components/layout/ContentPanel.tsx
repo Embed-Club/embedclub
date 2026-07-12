@@ -1,4 +1,3 @@
-import { ScrollPanelTexture } from '@/components/ui/bg-image-texture'
 import type React from 'react'
 import { forwardRef } from 'react'
 
@@ -13,14 +12,13 @@ export const ContentPanel = forwardRef<HTMLDivElement, ContentPanelProps>(
       <div
         ref={ref}
         data-scroll-container
-        className={`flex-1 overflow-auto relative pt-16 lg:pt-0 ${
+        className={`flex-1 overflow-auto relative pt-16 lg:pt-0 texture-panel ${
           borderless
-            ? 'bg-transparent m-0'
-            : 'bg-transparent m-0 lg:bg-sidebar lg:m-2 lg:ml-0 lg:rounded-lg lg:border'
+            ? 'bg-background m-0'
+            : 'bg-background m-0 lg:bg-sidebar lg:m-2 lg:ml-0 lg:rounded-lg lg:border'
         }`}
         style={borderless ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : undefined}
       >
-        <ScrollPanelTexture />
         {children}
         {borderless && <style jsx>{'div::-webkit-scrollbar { display: none; }'}</style>}
       </div>
