@@ -1,5 +1,5 @@
-// src/collections/MemberRoles.ts
 import type { CollectionConfig } from 'payload'
+import { createSortOrderBeforeChange } from '../hooks/resolveSortOrderConflicts'
 
 export const MemberRoles: CollectionConfig = {
   slug: 'member-roles',
@@ -20,29 +20,7 @@ export const MemberRoles: CollectionConfig = {
         return data
       },
     ],
-    beforeChange: [
-      async ({ data, req, originalDoc: _originalDoc }) => {
-        // Normalize sortOrder coming from admin (can be string)
-        let desiredSort: number | undefined | null = data.sortOrder as unknown as
-          | number
-          | undefined
-          | null
-        if (typeof desiredSort === 'string') {
-          const parsed = Number.parseInt(desiredSort, 10)
-          desiredSort = Number.isFinite(parsed) ? parsed : undefined
-        }
-
-        // If sortOrder not provided, assign next available
-        if (desiredSort === undefined || desiredSort === null || Number.isNaN(desiredSort)) {
-          const count = await req.payload.count({ collection: 'member-roles' })
-          data.sortOrder = count.totalDocs + 1
-        } else {
-          data.sortOrder = desiredSort
-        }
-
-        return data
-      },
-    ],
+    beforeChange: [createSortOrderBeforeChange('member-roles')],
     afterChange: [
       async ({ doc, req }) => {
         // Check for duplicates after save and notify via context
@@ -87,7 +65,7 @@ export const MemberRoles: CollectionConfig = {
       required: true,
       admin: {
         description:
-          'Order in which this role appears. Lower numbers appear first. Occupied positions will be automatically reassigned.',
+          'Order in which this role appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other role automatically.',
         components: {
           Field: '@/components/admin/sortOrderSelectRole',
         },
