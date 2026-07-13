@@ -85,6 +85,7 @@ export default function LeafletMap({
     // to reading options.iconUrl — assigning undefined shadows the base method
     // and crashes with "this._getIconUrl is not a function" in production.
     // biome-ignore lint/suspicious/noExplicitAny: Leaflet internals
+    // biome-ignore lint/performance/noDelete: MUST be delete — assigning undefined shadows the base method and crashes Leaflet
     delete (L.Icon.Default.prototype as any)._getIconUrl
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
