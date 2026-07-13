@@ -42,15 +42,17 @@ function toMasonryItems(galleries: Gallery[]) {
       const image = photo.image
       if (typeof image !== 'object' || image === null) continue
       const media = image as Media
-      // Prefer the generated thumbnail size — far lighter than originals
-      const src = media.sizes?.thumbnail?.url || media.url
+      // `tablet` keeps the NATURAL aspect ratio (thumbnail/card are square-ish
+      // crops that flatten masonry into a grid). Fall back to the original.
+      const src = media.sizes?.tablet?.url || media.url
       if (!src) continue
       items.push({
         id: `${gallery.id}-${photo.id ?? media.id}`,
         img: src,
         url: media.url ?? src,
-        height: media.sizes?.thumbnail?.height ?? media.height ?? 400,
-        width: media.sizes?.thumbnail?.width ?? media.width ?? 400,
+        // Natural dimensions drive the masonry column heights.
+        height: media.height ?? 400,
+        width: media.width ?? 400,
         caption: photo.caption ?? undefined,
       })
     }
@@ -84,16 +86,7 @@ export default async function Page() {
           GALLERY
         </h1>
         <div className="h-full w-full px-2 pt-16 md:pt-32 ">
-          <Masonry
-            items={items}
-            ease="power3.out"
-            duration={0.5}
-            stagger={0.05}
-            animateFrom="bottom"
-            scaleOnHover={true}
-            hoverScale={0.95}
-            colorShiftOnHover={false}
-          />
+          <Masonry items={items} />
         </div>
       </MainbarShell>
     </SidebarShell>

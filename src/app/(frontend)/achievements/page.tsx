@@ -233,6 +233,19 @@ export default function AchievementsPage() {
   return (
     <SidebarShell>
       <MainbarShell>
+        {/* Achievements timeline drives its own scroll — suppress the outer
+            scroll-container scrollbar on every viewport so none ever shows. */}
+        <style jsx global>{`
+          [data-scroll-container] {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+          }
+          [data-scroll-container]::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+          }
+        `}</style>
         {/* Mobile heading only - desktop heading is inside Timeline component */}
         {isMobile && !isLoading && (
           <h1 className="absolute left-5 top-5 text-2xl font-medium md:text-5xl">CHIEEENTS</h1>
