@@ -27,22 +27,31 @@ async function getGallery(base: string): Promise<Gallery[]> {
   }
 }
 
-/** Flatten every album's Media images into masonry items. */
-function toMasonryItems(albums: Gallery[]) {
-  const items: { id: string; img: string; url: string; height: number; width: number }[] = []
-  for (const album of albums) {
-    for (const image of album.images ?? []) {
+/** Flatten every gallery doc's photos (image + caption) into masonry items. */
+function toMasonryItems(galleries: Gallery[]) {
+  const items: {
+    id: string
+    img: string
+    url: string
+    height: number
+    width: number
+    caption?: string
+  }[] = []
+  for (const gallery of galleries) {
+    for (const photo of gallery.photos ?? []) {
+      const image = photo.image
       if (typeof image !== 'object' || image === null) continue
       const media = image as Media
       // Prefer the generated thumbnail size — far lighter than originals
       const src = media.sizes?.thumbnail?.url || media.url
       if (!src) continue
       items.push({
-        id: `${album.id}-${media.id}`,
+        id: `${gallery.id}-${photo.id ?? media.id}`,
         img: src,
         url: media.url ?? src,
         height: media.sizes?.thumbnail?.height ?? media.height ?? 400,
         width: media.sizes?.thumbnail?.width ?? media.width ?? 400,
+        caption: photo.caption ?? undefined,
       })
     }
   }

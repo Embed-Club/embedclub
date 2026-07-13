@@ -66,6 +66,7 @@ interface Item {
   url: string
   height: number
   width: number
+  caption?: string
 }
 
 interface GridItem extends Item {
@@ -304,7 +305,7 @@ const Masonry: React.FC<MasonryProps> = ({
           onMouseLeave={(e) => handleMouseLeave(item.id, e.currentTarget)}
         >
           <div
-            className="relative w-full h-full bg-cover bg-center rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] uppercase text-[10px] leading-[10px]"
+            className="group/photo relative w-full h-full bg-cover bg-center rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] overflow-hidden"
             style={{
               backgroundImage: loadedIds.has(item.id) ? `url(\"${item.img}\")` : 'none',
             }}
@@ -314,6 +315,13 @@ const Masonry: React.FC<MasonryProps> = ({
             )}
             {colorShiftOnHover && (
               <div className="color-overlay absolute inset-0 rounded-[10px] bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
+            )}
+            {item.caption && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-3 pb-3 pt-8 opacity-0 transition-all duration-300 group-hover/photo:translate-y-0 group-hover/photo:opacity-100">
+                <p className="text-left text-sm font-medium normal-case text-white line-clamp-2">
+                  {item.caption}
+                </p>
+              </div>
             )}
           </div>
         </button>
