@@ -3,7 +3,7 @@ import { createSortOrderBeforeChange } from '../hooks/resolveSortOrderConflicts'
 
 export const MemberCategories: CollectionConfig = {
   slug: 'member-categories',
-  admin: { useAsTitle: 'name' },
+  admin: { useAsTitle: 'name', group: 'Members' },
   access: { read: () => true },
   hooks: {
     beforeValidate: [
@@ -56,7 +56,7 @@ export const MemberCategories: CollectionConfig = {
     ],
   },
   fields: [
-    { name: 'name', type: 'text', required: true },
+    { name: 'name', type: 'text', required: true, unique: true },
     { name: 'slug', type: 'text', required: true, unique: true },
     { name: 'description', type: 'textarea' },
     {

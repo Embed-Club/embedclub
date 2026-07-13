@@ -67,6 +67,40 @@ export const Events: CollectionConfig = {
               },
             },
             {
+              name: 'eventDate',
+              label: 'Event Date & Time',
+              type: 'date',
+              required: true,
+              admin: {
+                date: { pickerAppearance: 'dayAndTime', displayFormat: 'MMM d, yyyy h:mm a' },
+                description:
+                  'When the event happens. Controls ordering and the automatic NEW badge.',
+              },
+            },
+            {
+              name: 'eventMode',
+              label: 'Event Mode',
+              type: 'select',
+              required: true,
+              defaultValue: 'inPerson',
+              options: [
+                { label: 'In-person', value: 'inPerson' },
+                { label: 'Online', value: 'online' },
+              ],
+              admin: {
+                description: 'Online events hide the venue/map tabs and show a meeting link',
+              },
+            },
+            {
+              name: 'meetingLink',
+              label: 'Meeting Link',
+              type: 'text',
+              admin: {
+                condition: (data) => data?.eventMode === 'online',
+                description: 'Google Meet / Zoom / stream URL shown for online events',
+              },
+            },
+            {
               name: 'registrationForm',
               type: 'relationship',
               relationTo: 'forms',
@@ -112,6 +146,9 @@ export const Events: CollectionConfig = {
               name: 'venue',
               type: 'group',
               label: 'Venue Details',
+              admin: {
+                condition: (data) => data?.eventMode !== 'online',
+              },
               fields: [
                 {
                   name: 'roomName',
@@ -168,6 +205,9 @@ export const Events: CollectionConfig = {
             {
               name: 'location',
               type: 'group',
+              admin: {
+                condition: (data) => data?.eventMode !== 'online',
+              },
               fields: [
                 {
                   name: 'address',

@@ -1,6 +1,7 @@
 'use client'
 import { EventDetails } from '@/components/features/events/eventDetails'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
+import { isNewEvent } from '@/lib/eventUtils'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
 import { X } from 'lucide-react'
@@ -88,6 +89,11 @@ export const Card = ({
         className="relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900 shadow-lg hover:shadow-2xl transition-shadow duration-300"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
+        {isNewEvent(event?.eventDate) && (
+          <span className="absolute right-4 top-4 z-40 rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)]">
+            New
+          </span>
+        )}
         <div className="relative z-40 p-8">
           <motion.p
             layoutId={layout ? `category-${card.category}` : undefined}
@@ -97,6 +103,7 @@ export const Card = ({
             transition={{ duration: 0.3 }}
           >
             {card.category}
+            {event?.eventMode === 'online' && ' · Online'}
           </motion.p>
           <motion.p
             layoutId={layout ? `title-${card.title}` : undefined}

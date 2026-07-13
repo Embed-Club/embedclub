@@ -1,7 +1,9 @@
 'use client'
 
 import { Skeleton } from '@/components/ui/skeleton'
+import { formatEventDate } from '@/lib/eventUtils'
 import type { Event } from '@/payload/payload-types'
+import { CalendarDays, Video } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import type React from 'react'
 import { Suspense } from 'react'
@@ -30,10 +32,12 @@ interface EventDetailsProps {
  * making it reusable across different pages and components.
  */
 export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
+  const isOnline = event.eventMode === 'online'
   const hasDescription = event.description && typeof event.description === 'object'
-  const hasLocation = event.location?.address || event.location?.coords
+  const hasLocation = !isOnline && (event.location?.address || event.location?.coords)
   const hasContact = event.contact?.email || event.contact?.phone
-  const hasVenue = event.venue?.roomName || event.venue?.floor
+  const hasVenue = !isOnline && (event.venue?.roomName || event.venue?.floor)
+  const dateLabel = formatEventDate(event.eventDate)
   const registrationSlug =
     event.registrationForm && typeof event.registrationForm === 'object'
       ? event.registrationForm.slug
@@ -41,6 +45,23 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
 
   return (
     <div className="space-y-6">
+      {/* Date + mode */}
+      {(dateLabel || isOnline) && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-600 dark:text-neutral-300">
+          {dateLabel && (
+            <span className="flex items-center gap-1.5 font-medium">
+              <CalendarDays className="h-4 w-4 text-primary" />
+              {dateLabel}
+            </span>
+          )}
+          {isOnline && (
+            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-widest text-primary">
+              Online Event
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Registration */}
       {registrationSlug && (
         <a
@@ -48,6 +69,19 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
           className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-all shadow-[0_0_24px_hsl(var(--primary)/0.25)]"
         >
           Register for this event
+        </a>
+      )}
+
+      {/* Online meeting link */}
+      {isOnline && event.meetingLink && (
+        <a
+          href={event.meetingLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full px-6 py-3 border border-primary/40 text-primary font-semibold rounded-xl hover:bg-primary/10 transition-all"
+        >
+          <Video className="h-4 w-4" />
+          Join online meeting
         </a>
       )}
 
@@ -71,7 +105,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
         )}
 
         {/* Location Information */}
-        {event.location?.address && (
+        {!isOnline && event.location?.address && (
           <div className="rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800">
             <p className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
               Location
@@ -108,7 +142,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
       )}
 
       {/* Map Section */}
-      {event.location?.coords?.lat && event.location?.coords?.lng && (
+      {!isOnline && event.location?.coords?.lat && event.location?.coords?.lng && (
         <div className="space-y-2 rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800">
           <div className="flex items-center justify-between mb-1">
             <p className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">

@@ -1,7 +1,14 @@
 'use client'
 
+import {
+  CutoutCardInsetLabel,
+  CutoutCardPin,
+  CutoutCorner,
+  cutoutCardSurfaceShadowClassName,
+} from '@/components/common/cutoutCard'
 import { EventModal, eventToCard } from '@/components/features/events/eventsCards'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
+import { isNewEvent } from '@/lib/eventUtils'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
 import React, { useMemo, useRef, useState } from 'react'
@@ -19,34 +26,58 @@ export const Card = React.memo(
     hovered: number | null
     setHovered: React.Dispatch<React.SetStateAction<number | null>>
     onClick: () => void
-  }) => (
-    <button
-      type="button"
-      onMouseEnter={() => setHovered(index)}
-      onMouseLeave={() => setHovered(null)}
-      onClick={onClick}
-      className={cn(
-        'cursor-pointer rounded-lg relative bg-gray-100 dark:bg-neutral-900 overflow-hidden h-60 md:h-96 w-full transition-all duration-300 ease-out border-none p-0 outline-none',
-        hovered !== null && hovered !== index && 'md:blur-sm md:scale-[0.98]',
-      )}
-    >
-      <img
-        src={card.src}
-        alt={card.title}
-        className="absolute inset-0 h-full w-full object-cover object-center"
-      />
-      <div
+  }) => {
+    const showNew = isNewEvent(card.event?.eventDate)
+    const isOnline = card.event?.eventMode === 'online'
+
+    return (
+      <button
+        type="button"
+        onMouseEnter={() => setHovered(index)}
+        onMouseLeave={() => setHovered(null)}
+        onClick={onClick}
         className={cn(
-          'absolute inset-0 bg-black/0 md:bg-black/50 flex items-end py-8 px-4 transition-opacity duration-300 opacity-100 md:opacity-0',
-          hovered === index ? 'md:opacity-100' : 'md:opacity-0',
+          'group/cutout cursor-pointer rounded-2xl relative bg-card overflow-hidden h-60 md:h-96 w-full transition-all duration-300 ease-out p-0 outline-none',
+          cutoutCardSurfaceShadowClassName,
+          hovered !== null && hovered !== index && 'md:blur-sm md:scale-[0.98]',
         )}
       >
-        <div className="text-xl md:text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-200">
-          {card.title}
-        </div>
-      </div>
-    </button>
-  ),
+        <img
+          src={card.src}
+          alt={card.title}
+          className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover/cutout:scale-105"
+        />
+        <div
+          className={cn(
+            'absolute inset-0 bg-black/0 md:bg-black/40 transition-opacity duration-300 opacity-100 md:opacity-0',
+            hovered === index ? 'md:opacity-100' : 'md:opacity-0',
+          )}
+        />
+
+        {/* Cutout inset title strip */}
+        <CutoutCardInsetLabel className="bottom-0 left-0 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-2.5 text-left">
+          <span className="block truncate text-sm font-semibold text-foreground">{card.title}</span>
+          {isOnline && (
+            <span className="block text-[10px] font-semibold uppercase tracking-widest text-primary">
+              Online Event
+            </span>
+          )}
+          <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+          <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+        </CutoutCardInsetLabel>
+
+        {showNew && (
+          <CutoutCardPin className="top-0 right-0 rounded-bl-[16px] bg-primary px-3 py-1.5">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground">
+              New
+            </span>
+            <CutoutCorner className="absolute -left-[27px] -top-px -rotate-90 text-primary" />
+            <CutoutCorner className="absolute -bottom-[27px] -right-px -rotate-90 text-primary" />
+          </CutoutCardPin>
+        )}
+      </button>
+    )
+  },
 )
 
 Card.displayName = 'Card'

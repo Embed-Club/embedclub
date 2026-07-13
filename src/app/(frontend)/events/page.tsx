@@ -25,10 +25,10 @@ function getBaseUrl() {
 
 /**
  * Fetch all events once — the carousel takes the first 5, the gallery paginates
- * the full list. depth=1 expands linked media; sort=-createdAt = newest first.
+ * the full list. depth=1 expands linked media; sort=-eventDate = newest first.
  */
 async function getAllEvents(baseUrl: string) {
-  const res = await fetch(`${baseUrl}/api/events?depth=1&sort=-createdAt&limit=200`, {
+  const res = await fetch(`${baseUrl}/api/events?depth=1&sort=-eventDate&limit=200`, {
     cache: 'no-store',
   })
 
@@ -38,7 +38,7 @@ async function getAllEvents(baseUrl: string) {
       status: res.status,
       statusText: res.statusText,
       error: errorText,
-      url: `${baseUrl}/api/events?depth=1&sort=-createdAt`,
+      url: `${baseUrl}/api/events?depth=1&sort=-eventDate`,
     })
     throw new Error(`Failed to load events: ${res.status} ${res.statusText}`)
   }

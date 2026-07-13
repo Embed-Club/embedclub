@@ -79,41 +79,27 @@ function groupByCategorySorted(members: MemberDoc[]) {
     }
   }
 
-  // Convert to array and sort by sortOrder
+  // Within a category, members are grouped into batches (startYear–endYear).
+  // Batches run oldest-first; inside a batch, role sortOrder decides.
   const sorted = Array.from(map.entries())
     .map(([category, { items, sortOrder }]) => {
-      // Separate current members (no endYear) from past members (with endYear)
-      const currentMembers = items.filter((m) => !m.endYear)
-      const pastMembers = items.filter((m) => m.endYear)
+      const batchMap = new Map<string, { startYear: number; items: MemberDoc[] }>()
+      for (const m of items) {
+        const start = m.startYear ?? 0
+        const label = m.startYear ? `${m.startYear} – ${m.endYear ?? 'Present'}` : 'Batch Unknown'
+        const entry = batchMap.get(label)
+        if (entry) entry.items.push(m)
+        else batchMap.set(label, { startYear: start, items: [m] })
+      }
 
-      // Sort current members: first by startYear (descending), then by role order
-      currentMembers.sort((a, b) => {
-        // Primary sort: year descending (most recent first)
-        const yearDiff = (b.startYear ?? 0) - (a.startYear ?? 0)
-        if (yearDiff !== 0) return yearDiff
+      const batches = Array.from(batchMap.entries())
+        .map(([label, { startYear, items: batchItems }]) => {
+          batchItems.sort((a, b) => getPrimaryRoleSortOrder(a) - getPrimaryRoleSortOrder(b))
+          return { label, startYear, items: batchItems }
+        })
+        .sort((a, b) => a.startYear - b.startYear) // oldest batch first
 
-        // Secondary sort: role order (within same year) - lower sortOrder first
-        const sortOrderA = getPrimaryRoleSortOrder(a)
-        const sortOrderB = getPrimaryRoleSortOrder(b)
-        return sortOrderA - sortOrderB
-      })
-
-      // Sort past members: first by startYear (descending), then by role order
-      pastMembers.sort((a, b) => {
-        // Primary sort: year descending (most recent first)
-        const yearDiff = (b.startYear ?? 0) - (a.startYear ?? 0)
-        if (yearDiff !== 0) return yearDiff
-
-        // Secondary sort: role order (within same year) - lower sortOrder first
-        const sortOrderA = getPrimaryRoleSortOrder(a)
-        const sortOrderB = getPrimaryRoleSortOrder(b)
-        return sortOrderA - sortOrderB
-      })
-
-      // Combine: current members first, then past members
-      const sortedItems = [...currentMembers, ...pastMembers]
-
-      return { category, items: sortedItems, sortOrder }
+      return { category, batches, sortOrder }
     })
     .sort((a, b) => a.sortOrder - b.sortOrder) // Sort categories by their sortOrder
 
@@ -241,34 +227,26 @@ export default function Page() {
 
               {grouped.length === 0 && <EmptyState title="No Members Yet" />}
 
-              {grouped.map(({ category, items }) => {
-                const currentMembers = items.filter((m) => !m.endYear)
-                const pastMembers = items.filter((m) => m.endYear)
+              {grouped.map(({ category, batches }) => (
+                <section key={category} className="mb-12">
+                  <h2 className="mb-4 text-2xl font-semibold text-foreground">{category}</h2>
 
-                return (
-                  <section key={category} className="mb-12">
-                    <h2 className="mb-4 text-2xl font-semibold text-foreground">{category}</h2>
-
-                    {currentMembers.length > 0 && (
+                  {batches.map((batch) => (
+                    <div key={batch.label} className="mb-8">
+                      <div className="mb-3 flex items-center gap-3">
+                        <span className="text-sm font-semibold tracking-widest text-primary uppercase">
+                          {batch.label}
+                        </span>
+                        <span className="h-px flex-1 bg-border" />
+                      </div>
                       <ChromaGridWrapper
                         className="w-full"
-                        items={toChromaItems(currentMembers, base)}
+                        items={toChromaItems(batch.items, base)}
                       />
-                    )}
-
-                    {currentMembers.length > 0 && pastMembers.length > 0 && (
-                      <div className="my-8" />
-                    )}
-
-                    {pastMembers.length > 0 && (
-                      <ChromaGridWrapper
-                        className="w-full"
-                        items={toChromaItems(pastMembers, base)}
-                      />
-                    )}
-                  </section>
-                )
-              })}
+                    </div>
+                  ))}
+                </section>
+              ))}
             </div>
           )}
         </ChromaScene>
