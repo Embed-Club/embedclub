@@ -516,7 +516,7 @@ export interface MemberCategory {
   slug: string;
   description?: string | null;
   /**
-   * Order in which this category appears. Lower numbers appear first. Occupied positions will be automatically reassigned.
+   * Order in which this category appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other category automatically.
    */
   sortOrder: number;
   updatedAt: string;
@@ -580,7 +580,7 @@ export interface MemberRole {
   slug: string;
   description?: string | null;
   /**
-   * Order in which this role appears. Lower numbers appear first. Occupied positions will be automatically reassigned.
+   * Order in which this role appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other role automatically.
    */
   sortOrder: number;
   updatedAt: string;

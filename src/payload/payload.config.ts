@@ -63,6 +63,9 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    // Schema is migration-managed (see docs/SETUP.md §4). Never let dev/test
+    // mode push schema diffs — it fights the migrations and corrupts state.
+    push: false,
   }),
   sharp,
   plugins: [
