@@ -106,5 +106,5 @@ E2E tests boot their own dev server; make sure port 3000 is free. First run:
 ## 9. Rules for contributors (humans AND AI)
 
 Read **AGENTS.md** before writing code. It defines the design language,
-naming conventions, and hard bans. PRODUCT.md and DESIGN.md define the brand —
+naming conventions, and hard bans. docs/PRODUCT.md and docs/DESIGN.md define the brand —
 they are not suggestions.

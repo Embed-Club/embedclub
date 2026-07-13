@@ -7,8 +7,8 @@ them to update it first.
 
 ## 1. The design language is locked
 
-- **PRODUCT.md** (brand strategy) and **DESIGN.md** (visual system) at the repo
-  root are canon. Read them before any UI work.
+- **docs/PRODUCT.md** (brand strategy) and **docs/DESIGN.md** (visual system)
+  are canon. Read them before any UI work.
 - Theme = **"Solder & Copper"**: copper `#d98e4a` (dark) / `#a05a20` (light) on
   graphite/warm-white. All colors come from the CSS tokens in
   `src/app/(frontend)/globals.css`. **Never** introduce new hex colors, new
@@ -22,29 +22,39 @@ them to update it first.
   resources/tutorials, background audio with its toggle.
 - Empty states use the shared `EmptyState` component — never write bespoke
   "nothing here" markup.
-- Banned patterns (from DESIGN.md): icon+heading+text card grids, tiny
+- Banned patterns (from docs/DESIGN.md): icon+heading+text card grids, tiny
   uppercase tracked kicker labels above every section, numbered 01/02/03
   section scaffolding, gradient text, glassmorphism-by-default, blue "tech"
   glows, side-stripe borders, border-radius > 16px on cards.
 
 ## 2. Naming & structure
 
-- Project code files/folders: **camelCase** — `resourceCutoutCard.tsx`,
-  `formWizard.tsx`, `useMediaQuery.ts`. Exported React components stay
-  PascalCase; the *file name* is camelCase.
-- Vendor exception: `src/components/ui/` (shadcn) and
-  `src/components/animate-ui/` keep their upstream **kebab-case** names —
-  the shadcn CLI generates kebab files and fighting it causes drift.
-- Next.js route files (`page.tsx`, `layout.tsx`, `route.ts`, `loading.tsx`)
-  and route segment folders are dictated by Next — do not rename.
-- Component homes: `ui/` (primitives), `common/` (shared), `layout/` (shell),
-  `theme/`, `admin/` (Payload admin), `features/<domain>/` (page-specific).
+- **Every** file and folder is **camelCase** — `resourceCutoutCard.tsx`,
+  `formWizard.tsx`, `useMediaQuery.ts`, `codeTabs.tsx`, `radioGroup.tsx`.
+  Exported React components stay PascalCase; the *file name* is camelCase.
+- Only two exceptions, both forced by tooling: `src/payload/payload-types.ts`
+  (Payload writes this name) and Next.js route files (`page.tsx`, `layout.tsx`,
+  `route.ts`, `loading.tsx`, `not-found.tsx`) + route-segment folders.
+- **shadcn/registry caveat**: the `shadcn add` CLI generates kebab-case files
+  into `src/components/ui/`. After adding a component, **rename it to camelCase**
+  and update the import — do not leave kebab files in the tree.
+- Component homes:
+  - `ui/` — shadcn primitives only (button, input, dialog, select, …)
+  - `common/` — shared custom components (cutoutCard, bgImageTexture,
+    borderGlow, focusCards, emptyState, searchBar, …)
+  - `layout/` — app shell (frontendShell, sidebar menus, contentPanel)
+  - `theme/` — theme provider / toggles
+  - `admin/` — Payload admin field components
+  - `features/<domain>/` — page-specific (events, resources, simulators, forms, …)
+  - `animate-ui/` — the animate-ui registry tree
+- Docs live in `docs/` (SETUP, PRODUCT, DESIGN). Only README, AGENTS, CLAUDE
+  stay at the repo root (they must be auto-discovered).
 
 ## 3. Data & CMS rules
 
 - Content lives in Payload, not in JSX. Adding hardcoded page copy is a bug —
   extend a collection or global instead.
-- Schema changes follow the migration workflow in SETUP.md §4: edit collection
+- Schema changes follow the migration workflow in docs/SETUP.md §4: edit collection
   → `generate:types` → `migrate:create` → review SQL → `migrate` → commit all
   together. **Never** rely on dev-mode schema push; never edit an existing
   migration.

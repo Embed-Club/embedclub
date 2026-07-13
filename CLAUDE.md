@@ -4,9 +4,9 @@
 
 **AGENTS.md at the repo root is mandatory reading before any code or design
 change.** It locks the design language (Solder & Copper theme, fonts, signature
-elements), naming conventions (camelCase files; vendor ui/ stays kebab), the
+elements), naming conventions (camelCase files everywhere), the
 migration workflow, and the quality gates (`pnpm verify` / `pnpm verify:full`).
-PRODUCT.md and DESIGN.md define the brand. These override anything below.
+docs/PRODUCT.md and docs/DESIGN.md define the brand. These override anything below.
 
 ## Behavioral Rules (Always Enforced)
 

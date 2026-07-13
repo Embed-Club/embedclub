@@ -11,7 +11,7 @@ import {
   CutoutCardPin,
   CutoutCorner,
   cutoutCardSurfaceClassName,
-} from '@/components/ui/cutout-card'
+} from '@/components/common/cutoutCard'
 import { cn } from '@/lib/utils'
 import { ArrowUpRight, BarChart, Clock } from 'lucide-react'
 import Link from 'next/link'
