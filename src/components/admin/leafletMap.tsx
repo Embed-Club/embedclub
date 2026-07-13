@@ -1,7 +1,7 @@
 'use client'
 
 import L from 'leaflet'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -37,6 +37,18 @@ function SizeFixer() {
 // the "leave without saving" guard. Buttons never navigate.
 function ZoomButtons() {
   const map = useMap()
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // The buttons live in a React-rendered .leaflet-control div, which Leaflet
+  // did NOT register — so their clicks bubble to the map and drop a pin behind
+  // the zoom. Disable click/scroll propagation on the container to stop that.
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    L.DomEvent.disableClickPropagation(el)
+    L.DomEvent.disableScrollPropagation(el)
+  }, [])
+
   const btnStyle: React.CSSProperties = {
     width: '30px',
     height: '30px',
@@ -53,6 +65,7 @@ function ZoomButtons() {
   return (
     <div className="leaflet-top leaflet-left" style={{ pointerEvents: 'auto' }}>
       <div
+        ref={containerRef}
         className="leaflet-control leaflet-bar"
         style={{ margin: '10px', overflow: 'hidden', borderRadius: '4px' }}
       >
