@@ -51,12 +51,7 @@ function ZoomButtons() {
     cursor: 'pointer',
   }
   return (
-    <div
-      className="leaflet-top leaflet-left"
-      style={{ pointerEvents: 'auto' }}
-      // keep clicks off the map canvas
-      onClick={(e) => e.stopPropagation()}
-    >
+    <div className="leaflet-top leaflet-left" style={{ pointerEvents: 'auto' }}>
       <div
         className="leaflet-control leaflet-bar"
         style={{ margin: '10px', overflow: 'hidden', borderRadius: '4px' }}
