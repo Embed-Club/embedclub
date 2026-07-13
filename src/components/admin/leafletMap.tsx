@@ -32,6 +32,51 @@ function SizeFixer() {
   return null
 }
 
+// Real <button> zoom controls. Leaflet's built-in zoom control is an <a href="#">,
+// and inside the Payload admin a hash click reads as a route change and fires
+// the "leave without saving" guard. Buttons never navigate.
+function ZoomButtons() {
+  const map = useMap()
+  const btnStyle: React.CSSProperties = {
+    width: '30px',
+    height: '30px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    background: '#fff',
+    color: '#000',
+    fontSize: '18px',
+    lineHeight: '1',
+    cursor: 'pointer',
+  }
+  return (
+    <div
+      className="leaflet-top leaflet-left"
+      style={{ pointerEvents: 'auto' }}
+      // keep clicks off the map canvas
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div
+        className="leaflet-control leaflet-bar"
+        style={{ margin: '10px', overflow: 'hidden', borderRadius: '4px' }}
+      >
+        <button type="button" style={btnStyle} aria-label="Zoom in" onClick={() => map.zoomIn()}>
+          +
+        </button>
+        <button
+          type="button"
+          style={{ ...btnStyle, borderTop: '1px solid #ccc' }}
+          aria-label="Zoom out"
+          onClick={() => map.zoomOut()}
+        >
+          −
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function MapUpdater({
   lat,
   lng,
@@ -137,16 +182,17 @@ export default function LeafletMap({
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={false}
         dragging={true}
-        doubleClickZoom={false}
+        doubleClickZoom={true}
         touchZoom={true}
         boxZoom={false}
-        zoomControl={true}
+        zoomControl={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <SizeFixer />
+        {!readonly && <ZoomButtons />}
         {!readonly && onChange && (
           <ClickHandler onSelect={onChange} setInternalMarker={setMarkerPos} />
         )}
