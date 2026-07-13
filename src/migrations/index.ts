@@ -3,6 +3,7 @@ import * as migration_20260711_180904_add_simulators_feedback_forms from './2026
 import * as migration_20260712_005246_add_globals_badges_deadline from './20260712_005246_add_globals_badges_deadline';
 import * as migration_20260712_203058_add_native_forms from './20260712_203058_add_native_forms';
 import * as migration_20260713_120901_admin_qol_batch from './20260713_120901_admin_qol_batch';
+import * as migration_20260713_130000_gallery_photos_captions from './20260713_130000_gallery_photos_captions';
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260713_120901_admin_qol_batch.up,
     down: migration_20260713_120901_admin_qol_batch.down,
     name: '20260713_120901_admin_qol_batch'
+  },
+  {
+    up: migration_20260713_130000_gallery_photos_captions.up,
+    down: migration_20260713_130000_gallery_photos_captions.down,
+    name: '20260713_130000_gallery_photos_captions',
   },
 ];

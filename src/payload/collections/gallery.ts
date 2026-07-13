@@ -1,42 +1,45 @@
 import type { CollectionConfig } from 'payload'
 
 /**
- * Gallery albums. Instead of owning its own uploads, each doc picks any number
- * of images from the shared Media library — so photos can be bulk-selected
- * (and reused across events, achievements, etc.) without re-uploading.
+ * The photo gallery. One document holds the whole masonry wall: each row is an
+ * image picked from the Media library plus its own caption. No title needed —
+ * the caption per image is the only text.
  */
 export const Gallery: CollectionConfig = {
   slug: 'gallery',
   admin: {
-    useAsTitle: 'title',
-    defaultColumns: ['title', 'images', 'updatedAt'],
-    description: 'Pick images from the Media library — multiple at once is supported.',
+    useAsTitle: 'id',
+    defaultColumns: ['id', 'updatedAt'],
+    description: 'Add images and give each one a caption. They render as a masonry wall.',
   },
   access: {
     read: () => true,
   },
   fields: [
     {
-      name: 'title',
-      label: 'Title',
-      type: 'text',
-      required: true,
-      admin: {
-        description: 'Album/batch name, e.g. "RC Car Expo 2025"',
-      },
-    },
-    {
-      name: 'images',
-      label: 'Images',
-      type: 'upload',
-      relationTo: 'media',
-      hasMany: true,
+      name: 'photos',
+      label: 'Photos',
+      type: 'array',
       required: true,
       minRows: 1,
+      labels: { singular: 'Photo', plural: 'Photos' },
       admin: {
-        description:
-          'Select from the Media library — you can pick many at once, or drag new files in to upload them to Media.',
+        description: 'Drag to reorder. Pick each image from Media (or drag new files in).',
+        initCollapsed: true,
       },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'caption',
+          type: 'text',
+          admin: { description: 'What is this photo? Shown on hover.' },
+        },
+      ],
     },
   ],
 }

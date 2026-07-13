@@ -646,7 +646,7 @@ export interface Member {
   createdAt: string;
 }
 /**
- * Pick images from the Media library — multiple at once is supported.
+ * Add images and give each one a caption. They render as a masonry wall.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery".
@@ -654,13 +654,16 @@ export interface Member {
 export interface Gallery {
   id: number;
   /**
-   * Album/batch name, e.g. "RC Car Expo 2025"
+   * Drag to reorder. Pick each image from Media (or drag new files in).
    */
-  title: string;
-  /**
-   * Select from the Media library — you can pick many at once, or drag new files in to upload them to Media.
-   */
-  images: (number | Media)[];
+  photos: {
+    image: number | Media;
+    /**
+     * What is this photo? Shown on hover.
+     */
+    caption?: string | null;
+    id?: string | null;
+  }[];
   updatedAt: string;
   createdAt: string;
 }
@@ -1573,8 +1576,13 @@ export interface MembersSelect<T extends boolean = true> {
  * via the `definition` "gallery_select".
  */
 export interface GallerySelect<T extends boolean = true> {
-  title?: T;
-  images?: T;
+  photos?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
