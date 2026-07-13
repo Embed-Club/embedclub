@@ -13,8 +13,8 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center gap-3 px-4">
-      <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">{title}</p>
-      <p className="text-neutral-600 dark:text-neutral-400">{message}</p>
+      <p className="text-2xl font-bold text-foreground mb-2">{title}</p>
+      <p className="text-muted-foreground">{message}</p>
     </div>
   )
 }

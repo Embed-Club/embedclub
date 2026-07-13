@@ -39,7 +39,6 @@ export const Card = React.memo(
         className={cn(
           'group/cutout cursor-pointer rounded-2xl relative bg-card overflow-hidden h-60 md:h-96 w-full transition-all duration-300 ease-out p-0 outline-none',
           cutoutCardSurfaceShadowClassName,
-          hovered !== null && hovered !== index && 'md:blur-sm md:scale-[0.98]',
         )}
       >
         <img

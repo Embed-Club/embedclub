@@ -84,9 +84,8 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        whileHover={{ scale: 1.05, y: -8 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900 shadow-lg hover:shadow-2xl transition-shadow duration-300"
+        className="group/eventcard relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-3xl bg-muted md:h-[40rem] md:w-96 shadow-lg hover:shadow-2xl transition-shadow duration-300"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
         {isNewEvent(event?.eventDate) && (
@@ -119,7 +118,7 @@ export const Card = ({
           src={card.src}
           alt={card.title}
           fill
-          className="absolute inset-0 z-10 object-cover"
+          className="absolute inset-0 z-10 object-cover transition-transform duration-500 ease-out group-hover/eventcard:scale-110"
         />
       </motion.button>
     </>

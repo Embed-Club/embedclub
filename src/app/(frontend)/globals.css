@@ -125,9 +125,11 @@
 }
 
 /* Fabric-of-squares grain as a real background layer: zero layout impact,
-   scrolls with content (attachment: local), tiles infinitely. Light mode
-   multiplies the pattern into the surface at full strength; dark mode uses
-   overlay so the pattern reads as a subtle lift instead of vanishing. */
+   scrolls with content (attachment: local), tiles infinitely. The texture PNG
+   is a ~11% light-grey pattern. Light mode multiplies it into the surface so
+   the grain reads as faint darker specks. Dark mode composites it normally so
+   the same semi-transparent light pattern LIFTS the near-black surface —
+   `overlay`/`multiply` on a near-black base crush it to invisible. */
 .texture-panel {
   background-image: url("/textures/fabric-of-squares.png");
   background-repeat: repeat;
@@ -135,7 +137,7 @@
   background-blend-mode: multiply;
 }
 .dark .texture-panel {
-  background-blend-mode: overlay;
+  background-blend-mode: normal;
 }
 
 * {

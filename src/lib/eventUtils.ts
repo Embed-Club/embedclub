@@ -1,8 +1,8 @@
-const NEW_WINDOW_PAST_DAYS = 30
+const NEW_WINDOW_PAST_DAYS = 60
 
 /**
- * An event is NEW when it happened within the last 30 days or is upcoming
- * (any future date).
+ * An event is NEW when it happened within the last 60 days (~2 months) or is
+ * upcoming (any future date).
  */
 export function isNewEvent(eventDate?: string | null): boolean {
   if (!eventDate) return false
