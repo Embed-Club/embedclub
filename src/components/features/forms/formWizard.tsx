@@ -1,12 +1,12 @@
 'use client'
 
 import { type FormAnswers, type SubmitFormResult, submitForm } from '@/app/(frontend)/forms/actions'
+import { cutoutCardSurfaceShadowClassName } from '@/components/common/cutoutCard'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { cutoutCardSurfaceShadowClassName } from '@/components/ui/cutout-card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radioGroup'
 import {
   Select,
   SelectContent,

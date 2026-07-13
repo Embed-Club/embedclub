@@ -39,10 +39,6 @@ migration_log.txt
 .agents/
 .gemini/
 scratch/
-antigravity-restructure-prompt.md
-embed-club-pages-prompt.md
-borderless-sidebar-main-shell.md
-example.html
 
 # IDE files
 .vscode/
@@ -74,3 +70,4 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+green_dots.txt

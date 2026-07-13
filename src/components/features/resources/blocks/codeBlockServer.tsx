@@ -1,4 +1,4 @@
-import { CodeTabs } from '@/components/animate-ui/components/code-tabs'
+import { CodeTabs } from '@/components/animate-ui/components/codeTabs'
 import { highlightCode } from '@/lib/shiki'
 import type { CodeBlock } from '@/payload/payload-types'
 

@@ -66,7 +66,7 @@ Embed Club connects over **100+ members** who share a passion for embedded syste
 ### High-Fidelity Features
 
 - **Intro Visual Identity**: A specialized **Shared Element Transition** (Logo Glide) that persists across page loads for a premium "App-like" feel.
-- **"Solder & Copper" design system**: copper-on-graphite theme with a fabric texture, documented in `DESIGN.md` / `PRODUCT.md`.
+- **"Solder & Copper" design system**: copper-on-graphite theme with a fabric texture, documented in `docs/DESIGN.md` / `docs/PRODUCT.md`.
 - **Native Form Builder**: multi-step wizard forms built in Payload admin; submissions are stored locally AND forwarded to Google Forms so organizers keep working in Sheets.
 - **Automated Media Engine**: Integrated **Sharp-powered WebP compression** and responsive image generation hosted on Supabase S3.
 - **Relational Directory**: Sophisticated member profiles with hierarchical roles, categories, and achievement tracking.
@@ -104,12 +104,12 @@ Ensure the following are set in production:
 
 ## Getting Started
 
-Full instructions live in **[SETUP.md](SETUP.md)** — environment, database
+Full instructions live in **[docs/SETUP.md](docs/SETUP.md)** — environment, database
 migrations, content model, deployment, and troubleshooting. TLDR:
 
 ```bash
 pnpm install
-# create .env (see SETUP.md §3)
+# create .env (see docs/SETUP.md §3)
 pnpm payload migrate
 pnpm dev            # http://localhost:3000  (+ /admin)
 ```

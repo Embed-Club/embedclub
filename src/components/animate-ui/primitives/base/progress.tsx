@@ -7,7 +7,7 @@ import type * as React from 'react'
 import {
   CountingNumber,
   type CountingNumberProps,
-} from '@/components/animate-ui/primitives/texts/counting-number'
+} from '@/components/animate-ui/primitives/texts/countingNumber'
 import { getStrictContext } from '@/lib/getStrictContext'
 
 type ProgressContextType = {
