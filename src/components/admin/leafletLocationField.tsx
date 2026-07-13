@@ -112,7 +112,9 @@ const LeafletLocationField: FieldClientComponent = (props) => {
             style={{
               width: '100%',
               padding: '8px',
-              border: '1px solid #ccc',
+              border: '1px solid var(--theme-elevation-150)',
+              backgroundColor: 'var(--theme-input-bg, var(--theme-elevation-50))',
+              color: 'var(--theme-text)',
               borderRadius: '4px',
               fontSize: '14px',
               boxSizing: 'border-box',
@@ -137,7 +139,9 @@ const LeafletLocationField: FieldClientComponent = (props) => {
             style={{
               width: '100%',
               padding: '8px',
-              border: '1px solid #ccc',
+              border: '1px solid var(--theme-elevation-150)',
+              backgroundColor: 'var(--theme-input-bg, var(--theme-elevation-50))',
+              color: 'var(--theme-text)',
               borderRadius: '4px',
               fontSize: '14px',
               boxSizing: 'border-box',
@@ -148,21 +152,24 @@ const LeafletLocationField: FieldClientComponent = (props) => {
 
       {/* Map */}
       <div style={{ marginBottom: '10px' }}>
-        <strong>Click on map to set marker:</strong>
+        <strong>
+          Click the map to drop a pin — or drag the pin to fine-tune. Both boxes update.
+        </strong>
       </div>
       <Suspense
         fallback={
           <div
             style={{
-              height: '600px',
-              backgroundColor: '#f0f0f0',
+              height: '320px',
+              backgroundColor: 'var(--theme-elevation-100)',
+              color: 'var(--theme-text)',
               borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            Loading map...
+            Loading map…
           </div>
         }
       >
@@ -178,8 +185,10 @@ const LeafletLocationField: FieldClientComponent = (props) => {
         <div
           style={{
             marginTop: '10px',
-            padding: '8px',
-            backgroundColor: '#f0f0f0',
+            padding: '8px 12px',
+            backgroundColor: 'var(--theme-elevation-100)',
+            color: 'var(--theme-text)',
+            border: '1px solid var(--theme-elevation-150)',
             borderRadius: '4px',
             fontSize: '12px',
           }}
