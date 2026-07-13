@@ -46,32 +46,44 @@ const LeafletLocationField: FieldClientComponent = (props) => {
     isUpdatingFromMap.current = true
     setLocalLat(coords.lat.toString())
     setLocalLng(coords.lng.toString())
-
-    console.log('Setting coordinates from map:', coords)
     setLatValue(coords.lat)
     setLngValue(coords.lng)
   }
 
+  /** "12.806869, 74.932505" pasted into either box fills both fields. */
+  const applyCombined = (raw: string): boolean => {
+    const match = raw.trim().match(/^(-?\d+(?:\.\d+)?)\s*[,;\s]\s*(-?\d+(?:\.\d+)?)$/)
+    if (!match) return false
+    const lat = Number.parseFloat(match[1])
+    const lng = Number.parseFloat(match[2])
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return false
+    isUpdatingFromMap.current = true
+    setLocalLat(String(lat))
+    setLocalLng(String(lng))
+    setLatValue(lat)
+    setLngValue(lng)
+    return true
+  }
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const text = e.clipboardData.getData('text')
+    if (applyCombined(text)) e.preventDefault()
+  }
+
   const handleLatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
+    if (applyCombined(val)) return
     setLocalLat(val)
     const lat = val ? Number.parseFloat(val) : null
-
-    if (lat === null || !Number.isNaN(lat)) {
-      console.log('Setting lat from input:', lat)
-      setLatValue(lat)
-    }
+    if (lat === null || !Number.isNaN(lat)) setLatValue(lat)
   }
 
   const handleLngChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
+    if (applyCombined(val)) return
     setLocalLng(val)
     const lng = val ? Number.parseFloat(val) : null
-
-    if (lng === null || !Number.isNaN(lng)) {
-      console.log('Setting lng from input:', lng)
-      setLngValue(lng)
-    }
+    if (lng === null || !Number.isNaN(lng)) setLngValue(lng)
   }
 
   return (
@@ -91,11 +103,12 @@ const LeafletLocationField: FieldClientComponent = (props) => {
           </label>
           <input
             id={`${path}-lat`}
-            type="number"
-            step="0.000001"
+            type="text"
+            inputMode="decimal"
             value={localLat}
             onChange={handleLatChange}
-            placeholder="e.g., 12.806922"
+            onPaste={handlePaste}
+            placeholder='e.g., 12.806922 — or paste "lat, lng" together'
             style={{
               width: '100%',
               padding: '8px',
@@ -115,11 +128,12 @@ const LeafletLocationField: FieldClientComponent = (props) => {
           </label>
           <input
             id={`${path}-lng`}
-            type="number"
-            step="0.000001"
+            type="text"
+            inputMode="decimal"
             value={localLng}
             onChange={handleLngChange}
-            placeholder="e.g., 74.932009"
+            onPaste={handlePaste}
+            placeholder='e.g., 74.932009 — or paste "lat, lng" together'
             style={{
               width: '100%',
               padding: '8px',

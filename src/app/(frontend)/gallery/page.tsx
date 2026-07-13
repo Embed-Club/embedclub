@@ -1,7 +1,7 @@
 import { EmptyState } from '@/components/common/emptyState'
 import Masonry from '@/components/features/gallery/masonry'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
-import type { Gallery } from '@/payload/payload-types'
+import type { Gallery, Media } from '@/payload/payload-types'
 
 function getBaseUrl() {
   return typeof window !== 'undefined'
@@ -27,10 +27,33 @@ async function getGallery(base: string): Promise<Gallery[]> {
   }
 }
 
+/** Flatten every album's Media images into masonry items. */
+function toMasonryItems(albums: Gallery[]) {
+  const items: { id: string; img: string; url: string; height: number; width: number }[] = []
+  for (const album of albums) {
+    for (const image of album.images ?? []) {
+      if (typeof image !== 'object' || image === null) continue
+      const media = image as Media
+      // Prefer the generated thumbnail size — far lighter than originals
+      const src = media.sizes?.thumbnail?.url || media.url
+      if (!src) continue
+      items.push({
+        id: `${album.id}-${media.id}`,
+        img: src,
+        url: media.url ?? src,
+        height: media.sizes?.thumbnail?.height ?? media.height ?? 400,
+        width: media.sizes?.thumbnail?.width ?? media.width ?? 400,
+      })
+    }
+  }
+  return items
+}
+
 export default async function Page() {
   const gallery = await getGallery(getBaseUrl())
+  const items = toMasonryItems(gallery)
 
-  if (gallery.length === 0) {
+  if (items.length === 0) {
     return (
       <SidebarShell>
         <MainbarShell>
@@ -44,14 +67,6 @@ export default async function Page() {
       </SidebarShell>
     )
   }
-
-  const items = gallery.map((g) => ({
-    id: g.id.toString(),
-    img: g.url ?? '',
-    url: g.url ?? '',
-    height: g.height ?? 400,
-    width: g.width ?? 400,
-  }))
 
   return (
     <SidebarShell>

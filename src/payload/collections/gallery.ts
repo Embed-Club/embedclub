@@ -1,10 +1,16 @@
 import type { CollectionConfig } from 'payload'
 
+/**
+ * Gallery albums. Instead of owning its own uploads, each doc picks any number
+ * of images from the shared Media library — so photos can be bulk-selected
+ * (and reused across events, achievements, etc.) without re-uploading.
+ */
 export const Gallery: CollectionConfig = {
   slug: 'gallery',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'image'],
+    defaultColumns: ['title', 'images', 'updatedAt'],
+    description: 'Pick images from the Media library — multiple at once is supported.',
   },
   access: {
     read: () => true,
@@ -15,32 +21,24 @@ export const Gallery: CollectionConfig = {
       label: 'Title',
       type: 'text',
       required: true,
+      admin: {
+        description: 'Album/batch name, e.g. "RC Car Expo 2025"',
+      },
+    },
+    {
+      name: 'images',
+      label: 'Images',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      required: true,
+      minRows: 1,
+      admin: {
+        description:
+          'Select from the Media library — you can pick many at once, or drag new files in to upload them to Media.',
+      },
     },
   ],
-  upload: {
-    staticDir: 'gallery',
-    imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 1200,
-        withoutEnlargement: true,
-        formatOptions: { format: 'webp', options: { quality: 80 } },
-      },
-      {
-        name: 'card',
-        width: 600,
-        height: 400,
-        position: 'centre',
-        formatOptions: { format: 'webp', options: { quality: 80 } },
-      },
-    ],
-    formatOptions: {
-      format: 'webp',
-      options: {
-        quality: 80,
-      },
-    },
-  },
 }
 
 export default Gallery

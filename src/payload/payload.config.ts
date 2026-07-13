@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { s3Storage } from '@payloadcms/storage-s3'
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -69,6 +70,18 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
+    // Bulk operations: adds Export/Import (CSV + JSON) to these collections'
+    // list views, so many docs can be added or updated in one go.
+    importExportPlugin({
+      collections: [
+        { slug: 'members' },
+        { slug: 'events' },
+        { slug: 'achievements' },
+        { slug: 'tags' },
+        { slug: 'member-roles' },
+        { slug: 'member-categories' },
+      ],
+    }),
     // S3 is opt-in via env, not tied to NODE_ENV — so a local production build
     // (`next build && next start`) still stores uploads on disk. Set
     // USE_S3_STORAGE=true in the real deployment environment.
@@ -78,7 +91,6 @@ export default buildConfig({
             collections: {
               media: true,
               'member-photo': true,
-              gallery: true,
               'audio-files': true,
             },
             bucket: process.env.S3_BUCKET || '',

@@ -80,9 +80,12 @@ export default function LeafletMap({
 
   // Fix marker icons on mount
   useEffect(() => {
-    // Fix for default marker icons in react-leaflet
-    // biome-ignore lint/suspicious/noExplicitAny: complex Leaflet internals
-    ;(L.Icon.Default.prototype as any)._getIconUrl = undefined
+    // react-leaflet + bundlers break Leaflet's default icon path detection.
+    // The override must be DELETED (not set to undefined) so Leaflet falls back
+    // to reading options.iconUrl — assigning undefined shadows the base method
+    // and crashes with "this._getIconUrl is not a function" in production.
+    // biome-ignore lint/suspicious/noExplicitAny: Leaflet internals
+    delete (L.Icon.Default.prototype as any)._getIconUrl
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
       iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',

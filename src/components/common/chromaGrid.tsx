@@ -1,3 +1,4 @@
+import { CutoutCorner } from '@/components/common/cutoutCard'
 import { cn } from '@/lib/utils'
 import { animate } from 'motion/react'
 import { useTheme } from 'next-themes'
@@ -305,8 +306,6 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '', onItemCl
           ? 'border-gray-300/40 hover:border-gray-400/60'
           : 'border-white/15 hover:border-white/30'
 
-        const textColorClass = isLightMode ? 'text-gray-700 group-hover:text-black' : 'text-white'
-
         const spotlightColor = 'rgba(255,255,255,0.3)'
 
         return (
@@ -350,13 +349,11 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '', onItemCl
                 proximity={64}
                 inactiveZone={0.01}
                 disabled={false}
-                className="z-[60] rounded-[20px]"
+                className="z-[60] rounded-2xl"
               />
             )}
             <div
-              className={`relative z-10 flex flex-col rounded-[20px] overflow-hidden transition-all duration-300 border ${borderStyle} ${
-                isLightMode ? 'hover:bg-white' : ''
-              }`}
+              className={`relative z-10 flex flex-col rounded-2xl overflow-hidden transition-all duration-300 border ${borderStyle}`}
               style={{
                 background: cardBackground,
               }}
@@ -372,34 +369,35 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '', onItemCl
                 />
               )}
 
-              <div className="relative z-10 flex-1 p-[10px] box-border">
+              <div className="relative z-10 aspect-[4/5] w-full">
                 <img
                   src={c.image}
                   alt={c.title}
                   loading="lazy"
-                  className="w-full h-full object-cover rounded-[10px] transition-all duration-300"
+                  className="absolute inset-0 h-full w-full object-cover transition-all duration-300"
                 />
-              </div>
-              <footer
-                className={`relative z-10 p-3 font-sans grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 ${textColorClass}`}
-              >
-                <h3 className="m-0 text-[1.05rem] font-semibold transition-colors duration-300">
-                  {c.title}
-                </h3>
+
+                {/* Cutout inset label — name + role(s) */}
+                <div className="absolute bottom-0 left-0 z-30 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-2.5">
+                  <h3 className="m-0 truncate text-[1rem] font-semibold text-foreground">
+                    {c.title}
+                  </h3>
+                  <p className="m-0 line-clamp-1 text-[0.8rem] text-muted-foreground">
+                    {c.subtitle}
+                  </p>
+                  <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+                  <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+                </div>
+
+                {/* Batch years pin */}
                 {c.handle && (
-                  <span className="text-[0.95rem] opacity-80 text-right transition-colors duration-300">
+                  <span className="absolute top-0 right-0 z-30 rounded-bl-[16px] bg-card px-3 py-1.5 text-xs font-semibold text-primary">
                     {c.handle}
+                    <CutoutCorner className="absolute -left-[27px] -top-px -rotate-90 text-card" />
+                    <CutoutCorner className="absolute -bottom-[27px] -right-px -rotate-90 text-card" />
                   </span>
                 )}
-                <p className="m-0 text-[0.85rem] opacity-85 transition-colors duration-300">
-                  {c.subtitle}
-                </p>
-                {c.location && (
-                  <span className="text-[0.85rem] opacity-85 text-right transition-colors duration-300">
-                    {c.location}
-                  </span>
-                )}
-              </footer>
+              </div>
             </div>
           </article>
         )

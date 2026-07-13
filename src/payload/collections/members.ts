@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Members: CollectionConfig = {
   slug: 'members',
   admin: {
+    group: 'Members',
     useAsTitle: 'fullName',
     defaultColumns: ['fullName', 'category', 'roles', 'startYear', 'endYear'],
   },
@@ -27,9 +28,13 @@ export const Members: CollectionConfig = {
       name: 'roles',
       label: 'Roles',
       type: 'relationship',
-      relationTo: 'member-roles', // create this collection separately
-      hasMany: false, // set to false if you want only one role
+      relationTo: 'member-roles',
+      hasMany: true,
       required: true,
+      admin: {
+        description:
+          'A member can hold multiple roles over time (e.g. Member, then President). First role listed is shown most prominently.',
+      },
     },
     {
       name: 'bio',

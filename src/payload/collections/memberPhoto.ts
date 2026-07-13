@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const MemberPhoto: CollectionConfig = {
   slug: 'member-photo',
+  admin: { group: 'Members' },
   access: { read: () => true },
   fields: [
     {

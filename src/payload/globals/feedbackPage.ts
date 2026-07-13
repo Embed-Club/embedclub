@@ -3,6 +3,7 @@ import type { GlobalConfig } from 'payload'
 export const FeedbackPage: GlobalConfig = {
   slug: 'feedback-page',
   label: 'Feedback Page',
+  admin: { group: 'Pages' },
   access: {
     read: () => true,
   },

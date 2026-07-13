@@ -41,11 +41,13 @@ export const Achievements: CollectionConfig = {
       },
     },
 
-    // Optional image - will appear on opposite side of text on timeline
+    // Optional image - will appear on opposite side of text on timeline.
+    // `upload` type (not relationship) so the admin shows thumbnail previews
+    // and the media-library picker instead of a bare dropdown.
     {
       name: 'image',
       label: 'Image (optional)',
-      type: 'relationship',
+      type: 'upload',
       relationTo: 'media',
       required: false,
     },
