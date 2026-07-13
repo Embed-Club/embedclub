@@ -13,10 +13,7 @@ interface ClickHandlerProps {
 function ClickHandler({ onSelect, setInternalMarker }: ClickHandlerProps) {
   useMapEvents({
     click(e) {
-      const coords = {
-        lat: e.latlng.lat,
-        lng: e.latlng.lng,
-      }
+      const coords = { lat: e.latlng.lat, lng: e.latlng.lng }
       setInternalMarker(coords)
       onSelect(coords)
     },
@@ -24,7 +21,17 @@ function ClickHandler({ onSelect, setInternalMarker }: ClickHandlerProps) {
   return null
 }
 
-// Component to update map center when coordinates change externally
+// Leaflet inside a tab/flex container often mounts at 0px and renders grey —
+// force it to recompute size once it's laid out.
+function SizeFixer() {
+  const map = useMap()
+  useEffect(() => {
+    const t = setTimeout(() => map.invalidateSize(), 200)
+    return () => clearTimeout(t)
+  }, [map])
+  return null
+}
+
 function MapUpdater({
   lat,
   lng,
@@ -46,12 +53,10 @@ function MapUpdater({
       !Number.isNaN(lng)
     ) {
       setInternalMarker({ lat, lng })
-
       setTimeout(() => {
         map.invalidateSize()
-
-        map.flyTo([lat, lng], zoom ?? map.getZoom(), { duration: 1.3 })
-      }, 250)
+        map.flyTo([lat, lng], zoom ?? map.getZoom(), { duration: 1.0 })
+      }, 220)
     }
   }, [lat, lng, zoom, map, setInternalMarker])
 
@@ -73,12 +78,10 @@ export default function LeafletMap({
   onChange,
   readonly = false,
 }: LeafletMapProps) {
-  // Internal marker state that doesn't change from parent re-renders
   const [markerPos, setMarkerPos] = useState<{ lat: number; lng: number } | null>(null)
   const safeZoom =
     typeof zoom === 'number' && !Number.isNaN(zoom) ? Math.min(Math.max(zoom, 3), 18) : 15
 
-  // Fix marker icons on mount
   useEffect(() => {
     // react-leaflet + bundlers break Leaflet's default icon path detection.
     // The override must be DELETED (not set to undefined) so Leaflet falls back
@@ -94,9 +97,7 @@ export default function LeafletMap({
     })
   }, [])
 
-  // Update marker position when props change (from manual input)
   useEffect(() => {
-    // Only set marker if we have valid numeric coordinates
     if (
       typeof lat === 'number' &&
       typeof lng === 'number' &&
@@ -105,7 +106,6 @@ export default function LeafletMap({
     ) {
       setMarkerPos({ lat, lng })
     }
-    // Don't clear marker if coordinates become invalid - preserve last valid position
   }, [lat, lng])
 
   // PA College of Engineering coordinates as default
@@ -115,7 +115,6 @@ export default function LeafletMap({
       ? [lat, lng]
       : defaultPosition
 
-  // Helper to check if markerPos has valid coordinates
   const hasValidMarker =
     markerPos &&
     typeof markerPos.lat === 'number' &&
@@ -124,7 +123,14 @@ export default function LeafletMap({
     !Number.isNaN(markerPos.lng)
 
   return (
-    <div className="h-[240px] w-full rounded-lg overflow-hidden touch-pan-y">
+    <div
+      style={{
+        height: '320px',
+        width: '100%',
+        borderRadius: '8px',
+        overflow: 'hidden',
+      }}
+    >
       <MapContainer
         center={position}
         zoom={safeZoom}
@@ -140,12 +146,26 @@ export default function LeafletMap({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <SizeFixer />
         {!readonly && onChange && (
           <ClickHandler onSelect={onChange} setInternalMarker={setMarkerPos} />
         )}
-
         <MapUpdater lat={lat} lng={lng} zoom={safeZoom} setInternalMarker={setMarkerPos} />
-        {hasValidMarker && <Marker position={[markerPos.lat, markerPos.lng]} />}
+        {hasValidMarker && (
+          <Marker
+            position={[markerPos.lat, markerPos.lng]}
+            draggable={!readonly}
+            eventHandlers={{
+              dragend(e) {
+                const m = e.target as L.Marker
+                const p = m.getLatLng()
+                const coords = { lat: p.lat, lng: p.lng }
+                setMarkerPos(coords)
+                if (!readonly) onChange(coords)
+              },
+            }}
+          />
+        )}
       </MapContainer>
     </div>
   )
