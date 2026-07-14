@@ -1,9 +1,14 @@
+import { rewriteUploadUrls } from '@/lib/mediaUrl'
 import type { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
     read: () => true,
+  },
+  hooks: {
+    // Serve media from the Supabase public CDN (see NEXT_PUBLIC_SUPABASE_MEDIA_URL).
+    afterRead: [rewriteUploadUrls],
   },
   fields: [
     {

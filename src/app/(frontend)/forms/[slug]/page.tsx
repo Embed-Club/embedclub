@@ -32,8 +32,11 @@ export async function generateMetadata({ params }: FormPageProps): Promise<Metad
   const form = await getForm(slug)
   if (!form) return { title: 'Form Not Found' }
   return {
-    title: `${form.title} | Embed Club`,
+    title: form.title,
     description: form.description || undefined,
+    alternates: { canonical: `/forms/${slug}` },
+    // Forms are interactive, single-use pages — keep them out of the index.
+    robots: { index: false, follow: true },
   }
 }
 

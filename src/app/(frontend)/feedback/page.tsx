@@ -11,7 +11,7 @@ import { getPayload } from 'payload'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Feedback | Embed Club',
+  title: 'Feedback',
   description: 'Submit feedback for Embed Club workshops and events.',
 }
 

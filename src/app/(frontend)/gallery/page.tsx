@@ -2,25 +2,30 @@ import { EmptyState } from '@/components/common/emptyState'
 import Masonry from '@/components/features/gallery/masonry'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import type { Gallery, Media } from '@/payload/payload-types'
+import config from '@/payload/payload.config'
+import type { Metadata } from 'next'
+import { getPayload } from 'payload'
 
-function getBaseUrl() {
-  return typeof window !== 'undefined'
-    ? window.location.origin
-    : process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_BASE_URL || 'http://localhost:3000'
+// ISR: rebuild at most every 60s so CMS edits appear without a redeploy.
+// Using Payload's local API (getPayload) means no self-HTTP hop and no
+// "Dynamic server usage" — the page is statically renderable.
+export const revalidate = 60
+
+export const metadata: Metadata = {
+  title: 'Gallery',
+  description: 'Photos from Embed Club workshops, builds, and events.',
 }
 
-async function getGallery(base: string): Promise<Gallery[]> {
+async function getGallery(): Promise<Gallery[]> {
   try {
-    const res = await fetch(`${base}/api/gallery?depth=1&limit=1000`, {
-      cache: 'no-store',
+    const payload = await getPayload({ config })
+    const res = await payload.find({
+      collection: 'gallery',
+      depth: 1,
+      limit: 1000,
+      pagination: false,
     })
-    if (!res.ok) {
-      console.error('Failed to fetch gallery:', res.status, res.statusText)
-      return []
-    }
-
-    const data = await res.json()
-    return data.docs || []
+    return res.docs
   } catch (error) {
     console.error('[Gallery] Error fetching from Payload:', error)
     return []
@@ -61,7 +66,7 @@ function toMasonryItems(galleries: Gallery[]) {
 }
 
 export default async function Page() {
-  const gallery = await getGallery(getBaseUrl())
+  const gallery = await getGallery()
   const items = toMasonryItems(gallery)
 
   if (items.length === 0) {

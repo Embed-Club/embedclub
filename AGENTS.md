@@ -18,8 +18,12 @@ them to update it first.
   Do not add fonts or swap families.
 - Signature elements that must not be removed or "modernized": the intro logo
   animation, the fabric-of-squares panel texture (`.texture-panel`), the
-  star-field home page, the sidebar shell layout, cutout cards on
-  resources/tutorials, background audio with its toggle.
+  sidebar shell layout, cutout cards on resources/tutorials, background audio
+  with its toggle, and the full-viewport `SiteFooter` on every page.
+- The home page is a multi-section, full-viewport scroll: hero (image/video
+  background + brand title) → latest events → featured members (curated via the
+  `home-featured-members` global) → gallery marquee → footer. (The old
+  star-field landing was intentionally retired 2026-07 by the owner.)
 - Empty states use the shared `EmptyState` component — never write bespoke
   "nothing here" markup.
 - Banned patterns (from docs/DESIGN.md): icon+heading+text card grids, tiny
@@ -81,7 +85,6 @@ them to update it first.
   font renders them with special glyphs. Do not "fix" the strings.
 - `USE_S3_STORAGE` gates media storage, not NODE_ENV — local prod builds use
   local disk on purpose.
-- The Gallery "Dynamic server usage" log line during builds is expected.
 - Migrations create-then-drop tables in their DOWN sections — normal.
 
 ## 6. When unsure

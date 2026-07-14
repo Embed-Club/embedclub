@@ -11,6 +11,8 @@ import { useIsMobile } from '@/hooks/useMobile'
 import { AnimatePresence, motion } from 'motion/react'
 import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
+import { ScrollContainerContext } from './scrollContainerContext'
+import { SiteFooter } from './siteFooter'
 
 export const IntroContext = React.createContext<{
   isIntroFinished: boolean
@@ -70,7 +72,12 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
 
   return (
     <IntroContext.Provider value={{ isIntroFinished, setIntroFinished }}>
-      <SidebarProvider>
+      {/* Bind the shell to exactly one viewport. Without this the shadcn wrapper
+          is `min-h-svh` (grows with content), so ContentPanel never bounds — the
+          body scrolls AND the panel scrolls (two scrollbars) and the footer's
+          clientHeight measurement feeds a ResizeObserver growth loop. Fixing the
+          height makes ContentPanel the single, bounded scroll container. */}
+      <SidebarProvider className="h-svh overflow-hidden">
         {/* The Evolving Intro Logo - Matches prompt requirements */}
         <AnimatePresence>
           {!isIntroFinished && (
@@ -175,7 +182,7 @@ interface MainbarShellProps {
   borderless?: boolean
 }
 
-export const ScrollContainerContext = React.createContext<HTMLDivElement | null>(null)
+export { ScrollContainerContext }
 
 export function MainbarShell({ children, borderless }: MainbarShellProps) {
   const isMobile = useIsMobile()
@@ -194,7 +201,9 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
   return (
     <ScrollContainerContext.Provider value={scrollEl}>
       <ContentPanel ref={setScrollEl} borderless={borderless || isMobile}>
-        <div className="h-full w-full relative">
+        {/* min-h-full (not h-full) so tall pages grow past one viewport and the
+            footer flows below them instead of overlapping overflowed content. */}
+        <div className="min-h-full w-full relative">
           <AnimatePresence>
             {!isContentVisible && !isMobile ? (
               <motion.div
@@ -212,11 +221,12 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: isContentVisible || isMobile ? 1 : 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="h-full w-full"
+            className="min-h-full w-full"
           >
             {children}
           </motion.div>
         </div>
+        <SiteFooter />
       </ContentPanel>
     </ScrollContainerContext.Provider>
   )

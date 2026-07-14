@@ -1,22 +1,84 @@
-import { AudioToggleMini, BackgroundAudio } from '@/components/common/backgroundAudio'
+import { FeaturedMembersSection } from '@/components/features/home/featuredMembersSection'
+import { GalleryMarqueeSection } from '@/components/features/home/galleryMarqueeSection'
+import { HeroSection } from '@/components/features/home/heroSection'
+import { LatestEventsSection } from '@/components/features/home/latestEventsSection'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
-import { ThemedStarsBackground } from '@/components/theme/themedStarsBackground'
-import DashboardTitle from './title'
+import type { Event, Gallery, Media, Member } from '@/payload/payload-types'
+import config from '@/payload/payload.config'
+import { getPayload } from 'payload'
+
+// ISR: rebuild at most every 60s so CMS edits appear without a redeploy.
+export const revalidate = 60
+
+/** Keep only populated relationship docs (drop bare ids). */
+function objectsOnly(value: (number | Member)[] | null | undefined): Member[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((m): m is Member => typeof m === 'object' && m !== null)
+}
+
+/** Flatten gallery docs to image URLs. */
+function galleryImageUrls(galleries: Gallery[]): string[] {
+  const urls: string[] = []
+  for (const gallery of galleries) {
+    for (const photo of gallery.photos ?? []) {
+      const image = photo.image
+      if (typeof image !== 'object' || image === null) continue
+      const media = image as Media
+      const src = media.sizes?.tablet?.url || media.url
+      if (src) urls.push(src)
+    }
+  }
+  return urls
+}
+
+/** Deterministic-enough shuffle; runs at build / ISR regeneration. */
+function pickRandom(urls: string[], count: number): string[] {
+  const arr = [...urls]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr.slice(0, count)
+}
+
+async function getHomeData() {
+  try {
+    const payload = await getPayload({ config })
+    const [eventsRes, featured, galleryRes] = await Promise.all([
+      payload.find({
+        collection: 'events',
+        depth: 1,
+        limit: 3,
+        pagination: false,
+        sort: '-eventDate',
+      }),
+      payload.findGlobal({ slug: 'home-featured-members', depth: 2 }),
+      payload.find({ collection: 'gallery', depth: 1, limit: 1000, pagination: false }),
+    ])
+
+    return {
+      events: eventsRes.docs as Event[],
+      coordinators: objectsOnly(featured.coordinators),
+      core: objectsOnly(featured.core),
+      alumni: objectsOnly(featured.alumni),
+      galleryImages: pickRandom(galleryImageUrls(galleryRes.docs as Gallery[]), 10),
+    }
+  } catch (error) {
+    console.error('[Home] Error fetching data:', error)
+    return { events: [], coordinators: [], core: [], alumni: [], galleryImages: [] }
+  }
+}
 
 export default async function Page() {
+  const { events, coordinators, core, alumni, galleryImages } = await getHomeData()
+
   return (
     <SidebarShell>
       <MainbarShell>
-        <div className="h-full w-full overflow-hidden rounded-lg">
-          <ThemedStarsBackground>
-            <DashboardTitle />
-            <BackgroundAudio />
-          </ThemedStarsBackground>
-        </div>
-        {/* Compact audio control, bottom-right; desktop has the toggle next to the theme switch */}
-        <div className="absolute bottom-4 right-4 z-40 lg:hidden">
-          <AudioToggleMini />
-        </div>
+        <HeroSection />
+        <LatestEventsSection events={events} />
+        <FeaturedMembersSection coordinators={coordinators} core={core} alumni={alumni} />
+        <GalleryMarqueeSection images={galleryImages} />
       </MainbarShell>
     </SidebarShell>
   )

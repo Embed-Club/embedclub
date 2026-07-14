@@ -25,6 +25,7 @@ import { Tags } from './collections/tags'
 import { Users } from './collections/users'
 import { AboutPage } from './globals/aboutPage'
 import { FeedbackPage } from './globals/feedbackPage'
+import { HomeFeaturedMembers } from './globals/homeFeaturedMembers'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -54,7 +55,7 @@ export default buildConfig({
     Simulators,
     Tags,
   ],
-  globals: [AboutPage, FeedbackPage],
+  globals: [AboutPage, FeedbackPage, HomeFeaturedMembers],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

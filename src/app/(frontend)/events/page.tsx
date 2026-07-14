@@ -1,311 +1,43 @@
-'use client'
-
-import { EmptyState } from '@/components/common/emptyState'
-import { FocusCards } from '@/components/common/focusCards'
-import { EventCard } from '@/components/features/events/eventsCards'
-import { Carousel } from '@/components/features/events/eventsCarousel'
+import { EventsPageContent } from '@/app/(frontend)/events/eventsPageContent'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
-import { Skeleton } from '@/components/ui/skeleton'
 import type { Event } from '@/payload/payload-types'
-import React from 'react'
+import config from '@/payload/payload.config'
+import type { Metadata } from 'next'
+import { getPayload } from 'payload'
 
-function getBaseUrl() {
-  return typeof window !== 'undefined'
-    ? window.location.origin
-    : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+// ISR: rebuild at most every 60s so CMS edits appear without a redeploy.
+export const revalidate = 60
+
+export const metadata: Metadata = {
+  title: 'Events',
+  description: 'Workshops, builds, and events run by Embed Club at PA College of Engineering.',
 }
 
-/**
- * Fetch all events once — the carousel takes the first 5, the gallery paginates
- * the full list. depth=1 expands linked media; sort=-eventDate = newest first.
- */
-async function getAllEvents(baseUrl: string) {
-  const res = await fetch(`${baseUrl}/api/events?depth=1&sort=-eventDate&limit=200`, {
-    cache: 'no-store',
-  })
-
-  if (!res.ok) {
-    const errorText = await res.text()
-    console.error('Failed to fetch all events:', {
-      status: res.status,
-      statusText: res.statusText,
-      error: errorText,
-      url: `${baseUrl}/api/events?depth=1&sort=-eventDate`,
+/** All events, newest first, fetched once via the Payload local API. */
+async function getEvents(): Promise<Event[]> {
+  try {
+    const payload = await getPayload({ config })
+    const res = await payload.find({
+      collection: 'events',
+      depth: 1,
+      limit: 200,
+      pagination: false,
+      sort: '-eventDate',
     })
-    throw new Error(`Failed to load events: ${res.status} ${res.statusText}`)
+    return res.docs
+  } catch (error) {
+    console.error('[Events] Error fetching from Payload:', error)
+    return []
   }
-
-  const data = (await res.json()) as { docs: Event[] }
-  return data.docs
 }
 
-function getEventImageUrl(event: Event): string {
-  return typeof event.image === 'object' && event.image !== null && 'url' in event.image
-    ? event.image.url || '/placeholder/placeholder.jpg'
-    : '/placeholder/placeholder.jpg'
-}
-
-function CarouselSkeleton({ count = 4 }: { count?: number }) {
-  return (
-    <div className="flex w-full overflow-hidden py-10 md:py-20">
-      <div className="mx-auto flex w-full max-w-7xl flex-row justify-start gap-4 pl-4">
-        {Array.from({ length: count }).map((_, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: safe for static placeholder
-          <Skeleton key={index} className="h-80 w-56 rounded-3xl md:h-[40rem] md:w-96" />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function FocusCardsSkeleton({ count = 9 }: { count?: number }) {
-  return (
-    <div className="grid grid-cols-1 gap-10 w-full md:px-8 md:grid-cols-3">
-      {Array.from({ length: count }).map((_, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: valid for placeholders
-        <Skeleton key={index} className="h-60 w-full rounded-lg md:h-96" />
-      ))}
-    </div>
-  )
-}
-
-export default function Page() {
-  const [events, setEvents] = React.useState<Event[]>([])
-  const [allEvents, setAllEvents] = React.useState<Event[]>([])
-  const [isLoading, setIsLoading] = React.useState(true)
-  const [_error, setError] = React.useState<string | null>(null)
-  const [useFallback, setUseFallback] = React.useState(false)
-  const [currentPage, setCurrentPage] = React.useState(1)
-  const [pageSize, setPageSize] = React.useState(9)
-
-  React.useEffect(() => {
-    let isMounted = true
-    const baseUrl = getBaseUrl()
-    const minLoadingMs = 600
-
-    Promise.all([
-      getAllEvents(baseUrl),
-      new Promise((resolve) => setTimeout(resolve, minLoadingMs)),
-    ])
-      .then(([allEventsData]) => {
-        if (!isMounted) return
-        const all = allEventsData as Event[]
-        setAllEvents(all)
-        // Carousel shows the 5 newest — same list, no second request needed
-        setEvents(all.slice(0, 5))
-        setIsLoading(false)
-      })
-      .catch((err) => {
-        console.error('Error fetching events:', err)
-        if (!isMounted) return
-        setError('Failed to load events')
-        setUseFallback(true)
-        setIsLoading(false)
-      })
-
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  React.useEffect(() => {
-    const updatePageSize = () => {
-      setPageSize(window.innerWidth < 768 ? 6 : 9)
-    }
-
-    updatePageSize()
-    window.addEventListener('resize', updatePageSize)
-    return () => window.removeEventListener('resize', updatePageSize)
-  }, [])
-
-  React.useEffect(() => {
-    setCurrentPage(1)
-  }, [])
-
-  const totalPages = Math.max(1, Math.ceil(allEvents.length / pageSize))
-  const startIndex = (currentPage - 1) * pageSize
-  const visibleEvents = allEvents.slice(startIndex, startIndex + pageSize)
+export default async function Page() {
+  const events = await getEvents()
 
   return (
     <SidebarShell>
       <MainbarShell>
-        {isLoading ? (
-          <>
-            <div className="absolute left-5 top-5 md:left-20 md:top-12">
-              <Skeleton className="h-6 w-36 md:h-10 md:w-56" />
-            </div>
-            <div className="pt-6 md:pt-12">
-              <CarouselSkeleton />
-            </div>
-            <div className="mr-10 flex justify-end gap-2">
-              <Skeleton className=" h-11 w-11 rounded-full" />
-              <Skeleton className="h-11 w-11 rounded-full" />
-            </div>
-
-            <div className="w-full px-6 pt-20 pb-40 md:px-12 lg:px-16">
-              <Skeleton className="mb-2 h-20 w-32 md:h-10 md:w-48" />
-              <div className="mt-2 flex w-full justify-end">
-                <div className="flex items-center gap-2 pb-6">
-                  <Skeleton className="h-9 w-24 rounded-md" />
-                  <Skeleton className="h-9 w-9 rounded-md" />
-                  <Skeleton className="h-9 w-9 rounded-md" />
-                  <Skeleton className="h-9 w-16 rounded-md" />
-                </div>
-              </div>
-              <FocusCardsSkeleton />
-              <div className="mt-6 flex w-full justify-end">
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-9 w-24 rounded-md" />
-                  <Skeleton className="h-9 w-9 rounded-md" />
-                  <Skeleton className="h-9 w-9 rounded-md" />
-                  <Skeleton className="h-9 w-16 rounded-md" />
-                </div>
-              </div>
-            </div>
-          </>
-        ) : useFallback ? (
-          <>
-            <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-              RECENT EVENTS
-            </h1>
-            <div className="w-full py-6 md:py-12">
-              <EmptyState title="No Events Yet" />
-            </div>
-
-            <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
-              <h2 className="relative text-2xl font-bold md:text-4xl mb-8">ALL EVENTS</h2>
-              <EmptyState title="No Events Yet" />
-            </div>
-          </>
-        ) : (
-          <>
-            <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-              RECENT EVENTS
-            </h1>
-            <div className="w-full py-6 md:py-12">
-              {events.length === 0 ? (
-                <EmptyState title="No Events Yet" />
-              ) : (
-                <Carousel
-                  items={events.map((event, index) => (
-                    <EventCard key={event.id ?? index} event={event} index={index} />
-                  ))}
-                />
-              )}
-            </div>
-
-            <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
-              <h2 className="relative text-2xl font-bold md:text-4xl mb-8">ALL EVENTS</h2>
-              {totalPages > 1 && (
-                <div className="mt-6 flex w-full justify-end pb-6">
-                  <Pagination className="justify-end">
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          href="#"
-                          onClick={(event) => {
-                            event.preventDefault()
-                            setCurrentPage((page) => Math.max(1, page - 1))
-                          }}
-                        />
-                      </PaginationItem>
-                      {Array.from({ length: totalPages }).map((_, index) => {
-                        const pageNumber = index + 1
-                        return (
-                          <PaginationItem key={pageNumber}>
-                            <PaginationLink
-                              href="#"
-                              isActive={pageNumber === currentPage}
-                              onClick={(event) => {
-                                event.preventDefault()
-                                setCurrentPage(pageNumber)
-                              }}
-                            >
-                              {pageNumber}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )
-                      })}
-                      <PaginationItem>
-                        <PaginationNext
-                          href="#"
-                          onClick={(event) => {
-                            event.preventDefault()
-                            setCurrentPage((page) => Math.min(totalPages, page + 1))
-                          }}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
-              {allEvents.length === 0 ? (
-                <EmptyState title="No Events Yet" />
-              ) : (
-                <>
-                  <FocusCards
-                    cards={visibleEvents.map((event) => ({
-                      title: event.title || 'Untitled Event',
-                      src: getEventImageUrl(event),
-                      event,
-                    }))}
-                  />
-                </>
-              )}
-              {totalPages > 1 && (
-                <div className="mt-6 flex w-full justify-end">
-                  <Pagination className="justify-end">
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          href="#"
-                          onClick={(event) => {
-                            event.preventDefault()
-                            setCurrentPage((page) => Math.max(1, page - 1))
-                          }}
-                        />
-                      </PaginationItem>
-                      {Array.from({ length: totalPages }).map((_, index) => {
-                        const pageNumber = index + 1
-                        return (
-                          <PaginationItem key={pageNumber}>
-                            <PaginationLink
-                              href="#"
-                              isActive={pageNumber === currentPage}
-                              onClick={(event) => {
-                                event.preventDefault()
-                                setCurrentPage(pageNumber)
-                              }}
-                            >
-                              {pageNumber}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )
-                      })}
-                      <PaginationItem>
-                        <PaginationNext
-                          href="#"
-                          onClick={(event) => {
-                            event.preventDefault()
-                            setCurrentPage((page) => Math.min(totalPages, page + 1))
-                          }}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+        <EventsPageContent events={events} />
       </MainbarShell>
     </SidebarShell>
   )

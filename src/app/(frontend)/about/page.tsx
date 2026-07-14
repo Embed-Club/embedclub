@@ -12,7 +12,7 @@ import { getPayload } from 'payload'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'About | Embed Club',
+  title: 'About',
   description: 'About Embed Club — inspiring innovation at PACE since 2018.',
 }
 
