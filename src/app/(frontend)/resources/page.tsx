@@ -1,9 +1,15 @@
 import { getResourceCards } from '@/app/(frontend)/resources/getResourceCards'
 import { ResourcesPageContent } from '@/app/(frontend)/resources/resourcesPageContent'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
+import type { Metadata } from 'next'
 
 // ISR: rebuild this page at most every 60s so CMS edits show up without a redeploy
 export const revalidate = 60
+
+export const metadata: Metadata = {
+  title: 'Resources',
+  description: 'Guides, references, and learning material from Embed Club.',
+}
 
 export default async function Page() {
   const resources = await getResourceCards('resource')

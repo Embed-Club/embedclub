@@ -41,12 +41,14 @@ export async function generateMetadata({ params }: ResourceDetailPageProps): Pro
   if (!resource) return { title: 'Resource Not Found' }
 
   return {
-    title: `${resource.title} | Embed Club`,
+    title: resource.title,
     description: resource.description,
+    alternates: { canonical: `/resources/${slug}` },
     openGraph: {
       title: resource.title,
-      description: resource.description,
+      description: resource.description ?? undefined,
       type: 'article',
+      url: `/resources/${slug}`,
     },
   }
 }

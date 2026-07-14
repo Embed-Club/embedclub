@@ -1,9 +1,14 @@
+import { rewriteUploadUrls } from '@/lib/mediaUrl'
 import type { CollectionConfig } from 'payload'
 
 export const MemberPhoto: CollectionConfig = {
   slug: 'member-photo',
   admin: { group: 'Members' },
   access: { read: () => true },
+  hooks: {
+    // Serve member photos from the Supabase public CDN (same bucket as media).
+    afterRead: [rewriteUploadUrls],
+  },
   fields: [
     {
       name: 'alt',

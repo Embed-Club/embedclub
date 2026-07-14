@@ -7,7 +7,7 @@ import type { Metadata } from 'next'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Tutorials | Embed Club',
+  title: 'Tutorials',
   description: 'Step-by-step embedded systems tutorials from Embed Club.',
 }
 

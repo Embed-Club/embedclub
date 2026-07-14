@@ -124,10 +124,12 @@ export interface Config {
   globals: {
     'about-page': AboutPage;
     'feedback-page': FeedbackPage;
+    'home-featured-members': HomeFeaturedMember;
   };
   globalsSelect: {
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
     'feedback-page': FeedbackPageSelect<false> | FeedbackPageSelect<true>;
+    'home-featured-members': HomeFeaturedMembersSelect<false> | HomeFeaturedMembersSelect<true>;
   };
   locale: null;
   widgets: {
@@ -2047,6 +2049,27 @@ export interface FeedbackPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-featured-members".
+ */
+export interface HomeFeaturedMember {
+  id: number;
+  /**
+   * Top row. Order here is the display order (max 2).
+   */
+  coordinators?: (number | Member)[] | null;
+  /**
+   * Middle row (max 4).
+   */
+  core?: (number | Member)[] | null;
+  /**
+   * Bottom row. Any batch/year (max 4).
+   */
+  alumni?: (number | Member)[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about-page_select".
  */
 export interface AboutPageSelect<T extends boolean = true> {
@@ -2093,6 +2116,18 @@ export interface AboutPageSelect<T extends boolean = true> {
 export interface FeedbackPageSelect<T extends boolean = true> {
   title?: T;
   intro?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-featured-members_select".
+ */
+export interface HomeFeaturedMembersSelect<T extends boolean = true> {
+  coordinators?: T;
+  core?: T;
+  alumni?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
