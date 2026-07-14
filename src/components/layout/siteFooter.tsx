@@ -1,11 +1,5 @@
-'use client'
-
-import { ScrollContainerContext } from '@/components/layout/scrollContainerContext'
 import { cn } from '@/lib/utils'
-import { gsap } from 'gsap'
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 import { ArrowUpRight } from 'lucide-react'
-import { useContext, useEffect, useRef } from 'react'
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -38,70 +32,14 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
 ]
 
 /**
- * Full-viewport footer that lives at the bottom of the scroll container on
- * every page. GSAP magnetically snaps the last scroll so the footer settles
- * fully into view once you scroll past its threshold.
+ * Full-viewport footer at the bottom of every page's scroll container. Plain
+ * full-page section — no scroll snapping (free to scroll into and back out of).
  */
 export function SiteFooter() {
-  const scrollEl = useContext(ScrollContainerContext)
-  const sectionRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    const scroller = scrollEl
-    const section = sectionRef.current
-    if (!scroller || !section) return
-
-    gsap.registerPlugin(ScrollToPlugin)
-
-    let snapping = false
-    let settleTimer: ReturnType<typeof setTimeout>
-
-    const settle = () => {
-      if (snapping) return
-      const vh = scroller.clientHeight
-      const top = section.offsetTop
-      const height = section.offsetHeight
-      const hidden = top - vh // footer sits just below the viewport
-      const shown = top + height - vh // footer fully in view (bottom-aligned)
-      if (shown <= hidden) return
-
-      const cur = scroller.scrollTop
-      if (cur <= hidden || cur >= shown) return // not inside the footer band
-
-      const progress = (cur - hidden) / (shown - hidden)
-      if (progress <= 0.02 || progress >= 0.98) return
-
-      // Magnetic bias toward the footer — reveal it from ~40% in, snap back below only near the top edge.
-      const target = progress > 0.4 ? shown : hidden
-      snapping = true
-      gsap.to(scroller, {
-        scrollTo: { y: target },
-        duration: 0.7,
-        ease: 'power3.inOut',
-        onComplete: () => {
-          snapping = false
-        },
-      })
-    }
-
-    const onScroll = () => {
-      if (snapping) return
-      clearTimeout(settleTimer)
-      settleTimer = setTimeout(settle, 140)
-    }
-
-    scroller.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      scroller.removeEventListener('scroll', onScroll)
-      clearTimeout(settleTimer)
-      gsap.killTweensOf(scroller)
-    }
-  }, [scrollEl])
-
   return (
     // Full-page section: one viewport tall on every device (svh accounts for
     // mobile browser chrome) so scrolling to the bottom reveals the whole footer.
-    <footer ref={sectionRef} className="relative flex min-h-[100svh] w-full flex-col p-4 md:p-8">
+    <footer className="relative flex min-h-[100svh] w-full flex-col p-4 md:p-8">
       <div className="relative flex flex-1 flex-col overflow-hidden rounded-3xl border border-border bg-card/70 backdrop-blur-sm">
         {/* Foreground content */}
         <div className="relative z-10 flex flex-1 flex-col justify-between gap-10 p-6 md:p-12">

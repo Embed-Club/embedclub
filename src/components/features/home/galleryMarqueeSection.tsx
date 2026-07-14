@@ -11,15 +11,23 @@ function Tile({ src }: { src: string }) {
 }
 
 /**
- * Fourth section: two marquee rows of gallery photos scrolling in opposite
- * directions. Hovering one row pauses only that row (per-row `pauseOnHover`).
+ * Fourth section: three marquee rows of gallery photos, alternating scroll
+ * direction. Hovering one row pauses only that row (per-row `pauseOnHover`).
  */
 export function GalleryMarqueeSection({ images }: { images: string[] }) {
   if (images.length === 0) return null
 
-  const row1 = images.slice(0, 5)
-  // Fall back to row1 when there aren't enough images for a distinct second row.
-  const row2 = images.length > 5 ? images.slice(5, 10) : row1
+  // Up to 15 images across 3 rows of 5. Rows fall back to the full set when
+  // there aren't enough for a distinct slice, so every row always has content.
+  const slice = (start: number, end: number) => {
+    const part = images.slice(start, end)
+    return part.length > 0 ? part : images
+  }
+  const rows = [
+    { images: slice(0, 5), reverse: false },
+    { images: slice(5, 10), reverse: true },
+    { images: slice(10, 15), reverse: false },
+  ]
 
   return (
     <section className="relative flex min-h-[100svh] w-full flex-col justify-center gap-8 overflow-hidden py-20">
@@ -38,18 +46,20 @@ export function GalleryMarqueeSection({ images }: { images: string[] }) {
       </div>
 
       <div className="relative flex w-full flex-col gap-4">
-        <Marquee pauseOnHover className="[--duration:35s]">
-          {row1.map((src, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: image URLs may repeat; index keeps them distinct
-            <Tile key={`r1-${i}`} src={src} />
-          ))}
-        </Marquee>
-        <Marquee reverse pauseOnHover className="[--duration:35s]">
-          {row2.map((src, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: image URLs may repeat; index keeps them distinct
-            <Tile key={`r2-${i}`} src={src} />
-          ))}
-        </Marquee>
+        {rows.map((row, rowIndex) => (
+          <Marquee
+            // biome-ignore lint/suspicious/noArrayIndexKey: fixed 3-row layout
+            key={rowIndex}
+            reverse={row.reverse}
+            pauseOnHover
+            className="[--duration:35s]"
+          >
+            {row.images.map((src, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: image URLs may repeat; index keeps them distinct
+              <Tile key={`${rowIndex}-${i}`} src={src} />
+            ))}
+          </Marquee>
+        ))}
 
         {/* Edge fades */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-1/6 bg-gradient-to-r from-background" />

@@ -69,7 +69,7 @@ async function getHomeData() {
     return {
       events: eventsRes.docs as Event[],
       rows,
-      galleryImages: pickRandom(galleryImageUrls(galleryRes.docs as Gallery[]), 10),
+      galleryImages: pickRandom(galleryImageUrls(galleryRes.docs as Gallery[]), 15),
     }
   } catch (error) {
     console.error('[Home] Error fetching data:', error)
