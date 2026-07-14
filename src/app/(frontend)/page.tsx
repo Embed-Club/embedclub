@@ -1,4 +1,7 @@
-import { FeaturedMembersSection } from '@/components/features/home/featuredMembersSection'
+import {
+  FeaturedMembersSection,
+  type FeaturedRow,
+} from '@/components/features/home/featuredMembersSection'
 import { GalleryMarqueeSection } from '@/components/features/home/galleryMarqueeSection'
 import { HeroSection } from '@/components/features/home/heroSection'
 import { LatestEventsSection } from '@/components/features/home/latestEventsSection'
@@ -48,7 +51,7 @@ async function getHomeData() {
       payload.find({
         collection: 'events',
         depth: 1,
-        limit: 3,
+        limit: 5,
         pagination: false,
         sort: '-eventDate',
       }),
@@ -56,28 +59,33 @@ async function getHomeData() {
       payload.find({ collection: 'gallery', depth: 1, limit: 1000, pagination: false }),
     ])
 
+    // Each row: a category (its name becomes the label) + curated members.
+    const rows: FeaturedRow[] = (featured.rows ?? []).map((row) => {
+      const category =
+        typeof row.category === 'object' && row.category !== null ? (row.category.name ?? '') : ''
+      return { id: String(row.id), category, members: objectsOnly(row.members) }
+    })
+
     return {
       events: eventsRes.docs as Event[],
-      coordinators: objectsOnly(featured.coordinators),
-      core: objectsOnly(featured.core),
-      alumni: objectsOnly(featured.alumni),
+      rows,
       galleryImages: pickRandom(galleryImageUrls(galleryRes.docs as Gallery[]), 10),
     }
   } catch (error) {
     console.error('[Home] Error fetching data:', error)
-    return { events: [], coordinators: [], core: [], alumni: [], galleryImages: [] }
+    return { events: [] as Event[], rows: [] as FeaturedRow[], galleryImages: [] as string[] }
   }
 }
 
 export default async function Page() {
-  const { events, coordinators, core, alumni, galleryImages } = await getHomeData()
+  const { events, rows, galleryImages } = await getHomeData()
 
   return (
     <SidebarShell>
       <MainbarShell>
         <HeroSection />
         <LatestEventsSection events={events} />
-        <FeaturedMembersSection coordinators={coordinators} core={core} alumni={alumni} />
+        <FeaturedMembersSection rows={rows} />
         <GalleryMarqueeSection images={galleryImages} />
       </MainbarShell>
     </SidebarShell>

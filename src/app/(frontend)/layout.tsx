@@ -87,9 +87,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <head />
       <body className={`${avantGarde.className} font-medium`} suppressHydrationWarning>
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: static, app-authored JSON-LD */}
         <script
           type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: static, app-authored JSON-LD
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeWrapper>{children}</ThemeWrapper>
