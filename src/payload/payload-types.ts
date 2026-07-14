@@ -2054,17 +2054,21 @@ export interface FeedbackPage {
 export interface HomeFeaturedMember {
   id: number;
   /**
-   * Top row. Order here is the display order (max 2).
+   * Each row is a category plus the members to feature from it. Rows show top → bottom.
    */
-  coordinators?: (number | Member)[] | null;
-  /**
-   * Middle row (max 4).
-   */
-  core?: (number | Member)[] | null;
-  /**
-   * Bottom row. Any batch/year (max 4).
-   */
-  alumni?: (number | Member)[] | null;
+  rows?:
+    | {
+        /**
+         * The row label + which members you can pick below.
+         */
+        category: number | MemberCategory;
+        /**
+         * Members to show in this row (order = display order, up to 8).
+         */
+        members: (number | Member)[];
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2125,9 +2129,13 @@ export interface FeedbackPageSelect<T extends boolean = true> {
  * via the `definition` "home-featured-members_select".
  */
 export interface HomeFeaturedMembersSelect<T extends boolean = true> {
-  coordinators?: T;
-  core?: T;
-  alumni?: T;
+  rows?:
+    | T
+    | {
+        category?: T;
+        members?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

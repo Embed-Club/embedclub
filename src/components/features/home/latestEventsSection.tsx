@@ -1,10 +1,10 @@
 import { EmptyState } from '@/components/common/emptyState'
-import { EventCard } from '@/components/features/events/eventsCards'
+import { EventCutoutCard } from '@/components/features/home/eventCutoutCard'
 import type { Event } from '@/payload/payload-types'
 import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 
-/** Second section: the latest 3 events + a "Show all" link to /events. */
+/** Second section: the latest events as cutout cards + a "Show all" link. */
 export function LatestEventsSection({ events }: { events: Event[] }) {
   return (
     <section className="relative flex min-h-[100svh] w-full flex-col justify-center gap-10 px-6 py-20 md:px-12 lg:px-20">
@@ -25,9 +25,9 @@ export function LatestEventsSection({ events }: { events: Event[] }) {
       {events.length === 0 ? (
         <EmptyState title="No Events Yet" />
       ) : (
-        <div className="flex flex-wrap justify-center gap-6 lg:justify-start">
-          {events.map((event, index) => (
-            <EventCard key={event.id ?? index} event={event} index={index} />
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+          {events.map((event) => (
+            <EventCutoutCard key={event.id} event={event} />
           ))}
         </div>
       )}
