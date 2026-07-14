@@ -46,21 +46,17 @@ export function SiteFooter() {
           <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
             {/* Brand */}
             <div className="max-w-md">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/embedClubLogo-Dark.svg"
-                  alt=""
-                  className="hidden h-9 w-9 object-contain dark:block"
-                />
-                <img
-                  src="/embedClubLogo-Light.svg"
-                  alt=""
-                  className="h-9 w-9 object-contain dark:hidden"
-                />
-                <span className="text-lg font-bold uppercase tracking-[0.2em] text-foreground">
-                  Embed Club
-                </span>
-              </div>
+              {/* Full banner lockup (EMBED CLUB · Inspiring Innovation) */}
+              <img
+                src="/EmbedClubBanner-Dark.svg"
+                alt="Embed Club"
+                className="hidden h-10 w-auto object-contain dark:block md:h-12"
+              />
+              <img
+                src="/EmbedClubBanner-Light.svg"
+                alt="Embed Club"
+                className="h-10 w-auto object-contain dark:hidden md:h-12"
+              />
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
                 Student-run embedded systems & IoT club at PA College of Engineering. We build,
                 break, and ship — turning circuits and code into things that work.
@@ -96,6 +92,34 @@ export function SiteFooter() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Institution: partner logos above the P.A. College address */}
+          <div className="flex flex-col gap-5 border-t border-border pt-6">
+            <div className="flex items-center gap-4">
+              {/* White chips so the white-background logos read cleanly in both themes */}
+              <div className="flex h-16 items-center justify-center rounded-xl bg-white px-3 shadow-sm">
+                <img
+                  src="/pace-logo.png"
+                  alt="P.A. College of Engineering"
+                  className="h-12 w-auto object-contain"
+                />
+              </div>
+              <div className="flex h-16 items-center justify-center rounded-xl bg-white px-3 shadow-sm">
+                <img
+                  src="/pacesilvioralogo.png"
+                  alt="PACE Silver Jubilee — 25 years"
+                  className="h-12 w-auto object-contain"
+                />
+              </div>
+            </div>
+            <address className="text-sm not-italic leading-relaxed text-muted-foreground">
+              <span className="font-semibold text-foreground">P.A. College of Engineering</span>
+              <br />
+              Nadupadav, Montepadav Post, Kairangala
+              <br />
+              Mangalore – 574153, Karnataka, INDIA
+            </address>
           </div>
 
           {/* Bottom bar */}

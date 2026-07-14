@@ -1,3 +1,5 @@
+'use client'
+
 import {
   CutoutCard,
   CutoutCardContent,
@@ -42,10 +44,13 @@ export function MemberCutoutCard({ member }: { member: Member }) {
         <CutoutCardOverlay />
       </CutoutCardMedia>
       <CutoutCardContent className="p-4 text-center">
-        <p className="font-semibold text-foreground group-hover/cutout:text-primary transition-colors">
+        <p
+          title={member.fullName}
+          className="truncate font-semibold text-foreground transition-colors group-hover/cutout:text-primary"
+        >
           {member.fullName}
         </p>
-        {role && <p className="mt-1 text-sm text-primary">{role}</p>}
+        {role && <p className="mt-1 truncate text-sm text-primary">{role}</p>}
       </CutoutCardContent>
     </>
   )
