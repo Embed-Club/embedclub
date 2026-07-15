@@ -1,27 +1,23 @@
 import DashboardTitle from '@/app/(frontend)/title'
 import { AudioToggleMini, BackgroundAudio } from '@/components/common/backgroundAudio'
-import Image from 'next/image'
 
-// Static hero background. Placeholder for now — later swap for a muted, looping
-// video of club activities (keep this element the full-bleed background layer).
-const HERO_IMAGE = '/iot.jpeg'
-
-/** First full-viewport section: full-bleed image, brand title, tagline. */
+/**
+ * First full-viewport section: brand title + tagline over a themed backdrop.
+ *
+ * The backdrop is a CSS gradient for now (no image dependency). To use a
+ * looping activities video later, drop a <video> (muted, autoplay, loop,
+ * playsinline) as the first absolute-inset child in place of the gradient div.
+ */
 export function HeroSection() {
   return (
     <section className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden">
-      {/* Background image (video placeholder) */}
-      <Image
-        src={HERO_IMAGE}
-        alt=""
+      {/* Themed gradient backdrop (video placeholder) */}
+      <div
         aria-hidden
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_hsl(var(--muted))_0%,_hsl(var(--background))_100%)]"
       />
-      {/* Legibility overlay so the title reads on any image */}
-      <div className="absolute inset-0 bg-background/75 backdrop-blur-[2px]" />
+      {/* Subtle legibility wash so the title always reads */}
+      <div className="absolute inset-0 bg-background/40" />
 
       <div className="relative z-10 flex w-full flex-col items-center gap-6 px-4">
         <DashboardTitle />
