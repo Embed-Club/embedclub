@@ -17,7 +17,15 @@ function resolvePhoto(member: Member): string {
   if (typeof photo === 'object' && photo !== null) {
     const p = photo as MemberPhoto
     const sizes = p.sizes as unknown as Record<string, { url?: string }> | undefined
-    return sizes?.card?.url || sizes?.profile?.url || p.url || '/placeholder/placeholder.jpg'
+    // Include thumbnail: small/old source photos only generate the thumbnail
+    // size (no 400px card), and the original can 404 — thumbnail beats blank.
+    return (
+      sizes?.card?.url ||
+      sizes?.profile?.url ||
+      sizes?.thumbnail?.url ||
+      p.url ||
+      '/placeholder/placeholder.jpg'
+    )
   }
   return '/placeholder/placeholder.jpg'
 }
