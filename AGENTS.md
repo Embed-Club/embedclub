@@ -75,6 +75,12 @@ them to update it first.
   to `main` without the branch being explicitly approved by a maintainer.
 - Never add `ignoreBuildErrors`, `ignoreDuringBuilds`, `as any`, `@ts-ignore`,
   or biome suppressions without a written reason in the comment.
+- **Never hardcode `.env` variable values into source** — not as a "default",
+  "fallback", or convenience, and not even for non-secret values (project URLs,
+  bucket names, region, hosts). Read them from `process.env.*` only. If a var is
+  missing in an environment, the fix is to set it there (e.g. Vercel project
+  settings), never to bake the value into the code. Config that must ship in the
+  repo goes through a documented env var with the real value set per environment.
 - Keep dependencies lean: `motion` (never framer-motion), gsap, shiki, mermaid
   (lazy-loaded), pdf-lib (lazy-loaded). Adding a dependency needs justification
   in the PR description.
