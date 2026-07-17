@@ -180,11 +180,13 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
 interface MainbarShellProps {
   children?: React.ReactNode
   borderless?: boolean
+  /** Hide the scroll container's scrollbar while keeping it scrollable. */
+  hideScrollbar?: boolean
 }
 
 export { ScrollContainerContext }
 
-export function MainbarShell({ children, borderless }: MainbarShellProps) {
+export function MainbarShell({ children, borderless, hideScrollbar }: MainbarShellProps) {
   const isMobile = useIsMobile()
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
   const { isIntroFinished } = React.useContext(IntroContext)
@@ -200,7 +202,11 @@ export function MainbarShell({ children, borderless }: MainbarShellProps) {
 
   return (
     <ScrollContainerContext.Provider value={scrollEl}>
-      <ContentPanel ref={setScrollEl} borderless={borderless || isMobile}>
+      <ContentPanel
+        ref={setScrollEl}
+        borderless={borderless || isMobile}
+        hideScrollbar={hideScrollbar}
+      >
         {/* min-h-full (not h-full) so tall pages grow past one viewport and the
             footer flows below them instead of overlapping overflowed content. */}
         <div className="min-h-full w-full relative">

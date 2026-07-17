@@ -4,10 +4,13 @@ import { forwardRef } from 'react'
 interface ContentPanelProps {
   children?: React.ReactNode
   borderless?: boolean
+  /** Hide the scrollbar chrome while keeping the panel scrollable (e.g. home). */
+  hideScrollbar?: boolean
 }
 
 export const ContentPanel = forwardRef<HTMLDivElement, ContentPanelProps>(
-  ({ children, borderless }, ref) => {
+  ({ children, borderless, hideScrollbar }, ref) => {
+    const noScrollbar = borderless || hideScrollbar
     return (
       <div
         ref={ref}
@@ -17,10 +20,10 @@ export const ContentPanel = forwardRef<HTMLDivElement, ContentPanelProps>(
             ? 'bg-background m-0'
             : 'bg-background m-0 lg:bg-sidebar lg:m-2 lg:ml-0 lg:rounded-lg lg:border'
         }`}
-        style={borderless ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : undefined}
+        style={noScrollbar ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : undefined}
       >
         {children}
-        {borderless && <style jsx>{'div::-webkit-scrollbar { display: none; }'}</style>}
+        {noScrollbar && <style jsx>{'div::-webkit-scrollbar { display: none; }'}</style>}
       </div>
     )
   },
