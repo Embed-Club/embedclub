@@ -213,34 +213,53 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.navSecondary.map((item) => (
-                <SidebarMenuItem className="w-full" key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <button
-                      type="button"
-                      className="flex items-center gap-1 w-full py-3 text-center bg-transparent border-none p-0 cursor-default"
-                    >
-                      <item.icon />
-                      <span className="font-semibold text-2xl">{item.title}</span>
-                    </button>
-                  </SidebarMenuButton>
-                  {item.items?.length ? (
-                    <SidebarMenuSub>
-                      {item.items.map((item) => (
-                        <SidebarMenuSubItem key={item.title}>
-                          <SidebarMenuSubButton asChild>
-                            <a href={item.url}>
-                              {' '}
-                              <item.icon />{' '}
-                              <span className="font-semibold text-md">{item.title}</span>
-                            </a>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  ) : null}
-                </SidebarMenuItem>
-              ))}
+              {data.navSecondary.map((group) =>
+                collapsed ? (
+                  // Collapsed: the group headers are non-clickable, so surface the
+                  // navigable sub-items as icons in their place (the SidebarMenuSub
+                  // used when expanded is hidden in icon mode).
+                  group.items?.map((sub) => (
+                    <SidebarMenuItem className="w-full" key={sub.title}>
+                      <SidebarMenuButton asChild>
+                        <a
+                          href={sub.url}
+                          className="flex items-center gap-1 w-full py-3 text-center"
+                        >
+                          <sub.icon />
+                          <span className="font-semibold text-2xl">{sub.title}</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))
+                ) : (
+                  <SidebarMenuItem className="w-full" key={group.title}>
+                    <SidebarMenuButton asChild>
+                      <button
+                        type="button"
+                        className="flex items-center gap-1 w-full py-3 text-center bg-transparent border-none p-0 cursor-default"
+                      >
+                        <group.icon />
+                        <span className="font-semibold text-2xl">{group.title}</span>
+                      </button>
+                    </SidebarMenuButton>
+                    {group.items?.length ? (
+                      <SidebarMenuSub>
+                        {group.items.map((sub) => (
+                          <SidebarMenuSubItem key={sub.title}>
+                            <SidebarMenuSubButton asChild>
+                              <a href={sub.url}>
+                                {' '}
+                                <sub.icon />{' '}
+                                <span className="font-semibold text-md">{sub.title}</span>
+                              </a>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    ) : null}
+                  </SidebarMenuItem>
+                ),
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
           <SidebarGroupContent>
@@ -262,22 +281,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <SidebarGroup {...props}>
           {/* Same markup as the middle sub-navs (RESOURCES, TUTORILS, …) so both
-              sections share alignment, size, and hover styling */}
+              sections share alignment, size, and hover styling. Collapsed: the
+              SidebarMenuSub is icon-hidden, so render the items as icon buttons
+              (matching navMain) so they stay reachable. */}
           <SidebarMenu>
-            <SidebarMenuItem className="w-full">
-              <SidebarMenuSub>
-                {data.navBottom.map((item) => (
-                  <SidebarMenuSubItem key={item.title}>
-                    <SidebarMenuSubButton asChild>
-                      <a href={item.url}>
-                        {' '}
-                        <item.icon /> <span className="font-semibold text-md">{item.title}</span>
-                      </a>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                ))}
-              </SidebarMenuSub>
-            </SidebarMenuItem>
+            {collapsed ? (
+              data.navBottom.map((item) => (
+                <SidebarMenuItem className="w-full" key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url} className="flex items-center gap-1 w-full py-3 text-center">
+                      <item.icon />
+                      <span className="font-semibold text-2xl">{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))
+            ) : (
+              <SidebarMenuItem className="w-full">
+                <SidebarMenuSub>
+                  {data.navBottom.map((item) => (
+                    <SidebarMenuSubItem key={item.title}>
+                      <SidebarMenuSubButton asChild>
+                        <a href={item.url}>
+                          {' '}
+                          <item.icon /> <span className="font-semibold text-md">{item.title}</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  ))}
+                </SidebarMenuSub>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarFooter>
