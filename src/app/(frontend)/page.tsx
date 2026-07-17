@@ -82,7 +82,7 @@ export default async function Page() {
 
   return (
     <SidebarShell>
-      <MainbarShell>
+      <MainbarShell hideScrollbar>
         <HeroSection />
         <LatestEventsSection events={events} />
         <FeaturedMembersSection rows={rows} />
