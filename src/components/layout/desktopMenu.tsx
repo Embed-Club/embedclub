@@ -7,6 +7,7 @@ import {
   Images,
   LibraryBig,
   LucideHome,
+  type LucideIcon,
   School,
   Settings2,
   SquareChartGantt,
@@ -120,6 +121,37 @@ const data = {
   ],
 }
 
+type NavLeaf = { title: string; url: string; icon: LucideIcon }
+
+/**
+ * Collapsed-rail item: a copper name-tab rooted in the rail *behind* the icon
+ * that wipes outward on hover, so it reads as the sidebar itself extending over
+ * the page content (not a detached pill). The tab starts at the rail's left
+ * padding, sits under the icon, and its right end rounds off past the rail edge
+ * — one continuous shape with no gap. The rail's SidebarContent is set to
+ * overflow-visible while collapsed so the tab can escape the rail.
+ */
+function CollapsedNavItem({ title, url, icon: Icon }: NavLeaf) {
+  return (
+    <SidebarMenuItem className="w-full">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-y-1 left-full z-0 ml-2 flex items-center whitespace-nowrap rounded-r-full border border-l-0 border-sidebar-border bg-sidebar texture-panel px-5 font-semibold text-xl text-sidebar-foreground opacity-0 shadow-[6px_4px_16px_-6px_rgba(0,0,0,0.3)] [clip-path:inset(0_100%_0_0)] transition-all duration-300 ease-out group-hover/menu-item:opacity-100 group-hover/menu-item:[clip-path:inset(0_0_0_0)]"
+      >
+        {title}
+      </span>
+      <SidebarMenuButton
+        asChild
+        className="relative z-10 hover:!bg-transparent hover:!text-sidebar-foreground"
+      >
+        <a href={url} className="flex items-center justify-center py-3">
+          <Icon />
+        </a>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [mounted, setMounted] = React.useState(false)
   const { resolvedTheme } = useTheme()
@@ -195,43 +227,46 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="flex-1 flex flex-col justify-center">
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {data.navMain.map((item) => (
-                <SidebarMenuItem className="w-full" key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center gap-1 w-full py-3 text-center">
-                      <item.icon />
-                      <span className="font-semibold text-2xl">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {data.navSecondary.map((group) =>
-                collapsed ? (
-                  // Collapsed: the group headers are non-clickable, so surface the
-                  // navigable sub-items as icons in their place (the SidebarMenuSub
-                  // used when expanded is hidden in icon mode).
-                  group.items?.map((sub) => (
-                    <SidebarMenuItem className="w-full" key={sub.title}>
-                      <SidebarMenuButton asChild>
-                        <a
-                          href={sub.url}
-                          className="flex items-center gap-1 w-full py-3 text-center"
-                        >
-                          <sub.icon />
-                          <span className="font-semibold text-2xl">{sub.title}</span>
-                        </a>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))
-                ) : (
+      <SidebarContent className="flex-1 flex flex-col justify-center group-data-[collapsible=icon]:!overflow-visible">
+        {collapsed ? (
+          // Collapsed rail: every navigable leaf as an icon with a hover-reveal
+          // label pill. The non-clickable group headers (Activities / Learning)
+          // are dropped in favour of their items.
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {[
+                  ...data.navMain,
+                  ...data.navSecondary.flatMap((group) => group.items ?? []),
+                  ...data.navThird,
+                ].map((item) => (
+                  <CollapsedNavItem key={item.title} {...item} />
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ) : (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {data.navMain.map((item) => (
+                  <SidebarMenuItem className="w-full" key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a
+                        href={item.url}
+                        className="flex items-center gap-1 w-full py-3 text-center"
+                      >
+                        <item.icon />
+                        <span className="font-semibold text-2xl">{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {data.navSecondary.map((group) => (
                   <SidebarMenuItem className="w-full" key={group.title}>
                     <SidebarMenuButton asChild>
                       <button
@@ -258,44 +293,40 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       </SidebarMenuSub>
                     ) : null}
                   </SidebarMenuItem>
-                ),
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {data.navThird.map((item) => (
-                <SidebarMenuItem className="w-full" key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center gap-1 w-full py-3 text-center">
-                      <item.icon />
-                      <span className="font-semibold text-2xl">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {data.navThird.map((item) => (
+                  <SidebarMenuItem className="w-full" key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a
+                        href={item.url}
+                        className="flex items-center gap-1 w-full py-3 text-center"
+                      >
+                        <item.icon />
+                        <span className="font-semibold text-2xl">{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarFooter>
-        <SidebarGroup {...props}>
+        {/* p-0 when collapsed: SidebarFooter already pads 8px, so the extra
+            group padding would push footer icons 8px right of the content icons. */}
+        <SidebarGroup {...props} className="group-data-[collapsible=icon]:p-0">
           {/* Same markup as the middle sub-navs (RESOURCES, TUTORILS, …) so both
               sections share alignment, size, and hover styling. Collapsed: the
               SidebarMenuSub is icon-hidden, so render the items as icon buttons
               (matching navMain) so they stay reachable. */}
           <SidebarMenu>
             {collapsed ? (
-              data.navBottom.map((item) => (
-                <SidebarMenuItem className="w-full" key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center gap-1 w-full py-3 text-center">
-                      <item.icon />
-                      <span className="font-semibold text-2xl">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))
+              data.navBottom.map((item) => <CollapsedNavItem key={item.title} {...item} />)
             ) : (
               <SidebarMenuItem className="w-full">
                 <SidebarMenuSub>

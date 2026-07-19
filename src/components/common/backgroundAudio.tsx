@@ -14,6 +14,9 @@ import { useContext, useEffect, useSyncExternalStore } from 'react'
 type AudioSnapshot = { available: boolean; playing: boolean }
 
 let audio: HTMLAudioElement | null = null
+// True when playback was paused because the page went to the background, so we
+// know to resume on return — and to never resume a track the user paused by hand.
+let pausedByVisibility = false
 let snapshot: AudioSnapshot = { available: false, playing: false }
 const listeners = new Set<() => void>()
 
@@ -85,7 +88,12 @@ export function BackgroundAudio() {
     // MainbarShell fades the page content in 600ms after the intro finishes —
     // start the music together with that reveal, not with the logo animation.
     const startTimer = setTimeout(() => {
-      void play()
+      // Don't start music into a hidden/blurred tab — resume when they return.
+      if (document.visibilityState === 'visible' && document.hasFocus()) {
+        void play()
+      } else {
+        pausedByVisibility = true
+      }
     }, 600)
 
     // If the browser blocked autoplay, the first user gesture starts playback.
@@ -108,9 +116,33 @@ export function BackgroundAudio() {
     window.addEventListener('touchstart', handleInteraction)
     window.addEventListener('keydown', handleInteraction)
 
+    // Pause whenever the page isn't the user's active view — tab hidden, window
+    // minimized, or focus moved to another app — and resume on return. Guarded
+    // by pausedByVisibility so a manual pause is never overridden.
+    const syncPlaybackToVisibility = () => {
+      const active = document.visibilityState === 'visible' && document.hasFocus()
+      if (!active) {
+        if (audio && !audio.paused) {
+          audio.pause()
+          pausedByVisibility = true
+          setSnapshot({ available: true, playing: false })
+        }
+      } else if (pausedByVisibility) {
+        pausedByVisibility = false
+        void play()
+      }
+    }
+    document.addEventListener('visibilitychange', syncPlaybackToVisibility)
+    window.addEventListener('blur', syncPlaybackToVisibility)
+    window.addEventListener('focus', syncPlaybackToVisibility)
+
     return () => {
       clearTimeout(startTimer)
       removeListeners()
+      document.removeEventListener('visibilitychange', syncPlaybackToVisibility)
+      window.removeEventListener('blur', syncPlaybackToVisibility)
+      window.removeEventListener('focus', syncPlaybackToVisibility)
+      pausedByVisibility = false
       if (audio) {
         audio.pause()
         audio = null

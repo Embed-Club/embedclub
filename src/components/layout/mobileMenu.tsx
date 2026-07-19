@@ -18,7 +18,8 @@ const navItems = [
 export default function MobileMenu() {
   return (
     <>
-      {/* Background overlay to hide content behind menu */}
+      {/* Transparent top strip: no background so the hero video shows through;
+          it only carries the menu-toggle colour vars for each theme. */}
       <style jsx>{`
         @media (max-width: 1023px) {
           .mobile-menu-overlay {
@@ -27,18 +28,14 @@ export default function MobileMenu() {
             right: 0;
             width: 100%;
             height: 60px;
-            background: linear-gradient(
-              135deg,
-              rgba(255, 255, 255, 1) 0%,
-              rgba(248, 248, 248, 1) 100%
-            );
+            background: transparent;
             z-index: 40;
             pointer-events: none;
             --sm-toggle-color: #111111;
             --sm-toggle-open-color: #000000;
           }
           :global(.dark) .mobile-menu-overlay {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.95) 100%);
+            background: transparent;
             --sm-toggle-color: #ffffff;
             --sm-toggle-open-color: #ffffff;
           }
