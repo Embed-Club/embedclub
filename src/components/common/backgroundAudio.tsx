@@ -88,8 +88,8 @@ export function BackgroundAudio() {
     // MainbarShell fades the page content in 600ms after the intro finishes —
     // start the music together with that reveal, not with the logo animation.
     const startTimer = setTimeout(() => {
-      // Don't start music into a hidden/blurred tab — resume when they return.
-      if (document.visibilityState === 'visible' && document.hasFocus()) {
+      // Don't start music into a backgrounded tab — resume when they return.
+      if (document.visibilityState === 'visible') {
         void play()
       } else {
         pausedByVisibility = true
@@ -116,14 +116,24 @@ export function BackgroundAudio() {
     window.addEventListener('touchstart', handleInteraction)
     window.addEventListener('keydown', handleInteraction)
 
-    // Pause whenever the page isn't the user's active view — tab hidden, window
-    // minimized, or focus moved to another app — and resume on return. Guarded
-    // by pausedByVisibility so a manual pause is never overridden.
-    const syncPlaybackToVisibility = () => {
-      const active = document.visibilityState === 'visible' && document.hasFocus()
+    // Pause whenever the page isn't the user's active view, and resume on
+    // return. The two signals cover different cases:
+    //   • visibilitychange / pagehide — tab hidden, window minimized, phone
+    //     locked, or the mobile browser sent to the background (the reliable
+    //     mobile signal; iOS also fires pagehide/pageshow via the bfcache).
+    //   • window blur / focus — desktop switching to another app while the tab
+    //     stays visible.
+    // Window focus is tracked with a flag rather than document.hasFocus(), which
+    // is unreliable on mobile; browsers that never fire blur/focus stay purely
+    // visibility-driven, which is exactly right for mobile. The resume is gated
+    // on snapshot.playing (our intent) — not audio.paused, since the mobile OS
+    // may have already paused the element — so a manual pause is never resumed.
+    let windowActive = true
+    const syncPlayback = () => {
+      const active = document.visibilityState === 'visible' && windowActive
       if (!active) {
-        if (audio && !audio.paused) {
-          audio.pause()
+        if (snapshot.playing) {
+          audio?.pause()
           pausedByVisibility = true
           setSnapshot({ available: true, playing: false })
         }
@@ -132,16 +142,28 @@ export function BackgroundAudio() {
         void play()
       }
     }
-    document.addEventListener('visibilitychange', syncPlaybackToVisibility)
-    window.addEventListener('blur', syncPlaybackToVisibility)
-    window.addEventListener('focus', syncPlaybackToVisibility)
+    const handleBlur = () => {
+      windowActive = false
+      syncPlayback()
+    }
+    const handleFocus = () => {
+      windowActive = true
+      syncPlayback()
+    }
+    document.addEventListener('visibilitychange', syncPlayback)
+    document.addEventListener('pagehide', handleBlur)
+    document.addEventListener('pageshow', handleFocus)
+    window.addEventListener('blur', handleBlur)
+    window.addEventListener('focus', handleFocus)
 
     return () => {
       clearTimeout(startTimer)
       removeListeners()
-      document.removeEventListener('visibilitychange', syncPlaybackToVisibility)
-      window.removeEventListener('blur', syncPlaybackToVisibility)
-      window.removeEventListener('focus', syncPlaybackToVisibility)
+      document.removeEventListener('visibilitychange', syncPlayback)
+      document.removeEventListener('pagehide', handleBlur)
+      document.removeEventListener('pageshow', handleFocus)
+      window.removeEventListener('blur', handleBlur)
+      window.removeEventListener('focus', handleFocus)
       pausedByVisibility = false
       if (audio) {
         audio.pause()
