@@ -3,6 +3,10 @@ import type { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  admin: {
+    group: 'Library',
+    description: 'Every image used across the site. Drag files in to upload in bulk.',
+  },
   access: {
     read: () => true,
   },

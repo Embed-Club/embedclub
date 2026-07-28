@@ -14,6 +14,7 @@ export const Forms: CollectionConfig = {
     defaultColumns: ['title', 'type', 'active', 'deadline', 'updatedAt'],
     description:
       'Forms shown on the website. Answers are saved here and forwarded to the linked Google Form.',
+    group: 'Forms',
   },
   access: {
     read: () => true,

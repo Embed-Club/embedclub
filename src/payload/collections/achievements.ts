@@ -5,6 +5,7 @@ export const Achievements: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'image'],
+    group: 'Content',
   },
   access: {
     read: () => true,

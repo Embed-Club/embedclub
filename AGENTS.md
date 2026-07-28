@@ -26,10 +26,28 @@ them to update it first.
   star-field landing was intentionally retired 2026-07 by the owner.)
 - Empty states use the shared `EmptyState` component — never write bespoke
   "nothing here" markup.
-- Banned patterns (from docs/DESIGN.md): icon+heading+text card grids, tiny
-  uppercase tracked kicker labels above every section, numbered 01/02/03
-  section scaffolding, gradient text, glassmorphism-by-default, blue "tech"
-  glows, side-stripe borders, border-radius > 16px on cards.
+- **Border radius — allowed.** The whole Tailwind scale is available, with
+  `sm`/`md`/`lg` driven by the `--radius` token (`0.5rem`) in `globals.css`.
+  There is no cap. This table is what the codebase currently reaches for, not
+  a restriction:
+
+  | Class | Value | Currently used for |
+  |---|---|---|
+  | `rounded-sm` / `rounded-md` / `rounded-lg` | 4 / 6 / 8px | inputs, buttons, small chips, the shell content panel |
+  | `rounded-xl` | 12px | inner panels, media wells inside a card |
+  | `rounded-2xl` | 16px | most card surfaces |
+  | `rounded-3xl` | 24px | the `SiteFooter` panel |
+  | `rounded-full` | pill | avatars, icon buttons, tag chips |
+
+  One mechanical caveat, not a rule: **cutout** cards are locked to 16px
+  because the notch geometry is cut to that radius — `CutoutCorner`'s path and
+  the `rounded-tr-[16px]` / `rounded-bl-[16px]` inset strips. Give a cutout
+  card a different radius and a gap opens where the notch meets the corner. To
+  change it, move `cutoutCard.tsx` and the inset-strip classes together.
+  Non-cutout surfaces can use any radius.
+- Banned patterns: icon+heading+text card grids, tiny uppercase tracked kicker
+  labels above every section, numbered 01/02/03 section scaffolding, gradient
+  text, glassmorphism-by-default, blue "tech" glows, side-stripe borders.
 
 ## 2. Naming & structure
 

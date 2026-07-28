@@ -7,9 +7,11 @@ import { useCallback, useEffect, useRef } from 'react'
 
 interface ResourceCardsProps {
   resources: ResourceCardData[]
+  /** Route prefix each card links to — `/resources` or `/tutorials`. */
+  basePath?: string
 }
 
-export function ResourceCards({ resources }: ResourceCardsProps) {
+export function ResourceCards({ resources, basePath = '/resources' }: ResourceCardsProps) {
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   const setCardRef = useCallback((id: string, el: HTMLDivElement | null) => {
@@ -80,7 +82,7 @@ export function ResourceCards({ resources }: ResourceCardsProps) {
             ref={(el) => setCardRef(resource.id, el)}
             className="w-full"
           >
-            <ResourceCutoutCard card={resource} />
+            <ResourceCutoutCard card={resource} basePath={basePath} />
           </div>
         ))}
       </div>

@@ -10,6 +10,7 @@ const navItems = [
   { label: 'RESOURCES', ariaLabel: 'Resources', link: '/resources' },
   { label: 'TUTORILS', ariaLabel: 'Tutorials', link: '/tutorials' },
   { label: 'SIULTORS', ariaLabel: 'Simulators', link: '/simulators' },
+  { label: 'PROJECTS', ariaLabel: 'Projects', link: '/projects' },
   { label: 'GLLERY', ariaLabel: 'Gallery', link: '/gallery' },
   { label: 'EBERS', ariaLabel: 'Members', link: '/members' },
   { label: 'FEEDBCK', ariaLabel: 'Feedback', link: '/feedback' },

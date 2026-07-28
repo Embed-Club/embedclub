@@ -7,9 +7,10 @@ import { useCallback, useEffect, useRef } from 'react'
 
 interface SimulatorCardsProps {
   simulators: SimulatorCardData[]
+  onOpen: (card: SimulatorCardData) => void
 }
 
-export function SimulatorCards({ simulators }: SimulatorCardsProps) {
+export function SimulatorCards({ simulators, onOpen }: SimulatorCardsProps) {
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   const setCardRef = useCallback((id: string, el: HTMLDivElement | null) => {
@@ -74,7 +75,8 @@ export function SimulatorCards({ simulators }: SimulatorCardsProps) {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 w-full">
+      {/* Same column rhythm as the resources grid — one card system, one layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 w-full">
         {simulators.map((simulator, index) => (
           <div
             key={simulator.id}
@@ -82,7 +84,7 @@ export function SimulatorCards({ simulators }: SimulatorCardsProps) {
             ref={(el) => setCardRef(simulator.id, el)}
             className="w-full"
           >
-            <SimulatorCard card={simulator} index={index} />
+            <SimulatorCard card={simulator} onOpen={onOpen} />
           </div>
         ))}
       </div>
