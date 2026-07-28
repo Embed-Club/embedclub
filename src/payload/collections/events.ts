@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { CARD_DESCRIPTION_MAX_LENGTH } from './learningFields'
+
 /**
  * Generate a URL-friendly slug from text
  * Converts: "AI Workshop 2024!" -> "ai-workshop-2024"
@@ -21,6 +23,7 @@ export const Events: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+    group: 'Content',
   },
   hooks: {
     beforeValidate: [
@@ -124,8 +127,9 @@ export const Events: CollectionConfig = {
               label: 'Short Description (Card Preview)',
               type: 'text',
               required: false,
+              maxLength: CARD_DESCRIPTION_MAX_LENGTH,
               admin: {
-                description: 'Brief tagline shown on the carousel card (optional)',
+                description: `Brief tagline shown on the carousel card (optional, max ${CARD_DESCRIPTION_MAX_LENGTH} characters)`,
               },
             },
           ],

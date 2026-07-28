@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-  const resources = await getResourceCards('resource')
+  const resources = await getResourceCards('resources')
 
   return (
     <SidebarShell>

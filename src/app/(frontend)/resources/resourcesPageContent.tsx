@@ -24,11 +24,14 @@ interface ResourcesPageContentProps {
   resources?: ResourceCardData[]
   /** Title of the shared empty state — the Tutorials page passes its own. */
   emptyTitle?: string
+  /** Route prefix each card links to — `/resources` or `/tutorials`. */
+  basePath?: string
 }
 
 export function ResourcesPageContent({
   resources = [],
   emptyTitle = 'No Resources Yet',
+  basePath = '/resources',
 }: ResourcesPageContentProps) {
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
@@ -184,7 +187,7 @@ export function ResourcesPageContent({
           </p>
         </div>
       ) : (
-        <ResourceCards resources={filteredResources} />
+        <ResourceCards resources={filteredResources} basePath={basePath} />
       )}
     </>
   )

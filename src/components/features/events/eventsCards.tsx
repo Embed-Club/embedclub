@@ -1,4 +1,10 @@
 'use client'
+import {
+  CutoutCardInsetLabel,
+  CutoutCardPin,
+  CutoutCorner,
+  cutoutCardSurfaceShadowClassName,
+} from '@/components/common/cutoutCard'
 import { EventDetails } from '@/components/features/events/eventDetails'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { isNewEvent } from '@/lib/eventUtils'
@@ -80,23 +86,39 @@ export const Card = ({
         layoutId={layout ? `card-${card.title}` : undefined}
       />
 
-      {/* Carousel Card Preview - Vertical Layout (Original) */}
+      {/* Carousel card — same cutout shell as the grid below it: notched
+          inset title strip, notched New pin, 16px radius. */}
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="group/eventcard relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-3xl bg-muted md:h-[40rem] md:w-96 shadow-lg hover:shadow-2xl transition-shadow duration-300"
-      >
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
-        {isNewEvent(event?.eventDate) && (
-          <span className="absolute right-4 top-4 z-40 rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.4)]">
-            New
-          </span>
+        className={cn(
+          'group/cutout relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-2xl bg-card p-0 outline-none md:h-[40rem] md:w-96',
+          cutoutCardSurfaceShadowClassName,
         )}
-        <div className="relative z-40 p-8">
+      >
+        <BlurImage
+          src={card.src}
+          alt={card.title}
+          fill
+          className="absolute inset-0 z-10 object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] group-hover/cutout:scale-105"
+        />
+        <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-background/35 via-transparent to-transparent dark:from-background/50" />
+
+        {isNewEvent(event?.eventDate) && (
+          <CutoutCardPin className="top-0 right-0 z-40 rounded-bl-[16px] bg-primary px-3 py-1.5">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground">
+              New
+            </span>
+            <CutoutCorner className="absolute -left-[27px] -top-px -rotate-90 text-primary" />
+            <CutoutCorner className="absolute -bottom-[27px] -right-px -rotate-90 text-primary" />
+          </CutoutCardPin>
+        )}
+
+        <CutoutCardInsetLabel className="bottom-0 left-0 z-40 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-3 text-left">
           <motion.p
             layoutId={layout ? `category-${card.category}` : undefined}
-            className="text-left font-sans text-sm font-medium text-white md:text-base"
+            className="text-left font-sans text-[11px] font-semibold uppercase tracking-widest text-primary"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
@@ -106,20 +128,16 @@ export const Card = ({
           </motion.p>
           <motion.p
             layoutId={layout ? `title-${card.title}` : undefined}
-            className="mt-2 max-w-xs text-left font-sans text-xl font-semibold [text-wrap:balance] text-white md:text-3xl"
+            className="mt-1 font-sans text-base font-semibold [text-wrap:balance] text-foreground md:text-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             {card.title}
           </motion.p>
-        </div>
-        <BlurImage
-          src={card.src}
-          alt={card.title}
-          fill
-          className="absolute inset-0 z-10 object-cover transition-transform duration-500 ease-out group-hover/eventcard:scale-110"
-        />
+          <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+          <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+        </CutoutCardInsetLabel>
       </motion.button>
     </>
   )

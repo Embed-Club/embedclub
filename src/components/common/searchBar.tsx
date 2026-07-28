@@ -54,9 +54,10 @@ type SearchBarProps = Omit<
   icon?: React.ReactNode
   className?: string
   inputClassName?: string
-  categories: string[]
-  selectedCategory: string | 'all'
-  onCategoryChange: (category: string) => void
+  /** Omit (or pass an empty list) to hide the category filter entirely. */
+  categories?: string[]
+  selectedCategory?: string | 'all'
+  onCategoryChange?: (category: string) => void
   sortBy: string
   onSortChange: (sort: string) => void
   activeTags: string[]
@@ -71,8 +72,8 @@ export function SearchBar({
   onChange,
   onSubmit,
   icon,
-  categories,
-  selectedCategory,
+  categories = [],
+  selectedCategory = 'all',
   onCategoryChange,
   sortBy,
   onSortChange,
@@ -255,22 +256,27 @@ export function SearchBar({
             </div>
 
             <div className="flex items-center gap-0 h-12">
-              <Select value={selectedCategory} onValueChange={onCategoryChange}>
-                <SelectTrigger className="group flex items-center justify-center w-8 h-full gap-1 overflow-visible rounded-none shadow-none transition-all duration-200 hover:w-24 data-[state=open]:w-24 border-0 bg-transparent hover:bg-white/2 data-[state=open]:bg-white/2 focus-visible:z-10">
-                  <Filter className="h-4 w-4 flex-shrink-0" />
-                  <span className="whitespace-nowrap">Filter</span>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {/* Collections without categories (e.g. simulators) skip this control */}
+              {categories.length > 0 && onCategoryChange ? (
+                <>
+                  <Select value={selectedCategory} onValueChange={onCategoryChange}>
+                    <SelectTrigger className="group flex items-center justify-center w-8 h-full gap-1 overflow-visible rounded-none shadow-none transition-all duration-200 hover:w-24 data-[state=open]:w-24 border-0 bg-transparent hover:bg-white/2 data-[state=open]:bg-white/2 focus-visible:z-10">
+                      <Filter className="h-4 w-4 flex-shrink-0" />
+                      <span className="whitespace-nowrap">Filter</span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-              <div className="h-8 border-l border-white/10" />
+                  <div className="h-8 border-l border-white/10" />
+                </>
+              ) : null}
 
               <Select value={sortBy} onValueChange={onSortChange}>
                 <SelectTrigger className="group flex items-center justify-center w-8 h-full gap-1 overflow-visible rounded-none shadow-none transition-all duration-200 hover:w-24 data-[state=open]:w-24 border-0 bg-transparent hover:bg-white/2 data-[state=open]:bg-white/2 focus-visible:z-10">

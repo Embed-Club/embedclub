@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+
 import {
   CodeBlock,
   GraphBlock,
@@ -7,13 +8,18 @@ import {
   SimulatorLinkBlock,
   TableBlock,
   TextBlock,
-} from './resources'
+} from './contentBlocks'
+import { CARD_DESCRIPTION_MAX_LENGTH, generateSlug } from './learningFields'
 
 export const Simulators: CollectionConfig = {
   slug: 'simulators',
+  orderable: true,
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'category', 'updatedAt'],
+    description:
+      'External simulators students can launch. Drag rows to set the order they appear on the site.',
+    defaultColumns: ['title', 'difficulty', 'updatedAt'],
+    group: 'Content',
   },
   access: {
     read: () => true,
@@ -31,30 +37,24 @@ export const Simulators: CollectionConfig = {
       unique: true,
       admin: {
         position: 'sidebar',
+        readOnly: true,
+        description: 'Generated from the title.',
       },
     },
     {
       name: 'description',
       type: 'textarea',
       required: true,
+      maxLength: CARD_DESCRIPTION_MAX_LENGTH,
+      admin: {
+        description: `Shown on the card and at the top of the modal (max ${CARD_DESCRIPTION_MAX_LENGTH} characters)`,
+      },
     },
     {
       name: 'thumbnail',
       type: 'upload',
       relationTo: 'media',
       required: true,
-    },
-    {
-      name: 'category',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Microcontrollers', value: 'microcontrollers' },
-        { label: 'Protocols', value: 'protocols' },
-        { label: 'RTOS', value: 'rtos' },
-        { label: 'Peripherals', value: 'peripherals' },
-        { label: 'Architecture', value: 'architecture' },
-      ],
     },
     {
       name: 'tags',
@@ -80,8 +80,34 @@ export const Simulators: CollectionConfig = {
       },
     },
     {
+      name: 'launchUrl',
+      label: 'Simulator URL',
+      type: 'text',
+      required: true,
+      admin: {
+        description:
+          'Where the simulator actually lives, e.g. https://wokwi.com. Students open this from the modal.',
+      },
+    },
+    {
+      name: 'videoUrl',
+      label: 'Walkthrough Video URL',
+      type: 'text',
+      admin: {
+        description:
+          'Optional YouTube, Vimeo, or direct .mp4 link. Plays inside the modal so students can follow along.',
+      },
+    },
+    {
       name: 'content',
+      label: 'How to use',
       type: 'blocks',
+      required: false,
+      minRows: 0,
+      admin: {
+        description:
+          'Optional — setup steps, login notes, download instructions. Shown under the video in the modal.',
+      },
       blocks: [
         TextBlock,
         CodeBlock,
@@ -90,14 +116,19 @@ export const Simulators: CollectionConfig = {
         ImageBlock,
         RowBlock,
         SimulatorLinkBlock,
-      ].filter(Boolean), // Remove any undefined blocks
-    },
-    {
-      name: 'iframeUrl',
-      type: 'text',
-      admin: {
-        description: 'URL of the interactive simulator iframe',
-      },
+      ],
     },
   ],
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        // Slug is read-only in the admin, so fill it here. Only when empty —
+        // regenerating on every title edit would break any link already shared.
+        if (data?.title && !data?.slug) {
+          data.slug = generateSlug(data.title)
+        }
+        return data
+      },
+    ],
+  },
 }

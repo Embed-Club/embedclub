@@ -6,7 +6,7 @@ import { GalleryMarqueeSection } from '@/components/features/home/galleryMarquee
 import { HeroSection } from '@/components/features/home/heroSection'
 import { LatestEventsSection } from '@/components/features/home/latestEventsSection'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
-import type { Event, Gallery, Media, Member } from '@/payload/payload-types'
+import type { Event, Gallery, Member } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 
@@ -19,17 +19,12 @@ function objectsOnly(value: (number | Member)[] | null | undefined): Member[] {
   return value.filter((m): m is Member => typeof m === 'object' && m !== null)
 }
 
-/** Flatten gallery docs to image URLs. */
+/** Each gallery doc is one uploaded photo — take its display URL. */
 function galleryImageUrls(galleries: Gallery[]): string[] {
   const urls: string[] = []
-  for (const gallery of galleries) {
-    for (const photo of gallery.photos ?? []) {
-      const image = photo.image
-      if (typeof image !== 'object' || image === null) continue
-      const media = image as Media
-      const src = media.sizes?.tablet?.url || media.url
-      if (src) urls.push(src)
-    }
+  for (const photo of galleries) {
+    const src = photo.sizes?.tablet?.url || photo.url
+    if (src) urls.push(src)
   }
   return urls
 }

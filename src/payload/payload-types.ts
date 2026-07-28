@@ -67,22 +67,22 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
-    media: Media;
-    'audio-files': AudioFile;
-    audio: Audio;
-    achievements: Achievement;
     events: Event;
+    achievements: Achievement;
+    gallery: Gallery;
+    resources: Resource;
+    tutorials: Tutorial;
+    simulators: Simulator;
+    projects: Project;
+    members: Member;
+    'member-roles': MemberRole;
     'member-categories': MemberCategory;
     'member-photo': MemberPhoto;
-    'member-roles': MemberRole;
-    members: Member;
-    gallery: Gallery;
     forms: Form;
     'form-submissions': FormSubmission;
-    resources: Resource;
-    simulators: Simulator;
+    media: Media;
     tags: Tag;
+    users: User;
     exports: Export;
     imports: Import;
     'payload-kv': PayloadKv;
@@ -93,22 +93,22 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    'audio-files': AudioFilesSelect<false> | AudioFilesSelect<true>;
-    audio: AudioSelect<false> | AudioSelect<true>;
-    achievements: AchievementsSelect<false> | AchievementsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
+    achievements: AchievementsSelect<false> | AchievementsSelect<true>;
+    gallery: GallerySelect<false> | GallerySelect<true>;
+    resources: ResourcesSelect<false> | ResourcesSelect<true>;
+    tutorials: TutorialsSelect<false> | TutorialsSelect<true>;
+    simulators: SimulatorsSelect<false> | SimulatorsSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
+    'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
     'member-categories': MemberCategoriesSelect<false> | MemberCategoriesSelect<true>;
     'member-photo': MemberPhotoSelect<false> | MemberPhotoSelect<true>;
-    'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
-    members: MembersSelect<false> | MembersSelect<true>;
-    gallery: GallerySelect<false> | GallerySelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
-    resources: ResourcesSelect<false> | ResourcesSelect<true>;
-    simulators: SimulatorsSelect<false> | SimulatorsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     exports: ExportsSelect<false> | ExportsSelect<true>;
     imports: ImportsSelect<false> | ImportsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -168,205 +168,6 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    tablet?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * Upload audio assets used across the site.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "audio-files".
- */
-export interface AudioFile {
-  id: number;
-  /**
-   * Friendly name to identify this audio file in pickers.
-   */
-  title: string;
-  /**
-   * Optional tags to group or search audio files.
-   */
-  tags?:
-    | {
-        tag: string;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * Configure how each sound behaves on the website.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "audio".
- */
-export interface Audio {
-  id: number;
-  /**
-   * Friendly name shown in the admin list.
-   */
-  name: string;
-  /**
-   * Controls where this sound is used in the frontend.
-   */
-  type: 'buttonClick' | 'mouseClick' | 'pageChange' | 'scroll' | 'background' | 'custom';
-  enabled?: boolean | null;
-  /**
-   * Base volume for this sound.
-   */
-  volume: number;
-  loop?: boolean | null;
-  /**
-   * 1 = normal speed. Lower is slower, higher is faster.
-   */
-  playbackRate?: number | null;
-  fadeInMs?: number | null;
-  fadeOutMs?: number | null;
-  /**
-   * Optional boost multiplier applied by the frontend.
-   */
-  volumeBoost?: number | null;
-  effects?: {
-    echo?: {
-      enabled?: boolean | null;
-      delayMs?: number | null;
-      feedback?: number | null;
-      mix?: number | null;
-    };
-    ambience?: {
-      enabled?: boolean | null;
-      mix?: number | null;
-      lowpassHz?: number | null;
-    };
-  };
-  /**
-   * Add one or more sources. The frontend can pick randomly.
-   */
-  sources?:
-    | {
-        label?: string | null;
-        file?: (number | null) | AudioFile;
-        /**
-         * Use this for hosted audio (e.g., CDN).
-         */
-        externalUrl?: string | null;
-        /**
-         * Higher weight makes this source more likely to be chosen.
-         */
-        weight?: number | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "achievements".
- */
-export interface Achievement {
-  id: number;
-  title: string;
-  summary: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * Date of the achievement (newest first)
-   */
-  date: string;
-  image?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events".
  */
 export interface Event {
@@ -401,7 +202,7 @@ export interface Event {
    */
   image: number | Media;
   /**
-   * Brief tagline shown on the carousel card (optional)
+   * Brief tagline shown on the carousel card (optional, max 200 characters)
    */
   shortDescription?: string | null;
   /**
@@ -534,30 +335,13 @@ export interface Form {
   createdAt: string;
 }
 /**
+ * Every image used across the site. Drag files in to upload in bulk.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-categories".
+ * via the `definition` "media".
  */
-export interface MemberCategory {
+export interface Media {
   id: number;
-  name: string;
-  slug: string;
-  description?: string | null;
-  /**
-   * Order in which this category appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other category automatically.
-   */
-  sortOrder: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-photo".
- */
-export interface MemberPhoto {
-  id: number;
-  /**
-   * e.g., "Photo of John Doe"
-   */
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -587,7 +371,7 @@ export interface MemberPhoto {
       filesize?: number | null;
       filename?: string | null;
     };
-    profile?: {
+    tablet?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -599,123 +383,105 @@ export interface MemberPhoto {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-roles".
+ * via the `definition` "achievements".
  */
-export interface MemberRole {
+export interface Achievement {
   id: number;
-  name: string;
-  slug: string;
-  description?: string | null;
+  title: string;
+  summary: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   /**
-   * Order in which this role appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other role automatically.
+   * Date of the achievement (newest first)
    */
-  sortOrder: number;
+  date: string;
+  image?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "members".
- */
-export interface Member {
-  id: number;
-  fullName: string;
-  photo: number | MemberPhoto;
-  category: number | MemberCategory;
-  /**
-   * A member can hold multiple roles over time (e.g. Member, then President). First role listed is shown most prominently.
-   */
-  roles: (number | MemberRole)[];
-  bio?: string | null;
-  /**
-   * e.g. 2021
-   */
-  startYear: number;
-  /**
-   * Leave empty if still active
-   */
-  endYear?: number | null;
-  github?: string | null;
-  linkedin?: string | null;
-  socialAccounts?:
-    | {
-        platform?: ('twitter' | 'instagram' | 'facebook' | 'youtube' | 'tiktok' | 'other') | null;
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Add images and give each one a caption. They render as a masonry wall.
+ * Drag photos in to upload them in bulk, then add a caption to each.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery".
  */
 export interface Gallery {
   id: number;
+  _order?: string | null;
   /**
-   * Drag to reorder. Pick each image from Media (or drag new files in).
+   * What is this photo? Shown on hover.
    */
-  photos: {
-    image: number | Media;
-    /**
-     * What is this photo? Shown on hover.
-     */
-    caption?: string | null;
-    id?: string | null;
-  }[];
+  caption?: string | null;
   updatedAt: string;
   createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    tablet?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
- * Read-only log of website form submissions
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "form-submissions".
- */
-export interface FormSubmission {
-  id: number;
-  form: number | Form;
-  /**
-   * Label → answer map exactly as submitted
-   */
-  answers:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Whether the answers reached the Google Form / Sheet
-   */
-  googleForwardStatus: 'forwarded' | 'failed' | 'pending';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Technical learning resources with flexible content blocks
+ * Reference material and guides. Drag rows to set the order they appear on the site.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resources".
  */
 export interface Resource {
   id: number;
+  _order?: string | null;
   title: string;
   /**
    * URL-friendly version (auto-generated from title, but you can edit it)
    */
   slug: string;
   /**
-   * One-line summary shown in resource cards and previews
+   * One-line summary shown in cards and previews (max 200 characters)
    */
   description: string;
   /**
-   * Image displayed in resource cards (1-2 sentence preview)
+   * Image displayed in cards
    */
   thumbnail: number | Media;
   /**
@@ -723,7 +489,7 @@ export interface Resource {
    */
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   /**
-   * Categorize this resource with tags (Python, React, Backend, etc.)
+   * Categorize with tags (Python, React, Backend, etc.)
    */
   tags?: (number | Tag)[] | null;
   /**
@@ -731,23 +497,11 @@ export interface Resource {
    */
   estimatedReadTime?: number | null;
   /**
-   * Feature this resource on the homepage
-   */
-  featured?: boolean | null;
-  /**
-   * Tutorials appear on the Tutorials page, resources on Resources
-   */
-  type: 'resource' | 'tutorial';
-  /**
    * Optional label shown on the card. "New" is added automatically for the first 14 days
    */
   badge?: ('featured' | 'popular' | 'essential') | null;
   /**
-   * When this resource was last updated
-   */
-  lastUpdated?: string | null;
-  /**
-   * Build your resource with flexible content blocks. Add text, code, tables, images, diagrams, and more.
+   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, and more.
    */
   content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
   updatedAt: string;
@@ -956,29 +710,307 @@ export interface SimulatorLinkBlock {
   blockType: 'simulatorLinkBlock';
 }
 /**
+ * External simulators students can launch. Drag rows to set the order they appear on the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "simulators".
  */
 export interface Simulator {
   id: number;
+  _order?: string | null;
   title: string;
+  /**
+   * Generated from the title.
+   */
   slug: string;
+  /**
+   * Shown on the card and at the top of the modal (max 200 characters)
+   */
   description: string;
   thumbnail: number | Media;
-  category: 'microcontrollers' | 'protocols' | 'rtos' | 'peripherals' | 'architecture';
   tags?: (number | Tag)[] | null;
   difficulty?: ('beginner' | 'intermediate' | 'advanced') | null;
   /**
    * Estimated time to complete in minutes
    */
   estimatedTime?: number | null;
-  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
   /**
-   * URL of the interactive simulator iframe
+   * Where the simulator actually lives, e.g. https://wokwi.com. Students open this from the modal.
    */
-  iframeUrl?: string | null;
+  launchUrl: string;
+  /**
+   * Optional YouTube, Vimeo, or direct .mp4 link. Plays inside the modal so students can follow along.
+   */
+  videoUrl?: string | null;
+  /**
+   * Optional — setup steps, login notes, download instructions. Shown under the video in the modal.
+   */
+  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Step-by-step walkthroughs. Drag rows to set the order they appear on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tutorials".
+ */
+export interface Tutorial {
+  id: number;
+  _order?: string | null;
+  title: string;
+  /**
+   * URL-friendly version (auto-generated from title, but you can edit it)
+   */
+  slug: string;
+  /**
+   * One-line summary shown in cards and previews (max 200 characters)
+   */
+  description: string;
+  /**
+   * Image displayed in cards
+   */
+  thumbnail: number | Media;
+  /**
+   * Difficulty level for this tutorial
+   */
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  /**
+   * Categorize with tags (Python, React, Backend, etc.)
+   */
+  tags?: (number | Tag)[] | null;
+  /**
+   * Approximate time to complete this tutorial
+   */
+  estimatedReadTime?: number | null;
+  /**
+   * Optional label shown on the card. "New" is added automatically for the first 14 days
+   */
+  badge?: ('featured' | 'popular' | 'essential') | null;
+  /**
+   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, and more.
+   */
+  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Member projects. Drag rows to set the order they appear on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  _order?: string | null;
+  title: string;
+  /**
+   * Generated from the title.
+   */
+  slug: string;
+  /**
+   * One-line summary shown on the project card (max 200 characters)
+   */
+  description: string;
+  /**
+   * Image displayed on the project card
+   */
+  thumbnail: number | Media;
+  /**
+   * Shown as a badge on the card
+   */
+  status: 'planned' | 'inProgress' | 'completed';
+  /**
+   * Who built this
+   */
+  team?: (number | Member)[] | null;
+  /**
+   * Categorize with tags (IoT, Robotics, PCB, etc.)
+   */
+  tags?: (number | Tag)[] | null;
+  /**
+   * Optional link to the source code (GitHub, GitLab, …)
+   */
+  repoUrl?: string | null;
+  /**
+   * Optional link to a live demo or video
+   */
+  demoUrl?: string | null;
+  /**
+   * The write-up: how it works, what it took, what broke. Optional.
+   */
+  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: number;
+  fullName: string;
+  photo: number | MemberPhoto;
+  category: number | MemberCategory;
+  /**
+   * A member can hold multiple roles over time (e.g. Member, then President). First role listed is shown most prominently.
+   */
+  roles: (number | MemberRole)[];
+  bio?: string | null;
+  /**
+   * e.g. 2021
+   */
+  startYear: number;
+  /**
+   * Leave empty if still active
+   */
+  endYear?: number | null;
+  github?: string | null;
+  linkedin?: string | null;
+  socialAccounts?:
+    | {
+        platform?: ('twitter' | 'instagram' | 'facebook' | 'youtube' | 'tiktok' | 'other') | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-photo".
+ */
+export interface MemberPhoto {
+  id: number;
+  /**
+   * e.g., "Photo of John Doe"
+   */
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    profile?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-categories".
+ */
+export interface MemberCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  /**
+   * Order in which this category appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other category automatically.
+   */
+  sortOrder: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-roles".
+ */
+export interface MemberRole {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  /**
+   * Order in which this role appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other role automatically.
+   */
+  sortOrder: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Read-only log of website form submissions
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions".
+ */
+export interface FormSubmission {
+  id: number;
+  form: number | Form;
+  /**
+   * Label → answer map exactly as submitted
+   */
+  answers:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Whether the answers reached the Google Form / Sheet
+   */
+  googleForwardStatus: 'forwarded' | 'failed' | 'pending';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Admin logins. New accounts cannot be created from here — run scripts/createBackupAdmin.ts to add one.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1171,28 +1203,40 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'audio-files';
-        value: number | AudioFile;
-      } | null)
-    | ({
-        relationTo: 'audio';
-        value: number | Audio;
+        relationTo: 'events';
+        value: number | Event;
       } | null)
     | ({
         relationTo: 'achievements';
         value: number | Achievement;
       } | null)
     | ({
-        relationTo: 'events';
-        value: number | Event;
+        relationTo: 'gallery';
+        value: number | Gallery;
+      } | null)
+    | ({
+        relationTo: 'resources';
+        value: number | Resource;
+      } | null)
+    | ({
+        relationTo: 'tutorials';
+        value: number | Tutorial;
+      } | null)
+    | ({
+        relationTo: 'simulators';
+        value: number | Simulator;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: number | Project;
+      } | null)
+    | ({
+        relationTo: 'members';
+        value: number | Member;
+      } | null)
+    | ({
+        relationTo: 'member-roles';
+        value: number | MemberRole;
       } | null)
     | ({
         relationTo: 'member-categories';
@@ -1203,18 +1247,6 @@ export interface PayloadLockedDocument {
         value: number | MemberPhoto;
       } | null)
     | ({
-        relationTo: 'member-roles';
-        value: number | MemberRole;
-      } | null)
-    | ({
-        relationTo: 'members';
-        value: number | Member;
-      } | null)
-    | ({
-        relationTo: 'gallery';
-        value: number | Gallery;
-      } | null)
-    | ({
         relationTo: 'forms';
         value: number | Form;
       } | null)
@@ -1223,16 +1255,16 @@ export interface PayloadLockedDocument {
         value: number | FormSubmission;
       } | null)
     | ({
-        relationTo: 'resources';
-        value: number | Resource;
-      } | null)
-    | ({
-        relationTo: 'simulators';
-        value: number | Simulator;
+        relationTo: 'media';
+        value: number | Media;
       } | null)
     | ({
         relationTo: 'tags';
         value: number | Tag;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1278,32 +1310,65 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "events_select".
  */
-export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+export interface EventsSelect<T extends boolean = true> {
+  category?: T;
+  title?: T;
+  slug?: T;
+  eventDate?: T;
+  eventMode?: T;
+  meetingLink?: T;
+  registrationForm?: T;
+  image?: T;
+  shortDescription?: T;
+  description?: T;
+  venue?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
+        roomName?: T;
+        floor?: T;
       };
+  contact?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+      };
+  location?:
+    | T
+    | {
+        address?: T;
+        coords?:
+          | T
+          | {
+              lat?: T;
+              lng?: T;
+            };
+        zoom?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "achievements_select".
  */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
+export interface AchievementsSelect<T extends boolean = true> {
+  title?: T;
+  summary?: T;
+  date?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery_select".
+ */
+export interface GallerySelect<T extends boolean = true> {
+  _order?: T;
+  caption?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1352,308 +1417,10 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "audio-files_select".
- */
-export interface AudioFilesSelect<T extends boolean = true> {
-  title?: T;
-  tags?:
-    | T
-    | {
-        tag?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "audio_select".
- */
-export interface AudioSelect<T extends boolean = true> {
-  name?: T;
-  type?: T;
-  enabled?: T;
-  volume?: T;
-  loop?: T;
-  playbackRate?: T;
-  fadeInMs?: T;
-  fadeOutMs?: T;
-  volumeBoost?: T;
-  effects?:
-    | T
-    | {
-        echo?:
-          | T
-          | {
-              enabled?: T;
-              delayMs?: T;
-              feedback?: T;
-              mix?: T;
-            };
-        ambience?:
-          | T
-          | {
-              enabled?: T;
-              mix?: T;
-              lowpassHz?: T;
-            };
-      };
-  sources?:
-    | T
-    | {
-        label?: T;
-        file?: T;
-        externalUrl?: T;
-        weight?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "achievements_select".
- */
-export interface AchievementsSelect<T extends boolean = true> {
-  title?: T;
-  summary?: T;
-  date?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events_select".
- */
-export interface EventsSelect<T extends boolean = true> {
-  category?: T;
-  title?: T;
-  slug?: T;
-  eventDate?: T;
-  eventMode?: T;
-  meetingLink?: T;
-  registrationForm?: T;
-  image?: T;
-  shortDescription?: T;
-  description?: T;
-  venue?:
-    | T
-    | {
-        roomName?: T;
-        floor?: T;
-      };
-  contact?:
-    | T
-    | {
-        email?: T;
-        phone?: T;
-      };
-  location?:
-    | T
-    | {
-        address?: T;
-        coords?:
-          | T
-          | {
-              lat?: T;
-              lng?: T;
-            };
-        zoom?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-categories_select".
- */
-export interface MemberCategoriesSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  description?: T;
-  sortOrder?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-photo_select".
- */
-export interface MemberPhotoSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        card?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        profile?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-roles_select".
- */
-export interface MemberRolesSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  description?: T;
-  sortOrder?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "members_select".
- */
-export interface MembersSelect<T extends boolean = true> {
-  fullName?: T;
-  photo?: T;
-  category?: T;
-  roles?: T;
-  bio?: T;
-  startYear?: T;
-  endYear?: T;
-  github?: T;
-  linkedin?: T;
-  socialAccounts?:
-    | T
-    | {
-        platform?: T;
-        url?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gallery_select".
- */
-export interface GallerySelect<T extends boolean = true> {
-  photos?:
-    | T
-    | {
-        image?: T;
-        caption?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "forms_select".
- */
-export interface FormsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  type?: T;
-  active?: T;
-  deadline?: T;
-  description?: T;
-  googleFormUrl?: T;
-  steps?:
-    | T
-    | {
-        stepTitle?: T;
-        stepDescription?: T;
-        fields?:
-          | T
-          | {
-              label?: T;
-              fieldType?: T;
-              required?: T;
-              width?: T;
-              placeholder?: T;
-              options?:
-                | T
-                | {
-                    option?: T;
-                    id?: T;
-                  };
-              googleEntryId?: T;
-              id?: T;
-            };
-        id?: T;
-      };
-  confirmationMessage?: T;
-  showCertificate?: T;
-  certificateTemplate?: T;
-  certificateConfig?:
-    | T
-    | {
-        nameX?: T;
-        nameY?: T;
-        fontSize?: T;
-        color?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "form-submissions_select".
- */
-export interface FormSubmissionsSelect<T extends boolean = true> {
-  form?: T;
-  answers?: T;
-  googleForwardStatus?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resources_select".
  */
 export interface ResourcesSelect<T extends boolean = true> {
+  _order?: T;
   title?: T;
   slug?: T;
   description?: T;
@@ -1661,10 +1428,7 @@ export interface ResourcesSelect<T extends boolean = true> {
   difficulty?: T;
   tags?: T;
   estimatedReadTime?: T;
-  featured?: T;
-  type?: T;
   badge?: T;
-  lastUpdated?: T;
   content?:
     | T
     | {
@@ -1779,17 +1543,18 @@ export interface SimulatorLinkBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "simulators_select".
+ * via the `definition` "tutorials_select".
  */
-export interface SimulatorsSelect<T extends boolean = true> {
+export interface TutorialsSelect<T extends boolean = true> {
+  _order?: T;
   title?: T;
   slug?: T;
   description?: T;
   thumbnail?: T;
-  category?: T;
-  tags?: T;
   difficulty?: T;
-  estimatedTime?: T;
+  tags?: T;
+  estimatedReadTime?: T;
+  badge?: T;
   content?:
     | T
     | {
@@ -1801,9 +1566,279 @@ export interface SimulatorsSelect<T extends boolean = true> {
         rowBlock?: T | RowBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
-  iframeUrl?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "simulators_select".
+ */
+export interface SimulatorsSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  slug?: T;
+  description?: T;
+  thumbnail?: T;
+  tags?: T;
+  difficulty?: T;
+  estimatedTime?: T;
+  launchUrl?: T;
+  videoUrl?: T;
+  content?:
+    | T
+    | {
+        textBlock?: T | TextBlockSelect<T>;
+        codeBlock?: T | CodeBlockSelect<T>;
+        tableBlock?: T | TableBlockSelect<T>;
+        graphBlock?: T | GraphBlockSelect<T>;
+        imageBlock?: T | ImageBlockSelect<T>;
+        rowBlock?: T | RowBlockSelect<T>;
+        simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  slug?: T;
+  description?: T;
+  thumbnail?: T;
+  status?: T;
+  team?: T;
+  tags?: T;
+  repoUrl?: T;
+  demoUrl?: T;
+  content?:
+    | T
+    | {
+        textBlock?: T | TextBlockSelect<T>;
+        codeBlock?: T | CodeBlockSelect<T>;
+        tableBlock?: T | TableBlockSelect<T>;
+        graphBlock?: T | GraphBlockSelect<T>;
+        imageBlock?: T | ImageBlockSelect<T>;
+        rowBlock?: T | RowBlockSelect<T>;
+        simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  fullName?: T;
+  photo?: T;
+  category?: T;
+  roles?: T;
+  bio?: T;
+  startYear?: T;
+  endYear?: T;
+  github?: T;
+  linkedin?: T;
+  socialAccounts?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-roles_select".
+ */
+export interface MemberRolesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-categories_select".
+ */
+export interface MemberCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-photo_select".
+ */
+export interface MemberPhotoSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        profile?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms_select".
+ */
+export interface FormsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  type?: T;
+  active?: T;
+  deadline?: T;
+  description?: T;
+  googleFormUrl?: T;
+  steps?:
+    | T
+    | {
+        stepTitle?: T;
+        stepDescription?: T;
+        fields?:
+          | T
+          | {
+              label?: T;
+              fieldType?: T;
+              required?: T;
+              width?: T;
+              placeholder?: T;
+              options?:
+                | T
+                | {
+                    option?: T;
+                    id?: T;
+                  };
+              googleEntryId?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  confirmationMessage?: T;
+  showCertificate?: T;
+  certificateTemplate?: T;
+  certificateConfig?:
+    | T
+    | {
+        nameX?: T;
+        nameY?: T;
+        fontSize?: T;
+        color?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions_select".
+ */
+export interface FormSubmissionsSelect<T extends boolean = true> {
+  form?: T;
+  answers?: T;
+  googleForwardStatus?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        tablet?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1814,6 +1849,28 @@ export interface TagsSelect<T extends boolean = true> {
   slug?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2160,22 +2217,22 @@ export interface TaskCreateCollectionExport {
     name: string;
     batchSize?: number | null;
     collectionSlug:
-      | 'users'
-      | 'media'
-      | 'audio-files'
-      | 'audio'
-      | 'achievements'
       | 'events'
+      | 'achievements'
+      | 'gallery'
+      | 'resources'
+      | 'tutorials'
+      | 'simulators'
+      | 'projects'
+      | 'members'
+      | 'member-roles'
       | 'member-categories'
       | 'member-photo'
-      | 'member-roles'
-      | 'members'
-      | 'gallery'
       | 'forms'
       | 'form-submissions'
-      | 'resources'
-      | 'simulators'
+      | 'media'
       | 'tags'
+      | 'users'
       | 'exports'
       | 'imports';
     drafts?: ('yes' | 'no') | null;
