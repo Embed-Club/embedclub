@@ -4,10 +4,25 @@ export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
+    group: 'System',
+    description:
+      'Admin logins. New accounts cannot be created from here — run scripts/createBackupAdmin.ts to add one.',
   },
   auth: true,
+  access: {
+    // Accounts are provisioned out-of-band (scripts/createBackupAdmin.ts) so a
+    // compromised session cannot mint itself a second admin, and so the club
+    // never accumulates stale logins. `create: () => false` blocks the REST,
+    // GraphQL, and Local API paths alike — the seed script sets
+    // `overrideAccess: true` to get past it deliberately.
+    create: () => false,
+    read: ({ req: { user } }) => Boolean(user),
+    update: ({ req: { user } }) => Boolean(user),
+    // Deleting the last admin would lock everyone out of the panel; deletion is
+    // a DB-level operation on purpose.
+    delete: () => false,
+  },
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    // Email + password come from `auth: true`.
   ],
 }

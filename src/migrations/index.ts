@@ -4,6 +4,10 @@ import * as migration_20260712_005246_add_globals_badges_deadline from './202607
 import * as migration_20260712_203058_add_native_forms from './20260712_203058_add_native_forms';
 import * as migration_20260713_120901_admin_qol_batch from './20260713_120901_admin_qol_batch';
 import * as migration_20260713_130000_gallery_photos_captions from './20260713_130000_gallery_photos_captions';
+import * as migration_20260728_100000_remove_audio from './20260728_100000_remove_audio';
+import * as migration_20260728_110000_learning_split from './20260728_110000_learning_split';
+import * as migration_20260728_120000_gallery_uploads from './20260728_120000_gallery_uploads';
+import * as migration_20260728_130000_add_projects from './20260728_130000_add_projects';
 
 export const migrations = [
   {
@@ -35,5 +39,25 @@ export const migrations = [
     up: migration_20260713_130000_gallery_photos_captions.up,
     down: migration_20260713_130000_gallery_photos_captions.down,
     name: '20260713_130000_gallery_photos_captions',
+  },
+  {
+    up: migration_20260728_100000_remove_audio.up,
+    down: migration_20260728_100000_remove_audio.down,
+    name: '20260728_100000_remove_audio',
+  },
+  {
+    up: migration_20260728_110000_learning_split.up,
+    down: migration_20260728_110000_learning_split.down,
+    name: '20260728_110000_learning_split',
+  },
+  {
+    up: migration_20260728_120000_gallery_uploads.up,
+    down: migration_20260728_120000_gallery_uploads.down,
+    name: '20260728_120000_gallery_uploads',
+  },
+  {
+    up: migration_20260728_130000_add_projects.up,
+    down: migration_20260728_130000_add_projects.down,
+    name: '20260728_130000_add_projects',
   },
 ];

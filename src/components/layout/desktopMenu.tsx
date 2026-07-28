@@ -4,6 +4,7 @@ import {
   Bot,
   Boxes,
   CalendarRange,
+  FolderGit2,
   Images,
   LibraryBig,
   LucideHome,
@@ -85,6 +86,13 @@ const data = {
     },
   ],
   navThird: [
+    {
+      // Plain ASCII: unlike the neighbouring labels, PROJECTS has no A/M/V, so
+      // it needs none of the private-use codepoints the display font maps.
+      title: 'PROJECTS',
+      url: '/projects',
+      icon: FolderGit2,
+    },
     {
       title: 'GLLERY',
       url: '/gallery',

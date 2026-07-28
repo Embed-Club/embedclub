@@ -1,7 +1,7 @@
 import { EmptyState } from '@/components/common/emptyState'
 import Masonry from '@/components/features/gallery/masonry'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
-import type { Gallery, Media } from '@/payload/payload-types'
+import type { Gallery } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import type { Metadata } from 'next'
 import { getPayload } from 'payload'
@@ -24,6 +24,8 @@ async function getGallery(): Promise<Gallery[]> {
       depth: 1,
       limit: 1000,
       pagination: false,
+      // Drag-arranged order from the admin list view
+      sort: '_order',
     })
     return res.docs
   } catch (error) {
@@ -32,8 +34,8 @@ async function getGallery(): Promise<Gallery[]> {
   }
 }
 
-/** Flatten every gallery doc's photos (image + caption) into masonry items. */
-function toMasonryItems(galleries: Gallery[]) {
+/** Each gallery doc is one uploaded photo (file + caption). */
+function toMasonryItems(photos: Gallery[]) {
   const items: {
     id: string
     img: string
@@ -42,25 +44,20 @@ function toMasonryItems(galleries: Gallery[]) {
     width: number
     caption?: string
   }[] = []
-  for (const gallery of galleries) {
-    for (const photo of gallery.photos ?? []) {
-      const image = photo.image
-      if (typeof image !== 'object' || image === null) continue
-      const media = image as Media
-      // `tablet` keeps the NATURAL aspect ratio (thumbnail/card are square-ish
-      // crops that flatten masonry into a grid). Fall back to the original.
-      const src = media.sizes?.tablet?.url || media.url
-      if (!src) continue
-      items.push({
-        id: `${gallery.id}-${photo.id ?? media.id}`,
-        img: src,
-        url: media.url ?? src,
-        // Natural dimensions drive the masonry column heights.
-        height: media.height ?? 400,
-        width: media.width ?? 400,
-        caption: photo.caption ?? undefined,
-      })
-    }
+  for (const photo of photos) {
+    // `tablet` keeps the NATURAL aspect ratio (thumbnail/card are square-ish
+    // crops that flatten masonry into a grid). Fall back to the original.
+    const src = photo.sizes?.tablet?.url || photo.url
+    if (!src) continue
+    items.push({
+      id: String(photo.id),
+      img: src,
+      url: photo.url ?? src,
+      // Natural dimensions drive the masonry column heights.
+      height: photo.height ?? 400,
+      width: photo.width ?? 400,
+      caption: photo.caption ?? undefined,
+    })
   }
   return items
 }

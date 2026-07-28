@@ -11,6 +11,7 @@ export const FormSubmissions: CollectionConfig = {
     useAsTitle: 'id',
     defaultColumns: ['form', 'googleForwardStatus', 'createdAt'],
     description: 'Read-only log of website form submissions',
+    group: 'Forms',
   },
   access: {
     read: ({ req: { user } }) => Boolean(user), // admins only

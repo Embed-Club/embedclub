@@ -18,6 +18,8 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
       depth: 1,
       limit: 100,
       pagination: false,
+      // Drag-arranged order from the admin list view, top row first
+      sort: '_order',
     })
 
     if (!simulators.docs || simulators.docs.length === 0) {
@@ -53,11 +55,13 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
         description: simulator.description || '',
         image: imageUrl,
         tags,
-        category: simulator.category || '',
         slug: simulator.slug || '',
         difficulty: simulator.difficulty || undefined,
         estimatedTime: simulator.estimatedTime ?? undefined,
         createdAt: simulator.createdAt,
+        launchUrl: simulator.launchUrl || undefined,
+        videoUrl: simulator.videoUrl || undefined,
+        content: simulator.content,
       }
     })
   } catch (error) {

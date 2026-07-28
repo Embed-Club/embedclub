@@ -9,7 +9,6 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Achievements } from './collections/achievements'
-import { Audio, AudioFiles } from './collections/audio'
 import { Events } from './collections/events'
 import { FormSubmissions } from './collections/formSubmissions'
 import { Forms } from './collections/forms'
@@ -19,9 +18,11 @@ import { MemberCategories } from './collections/memberCategories'
 import { MemberPhoto } from './collections/memberPhoto'
 import { MemberRoles } from './collections/memberRoles'
 import { Members } from './collections/members'
+import { Projects } from './collections/projects'
 import { Resources } from './collections/resources'
 import { Simulators } from './collections/simulators'
 import { Tags } from './collections/tags'
+import { Tutorials } from './collections/tutorials'
 import { Users } from './collections/users'
 import { AboutPage } from './globals/aboutPage'
 import { FeedbackPage } from './globals/feedbackPage'
@@ -37,23 +38,30 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  // Order here drives the order *within* each admin nav group (see each
+  // collection's `admin.group`), so keep grouped collections adjacent.
   collections: [
-    Users,
-    Media,
-    AudioFiles,
-    Audio,
-    Achievements,
+    // Content
     Events,
+    Achievements,
+    Gallery,
+    Resources,
+    Tutorials,
+    Simulators,
+    Projects,
+    // Members
+    Members,
+    MemberRoles,
     MemberCategories,
     MemberPhoto,
-    MemberRoles,
-    Members,
-    Gallery,
+    // Forms
     Forms,
     FormSubmissions,
-    Resources,
-    Simulators,
+    // Library
+    Media,
     Tags,
+    // System
+    Users,
   ],
   globals: [AboutPage, FeedbackPage, HomeFeaturedMembers],
   editor: lexicalEditor(),
@@ -92,7 +100,7 @@ export default buildConfig({
             collections: {
               media: true,
               'member-photo': true,
-              'audio-files': true,
+              gallery: true,
             },
             bucket: process.env.S3_BUCKET || '',
             config: {

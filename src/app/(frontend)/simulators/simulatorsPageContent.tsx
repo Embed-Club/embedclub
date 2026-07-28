@@ -3,7 +3,9 @@
 import { EmptyState } from '@/components/common/emptyState'
 import { SearchBar } from '@/components/common/searchBar'
 import { SimulatorCards } from '@/components/features/simulators/simulatorCards'
-import { useEffect, useMemo, useState } from 'react'
+import { SimulatorModal } from '@/components/features/simulators/simulatorModal'
+import type { Simulator } from '@/payload/payload-types'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export interface SimulatorCardData {
   id: string
@@ -11,11 +13,16 @@ export interface SimulatorCardData {
   description: string
   image: string
   tags: string[]
-  category?: string
   slug: string
   difficulty?: string
   estimatedTime?: number
   createdAt?: string
+  /** Where the simulator itself lives — opened from the modal. */
+  launchUrl?: string
+  /** Optional walkthrough video played inside the modal. */
+  videoUrl?: string
+  /** Optional "how to use" blocks rendered under the video. */
+  content?: Simulator['content']
 }
 
 interface SimulatorsPageContentProps {
@@ -25,10 +32,14 @@ interface SimulatorsPageContentProps {
 export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContentProps) {
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [sortBy, setSortBy] = useState<string>('relevant')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({})
+  const [activeSimulator, setActiveSimulator] = useState<SimulatorCardData | null>(null)
+
+  const openSimulator = useCallback((card: SimulatorCardData) => {
+    setActiveSimulator(card)
+  }, [])
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -45,9 +56,7 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
     if (normalized) {
       filtered = filtered.filter((simulator) => {
         const tagsText = simulator.tags.join(' ').toLowerCase()
-        const categoryText = simulator.category ? simulator.category.toLowerCase() : ''
-        const haystack =
-          `${simulator.title} ${simulator.description} ${tagsText} ${categoryText}`.toLowerCase()
+        const haystack = `${simulator.title} ${simulator.description} ${tagsText}`.toLowerCase()
         return haystack.includes(normalized)
       })
     }
@@ -55,12 +64,6 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
     if (selectedTags.length > 0) {
       filtered = filtered.filter((simulator) =>
         selectedTags.every((tag) => simulator.tags.includes(tag)),
-      )
-    }
-
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(
-        (simulator) => simulator.category?.toLowerCase() === selectedCategory.toLowerCase(),
       )
     }
 
@@ -101,20 +104,14 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
     })
 
     return sorted
-  }, [debouncedQuery, simulators, selectedCategory, sortBy, selectedTags, dateRange])
-
-  const categories = useMemo(
-    () => Array.from(new Set(simulators.map((r) => r.category).filter(Boolean))) as string[],
-    [simulators],
-  )
+  }, [debouncedQuery, simulators, sortBy, selectedTags, dateRange])
 
   const activeTags = useMemo(
     () => Array.from(new Set(simulators.flatMap((r) => r.tags))).filter(Boolean) as string[],
     [simulators],
   )
 
-  const hasSearched =
-    debouncedQuery.trim().length > 0 || selectedTags.length > 0 || selectedCategory !== 'all'
+  const hasSearched = debouncedQuery.trim().length > 0 || selectedTags.length > 0
 
   if (simulators.length === 0) {
     return <EmptyState title="No Simulators Yet" />
@@ -128,12 +125,9 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
           placeholders={[
             'Search simulators...',
             'Try: UART, SPI, Oscilloscope...',
-            'Search by tag or category...',
+            'Search by tag...',
           ]}
           onChange={(event) => setQuery(event.target.value)}
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
           sortBy={sortBy}
           onSortChange={setSortBy}
           activeTags={activeTags}
@@ -153,8 +147,16 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
           </p>
         </div>
       ) : (
-        <SimulatorCards simulators={filteredSimulators} />
+        <SimulatorCards simulators={filteredSimulators} onOpen={openSimulator} />
       )}
+
+      <SimulatorModal
+        simulator={activeSimulator}
+        open={activeSimulator !== null}
+        onOpenChange={(next) => {
+          if (!next) setActiveSimulator(null)
+        }}
+      />
     </>
   )
 }

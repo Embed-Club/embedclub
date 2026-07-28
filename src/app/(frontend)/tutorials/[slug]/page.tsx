@@ -5,60 +5,60 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 
-interface ResourceDetailPageProps {
+interface TutorialDetailPageProps {
   params: Promise<{
     slug: string
   }>
 }
 
-async function getResource(slug: string) {
+async function getTutorial(slug: string) {
   try {
     const payload = await getPayload({ config })
 
     const result = await payload.find({
-      collection: 'resources',
+      collection: 'tutorials',
       where: { slug: { equals: slug } },
       depth: 2,
     })
 
     return result.docs[0] || null
   } catch (error) {
-    console.error('[Resource Detail] Error fetching resource:', error)
+    console.error('[Tutorial Detail] Error fetching tutorial:', error)
     return null
   }
 }
 
-export async function generateMetadata({ params }: ResourceDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: TutorialDetailPageProps): Promise<Metadata> {
   const { slug } = await params
-  const resource = await getResource(slug)
+  const tutorial = await getTutorial(slug)
 
-  if (!resource) return { title: 'Resource Not Found' }
+  if (!tutorial) return { title: 'Tutorial Not Found' }
 
   return {
-    title: resource.title,
-    description: resource.description,
-    alternates: { canonical: `/resources/${slug}` },
+    title: tutorial.title,
+    description: tutorial.description,
+    alternates: { canonical: `/tutorials/${slug}` },
     openGraph: {
-      title: resource.title,
-      description: resource.description ?? undefined,
+      title: tutorial.title,
+      description: tutorial.description ?? undefined,
       type: 'article',
-      url: `/resources/${slug}`,
+      url: `/tutorials/${slug}`,
     },
   }
 }
 
-export default async function ResourceDetailPage({ params }: ResourceDetailPageProps) {
+export default async function TutorialDetailPage({ params }: TutorialDetailPageProps) {
   const { slug } = await params
-  const resource = await getResource(slug)
+  const tutorial = await getTutorial(slug)
 
-  if (!resource) {
+  if (!tutorial) {
     notFound()
   }
 
   return (
     <SidebarShell>
       <MainbarShell>
-        <LearningDetail doc={resource} basePath="/resources" backLabel="resources" />
+        <LearningDetail doc={tutorial} basePath="/tutorials" backLabel="tutorials" />
       </MainbarShell>
     </SidebarShell>
   )

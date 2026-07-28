@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-  const tutorials = await getResourceCards('tutorial')
+  const tutorials = await getResourceCards('tutorials')
 
   return (
     <SidebarShell>
@@ -21,7 +21,11 @@ export default async function Page() {
           TUTORIALS
         </h1>
         <div className="h-full w-full px-2 pt-16 md:pt-32">
-          <ResourcesPageContent resources={tutorials} emptyTitle="No Tutorials Yet" />
+          <ResourcesPageContent
+            resources={tutorials}
+            emptyTitle="No Tutorials Yet"
+            basePath="/tutorials"
+          />
         </div>
       </MainbarShell>
     </SidebarShell>
