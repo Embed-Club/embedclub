@@ -25,7 +25,6 @@ import { Tags } from './collections/tags'
 import { Tutorials } from './collections/tutorials'
 import { Users } from './collections/users'
 import { AboutPage } from './globals/aboutPage'
-import { FeedbackPage } from './globals/feedbackPage'
 import { HomeFeaturedMembers } from './globals/homeFeaturedMembers'
 
 const filename = fileURLToPath(import.meta.url)
@@ -63,7 +62,7 @@ export default buildConfig({
     // System
     Users,
   ],
-  globals: [AboutPage, FeedbackPage, HomeFeaturedMembers],
+  globals: [AboutPage, HomeFeaturedMembers],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -89,6 +88,9 @@ export default buildConfig({
         { slug: 'tags' },
         { slug: 'member-roles' },
         { slug: 'member-categories' },
+        // Officers export responses to CSV/JSON straight from the list view —
+        // which is most of why a Google Sheet mirror was wanted.
+        { slug: 'form-submissions' },
       ],
     }),
     // S3 is opt-in via env, not tied to NODE_ENV — so a local production build

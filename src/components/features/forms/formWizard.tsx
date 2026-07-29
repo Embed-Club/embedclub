@@ -25,9 +25,12 @@ type Field = NonNullable<Step['fields']>[number]
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-function entryKey(field: Field): string {
-  const raw = field.googleEntryId.trim()
-  return raw.startsWith('entry.') ? raw : `entry.${raw}`
+/**
+ * Answers are keyed by the field row's Payload id, which is stable across
+ * label edits. (It replaced the Google Form `entry.<id>` key in 2026-07.)
+ */
+function fieldKey(field: Field): string {
+  return field.id ?? ''
 }
 
 interface FormWizardProps {
@@ -43,6 +46,8 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<SubmitFormResult | null>(null)
+  // Bots fill every field they find; people never see this one.
+  const [honeypot, setHoneypot] = useState('')
 
   const step = steps[stepIndex]
   const isLast = stepIndex === steps.length - 1
@@ -60,7 +65,7 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
   const validateStep = (): boolean => {
     const next: Record<string, string> = {}
     for (const field of step?.fields ?? []) {
-      const key = entryKey(field)
+      const key = fieldKey(field)
       const value = answers[key]
       const empty =
         value === undefined || value === '' || (Array.isArray(value) && value.length === 0)
@@ -87,7 +92,7 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
   const handleSubmit = async () => {
     if (!validateStep()) return
     setSubmitting(true)
-    const res = await submitForm(form.slug, answers)
+    const res = await submitForm(form.slug, answers, honeypot)
     setSubmitting(false)
     if (res.success) {
       setResult(res)
@@ -96,7 +101,7 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
       // jump back to the first step containing an error
       const errKeys = Object.keys(res.fieldErrors)
       const idx = steps.findIndex((s) =>
-        (s.fields ?? []).some((f) => errKeys.includes(entryKey(f))),
+        (s.fields ?? []).some((f) => errKeys.includes(fieldKey(f))),
       )
       if (idx >= 0) setStepIndex(idx)
     } else {
@@ -195,14 +200,29 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
           )}
         </div>
 
+        {/* Honeypot: off-screen rather than display:none, which some bots skip.
+            aria-hidden + tabIndex -1 keep it away from real users entirely. */}
+        <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+          <label htmlFor="company-website">Company website</label>
+          <input
+            id="company-website"
+            name="company-website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
           {(step?.fields ?? []).map((field) => (
             <WizardField
-              key={entryKey(field)}
+              key={fieldKey(field)}
               field={field}
-              value={answers[entryKey(field)]}
-              error={errors[entryKey(field)]}
-              onChange={(v) => setAnswer(entryKey(field), v)}
+              value={answers[fieldKey(field)]}
+              error={errors[fieldKey(field)]}
+              onChange={(v) => setAnswer(fieldKey(field), v)}
             />
           ))}
         </div>
@@ -250,7 +270,7 @@ interface WizardFieldProps {
 }
 
 function WizardField({ field, value, error, onChange }: WizardFieldProps) {
-  const id = entryKey(field)
+  const id = fieldKey(field)
   const options = (field.options ?? []).map((o) => o.option)
   const str = typeof value === 'string' ? value : ''
   const arr = Array.isArray(value) ? value : []
@@ -350,6 +370,9 @@ function WizardField({ field, value, error, onChange }: WizardFieldProps) {
         {field.required && <span className="text-primary"> *</span>}
       </Label>
       {control}
+      {field.helpText && !error && (
+        <p className="text-xs text-muted-foreground">{field.helpText}</p>
+      )}
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )

@@ -1,19 +1,41 @@
 import type { CollectionConfig } from 'payload'
+import { APIError } from 'payload'
+
+import { generateSlug } from './learningFields'
+
+type FieldRow = { role?: string | null }
+type StepRow = { fields?: FieldRow[] | null }
+
+/** Count how many questions across the whole form carry a given role. */
+function countRole(steps: StepRow[] | null | undefined, role: string): number {
+  let n = 0
+  for (const step of steps ?? []) {
+    for (const field of step.fields ?? []) {
+      if (field.role === role) n += 1
+    }
+  }
+  return n
+}
 
 /**
- * Native form builder. Organizers recreate a Google Form's fields here
- * (mirroring each field's `entry.<id>` from the Form's pre-filled link);
- * the website renders a multi-step wizard, stores every submission in
- * `form-submissions`, and forwards the answers to the Google Form so the
- * linked Sheet stays the organizers' source of truth.
+ * Native form builder. Officers author the form here and it is rendered as a
+ * multi-step wizard on the site; answers are stored in `form-submissions`,
+ * which is the club's record — there is no Google Form behind it.
+ *
+ * Until 2026-07-28 each field carried a hand-copied `entry.<id>` from a Google
+ * Form and submissions were forwarded there. That was dropped: it was the most
+ * error-prone thing an officer had to do, and Google returns 200 even when the
+ * entry IDs are wrong, so a typo silently sent responses nowhere.
+ *
+ * Answers are keyed by each field row's Payload `id`, which is stable across
+ * label edits. Renaming a question therefore no longer orphans older answers.
  */
 export const Forms: CollectionConfig = {
   slug: 'forms',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'type', 'active', 'deadline', 'updatedAt'],
-    description:
-      'Forms shown on the website. Answers are saved here and forwarded to the linked Google Form.',
+    defaultColumns: ['title', 'type', 'relatedEvent', 'active', 'deadline'],
+    description: 'Forms shown on the website. Answers are stored under Form Submissions.',
     group: 'Forms',
   },
   access: {
@@ -30,7 +52,11 @@ export const Forms: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Generated from the title.',
+      },
     },
     {
       name: 'type',
@@ -43,6 +69,16 @@ export const Forms: CollectionConfig = {
         { label: 'General', value: 'general' },
       ],
       admin: { position: 'sidebar' },
+    },
+    {
+      name: 'relatedEvent',
+      type: 'relationship',
+      relationTo: 'events',
+      admin: {
+        position: 'sidebar',
+        description:
+          'The event this form belongs to. Events are created first, so the link is set here — the event page then shows a button to this form automatically.',
+      },
     },
     {
       name: 'active',
@@ -67,15 +103,6 @@ export const Forms: CollectionConfig = {
       type: 'textarea',
       admin: {
         description: 'Shown under the form title',
-      },
-    },
-    {
-      name: 'googleFormUrl',
-      type: 'text',
-      required: true,
-      admin: {
-        description:
-          'The Google Form link (viewform URL). Submissions are forwarded to it so responses appear in the linked Sheet.',
       },
     },
     {
@@ -132,6 +159,20 @@ export const Forms: CollectionConfig = {
               ],
             },
             {
+              name: 'role',
+              type: 'select',
+              defaultValue: 'none',
+              options: [
+                { label: 'Just an answer', value: 'none' },
+                { label: "The person's name", value: 'name' },
+                { label: "The person's email", value: 'email' },
+              ],
+              admin: {
+                description:
+                  'Marks which question holds the name and which holds the email. Required for certificates — the name is printed on them and the email is where they are sent.',
+              },
+            },
+            {
               type: 'row',
               fields: [
                 {
@@ -158,12 +199,19 @@ export const Forms: CollectionConfig = {
               type: 'text',
             },
             {
+              name: 'helpText',
+              type: 'text',
+              admin: {
+                description: 'Optional hint shown under the field',
+              },
+            },
+            {
               name: 'options',
               type: 'array',
               admin: {
                 condition: (_data, siblingData) =>
                   ['select', 'radio', 'checkbox'].includes(siblingData?.fieldType),
-                description: 'Choices — must match the Google Form options exactly',
+                description: 'Choices offered for this question',
               },
               fields: [
                 {
@@ -172,15 +220,6 @@ export const Forms: CollectionConfig = {
                   required: true,
                 },
               ],
-            },
-            {
-              name: 'googleEntryId',
-              type: 'text',
-              required: true,
-              admin: {
-                description:
-                  'From the Google Form pre-filled link, e.g. entry.123456789 (digits alone also work)',
-              },
             },
           ],
         },
@@ -192,11 +231,53 @@ export const Forms: CollectionConfig = {
       defaultValue: 'Your response has been recorded. Thank you!',
     },
     {
+      name: 'sheetId',
+      label: 'Google Sheet',
+      type: 'text',
+      admin: {
+        description:
+          'Optional. Paste the Sheet URL (or its id) to mirror this form’s responses there — one sheet per form. Share it with the service account address as an Editor first, or nothing will be written. Leave empty to use the default sheet, or to skip Sheets entirely.',
+      },
+      hooks: {
+        // Officers will paste the whole URL from the address bar; keep the id.
+        beforeValidate: [
+          ({ value }) => {
+            if (typeof value !== 'string') return value
+            const match = value.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/)
+            return match ? match[1] : value.trim()
+          },
+        ],
+      },
+    },
+    {
       name: 'showCertificate',
       type: 'checkbox',
       defaultValue: false,
       admin: {
-        description: 'Offer a certificate download after submitting (feedback forms)',
+        description: 'Give respondents a certificate (usually for feedback forms)',
+      },
+    },
+    {
+      name: 'certificateDelivery',
+      type: 'select',
+      defaultValue: 'immediate',
+      options: [
+        { label: 'Straight after they submit', value: 'immediate' },
+        { label: 'Email everyone at a set time', value: 'scheduled' },
+      ],
+      admin: {
+        condition: (data) => data.showCertificate,
+        description:
+          'Immediate also lets them download it on the spot. Scheduled emails everyone who has submitted once the time passes, and keeps emailing late submitters after that.',
+      },
+    },
+    {
+      name: 'certificateSendAt',
+      type: 'date',
+      admin: {
+        condition: (data) => data.showCertificate && data.certificateDelivery === 'scheduled',
+        date: { pickerAppearance: 'dayAndTime' },
+        description: 'When the certificates go out',
       },
     },
     {
@@ -222,4 +303,32 @@ export const Forms: CollectionConfig = {
       ],
     },
   ],
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (data?.title && !data?.slug) {
+          data.slug = generateSlug(data.title)
+        }
+
+        // A certificate needs a name to print and an address to send to. Catch
+        // that here rather than at send time, when the event is already over.
+        if (data?.showCertificate) {
+          const names = countRole(data.steps, 'name')
+          const emails = countRole(data.steps, 'email')
+          const problems: string[] = []
+          if (names !== 1) {
+            problems.push(`exactly one question marked as the person's name (found ${names})`)
+          }
+          if (emails !== 1) {
+            problems.push(`exactly one question marked as the person's email (found ${emails})`)
+          }
+          if (problems.length > 0) {
+            throw new APIError(`Certificates need ${problems.join(', and ')}.`, 400)
+          }
+        }
+
+        return data
+      },
+    ],
+  },
 }

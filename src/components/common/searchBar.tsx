@@ -11,9 +11,52 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { cn } from '@/lib/utils'
 import { ArrowUpDown, Calendar, Filter, X } from 'lucide-react'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
+
+/**
+ * Icon-only trailing control that widens on hover/focus/open to reveal its
+ * label.
+ *
+ * The original paired a fixed narrow width with `overflow-visible`, so the
+ * label rendered *outside* its button and overlapped its neighbours — worst on
+ * pages with fewer controls (e.g. simulators, which has no category filter).
+ *
+ * Two things collapse together: the button's width, and the label's own
+ * max-width (see below). Clipping alone was not enough, because
+ * `overflow-hidden` clips at the border box, so the button's right padding hid
+ * nothing and a sliver of text stayed visible.
+ *
+ * `[&>svg:last-child]:hidden` drops the ChevronDown that shadcn's
+ * `SelectTrigger` always appends — no room for it beside an icon and a label,
+ * and the icon already carries the meaning. It only matches the Select
+ * triggers; on the Date buttons the last child is the label span.
+ */
+const searchControlClassName = cn(
+  'group/ctl flex h-full w-10 shrink-0 items-center justify-center gap-0 overflow-hidden whitespace-nowrap rounded-none border-0 bg-transparent px-3 text-sm shadow-none outline-none',
+  'transition-[width,background-color] duration-200 ease-out',
+  'hover:w-24 focus-visible:w-24 data-[state=open]:w-24',
+  'hover:bg-foreground/5 focus-visible:z-10 focus-visible:bg-foreground/5 data-[state=open]:bg-foreground/5',
+  '[&>svg:last-child]:hidden',
+)
+
+/**
+ * The label collapses to zero width of its own accord, rather than relying on
+ * the button being narrow enough to clip it. `overflow-hidden` clips at the
+ * border box, so right padding hides nothing — a label positioned past the
+ * icon still peeked out of the collapsed button. Its left gap lives in `pl`
+ * here (not `gap` on the button) so that it too disappears at zero width,
+ * leaving the collapsed button exactly icon-sized.
+ */
+const searchControlLabelClassName = cn(
+  'max-w-0 overflow-hidden whitespace-nowrap pl-0 opacity-0',
+  'transition-[max-width,opacity,padding] duration-200 ease-out',
+  'group-hover/ctl:max-w-[4rem] group-hover/ctl:pl-1.5 group-hover/ctl:opacity-100',
+  'group-focus-visible/ctl:max-w-[4rem] group-focus-visible/ctl:pl-1.5 group-focus-visible/ctl:opacity-100',
+  'group-data-[state=open]/ctl:max-w-[4rem] group-data-[state=open]/ctl:pl-1.5 group-data-[state=open]/ctl:opacity-100',
+)
 
 const searchBarStyles = `
 @keyframes placeholder-slide-up {
@@ -260,9 +303,9 @@ export function SearchBar({
               {categories.length > 0 && onCategoryChange ? (
                 <>
                   <Select value={selectedCategory} onValueChange={onCategoryChange}>
-                    <SelectTrigger className="group flex items-center justify-center w-8 h-full gap-1 overflow-visible rounded-none shadow-none transition-all duration-200 hover:w-24 data-[state=open]:w-24 border-0 bg-transparent hover:bg-white/2 data-[state=open]:bg-white/2 focus-visible:z-10">
+                    <SelectTrigger className={searchControlClassName}>
                       <Filter className="h-4 w-4 flex-shrink-0" />
-                      <span className="whitespace-nowrap">Filter</span>
+                      <span className={searchControlLabelClassName}>Filter</span>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
@@ -279,9 +322,9 @@ export function SearchBar({
               ) : null}
 
               <Select value={sortBy} onValueChange={onSortChange}>
-                <SelectTrigger className="group flex items-center justify-center w-8 h-full gap-1 overflow-visible rounded-none shadow-none transition-all duration-200 hover:w-24 data-[state=open]:w-24 border-0 bg-transparent hover:bg-white/2 data-[state=open]:bg-white/2 focus-visible:z-10">
-                  <span className="whitespace-nowrap">Sort</span>
+                <SelectTrigger className={searchControlClassName}>
                   <ArrowUpDown className="h-4 w-4 flex-shrink-0" />
+                  <span className={searchControlLabelClassName}>Sort</span>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="relevant">Most Relevant</SelectItem>
@@ -298,10 +341,10 @@ export function SearchBar({
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="group flex items-center justify-center w-10 h-full gap-1 overflow-visible rounded-none shadow-none transition-all duration-200 hover:w-24 data-[state=open]:w-24 border-0 bg-transparent hover:bg-white/2 data-[state=open]:bg-white/2 focus-visible:z-10 rounded-r-full pr-3"
+                      className={cn(searchControlClassName, 'rounded-r-full pr-4 -mr-1')}
                     >
                       <Calendar className="h-4 w-4 flex-shrink-0" />
-                      <span className="whitespace-nowrap">Date</span>
+                      <span className={searchControlLabelClassName}>Date</span>
                     </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80 bg-zinc-900 border-zinc-800 p-4">
@@ -357,10 +400,10 @@ export function SearchBar({
                   <DialogTrigger asChild>
                     <button
                       type="button"
-                      className="group flex items-center justify-center w-10 h-full gap-1 overflow-visible rounded-none shadow-none transition-all duration-200 hover:w-24 data-[state=open]:w-24 border-0 bg-transparent hover:bg-white/2 data-[state=open]:bg-white/2 focus-visible:z-10 rounded-r-full pr-3"
+                      className={cn(searchControlClassName, 'rounded-r-full pr-4 -mr-1')}
                     >
                       <Calendar className="h-4 w-4 flex-shrink-0" />
-                      <span className="whitespace-nowrap">Date</span>
+                      <span className={searchControlLabelClassName}>Date</span>
                     </button>
                   </DialogTrigger>
                   <DialogContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
