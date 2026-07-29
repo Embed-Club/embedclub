@@ -9,29 +9,30 @@ import { getPayload } from 'payload'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Feedback',
-  description: 'Submit feedback for Embed Club workshops and events.',
+  title: 'Forms',
+  description: 'Registrations and sign-up forms for Embed Club events.',
 }
 
-async function getFeedbackForms() {
+async function getForms() {
   try {
     const payload = await getPayload({ config })
     const forms = await payload.find({
       collection: 'forms',
-      where: { type: { equals: 'feedback' } },
+      // Feedback has its own page; this lists everything else.
+      where: { type: { not_equals: 'feedback' } },
       sort: '-createdAt',
       limit: 50,
       depth: 1,
     })
     return forms.docs
   } catch (error) {
-    console.error('[Feedback] Error fetching forms:', error)
+    console.error('[Forms] Error fetching forms:', error)
     return []
   }
 }
 
 export default async function Page() {
-  const forms = await getFeedbackForms()
+  const forms = await getForms()
   const now = Date.now()
   const cards = forms.map((form) => formToCard(form, now))
 
@@ -39,10 +40,10 @@ export default async function Page() {
     <SidebarShell>
       <MainbarShell>
         <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-          FEEDBACK
+          FORMS
         </h1>
         <div className="h-full w-full px-2 pt-16 md:pt-32">
-          <FormsListing cards={cards} emptyTitle="No Feedback Forms Yet" />
+          <FormsListing cards={cards} emptyTitle="No Open Forms Right Now" />
         </div>
       </MainbarShell>
     </SidebarShell>

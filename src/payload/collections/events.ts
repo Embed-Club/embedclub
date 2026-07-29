@@ -104,12 +104,17 @@ export const Events: CollectionConfig = {
               },
             },
             {
-              name: 'registrationForm',
-              type: 'relationship',
-              relationTo: 'forms',
+              // Read-only view of the forms that point *here*. The link is set
+              // on the form (Forms → Related Event), because an event exists
+              // long before its registration or feedback form does — pointing
+              // the other way meant coming back to edit the event afterwards.
+              name: 'forms',
+              type: 'join',
+              collection: 'forms',
+              on: 'relatedEvent',
               admin: {
                 description:
-                  'Optional — when set, the event shows a Register button linking to this form',
+                  'Registration and feedback forms attached to this event. Add one by creating a form and setting its Related Event.',
               },
             },
             {

@@ -91,7 +91,11 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    events: {
+      forms: 'forms';
+    };
+  };
   collectionsSelect: {
     events: EventsSelect<false> | EventsSelect<true>;
     achievements: AchievementsSelect<false> | AchievementsSelect<true>;
@@ -123,12 +127,10 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'about-page': AboutPage;
-    'feedback-page': FeedbackPage;
     'home-featured-members': HomeFeaturedMember;
   };
   globalsSelect: {
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
-    'feedback-page': FeedbackPageSelect<false> | FeedbackPageSelect<true>;
     'home-featured-members': HomeFeaturedMembersSelect<false> | HomeFeaturedMembersSelect<true>;
   };
   locale: null;
@@ -194,9 +196,13 @@ export interface Event {
    */
   meetingLink?: string | null;
   /**
-   * Optional — when set, the event shows a Register button linking to this form
+   * Registration and feedback forms attached to this event. Add one by creating a form and setting its Related Event.
    */
-  registrationForm?: (number | null) | Form;
+  forms?: {
+    docs?: (number | Form)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   /**
    * Main image shown in carousel and modal
    */
@@ -258,7 +264,7 @@ export interface Event {
   createdAt: string;
 }
 /**
- * Forms shown on the website. Answers are saved here and forwarded to the linked Google Form.
+ * Forms shown on the website. Answers are stored under Form Submissions.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "forms".
@@ -266,8 +272,15 @@ export interface Event {
 export interface Form {
   id: number;
   title: string;
+  /**
+   * Generated from the title.
+   */
   slug: string;
   type: 'registration' | 'feedback' | 'general';
+  /**
+   * The event this form belongs to. Events are created first, so the link is set here — the event page then shows a button to this form automatically.
+   */
+  relatedEvent?: (number | null) | Event;
   /**
    * Inactive forms show a closed message instead of the form
    */
@@ -281,10 +294,6 @@ export interface Form {
    */
   description?: string | null;
   /**
-   * The Google Form link (viewform URL). Submissions are forwarded to it so responses appear in the linked Sheet.
-   */
-  googleFormUrl: string;
-  /**
    * Each step is one screen of the wizard
    */
   steps: {
@@ -293,6 +302,10 @@ export interface Form {
     fields: {
       label: string;
       fieldType: 'text' | 'email' | 'phone' | 'number' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'date';
+      /**
+       * Marks which question holds the name and which holds the email. Required for certificates — the name is printed on them and the email is where they are sent.
+       */
+      role?: ('none' | 'name' | 'email') | null;
       required?: boolean | null;
       /**
        * Half-width fields pair up side by side on desktop
@@ -300,7 +313,11 @@ export interface Form {
       width?: ('full' | 'half') | null;
       placeholder?: string | null;
       /**
-       * Choices — must match the Google Form options exactly
+       * Optional hint shown under the field
+       */
+      helpText?: string | null;
+      /**
+       * Choices offered for this question
        */
       options?:
         | {
@@ -308,19 +325,27 @@ export interface Form {
             id?: string | null;
           }[]
         | null;
-      /**
-       * From the Google Form pre-filled link, e.g. entry.123456789 (digits alone also work)
-       */
-      googleEntryId: string;
       id?: string | null;
     }[];
     id?: string | null;
   }[];
   confirmationMessage?: string | null;
   /**
-   * Offer a certificate download after submitting (feedback forms)
+   * Optional. Paste the Sheet URL (or its id) to mirror this form’s responses there — one sheet per form. Share it with the service account address as an Editor first, or nothing will be written. Leave empty to use the default sheet, or to skip Sheets entirely.
+   */
+  sheetId?: string | null;
+  /**
+   * Give respondents a certificate (usually for feedback forms)
    */
   showCertificate?: boolean | null;
+  /**
+   * Immediate also lets them download it on the spot. Scheduled emails everyone who has submitted once the time passes, and keeps emailing late submitters after that.
+   */
+  certificateDelivery?: ('immediate' | 'scheduled') | null;
+  /**
+   * When the certificates go out
+   */
+  certificateSendAt?: string | null;
   /**
    * Background image/PDF for the generated certificate
    */
@@ -958,7 +983,7 @@ export interface MemberRole {
   createdAt: string;
 }
 /**
- * Read-only log of website form submissions
+ * Responses submitted through the website.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
@@ -967,7 +992,15 @@ export interface FormSubmission {
   id: number;
   form: number | Form;
   /**
-   * Label → answer map exactly as submitted
+   * Taken from the question marked as the name. Printed on certificates.
+   */
+  submitterName?: string | null;
+  /**
+   * Taken from the question marked as the email. Certificates are sent here.
+   */
+  submitterEmail?: string | null;
+  /**
+   * Field id → answer. Stable across question renames.
    */
   answers:
     | {
@@ -979,9 +1012,30 @@ export interface FormSubmission {
     | boolean
     | null;
   /**
-   * Whether the answers reached the Google Form / Sheet
+   * The same answers against the question wording as it was at submit time.
    */
-  googleForwardStatus: 'forwarded' | 'failed' | 'pending';
+  answersByLabel?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Whether this person has been sent their certificate.
+   */
+  certificateStatus: 'notApplicable' | 'pending' | 'sent' | 'failed';
+  certificateSentAt?: string | null;
+  /**
+   * Why the last send attempt failed, if it did.
+   */
+  certificateError?: string | null;
+  /**
+   * When this row reached the optional Google Sheet mirror. Empty means not synced (or Sheets is not configured).
+   */
+  sheetSyncedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1319,7 +1373,7 @@ export interface EventsSelect<T extends boolean = true> {
   eventDate?: T;
   eventMode?: T;
   meetingLink?: T;
-  registrationForm?: T;
+  forms?: T;
   image?: T;
   shortDescription?: T;
   description?: T;
@@ -1735,10 +1789,10 @@ export interface FormsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   type?: T;
+  relatedEvent?: T;
   active?: T;
   deadline?: T;
   description?: T;
-  googleFormUrl?: T;
   steps?:
     | T
     | {
@@ -1749,22 +1803,26 @@ export interface FormsSelect<T extends boolean = true> {
           | {
               label?: T;
               fieldType?: T;
+              role?: T;
               required?: T;
               width?: T;
               placeholder?: T;
+              helpText?: T;
               options?:
                 | T
                 | {
                     option?: T;
                     id?: T;
                   };
-              googleEntryId?: T;
               id?: T;
             };
         id?: T;
       };
   confirmationMessage?: T;
+  sheetId?: T;
   showCertificate?: T;
+  certificateDelivery?: T;
+  certificateSendAt?: T;
   certificateTemplate?: T;
   certificateConfig?:
     | T
@@ -1783,8 +1841,14 @@ export interface FormsSelect<T extends boolean = true> {
  */
 export interface FormSubmissionsSelect<T extends boolean = true> {
   form?: T;
+  submitterName?: T;
+  submitterEmail?: T;
   answers?: T;
-  googleForwardStatus?: T;
+  answersByLabel?: T;
+  certificateStatus?: T;
+  certificateSentAt?: T;
+  certificateError?: T;
+  sheetSyncedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2078,34 +2142,6 @@ export interface AboutPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "feedback-page".
- */
-export interface FeedbackPage {
-  id: number;
-  title: string;
-  /**
-   * Optional intro shown above the list of feedback forms. The list itself comes from the Feedback Forms collection.
-   */
-  intro?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home-featured-members".
  */
 export interface HomeFeaturedMember {
@@ -2166,17 +2202,6 @@ export interface AboutPageSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "feedback-page_select".
- */
-export interface FeedbackPageSelect<T extends boolean = true> {
-  title?: T;
-  intro?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
