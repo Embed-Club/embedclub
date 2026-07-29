@@ -134,11 +134,25 @@ still gets theirs on the next pass. Status is per recipient
 re-sending to people who already received one. There is deliberately no
 review-before-send step: names are printed as typed.
 
-Server-side rendering in `lib/certificate.ts` mirrors the browser generator so
-the emailed and downloaded certificates are identical. Sending runs through
-`lib/mailer.ts` (SMTP, env-only) and the hourly `/api/cron/certificates` route,
-guarded by `CRON_SECRET`. Immediate sends go out via `after()` so a slow SMTP
-hop never makes a student wait or costs them their submission.
+**Generation and sending happen in Google Apps Script**, not on the site — see
+`scripts/appsScript/certificateSender.gs`, which is committed here even though
+it runs on Google's servers, so the next committee can find it.
+
+The script copies a Google Slides template, replaces `{{name}}`, exports a PDF
+and mails it with `GmailApp`. That sends **as the account that deployed the
+script**, so certificates come from the club address with no SMTP host and no
+app password. This matters: `pace.edu.in` is the college's Workspace tenant,
+app passwords may well be disabled there, and we don't administer it.
+
+The site keeps every decision — which form issues certificates, when they go
+out, who already has one, what to retry — and POSTs one recipient at a time to
+the web app, authenticated with a shared secret. Immediate sends go through
+`after()` so a slow call never makes a student wait or costs them their
+submission; scheduled sends go out from the hourly `/api/cron/certificates`
+route, guarded by `CRON_SECRET`.
+
+Each form can point at its own Slides template
+(`certificateTemplateDriveId`); empty falls back to the script's default.
 
 **Event ↔ form link reversed**
 
