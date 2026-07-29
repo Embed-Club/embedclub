@@ -281,12 +281,33 @@ export const Forms: CollectionConfig = {
       },
     },
     {
+      name: 'certificateTemplateDriveId',
+      label: 'Certificate Template (Google Slides)',
+      type: 'text',
+      admin: {
+        condition: (data) => data.showCertificate,
+        description:
+          'Paste the Google Slides link (or its id) for this event’s certificate. The slide must contain {{name}} where the name should print. Leave empty to use the default template configured in the Apps Script.',
+      },
+      hooks: {
+        // Officers will paste the whole URL from the address bar; keep the id.
+        beforeValidate: [
+          ({ value }) => {
+            if (typeof value !== 'string') return value
+            const match = value.match(/\/presentation\/d\/([a-zA-Z0-9-_]+)/)
+            return match ? match[1] : value.trim()
+          },
+        ],
+      },
+    },
+    {
       name: 'certificateTemplate',
       type: 'upload',
       relationTo: 'media',
       admin: {
-        condition: (data) => data.showCertificate,
-        description: 'Background image/PDF for the generated certificate',
+        condition: (data) => data.showCertificate && data.certificateDelivery === 'immediate',
+        description:
+          'Only for the on-the-spot download. Emailed certificates come from the Google Slides template above.',
       },
     },
     {

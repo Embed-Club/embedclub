@@ -1,12 +1,6 @@
 import 'server-only'
 
-import {
-  DEFAULT_CERTIFICATE_CONFIG,
-  certificateFileName,
-  renderCertificate,
-} from '@/lib/certificate'
-import { mailerConfigured, sendMail } from '@/lib/mailer'
-import type { Form } from '@/payload/payload-types'
+import { appsScriptConfigured, sendCertificate } from '@/lib/appsScript'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 
@@ -17,16 +11,14 @@ export interface DispatchResult {
   skipped: string[]
 }
 
-function templateUrl(form: Form): string | null {
-  const template = form.certificateTemplate
-  if (template && typeof template === 'object' && template.url) return template.url
-  return null
-}
-
 /**
  * Send certificates for one form to everyone still marked `pending`.
  *
- * Rolling by design: this can be called repeatedly and simply picks up whoever
+ * The PDF is built and mailed by the Apps Script web app (see
+ * `scripts/appsScript/certificateSender.gs`); this decides who gets one and
+ * records the outcome.
+ *
+ * Rolling by design: it can be called repeatedly and simply picks up whoever
  * is pending now, so someone who submits feedback the morning after the send
  * time still gets theirs on the next pass. Status is per recipient, so a
  * failure retries without re-sending to people who already received one.
@@ -37,30 +29,17 @@ export async function dispatchCertificatesForForm(
 ): Promise<DispatchResult> {
   const result: DispatchResult = { attempted: 0, sent: 0, failed: 0, skipped: [] }
 
-  if (!mailerConfigured()) {
-    result.skipped.push('SMTP is not configured')
+  if (!appsScriptConfigured()) {
+    result.skipped.push('Apps Script is not configured')
     return result
   }
 
   const payload = await getPayload({ config })
-  const form = await payload.findByID({ collection: 'forms', id: formId, depth: 1 })
+  const form = await payload.findByID({ collection: 'forms', id: formId, depth: 0 })
 
   if (!form?.showCertificate) {
     result.skipped.push('form does not issue certificates')
     return result
-  }
-
-  const template = templateUrl(form)
-  if (!template) {
-    result.skipped.push('no certificate template uploaded')
-    return result
-  }
-
-  const certConfig = {
-    nameX: form.certificateConfig?.nameX ?? DEFAULT_CERTIFICATE_CONFIG.nameX,
-    nameY: form.certificateConfig?.nameY ?? DEFAULT_CERTIFICATE_CONFIG.nameY,
-    fontSize: form.certificateConfig?.fontSize ?? DEFAULT_CERTIFICATE_CONFIG.fontSize,
-    color: form.certificateConfig?.color ?? DEFAULT_CERTIFICATE_CONFIG.color,
   }
 
   const pending = await payload.find({
@@ -94,20 +73,11 @@ export async function dispatchCertificatesForForm(
     result.attempted += 1
 
     try {
-      const pdf = await renderCertificate(template, name, certConfig)
-
-      await sendMail({
-        to: email,
-        subject: `Your certificate — ${form.title}`,
-        text: `Hi ${name},\n\nYour certificate for ${form.title} is attached.\n\n— Embed Club`,
-        html: `<p>Hi ${name},</p><p>Your certificate for <strong>${form.title}</strong> is attached.</p><p>— Embed Club</p>`,
-        attachments: [
-          {
-            filename: certificateFileName(name),
-            content: pdf,
-            contentType: 'application/pdf',
-          },
-        ],
+      await sendCertificate({
+        name,
+        email,
+        formTitle: form.title,
+        templateId: form.certificateTemplateDriveId?.trim() || undefined,
       })
 
       await payload.update({
@@ -140,7 +110,7 @@ export async function dispatchCertificatesForForm(
 /**
  * Every form whose certificates are due: scheduled ones past their send time,
  * and immediate ones (whose recipients are marked pending the moment they
- * submit, so this also acts as the retry path for those).
+ * submit, so this doubles as the retry path for those).
  */
 export async function dispatchDueCertificates(): Promise<Record<string, DispatchResult>> {
   const payload = await getPayload({ config })
@@ -174,4 +144,9 @@ export async function dispatchDueCertificates(): Promise<Record<string, Dispatch
     out[form.slug] = await dispatchCertificatesForForm(form.id)
   }
   return out
+}
+
+/** Re-exported so callers don't need to know which backend does the sending. */
+export function certificateSenderConfigured(): boolean {
+  return appsScriptConfigured()
 }

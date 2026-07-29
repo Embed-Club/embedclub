@@ -10,6 +10,7 @@ import * as migration_20260728_120000_gallery_uploads from './20260728_120000_ga
 import * as migration_20260728_130000_add_projects from './20260728_130000_add_projects';
 import * as migration_20260728_140000_forms_rework from './20260728_140000_forms_rework';
 import * as migration_20260728_150000_form_sheet_id from './20260728_150000_form_sheet_id';
+import * as migration_20260730_100000_certificate_drive_template from './20260730_100000_certificate_drive_template';
 
 export const migrations = [
   {
@@ -71,5 +72,10 @@ export const migrations = [
     up: migration_20260728_150000_form_sheet_id.up,
     down: migration_20260728_150000_form_sheet_id.down,
     name: '20260728_150000_form_sheet_id',
+  },
+  {
+    up: migration_20260730_100000_certificate_drive_template.up,
+    down: migration_20260730_100000_certificate_drive_template.down,
+    name: '20260730_100000_certificate_drive_template',
   },
 ];
