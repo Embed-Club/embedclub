@@ -347,7 +347,11 @@ export interface Form {
    */
   certificateSendAt?: string | null;
   /**
-   * Background image/PDF for the generated certificate
+   * Paste the Google Slides link (or its id) for this event’s certificate. The slide must contain {{name}} where the name should print. Leave empty to use the default template configured in the Apps Script.
+   */
+  certificateTemplateDriveId?: string | null;
+  /**
+   * Only for the on-the-spot download. Emailed certificates come from the Google Slides template above.
    */
   certificateTemplate?: (number | null) | Media;
   certificateConfig?: {
@@ -1823,6 +1827,7 @@ export interface FormsSelect<T extends boolean = true> {
   showCertificate?: T;
   certificateDelivery?: T;
   certificateSendAt?: T;
+  certificateTemplateDriveId?: T;
   certificateTemplate?: T;
   certificateConfig?:
     | T
