@@ -8,6 +8,8 @@ import * as migration_20260728_100000_remove_audio from './20260728_100000_remov
 import * as migration_20260728_110000_learning_split from './20260728_110000_learning_split';
 import * as migration_20260728_120000_gallery_uploads from './20260728_120000_gallery_uploads';
 import * as migration_20260728_130000_add_projects from './20260728_130000_add_projects';
+import * as migration_20260728_140000_forms_rework from './20260728_140000_forms_rework';
+import * as migration_20260728_150000_form_sheet_id from './20260728_150000_form_sheet_id';
 
 export const migrations = [
   {
@@ -59,5 +61,15 @@ export const migrations = [
     up: migration_20260728_130000_add_projects.up,
     down: migration_20260728_130000_add_projects.down,
     name: '20260728_130000_add_projects',
+  },
+  {
+    up: migration_20260728_140000_forms_rework.up,
+    down: migration_20260728_140000_forms_rework.down,
+    name: '20260728_140000_forms_rework',
+  },
+  {
+    up: migration_20260728_150000_form_sheet_id.up,
+    down: migration_20260728_150000_form_sheet_id.down,
+    name: '20260728_150000_form_sheet_id',
   },
 ];

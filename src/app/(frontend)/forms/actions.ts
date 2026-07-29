@@ -1,42 +1,77 @@
 'use server'
 
+import { dispatchCertificatesForForm } from '@/lib/certificateDispatch'
+import type { Form } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
+import { after } from 'next/server'
 import { getPayload } from 'payload'
 
+/** Answers are keyed by each form field's Payload row id. */
 export type FormAnswers = Record<string, string | string[]>
 
 export interface SubmitFormResult {
   success: boolean
   message: string
   fieldErrors?: Record<string, string>
+  /** Present when the form issues a certificate the moment it is submitted. */
+  certificate?: { name: string }
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-/** "entry.123" or "123" → "entry.123" */
-function normalizeEntryId(raw: string): string {
-  const trimmed = raw.trim()
-  return trimmed.startsWith('entry.') ? trimmed : `entry.${trimmed}`
-}
+/**
+ * Crude in-process rate limit. The submit path writes to the database on every
+ * call and is reachable by anyone, so this stops a trivial flood. It resets on
+ * deploy and is per-instance — good enough for a club site, and deliberately
+ * not a substitute for a real WAF if this ever gets seriously targeted.
+ */
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX = 5
+const recentSubmits = new Map<string, number[]>()
 
-/** viewform URL → formResponse URL */
-function toFormResponseUrl(viewUrl: string): string | null {
-  try {
-    const url = new URL(viewUrl)
-    if (!url.hostname.includes('docs.google.com')) return null
-    url.search = ''
-    url.pathname = url.pathname.replace(/\/(viewform|formResponse).*$/, '/formResponse')
-    if (!url.pathname.endsWith('/formResponse')) {
-      url.pathname = `${url.pathname.replace(/\/$/, '')}/formResponse`
+function rateLimited(key: string): boolean {
+  const now = Date.now()
+  const hits = (recentSubmits.get(key) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
+  hits.push(now)
+  recentSubmits.set(key, hits)
+
+  // Stop the map growing without bound on a long-lived instance
+  if (recentSubmits.size > 500) {
+    for (const [k, v] of recentSubmits) {
+      if (v.every((t) => now - t > RATE_LIMIT_WINDOW_MS)) recentSubmits.delete(k)
     }
-    return url.toString()
-  } catch {
-    return null
   }
+
+  return hits.length > RATE_LIMIT_MAX
 }
 
-export async function submitForm(slug: string, answers: FormAnswers): Promise<SubmitFormResult> {
+type FormField = NonNullable<NonNullable<Form['steps']>[number]['fields']>[number]
+
+function eachField(form: Form): FormField[] {
+  const out: FormField[] = []
+  for (const step of form.steps ?? []) {
+    for (const field of step.fields ?? []) out.push(field)
+  }
+  return out
+}
+
+export async function submitForm(
+  slug: string,
+  answers: FormAnswers,
+  /** Hidden field that only a bot fills in. */
+  honeypot?: string,
+): Promise<SubmitFormResult> {
   try {
+    // Silently accept and discard obvious bots — telling them why just helps
+    // them adapt.
+    if (honeypot) {
+      return { success: true, message: 'Your response has been recorded. Thank you!' }
+    }
+
+    if (rateLimited(slug)) {
+      return { success: false, message: 'Too many submissions just now — try again in a minute.' }
+    }
+
     const payload = await getPayload({ config })
 
     const result = await payload.find({
@@ -53,38 +88,53 @@ export async function submitForm(slug: string, answers: FormAnswers): Promise<Su
       return { success: false, message: 'The deadline for this form has passed.' }
     }
 
-    // Server-side validation against the form definition
+    // Validate against the form definition — never trust the client's idea of
+    // what the form contains.
     const fieldErrors: Record<string, string> = {}
-    const labelled: Record<string, string | string[]> = {}
+    const byId: Record<string, string | string[]> = {}
+    const byLabel: Record<string, string | string[]> = {}
+    let submitterName: string | undefined
+    let submitterEmail: string | undefined
 
-    for (const step of form.steps ?? []) {
-      for (const field of step.fields ?? []) {
-        const key = normalizeEntryId(field.googleEntryId)
-        const value = answers[key]
-        const isEmpty =
-          value === undefined || value === '' || (Array.isArray(value) && value.length === 0)
+    for (const field of eachField(form)) {
+      const key = field.id
+      if (!key) continue
 
-        if (field.required && isEmpty) {
-          fieldErrors[key] = `${field.label} is required`
+      const value = answers[key]
+      const isEmpty =
+        value === undefined || value === '' || (Array.isArray(value) && value.length === 0)
+
+      if (field.required && isEmpty) {
+        fieldErrors[key] = `${field.label} is required`
+        continue
+      }
+      if (isEmpty) continue
+
+      if (field.fieldType === 'email' && typeof value === 'string' && !EMAIL_RE.test(value)) {
+        fieldErrors[key] = 'Enter a valid email address'
+        continue
+      }
+
+      if (['select', 'radio', 'checkbox'].includes(field.fieldType)) {
+        const allowed = (field.options ?? []).map((o) => o.option)
+        const values = Array.isArray(value) ? value : [value]
+        if (values.some((v) => !allowed.includes(v))) {
+          fieldErrors[key] = `Invalid choice for ${field.label}`
           continue
         }
-        if (isEmpty) continue
+      }
 
-        if (field.fieldType === 'email' && typeof value === 'string' && !EMAIL_RE.test(value)) {
+      byId[key] = value
+      byLabel[field.label] = value
+
+      if (field.role === 'name' && typeof value === 'string') submitterName = value.trim()
+      if (field.role === 'email' && typeof value === 'string') {
+        const email = value.trim().toLowerCase()
+        if (EMAIL_RE.test(email)) {
+          submitterEmail = email
+        } else {
           fieldErrors[key] = 'Enter a valid email address'
-          continue
         }
-
-        if (['select', 'radio', 'checkbox'].includes(field.fieldType)) {
-          const allowed = (field.options ?? []).map((o) => o.option)
-          const values = Array.isArray(value) ? value : [value]
-          if (values.some((v) => !allowed.includes(v))) {
-            fieldErrors[key] = `Invalid choice for ${field.label}`
-            continue
-          }
-        }
-
-        labelled[field.label] = value
       }
     }
 
@@ -92,52 +142,65 @@ export async function submitForm(slug: string, answers: FormAnswers): Promise<Su
       return { success: false, message: 'Please fix the highlighted fields.', fieldErrors }
     }
 
-    // Store locally first — the club's own record survives even if Google is down
-    const submission = await payload.create({
-      collection: 'form-submissions',
-      overrideAccess: true,
-      data: {
-        form: form.id,
-        answers: labelled,
-        googleForwardStatus: 'pending',
-      },
-    })
+    const issuesCertificate = Boolean(form.showCertificate)
 
-    // Forward to the Google Form so the linked Sheet gets the row
-    let forwardStatus: 'forwarded' | 'failed' = 'failed'
-    const responseUrl = toFormResponseUrl(form.googleFormUrl)
-    if (responseUrl) {
-      try {
-        const params = new URLSearchParams()
-        for (const [key, value] of Object.entries(answers)) {
-          if (Array.isArray(value)) {
-            for (const v of value) params.append(key, v)
-          } else if (value !== '') {
-            params.append(key, value)
-          }
-        }
-        const res = await fetch(responseUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString(),
-        })
-        // Google returns 200 even for the thank-you page; 4xx = wrong entry IDs
-        forwardStatus = res.ok ? 'forwarded' : 'failed'
-      } catch (err) {
-        console.error('[Forms] Google forward failed:', err)
-      }
+    // One response per email per form. A second submission replaces the first
+    // rather than creating a duplicate, so nobody gets two certificates.
+    let existingId: number | null = null
+    if (submitterEmail) {
+      const dupes = await payload.find({
+        collection: 'form-submissions',
+        where: {
+          and: [{ form: { equals: form.id } }, { submitterEmail: { equals: submitterEmail } }],
+        },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      existingId = dupes.docs[0]?.id ?? null
     }
 
-    await payload.update({
-      collection: 'form-submissions',
-      id: submission.id,
-      overrideAccess: true,
-      data: { googleForwardStatus: forwardStatus },
-    })
+    const data = {
+      form: form.id,
+      submitterName,
+      submitterEmail,
+      answers: byId,
+      answersByLabel: byLabel,
+      certificateStatus: issuesCertificate ? ('pending' as const) : ('notApplicable' as const),
+    }
+
+    if (existingId) {
+      await payload.update({
+        collection: 'form-submissions',
+        id: existingId,
+        overrideAccess: true,
+        data,
+      })
+    } else {
+      await payload.create({ collection: 'form-submissions', overrideAccess: true, data })
+    }
+
+    // Email the certificate *after* the response is sent, so a slow or broken
+    // SMTP hop never makes the student wait and never costs them their
+    // submission. Anything that fails here stays `pending` and the cron retries.
+    if (issuesCertificate && form.certificateDelivery === 'immediate' && submitterEmail) {
+      after(async () => {
+        try {
+          await dispatchCertificatesForForm(form.id)
+        } catch (err) {
+          console.error('[Forms] Immediate certificate dispatch failed:', err)
+        }
+      })
+    }
 
     return {
       success: true,
       message: form.confirmationMessage || 'Your response has been recorded. Thank you!',
+      // Immediate delivery also lets them download it there and then.
+      certificate:
+        issuesCertificate && form.certificateDelivery === 'immediate' && submitterName
+          ? { name: submitterName }
+          : undefined,
     }
   } catch (error) {
     console.error('[Forms] Submission error:', error)

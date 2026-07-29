@@ -109,6 +109,73 @@ Schema is migration-managed. The workflow is in SETUP.md §4. Two cautions:
 
 ## Change history
 
+### 2026-07-28 — Forms become the real thing
+
+Forms stop mirroring a Google Form and become the system of record.
+Migrations `20260728_140000` and `20260728_150000`.
+
+**Google Forms dependency removed**
+
+- `googleFormUrl` and every field's hand-copied `googleEntryId` are gone. That
+  was the most error-prone step an officer had, and Google answers `200` even
+  when the entry IDs are wrong — so a typo silently sent responses nowhere and
+  the old `googleForwardStatus` reported success regardless.
+- Answers are keyed by each field row's Payload `id`, which survives label
+  edits. `answersByLabel` keeps a copy against the wording at submit time so
+  exports stay readable after questions are reworded.
+
+**Certificates**
+
+Two delivery modes on the form: *straight after they submit*, or *email
+everyone at a set time*. Both are **rolling** — dispatch picks up whoever is
+`pending` right now, so someone who submits the morning after the send time
+still gets theirs on the next pass. Status is per recipient
+(`pending`/`sent`/`failed` + `certificateError`), so a failure retries without
+re-sending to people who already received one. There is deliberately no
+review-before-send step: names are printed as typed.
+
+Server-side rendering in `lib/certificate.ts` mirrors the browser generator so
+the emailed and downloaded certificates are identical. Sending runs through
+`lib/mailer.ts` (SMTP, env-only) and the hourly `/api/cron/certificates` route,
+guarded by `CRON_SECRET`. Immediate sends go out via `after()` so a slow SMTP
+hop never makes a student wait or costs them their submission.
+
+**Event ↔ form link reversed**
+
+`events.registrationForm` is dropped in favour of `forms.relatedEvent`. Events
+exist long before their forms do, so pointing the other way meant going back to
+edit the event afterwards. Events surface theirs through a read-only `join`
+field, which needs no column and cannot drift.
+
+**Feedback**
+
+The `feedback-page` global is gone. Feedback is now the Forms listing filtered
+to `type: 'feedback'` — both pages share `formsListing.tsx` and the cutout
+`formCutoutCard`.
+
+**Hardening**
+
+Honeypot field, per-form rate limit, and dedupe by email (a second submission
+replaces the first, so nobody gets two certificates). Certificate forms now
+refuse to save without exactly one `name` and one `email` role — caught at
+edit time rather than at send time, when the event is already over.
+
+**Optional Google Sheets mirror**
+
+One spreadsheet **per form** (`forms.sheetId`, accepts a pasted URL). Because a
+sheet holds a single form's responses, columns are that form's questions rather
+than a JSON blob. Headers are matched by text and new questions are appended as
+new columns, so editing a form cannot change what an older row's columns mean.
+Idempotent — a row is only marked synced once written, and the submission id
+leads every row. Auth is a service-account JWT signed with `node:crypto`, so no
+Google SDK dependency. Entirely inert without credentials.
+
+Before reaching for this: `form-submissions` is now wired into the
+import/export plugin, so CSV/JSON export works from the admin list view with no
+Google setup at all.
+
+
+
 ### 2026-07-28 — Admin cleanup and content-model overhaul
 
 A five-part pass to make the admin panel navigable for non-technical officers.

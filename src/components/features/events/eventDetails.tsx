@@ -38,10 +38,17 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
   const hasContact = event.contact?.email || event.contact?.phone
   const hasVenue = !isOnline && (event.venue?.roomName || event.venue?.floor)
   const dateLabel = formatEventDate(event.eventDate)
+  // Forms point at the event (Forms → Related Event), surfaced back here by a
+  // join field. Take the first open registration form.
   const registrationSlug =
-    event.registrationForm && typeof event.registrationForm === 'object'
-      ? event.registrationForm.slug
-      : null
+    event.forms?.docs
+      ?.filter((f): f is Exclude<typeof f, number> => typeof f === 'object' && f !== null)
+      .find(
+        (f) =>
+          f.type === 'registration' &&
+          f.active !== false &&
+          (!f.deadline || new Date(f.deadline).getTime() > Date.now()),
+      )?.slug ?? null
 
   return (
     <div className="space-y-6">

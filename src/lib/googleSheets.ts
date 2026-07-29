@@ -1,0 +1,260 @@
+import 'server-only'
+
+import crypto from 'node:crypto'
+import type { Form, FormSubmission } from '@/payload/payload-types'
+import config from '@/payload/payload.config'
+import { getPayload } from 'payload'
+
+/**
+ * Optional mirror of form submissions into Google Sheets — one spreadsheet per
+ * form, so a sheet's columns can be that form's actual questions rather than an
+ * opaque JSON blob.
+ *
+ * Payload remains the source of truth; this is a convenience for officers who
+ * would rather work in a spreadsheet. Everything here is inert unless
+ * configured, so the site runs fine with no Google setup at all:
+ *
+ *   GOOGLE_SERVICE_ACCOUNT_EMAIL   the service account's address
+ *   GOOGLE_PRIVATE_KEY             its PEM key (literal \n are unescaped)
+ *   GOOGLE_SHEETS_ID               optional fallback sheet for forms with none
+ *
+ * Each form carries its own `sheetId`. Whichever spreadsheet is used must be
+ * shared with the service account address as an Editor — that sharing *is* the
+ * authorisation model. No OAuth consent flow and no refresh tokens, which is
+ * why this was chosen over creating real Google Forms (a service account
+ * cannot usefully own one).
+ *
+ * Auth is a self-signed JWT exchanged for an access token via node:crypto, so
+ * no Google SDK is pulled in for two REST calls.
+ */
+const TOKEN_URL = 'https://oauth2.googleapis.com/token'
+const SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
+
+/** Fixed columns that lead every sheet, before the form's own questions. */
+const BASE_HEADERS = ['Submission ID', 'Submitted At', 'Name', 'Email'] as const
+
+export function sheetsCredentialsPresent(): boolean {
+  return Boolean(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY)
+}
+
+function base64url(input: Buffer | string): string {
+  return Buffer.from(input)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '')
+}
+
+let cachedToken: { value: string; expiresAt: number } | null = null
+
+async function accessToken(): Promise<string> {
+  if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) return cachedToken.value
+
+  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL as string
+  // Env vars can't hold real newlines, so the key is stored with literal \n.
+  const key = (process.env.GOOGLE_PRIVATE_KEY as string).replace(/\\n/g, '\n')
+
+  const now = Math.floor(Date.now() / 1000)
+  const header = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
+  const claims = base64url(
+    JSON.stringify({ iss: email, scope: SCOPE, aud: TOKEN_URL, iat: now, exp: now + 3600 }),
+  )
+  const signature = base64url(crypto.sign('RSA-SHA256', Buffer.from(`${header}.${claims}`), key))
+
+  const res = await fetch(TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: `${header}.${claims}.${signature}`,
+    }),
+  })
+
+  if (!res.ok) {
+    throw new Error(`Google token exchange failed (${res.status}): ${await res.text()}`)
+  }
+
+  const json = (await res.json()) as { access_token: string; expires_in: number }
+  cachedToken = { value: json.access_token, expiresAt: Date.now() + json.expires_in * 1000 }
+  return cachedToken.value
+}
+
+async function sheetsFetch(path: string, init?: RequestInit): Promise<Response> {
+  const token = await accessToken()
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${path}`, {
+    ...init,
+    headers: {
+      ...init?.headers,
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  })
+}
+
+/** Current header row, or an empty list when the sheet is untouched. */
+async function readHeaders(sheetId: string): Promise<string[]> {
+  const res = await sheetsFetch(`${sheetId}/values/1:1`)
+  if (!res.ok) {
+    throw new Error(`Reading sheet headers failed (${res.status}): ${await res.text()}`)
+  }
+  const json = (await res.json()) as { values?: string[][] }
+  return json.values?.[0] ?? []
+}
+
+async function writeHeaders(sheetId: string, headers: string[]): Promise<void> {
+  const res = await sheetsFetch(`${sheetId}/values/1:1?valueInputOption=RAW`, {
+    method: 'PUT',
+    body: JSON.stringify({ values: [headers] }),
+  })
+  if (!res.ok) {
+    throw new Error(`Writing sheet headers failed (${res.status}): ${await res.text()}`)
+  }
+}
+
+async function appendRow(sheetId: string, values: string[]): Promise<void> {
+  const res = await sheetsFetch(
+    `${sheetId}/values/A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+    { method: 'POST', body: JSON.stringify({ values: [values] }) },
+  )
+  if (!res.ok) {
+    throw new Error(`Sheets append failed (${res.status}): ${await res.text()}`)
+  }
+}
+
+function questionLabels(form: Form): string[] {
+  const labels: string[] = []
+  for (const step of form.steps ?? []) {
+    for (const field of step.fields ?? []) {
+      if (field.label && !labels.includes(field.label)) labels.push(field.label)
+    }
+  }
+  return labels
+}
+
+function cellValue(answer: unknown): string {
+  if (answer === undefined || answer === null) return ''
+  if (Array.isArray(answer)) return answer.join(', ')
+  return String(answer)
+}
+
+/**
+ * Ensure the sheet's header row covers every column we are about to write, and
+ * return it.
+ *
+ * Columns are matched by header text, never by position, and new questions are
+ * appended to the right. So editing a form mid-run cannot change what an older
+ * row's columns mean — the failure mode that makes spreadsheet mirrors
+ * untrustworthy.
+ */
+async function reconcileHeaders(sheetId: string, wanted: string[]): Promise<string[]> {
+  const existing = await readHeaders(sheetId)
+
+  if (existing.length === 0) {
+    await writeHeaders(sheetId, wanted)
+    return wanted
+  }
+
+  const missing = wanted.filter((h) => !existing.includes(h))
+  if (missing.length === 0) return existing
+
+  const merged = [...existing, ...missing]
+  await writeHeaders(sheetId, merged)
+  return merged
+}
+
+export interface SheetSyncResult {
+  synced: number
+  failed: number
+  skipped?: string
+}
+
+function resolveSheetId(form: Form): string | null {
+  return form.sheetId?.trim() || process.env.GOOGLE_SHEETS_ID?.trim() || null
+}
+
+/**
+ * Push submissions that have not reached their form's sheet yet.
+ *
+ * Idempotent: a submission is only marked synced once its row is written, and
+ * the submission id leads every row, so a re-run can never double-append.
+ * Deliberately not done during submit — a slow or rate-limited Sheets call
+ * should never make a student wait, nor risk their response if Google is down.
+ */
+export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResult> {
+  if (!sheetsCredentialsPresent()) {
+    return { synced: 0, failed: 0, skipped: 'Google service account is not configured' }
+  }
+
+  const payload = await getPayload({ config })
+  const pending = await payload.find({
+    collection: 'form-submissions',
+    where: { sheetSyncedAt: { exists: false } },
+    limit,
+    depth: 1,
+    sort: 'createdAt',
+    overrideAccess: true,
+  })
+
+  if (pending.docs.length === 0) return { synced: 0, failed: 0 }
+
+  // Group by form so headers are reconciled once per sheet, not per row.
+  const byForm = new Map<number, { form: Form; submissions: FormSubmission[] }>()
+  for (const submission of pending.docs) {
+    const form = submission.form
+    if (typeof form !== 'object' || form === null) continue
+    const entry = byForm.get(form.id) ?? { form, submissions: [] }
+    entry.submissions.push(submission)
+    byForm.set(form.id, entry)
+  }
+
+  let synced = 0
+  let failed = 0
+
+  for (const { form, submissions } of byForm.values()) {
+    const sheetId = resolveSheetId(form)
+    if (!sheetId) continue // this form simply isn't mirrored
+
+    let headers: string[]
+    try {
+      headers = await reconcileHeaders(sheetId, [...BASE_HEADERS, ...questionLabels(form)])
+    } catch (error) {
+      console.error(`[Sheets] Header setup failed for form "${form.slug}":`, error)
+      failed += submissions.length
+      continue
+    }
+
+    for (const submission of submissions) {
+      try {
+        const answers = (submission.answersByLabel ?? {}) as Record<string, unknown>
+        const values = headers.map((header) => {
+          switch (header) {
+            case 'Submission ID':
+              return String(submission.id)
+            case 'Submitted At':
+              return submission.createdAt
+            case 'Name':
+              return submission.submitterName ?? ''
+            case 'Email':
+              return submission.submitterEmail ?? ''
+            default:
+              return cellValue(answers[header])
+          }
+        })
+
+        await appendRow(sheetId, values)
+        await payload.update({
+          collection: 'form-submissions',
+          id: submission.id,
+          overrideAccess: true,
+          data: { sheetSyncedAt: new Date().toISOString() },
+        })
+        synced += 1
+      } catch (error) {
+        console.error(`[Sheets] Sync failed for submission ${submission.id}:`, error)
+        failed += 1
+      }
+    }
+  }
+
+  return { synced, failed }
+}

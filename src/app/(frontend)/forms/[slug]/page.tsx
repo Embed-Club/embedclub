@@ -49,8 +49,12 @@ export default async function FormPage({ params }: FormPageProps) {
   const closed =
     !form.active || (form.deadline ? new Date(form.deadline).getTime() < Date.now() : false)
 
+  // Only the "straight after they submit" mode offers a download on the
+  // success screen. Scheduled certificates arrive by email instead.
   const certificateTemplate =
-    form.showCertificate && typeof form.certificateTemplate === 'object'
+    form.showCertificate &&
+    form.certificateDelivery === 'immediate' &&
+    typeof form.certificateTemplate === 'object'
       ? form.certificateTemplate?.url
       : null
 
