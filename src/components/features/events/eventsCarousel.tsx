@@ -3,7 +3,7 @@ import { CarouselContext } from '@/components/features/events/eventsCards'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 export interface CarouselProps {
   items: React.ReactNode[]
@@ -19,6 +19,9 @@ const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 768
 /** Card width + gap, matching the `gap-4` flex row below. */
 const step = () => (isMobile() ? 230 + 16 : 384 + 16)
 
+/** Ease-out cubic — matches the feel of a native smooth scroll. */
+const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
+
 export const Carousel = ({
   items,
   initialScroll = 0,
@@ -31,14 +34,14 @@ export const Carousel = ({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const reduceMotion = useReducedMotion()
+  const animRaf = useRef(0)
 
   // Two back-to-back copies of the same list — once scroll position passes
   // the first copy, it's rewound by exactly one copy's width, so the loop
   // never runs out of track (and never visibly jumps, since copy two is
-  // pixel-identical to copy one). Every position change here goes through
-  // `scrollBy`/`scrollTo` rather than assigning `.scrollLeft` directly —
-  // some contexts (backgrounded tabs among them) don't reliably commit a
-  // bare property write, where the scroll methods always do.
+  // pixel-identical to copy one). The rewind only ever runs once our own
+  // tween below has fully finished — never mid-animation — so it can't
+  // race a still-running scroll and read as a visible snap backward.
   const loopEnabled = items.length > 1
   const loopedItems = loopEnabled ? [...items, ...items] : items
 
@@ -65,7 +68,6 @@ export const Carousel = ({
     if (!el) return
 
     if (loopEnabled) {
-      rewindIfNeeded()
       setCanScrollLeft(true)
       setCanScrollRight(true)
       return
@@ -84,6 +86,40 @@ export const Carousel = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialScroll])
 
+  // Self-owned tween: we drive every programmatic scroll ourselves (instant
+  // per-frame writes, eased over `duration`) instead of the browser's native
+  // `behavior: 'smooth'`. That native animation has no "done" signal we can
+  // act on synchronously, so a rewind timed against it can land mid-flight
+  // and fight the still-running animation — which is what read as the loop
+  // snapping backward instead of continuing forward. Owning the tween means
+  // `onDone` fires exactly once, after the very last frame.
+  const animateScrollBy = (delta: number, duration = 450, onDone?: () => void) => {
+    const el = carouselRef.current
+    if (!el) return
+    window.cancelAnimationFrame(animRaf.current)
+
+    if (reduceMotion) {
+      el.scrollBy({ left: delta, behavior: 'instant' })
+      onDone?.()
+      return
+    }
+
+    const start = performance.now()
+    let last = 0
+    const frame = (now: number) => {
+      const elapsed = Math.min(1, (now - start) / duration)
+      const target = delta * easeOutCubic(elapsed)
+      el.scrollBy({ left: target - last, behavior: 'instant' })
+      last = target
+      if (elapsed < 1) {
+        animRaf.current = window.requestAnimationFrame(frame)
+      } else {
+        onDone?.()
+      }
+    }
+    animRaf.current = window.requestAnimationFrame(frame)
+  }
+
   const scrollLeftBy = (amount: number) => {
     const el = carouselRef.current
     if (!el) return
@@ -92,16 +128,11 @@ export const Carousel = ({
     if (loopEnabled && el.scrollLeft < amount) {
       el.scrollBy({ left: oneSetWidth(), behavior: 'instant' })
     }
-    el.scrollBy({ left: -amount, behavior: 'smooth' })
-    // The `scroll` event drives the rewind in normal use; this is a
-    // belt-and-suspenders check in case it doesn't fire (e.g. some
-    // automated/background-tab contexts suppress it for JS-driven scrolls).
-    window.setTimeout(rewindIfNeeded, 500)
+    animateScrollBy(-amount, 450, rewindIfNeeded)
   }
 
   const scrollRightBy = (amount: number) => {
-    carouselRef.current?.scrollBy({ left: amount, behavior: 'smooth' })
-    window.setTimeout(rewindIfNeeded, 500)
+    animateScrollBy(amount, 450, rewindIfNeeded)
   }
 
   const handleCardClose = (index: number) => {
@@ -110,7 +141,7 @@ export const Carousel = ({
       const cardWidth = isMobile() ? 230 : 384
       const gap = 16
       const targetPosition = (cardWidth + gap) * (index + 1)
-      el.scrollBy({ left: targetPosition - el.scrollLeft, behavior: 'smooth' })
+      animateScrollBy(targetPosition - el.scrollLeft, 450, rewindIfNeeded)
       setCurrentIndex(index)
     }
   }
@@ -120,7 +151,7 @@ export const Carousel = ({
   // on hover/touch/focus so reading a card doesn't fight the user, and
   // skipped under prefers-reduced-motion.
   useEffect(() => {
-    if (!autoScroll || reduceMotion || paused || !loopEnabled) return
+    if (!autoScroll || paused || !loopEnabled) return
 
     const id = window.setInterval(() => {
       scrollRightBy(step())
@@ -128,13 +159,15 @@ export const Carousel = ({
 
     return () => window.clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoScroll, autoScrollSecondsPerCard, reduceMotion, paused, loopEnabled])
+  }, [autoScroll, autoScrollSecondsPerCard, paused, loopEnabled, reduceMotion])
+
+  useEffect(() => () => window.cancelAnimationFrame(animRaf.current), [])
 
   return (
     <CarouselContext.Provider value={{ onCardClose: handleCardClose, currentIndex }}>
       <div className="relative w-full">
         <div
-          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] md:py-20"
+          className="flex w-full overflow-x-scroll overscroll-x-auto py-10 [scrollbar-width:none] md:py-20"
           ref={carouselRef}
           onScroll={checkScrollability}
           onMouseEnter={() => setPaused(true)}
