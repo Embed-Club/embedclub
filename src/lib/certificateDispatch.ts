@@ -1,8 +1,15 @@
 import 'server-only'
 
 import { appsScriptConfigured, sendCertificate } from '@/lib/appsScript'
+import { applyNameCase } from '@/lib/textCase'
+import type { Form, FormSubmission } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
+
+/** Fill {{name}}/{{event}} in an officer-supplied subject/body template. */
+function fillPlaceholders(template: string, name: string, event: string): string {
+  return template.replaceAll('{{name}}', name).replaceAll('{{event}}', event)
+}
 
 export interface DispatchResult {
   attempted: number
@@ -12,16 +19,46 @@ export interface DispatchResult {
 }
 
 /**
- * Send certificates for one form to everyone still marked `pending`.
+ * When a submission's certificate is due, or null if it isn't yet (or ever,
+ * if nothing is configured to cover it).
+ *
+ * Immediate-delivery forms are always due — dispatch there is really just the
+ * retry path for a send that failed right after submit.
+ *
+ * Scheduled forms support named batches so different groups can go out at
+ * different times (e.g. "Section A at 5pm, Section B at 9pm"). A batch is
+ * matched by checking one of the form's own questions against an expected
+ * answer — `matchField` is the question's exact label, `matchValue` the
+ * answer that puts someone in that group. The first matching batch wins.
+ * Anyone matched by no batch falls back to the form's plain `certificateSendAt`.
+ */
+function dueAt(form: Form, submission: FormSubmission): Date | null {
+  if (form.certificateDelivery === 'immediate') return new Date(0)
+
+  const answers = (submission.answersByLabel ?? {}) as Record<string, unknown>
+
+  for (const batch of form.certificateBatches ?? []) {
+    if (!batch.matchField || !batch.sendAt) continue
+    if (String(answers[batch.matchField] ?? '') === batch.matchValue) {
+      return new Date(batch.sendAt)
+    }
+  }
+
+  return form.certificateSendAt ? new Date(form.certificateSendAt) : null
+}
+
+/**
+ * Send certificates for one form to everyone still marked `pending` whose
+ * certificate is due.
  *
  * The PDF is built and mailed by the Apps Script web app (see
- * `scripts/appsScript/certificateSender.gs`); this decides who gets one and
- * records the outcome.
+ * `scripts/appsScript/certificateSender.gs`); this decides who gets one, when,
+ * and records the outcome.
  *
  * Rolling by design: it can be called repeatedly and simply picks up whoever
- * is pending now, so someone who submits feedback the morning after the send
- * time still gets theirs on the next pass. Status is per recipient, so a
- * failure retries without re-sending to people who already received one.
+ * is due now, so someone who submits after their batch's send time still gets
+ * theirs on the next pass. Status is per recipient, so a failure retries
+ * without re-sending to people who already received one.
  */
 export async function dispatchCertificatesForForm(
   formId: number,
@@ -52,7 +89,12 @@ export async function dispatchCertificatesForForm(
     overrideAccess: true,
   })
 
+  const now = Date.now()
+
   for (const submission of pending.docs) {
+    const due = dueAt(form, submission)
+    if (!due || due.getTime() > now) continue // not due yet — stays pending
+
     const name = submission.submitterName?.trim()
     const email = submission.submitterEmail?.trim()
 
@@ -73,11 +115,21 @@ export async function dispatchCertificatesForForm(
     result.attempted += 1
 
     try {
+      const certificateName = applyNameCase(name, form.certificateNameCase)
+      const emailName = applyNameCase(name, form.certificateEmailNameCase)
+
       await sendCertificate({
-        name,
+        certificateName,
+        emailName,
         email,
         formTitle: form.title,
         templateId: form.certificateTemplateDriveId?.trim() || undefined,
+        emailSubject: form.certificateEmailSubject
+          ? fillPlaceholders(form.certificateEmailSubject, emailName, form.title)
+          : undefined,
+        emailBody: form.certificateEmailBody
+          ? fillPlaceholders(form.certificateEmailBody, emailName, form.title)
+          : undefined,
       })
 
       await payload.update({
@@ -108,39 +160,25 @@ export async function dispatchCertificatesForForm(
 }
 
 /**
- * Every form whose certificates are due: scheduled ones past their send time,
- * and immediate ones (whose recipients are marked pending the moment they
- * submit, so this doubles as the retry path for those).
+ * Every form that issues certificates. Due-checking happens per submission
+ * inside `dispatchCertificatesForForm` (batches mean different recipients of
+ * the same form can become due at different times), so this just fans out to
+ * every candidate form rather than pre-filtering — the per-form pending query
+ * is cheap and indexed.
  */
 export async function dispatchDueCertificates(): Promise<Record<string, DispatchResult>> {
   const payload = await getPayload({ config })
-  const now = new Date().toISOString()
 
-  const due = await payload.find({
+  const forms = await payload.find({
     collection: 'forms',
-    where: {
-      and: [
-        { showCertificate: { equals: true } },
-        {
-          or: [
-            { certificateDelivery: { equals: 'immediate' } },
-            {
-              and: [
-                { certificateDelivery: { equals: 'scheduled' } },
-                { certificateSendAt: { less_than_equal: now } },
-              ],
-            },
-          ],
-        },
-      ],
-    },
+    where: { showCertificate: { equals: true } },
     limit: 100,
     depth: 0,
     overrideAccess: true,
   })
 
   const out: Record<string, DispatchResult> = {}
-  for (const form of due.docs) {
+  for (const form of forms.docs) {
     out[form.slug] = await dispatchCertificatesForForm(form.id)
   }
   return out

@@ -343,9 +343,43 @@ export interface Form {
    */
   certificateDelivery?: ('immediate' | 'scheduled') | null;
   /**
-   * When the certificates go out
+   * Default send time. Anyone not matched by a batch below goes out at this time.
    */
   certificateSendAt?: string | null;
+  /**
+   * Optional — send different groups at different times, e.g. "Section A gets theirs at 5pm, Section B at 9pm". A batch is matched against one of this form's questions. Anyone who matches no batch falls back to the send time above.
+   */
+  certificateBatches?:
+    | {
+        label: string;
+        /**
+         * Exact wording of the question that identifies the group
+         */
+        matchField: string;
+        /**
+         * The answer that puts someone in this batch
+         */
+        matchValue: string;
+        sendAt: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * How the name prints where {{name}} appears on the certificate itself
+   */
+  certificateNameCase?: ('asTyped' | 'upper' | 'title') | null;
+  /**
+   * How the name reads in the email body, independent of the certificate
+   */
+  certificateEmailNameCase?: ('asTyped' | 'upper' | 'title') | null;
+  /**
+   * Optional. {{event}} is replaced with this form’s title. Leave empty for the default subject.
+   */
+  certificateEmailSubject?: string | null;
+  /**
+   * Optional. {{name}} and {{event}} are replaced per recipient. Leave empty for the default message.
+   */
+  certificateEmailBody?: string | null;
   /**
    * Paste the Google Slides link (or its id) for this event’s certificate. The slide must contain {{name}} where the name should print. Leave empty to use the default template configured in the Apps Script.
    */
@@ -1827,6 +1861,19 @@ export interface FormsSelect<T extends boolean = true> {
   showCertificate?: T;
   certificateDelivery?: T;
   certificateSendAt?: T;
+  certificateBatches?:
+    | T
+    | {
+        label?: T;
+        matchField?: T;
+        matchValue?: T;
+        sendAt?: T;
+        id?: T;
+      };
+  certificateNameCase?: T;
+  certificateEmailNameCase?: T;
+  certificateEmailSubject?: T;
+  certificateEmailBody?: T;
   certificateTemplateDriveId?: T;
   certificateTemplate?: T;
   certificateConfig?:
