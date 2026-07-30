@@ -1,6 +1,16 @@
 'use client'
 
-import StaggeredMenu from '@/components/layout/staggeredMenu'
+import dynamic from 'next/dynamic'
+
+// StaggeredMenu pulls in gsap for its open/close choreography. It's mounted
+// unconditionally on every page (this component lives in the shared shell),
+// so a static import shipped a full animation engine to every visitor before
+// anyone had even tapped the hamburger icon. Loaded on demand instead —
+// `ssr:false` because it's pure client interaction with no meaningful
+// server-rendered fallback.
+const StaggeredMenu = dynamic(() => import('@/components/layout/staggeredMenu'), {
+  ssr: false,
+})
 
 const navItems = [
   { label: 'HOE', ariaLabel: 'Home', link: '/' },

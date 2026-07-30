@@ -2,8 +2,7 @@
 
 import type { ResourceCardData } from '@/app/(frontend)/resources/resourcesPageContent'
 import { ResourceCutoutCard } from '@/components/features/resources/resourceCutoutCard'
-import { gsap } from 'gsap'
-import { useCallback, useEffect, useRef } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 
 interface ResourceCardsProps {
   resources: ResourceCardData[]
@@ -11,79 +10,29 @@ interface ResourceCardsProps {
   basePath?: string
 }
 
+/**
+ * Reveal-on-scroll via `motion`'s `whileInView`, the same mechanism
+ * `masonry.tsx` uses — not gsap + a hand-rolled IntersectionObserver, which
+ * shipped a second full animation library just for this one effect and
+ * (unlike this version) ignored `prefers-reduced-motion`.
+ */
 export function ResourceCards({ resources, basePath = '/resources' }: ResourceCardsProps) {
-  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
-
-  const setCardRef = useCallback((id: string, el: HTMLDivElement | null) => {
-    if (el) {
-      cardRefs.current.set(id, el)
-    } else {
-      cardRefs.current.delete(id)
-    }
-  }, [])
-
-  useEffect(() => {
-    const elements = Array.from(cardRefs.current.values())
-
-    for (const el of elements) {
-      gsap.set(el, { opacity: 0, y: 0 })
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-
-          const el = entry.target as HTMLDivElement
-          const indexAttr = el.getAttribute('data-index')
-          const index = indexAttr ? Number(indexAttr) : 0
-
-          gsap.fromTo(
-            el,
-            {
-              opacity: 0,
-              y: 48,
-            },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              ease: 'power3.out',
-              delay: index * 0.05,
-            },
-          )
-
-          observer.unobserve(el)
-        }
-      },
-      { threshold: 0.2 },
-    )
-
-    for (const el of elements) {
-      observer.observe(el)
-    }
-
-    // Mention resources to ensure effect re-runs when props change, as we need to re-observe elements
-    const _trigger = resources.length
-
-    return () => {
-      observer.disconnect()
-      cardRefs.current.clear()
-    }
-  }, [resources])
+  const reduceMotion = useReducedMotion()
 
   return (
     <div className="w-full">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 w-full">
         {resources.map((resource, index) => (
-          <div
+          <motion.div
             key={resource.id}
-            data-index={index}
-            ref={(el) => setCardRef(resource.id, el)}
             className="w-full"
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 48 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: (index % 8) * 0.05 }}
           >
             <ResourceCutoutCard card={resource} basePath={basePath} />
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

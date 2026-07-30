@@ -3,9 +3,17 @@
 import { EmptyState } from '@/components/common/emptyState'
 import { SearchBar } from '@/components/common/searchBar'
 import { SimulatorCards } from '@/components/features/simulators/simulatorCards'
-import { SimulatorModal } from '@/components/features/simulators/simulatorModal'
 import type { Simulator } from '@/payload/payload-types'
+import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+
+// The modal (Dialog primitive + BlockRenderer's rich-content renderer + the
+// video-embed resolver) is real weight that only matters after a card is
+// clicked — most visitors browse without opening one. Loading it on demand
+// keeps that weight out of every /simulators page load.
+const SimulatorModal = dynamic(() =>
+  import('@/components/features/simulators/simulatorModal').then((m) => m.SimulatorModal),
+)
 
 export interface SimulatorCardData {
   id: string
