@@ -1,211 +1,95 @@
 'use client'
 import { CarouselContext } from '@/components/features/events/eventsCards'
 import { cn } from '@/lib/utils'
+import useEmblaCarousel from 'embla-carousel-react'
+import Autoplay from 'embla-carousel-autoplay'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface CarouselProps {
   items: React.ReactNode[]
-  initialScroll?: number
   /** Auto-advance one card at a time while idle. Off for reduced motion. */
   autoScroll?: boolean
   /** Seconds to hold on each card before advancing to the next. */
   autoScrollSecondsPerCard?: number
 }
 
-const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 768
-
-/** Card width + gap, matching the `gap-4` flex row below. */
-const step = () => (isMobile() ? 230 + 16 : 384 + 16)
-
-/** Ease-out cubic — matches the feel of a native smooth scroll. */
-const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
-
+/**
+ * Embla owns the actual scroll/loop mechanics (with `loop: true` it clones
+ * slides as needed and always moves forward, never a visible snap back) —
+ * a hand-rolled duplicate-list-plus-rewind version of this kept producing
+ * visible glitches at the wrap point. Embla + its autoplay plugin is the
+ * same combination shadcn/ui's own Carousel uses for this exact case.
+ */
 export const Carousel = ({
   items,
-  initialScroll = 0,
   autoScroll = true,
   autoScrollSecondsPerCard = 3.5,
 }: CarouselProps) => {
-  const carouselRef = React.useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = React.useState(false)
-  const [canScrollRight, setCanScrollRight] = React.useState(true)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [paused, setPaused] = useState(false)
   const reduceMotion = useReducedMotion()
-  const animRaf = useRef(0)
+  const [currentIndex, setCurrentIndex] = useState(0)
 
-  // Two back-to-back copies of the same list — once scroll position passes
-  // the first copy, it's rewound by exactly one copy's width, so the loop
-  // never runs out of track (and never visibly jumps, since copy two is
-  // pixel-identical to copy one). The rewind only ever runs once our own
-  // tween below has fully finished — never mid-animation — so it can't
-  // race a still-running scroll and read as a visible snap backward.
-  const loopEnabled = items.length > 1
-  const loopedItems = loopEnabled ? [...items, ...items] : items
+  const autoplay = useRef(
+    Autoplay({
+      delay: autoScrollSecondsPerCard * 1000,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+    }),
+  )
 
-  const oneSetWidth = () => {
-    const el = carouselRef.current
-    if (!el || !loopEnabled) return 0
-    return el.scrollWidth / 2
-  }
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: items.length > 1, align: 'start', skipSnaps: false, dragFree: false },
+    autoScroll && !reduceMotion && items.length > 1 ? [autoplay.current] : [],
+  )
 
-  const rewindIfNeeded = () => {
-    const el = carouselRef.current
-    if (!el || !loopEnabled) return
-    const setWidth = oneSetWidth()
-    if (setWidth <= 0) return
-    if (el.scrollLeft >= setWidth) {
-      el.scrollBy({ left: -setWidth, behavior: 'instant' })
-    } else if (el.scrollLeft < 0) {
-      el.scrollBy({ left: setWidth, behavior: 'instant' })
-    }
-  }
+  const [canScrollPrev, setCanScrollPrev] = useState(false)
+  const [canScrollNext, setCanScrollNext] = useState(false)
 
-  const checkScrollability = () => {
-    const el = carouselRef.current
-    if (!el) return
-
-    if (loopEnabled) {
-      setCanScrollLeft(true)
-      setCanScrollRight(true)
-      return
-    }
-
-    const { scrollLeft, scrollWidth, clientWidth } = el
-    setCanScrollLeft(scrollLeft > 0)
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth)
-  }
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return
+    setCurrentIndex(emblaApi.selectedScrollSnap())
+    setCanScrollPrev(emblaApi.canScrollPrev())
+    setCanScrollNext(emblaApi.canScrollNext())
+  }, [emblaApi])
 
   useEffect(() => {
-    if (carouselRef.current && initialScroll) {
-      carouselRef.current.scrollBy({ left: initialScroll, behavior: 'instant' })
+    if (!emblaApi) return
+    onSelect()
+    emblaApi.on('select', onSelect)
+    emblaApi.on('reInit', onSelect)
+    return () => {
+      emblaApi.off('select', onSelect)
+      emblaApi.off('reInit', onSelect)
     }
-    checkScrollability()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialScroll])
-
-  // Self-owned tween: we drive every programmatic scroll ourselves (instant
-  // per-frame writes, eased over `duration`) instead of the browser's native
-  // `behavior: 'smooth'`. That native animation has no "done" signal we can
-  // act on synchronously, so a rewind timed against it can land mid-flight
-  // and fight the still-running animation — which is what read as the loop
-  // snapping backward instead of continuing forward. Owning the tween means
-  // `onDone` fires exactly once, after the very last frame.
-  const animateScrollBy = (delta: number, duration = 450, onDone?: () => void) => {
-    const el = carouselRef.current
-    if (!el) return
-    window.cancelAnimationFrame(animRaf.current)
-
-    if (reduceMotion) {
-      el.scrollBy({ left: delta, behavior: 'instant' })
-      onDone?.()
-      return
-    }
-
-    const start = performance.now()
-    let last = 0
-    const frame = (now: number) => {
-      const elapsed = Math.min(1, (now - start) / duration)
-      const target = delta * easeOutCubic(elapsed)
-      el.scrollBy({ left: target - last, behavior: 'instant' })
-      last = target
-      if (elapsed < 1) {
-        animRaf.current = window.requestAnimationFrame(frame)
-      } else {
-        onDone?.()
-      }
-    }
-    animRaf.current = window.requestAnimationFrame(frame)
-  }
-
-  const scrollLeftBy = (amount: number) => {
-    const el = carouselRef.current
-    if (!el) return
-    // Give ourselves room to animate backward past zero before the loop
-    // rewind would otherwise clamp it.
-    if (loopEnabled && el.scrollLeft < amount) {
-      el.scrollBy({ left: oneSetWidth(), behavior: 'instant' })
-    }
-    animateScrollBy(-amount, 450, rewindIfNeeded)
-  }
-
-  const scrollRightBy = (amount: number) => {
-    animateScrollBy(amount, 450, rewindIfNeeded)
-  }
+  }, [emblaApi, onSelect])
 
   const handleCardClose = (index: number) => {
-    const el = carouselRef.current
-    if (el) {
-      const cardWidth = isMobile() ? 230 : 384
-      const gap = 16
-      const targetPosition = (cardWidth + gap) * (index + 1)
-      animateScrollBy(targetPosition - el.scrollLeft, 450, rewindIfNeeded)
-      setCurrentIndex(index)
-    }
+    emblaApi?.scrollTo(index)
   }
-
-  // Auto-advance one card at a time, like a normal carousel — smooth-scroll
-  // to the next card, hold, repeat — rather than a continuous drift. Paused
-  // on hover/touch/focus so reading a card doesn't fight the user, and
-  // skipped under prefers-reduced-motion.
-  useEffect(() => {
-    if (!autoScroll || paused || !loopEnabled) return
-
-    const id = window.setInterval(() => {
-      scrollRightBy(step())
-    }, autoScrollSecondsPerCard * 1000)
-
-    return () => window.clearInterval(id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoScroll, autoScrollSecondsPerCard, paused, loopEnabled, reduceMotion])
-
-  useEffect(() => () => window.cancelAnimationFrame(animRaf.current), [])
 
   return (
     <CarouselContext.Provider value={{ onCardClose: handleCardClose, currentIndex }}>
       <div className="relative w-full">
         <div
-          className="flex w-full overflow-x-scroll overscroll-x-auto py-10 [scrollbar-width:none] md:py-20"
-          ref={carouselRef}
-          onScroll={checkScrollability}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onTouchStart={() => setPaused(true)}
-          onTouchEnd={() => setPaused(false)}
-          onFocus={() => setPaused(true)}
-          onBlur={() => setPaused(false)}
-          style={{ WebkitOverflowScrolling: 'touch' }}
-        >
-          <div
-            className={cn(
-              'absolute right-0 z-[1000] h-auto w-[5%] overflow-hidden bg-gradient-to-l pointer-events-none',
-            )}
-          />
+          className={cn(
+            'pointer-events-none absolute inset-y-10 right-0 z-[1000] w-[5%] overflow-hidden bg-gradient-to-l md:inset-y-20',
+          )}
+        />
 
-          <div className={cn('flex flex-row justify-start gap-4 pl-4', 'mx-auto max-w-7xl')}>
-            {loopedItems.map((item, index) => (
+        <div className="overflow-hidden py-10 md:py-20" ref={emblaRef}>
+          <div className="flex flex-row justify-start gap-4 pl-4">
+            {items.map((item, index) => (
               <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 20,
-                }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{
                   opacity: 1,
                   y: 0,
-                  transition: {
-                    duration: 0.5,
-                    delay: 0.2 * (index % items.length),
-                    ease: 'easeOut',
-                  },
+                  transition: { duration: 0.5, delay: 0.2 * index, ease: 'easeOut' },
                 }}
-                // biome-ignore lint/suspicious/noArrayIndexKey: stable position in a duplicated, reorder-free list
+                // biome-ignore lint/suspicious/noArrayIndexKey: stable, unreordered list
                 key={`card${index}`}
-                className={cn(
-                  'rounded-3xl',
-                  index === loopedItems.length - 1 && !loopEnabled && 'pr-[5%] md:pr-[33%]',
-                )}
+                className="min-w-0 shrink-0 rounded-3xl"
               >
                 {item}
               </motion.div>
@@ -216,16 +100,16 @@ export const Carousel = ({
           <button
             type="button"
             className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
-            onClick={() => scrollLeftBy(step())}
-            disabled={!canScrollLeft}
+            onClick={() => emblaApi?.scrollPrev()}
+            disabled={!canScrollPrev}
           >
             <ArrowLeft className="h-6 w-6" />
           </button>
           <button
             type="button"
             className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
-            onClick={() => scrollRightBy(step())}
-            disabled={!canScrollRight}
+            onClick={() => emblaApi?.scrollNext()}
+            disabled={!canScrollNext}
           >
             <ArrowRight className="h-6 w-6" />
           </button>
