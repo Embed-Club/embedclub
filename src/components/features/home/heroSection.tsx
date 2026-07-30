@@ -14,7 +14,15 @@ import { LogoMarquee } from '@/components/features/home/logoMarquee'
  */
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-background">
+    // `-mt-16 lg:mt-0` cancels ContentPanel's own `pt-16` (the shared shell's
+    // mobile clearance for the fixed nav header, applied to every page).
+    // Without it the hero doubled up on that clearance — its own title
+    // wrapper below also has `pt-16` — leaving ~128px of dead space before
+    // anything rendered, which read as a disconnected bar rather than the
+    // nav floating (transparent, z-40) over the hero the way it does on
+    // desktop. This leaves exactly one 64px clearance, the same amount every
+    // other page already relies on for its own title placement.
+    <section className="relative -mt-16 flex min-h-[100svh] w-full flex-col overflow-hidden bg-background lg:mt-0">
       {/* Title + tagline — mobile: at the top; desktop: centered overlay */}
       <div className="relative z-10 flex w-full flex-col items-center gap-4 px-4 pt-16 lg:absolute lg:inset-0 lg:justify-center lg:gap-6 lg:pt-0">
         <DashboardTitle />
