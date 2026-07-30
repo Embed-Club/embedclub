@@ -154,6 +154,27 @@ route, guarded by `CRON_SECRET`.
 Each form can point at its own Slides template
 (`certificateTemplateDriveId`); empty falls back to the script's default.
 
+**Batches** — a scheduled form's certificates don't have to go out all at
+once. `certificateBatches` is an array: each row names a batch, a question
+(`matchField`), an expected answer (`matchValue`), and its own `sendAt`. A
+submission is matched against these in order; if none match, it falls back to
+the form's plain `certificateSendAt`. This is fully officer-configurable —
+any number of batches, matched on any question — not a fixed "Section A/B"
+split.
+
+**Wording** — `certificateNameCase` and `certificateEmailNameCase` are
+independent per form (`asTyped` / `upper` / `title`), so a certificate can
+print `RAFAN AHAMAD SHEIK` while the email greets `Dear Rafan Ahamad Sheik,` —
+mirroring a prior manual workflow. `certificateEmailSubject` /
+`certificateEmailBody` optionally override the default message, with
+`{{name}}`/`{{event}}` placeholders resolved on the site before the request
+reaches Apps Script — the script itself never sees a template, only the
+final strings.
+
+The Apps Script's secret and default template id live in **Script
+Properties**, not in the committed source — a literal secret in a file meant
+for git would sit in history forever.
+
 **Event ↔ form link reversed**
 
 `events.registrationForm` is dropped in favour of `forms.relatedEvent`. Events
