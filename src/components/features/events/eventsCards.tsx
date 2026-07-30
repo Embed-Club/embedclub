@@ -176,15 +176,18 @@ export const EventModal = ({
             exit={{ opacity: 0 }}
             ref={containerRef}
             layoutId={layoutId}
-            className="relative z-[60] w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl md:rounded-3xl bg-white font-sans dark:bg-neutral-900"
+            className={cn(
+              'relative z-[60] max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground',
+              cutoutCardSurfaceShadowClassName,
+            )}
           >
             <button
               type="button"
-              className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 transition"
+              className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 opacity-90 shadow-sm backdrop-blur-sm transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               onClick={onClose}
               aria-label="Close modal"
             >
-              <X className="h-6 w-6" />
+              <X className="h-4 w-4" />
             </button>
 
             {isFallback ? (
@@ -192,13 +195,13 @@ export const EventModal = ({
                 <img
                   src="/placeholder/NoNetwork.svg"
                   alt="Service unavailable"
-                  className="h-40 w-40 md:h-56 md:w-56 dark:invert opacity-60"
+                  className="h-40 w-40 opacity-60 dark:invert md:h-56 md:w-56"
                 />
-                <div className="text-center max-w-sm">
-                  <p className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <div className="max-w-sm text-center">
+                  <p className="text-2xl font-bold text-foreground">
                     Service Temporarily Unavailable
                   </p>
-                  <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                     We're unable to load event details at the moment. This could be due to a
                     temporary database connection issue. Please try again in a few moments, or
                     contact support if the problem persists.
@@ -206,19 +209,16 @@ export const EventModal = ({
                 </div>
               </div>
             ) : (
-              <div className="grid h-full grid-cols-1 gap-8 p-2 md:p-8 lg:p-10 md:grid-cols-2 overflow-y-auto max-h-[90vh]">
-                {/* Image Section */}
-                <div className="flex h-full items-stretch justify-center">
-                  <div className="relative h-full w-full overflow-hidden rounded-2xl">
-                    <BlurImage src={card.src} alt={card.title} fill className="object-cover" />
-                  </div>
-                </div>
+              <div className="grid h-full max-h-[90vh] grid-cols-1 gap-8 overflow-y-auto p-2 md:grid-cols-2 md:p-8 lg:p-10">
+                {/* Image Section — same cutout inset label as the card it opened from */}
+                <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted">
+                  <BlurImage src={card.src} alt={card.title} fill className="object-contain" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
 
-                {/* Details Section */}
-                <div className="flex flex-col justify-start space-y-4 md:space-y-6">
-                  <div>
+                  <CutoutCardInsetLabel className="bottom-0 left-0 z-10 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-3 text-left">
                     <motion.p
-                      className="text-sm font-medium text-neutral-600 dark:text-neutral-400"
+                      layoutId={layoutId ? `category-${card.category}` : undefined}
+                      className="text-left text-[11px] font-semibold uppercase tracking-widest text-primary"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
@@ -226,15 +226,21 @@ export const EventModal = ({
                       {card.category}
                     </motion.p>
                     <motion.p
-                      className="mt-2 text-3xl font-bold text-neutral-900 md:text-4xl dark:text-white"
+                      layoutId={layoutId ? `title-${card.title}` : undefined}
+                      className="mt-1 text-base font-semibold text-foreground md:text-xl [text-wrap:balance]"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3, delay: 0.1 }}
                     >
                       {card.title}
                     </motion.p>
-                  </div>
+                    <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+                    <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+                  </CutoutCardInsetLabel>
+                </div>
 
+                {/* Details Section */}
+                <div className="flex flex-col justify-start space-y-4 md:space-y-6">
                   {/* Content (Event Details) */}
                   <div className="flex-1 pr-4">
                     {event ? <EventDetails event={event} /> : card.content}
