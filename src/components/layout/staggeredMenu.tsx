@@ -439,7 +439,14 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   return (
     <div
       className={`sm-scope z-40 ${
-        isFixed ? 'fixed top-0 left-0 w-screen h-screen' : 'w-full h-full'
+        // `100dvh`, not `100vh` — on a real phone the address bar can still be
+        // showing when the menu opens, and `vh` is sized against the viewport
+        // with the bar hidden. Anything pinned near the bottom of a `100vh` box
+        // (the theme toggle here) then renders behind the bar. `dvh` tracks the
+        // actually-visible viewport instead. Chrome DevTools' device emulation
+        // doesn't reproduce the bar's show/hide behavior, which is why this
+        // never showed up there.
+        isFixed ? 'fixed top-0 left-0 w-screen h-dvh' : 'w-full h-full'
       } pointer-events-none`}
     >
       <div
@@ -512,13 +519,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           >
             <span
               ref={textWrapRef}
-              className="sm-toggle-textWrap relative inline-block h-[1em] overflow-hidden whitespace-nowrap w-[var(--sm-toggle-width,auto)] min-w-[var(--sm-toggle-width,auto)]"
+              className="sm-toggle-textWrap relative inline-block h-[1.2em] overflow-hidden whitespace-nowrap w-[var(--sm-toggle-width,auto)] min-w-[var(--sm-toggle-width,auto)]"
               aria-hidden="true"
             >
               <span ref={textInnerRef} className="sm-toggle-textInner flex flex-col leading-none">
                 {textLines.map((l, i) => (
                   <span
-                    className="sm-toggle-line block h-[1em] overflow-hidden leading-none"
+                    className="sm-toggle-line block h-[1.2em] overflow-hidden leading-[1.2]"
                     // biome-ignore lint/suspicious/noArrayIndexKey: fixed two-line toggle text stack
                     key={i}
                   >
@@ -564,12 +571,12 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               {items?.length ? (
                 items.map((it, idx) => (
                   <li
-                    className="sm-panel-itemWrap relative overflow-hidden leading-none"
+                    className="sm-panel-itemWrap relative overflow-hidden leading-[1.15]"
                     // biome-ignore lint/suspicious/noArrayIndexKey: nav items
                     key={it.label + idx}
                   >
                     <a
-                      className="sm-panel-item relative font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
+                      className="sm-panel-item relative font-semibold text-[4rem] cursor-pointer leading-[1.15] tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
                       href={it.link}
                       aria-label={it.ariaLabel}
                       data-index={idx + 1}
@@ -582,10 +589,10 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 ))
               ) : (
                 <li
-                  className="sm-panel-itemWrap relative overflow-hidden leading-none"
+                  className="sm-panel-itemWrap relative overflow-hidden leading-[1.15]"
                   aria-hidden="true"
                 >
-                  <span className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
+                  <span className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-[1.15] tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
                     <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
                       No items
                     </span>
@@ -649,11 +656,17 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-toggle { position: relative; display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: none; cursor: pointer; font-weight: 500; line-height: 1; overflow: visible; }
 .sm-scope .sm-toggle:focus-visible { outline: 2px solid #ffffffaa; outline-offset: 4px; border-radius: 4px; }
 .sm-scope .sm-line:last-of-type { margin-top: 6px; }
-.sm-scope .sm-toggle-textWrap { position: relative; margin-right: 0.5em; display: inline-block; height: 1em; overflow: hidden; white-space: nowrap; width: var(--sm-toggle-width, auto); min-width: var(--sm-toggle-width, auto); }
-.sm-scope .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1 !important; height: auto; }
-.sm-scope .sm-toggle-line { display: block; height: 1em; line-height: 1 !important; overflow: hidden; }
+.sm-scope .sm-toggle-textWrap { position: relative; margin-right: 0.5em; display: inline-block; height: 1.2em; overflow: hidden; white-space: nowrap; width: var(--sm-toggle-width, auto); min-width: var(--sm-toggle-width, auto); }
+.sm-scope .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1.2 !important; height: auto; }
+/* height/line-height are 1.2em, not 1em: a tight 1em box clips the ascenders of
+   this display font's rounded glyphs on some devices' font rasterizers (seen on
+   real Android Chrome, never in desktop devtools device emulation — the two
+   don't hint/rasterize custom webfonts identically). yPercent-based transforms
+   elsewhere in this file are relative to each element's own box, so this stays
+   in proportion automatically. */
+.sm-scope .sm-toggle-line { display: block; height: 1.2em; line-height: 1.2 !important; overflow: hidden; }
 .sm-scope .sm-icon { position: relative; width: 14px; height: 14px; flex: 0 0 14px; display: inline-flex; align-items: center; justify-content: center; will-change: transform; }
-.sm-scope .sm-panel-itemWrap { position: relative; overflow: hidden; line-height: 1; }
+.sm-scope .sm-panel-itemWrap { position: relative; overflow: hidden; line-height: 1.15; }
 .sm-scope .sm-icon-line { position: absolute; left: 50%; top: 50%; width: 100%; height: 2px; background: currentColor; border-radius: 2px; will-change: transform; }
 .sm-scope .sm-line { display: none !important; }
 .sm-scope .staggered-menu-panel { position: absolute; top: 0; right: 0; width: clamp(260px, 38vw, 420px); height: 100%; background: var(--sm-bg,#ffffff); color: var(--sm-fg,#000000); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; padding: 6em 2em 2em 2em; overflow-y: auto; z-index: 10; }
@@ -675,7 +688,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-socials-link:hover { color: var(--sm-accent, #ff0000); }
 .sm-scope .sm-panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; text-transform: uppercase; }
 .sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.sm-scope .sm-panel-item { position: relative; color: var(--sm-fg,#000000); font-weight: 600; font-size: clamp(2.0rem, 6vw, 3.4rem); cursor: pointer; line-height: 1; letter-spacing: -1px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
+.sm-scope .sm-panel-item { position: relative; color: var(--sm-fg,#000000); font-weight: 600; font-size: clamp(2.0rem, 6vw, 3.4rem); cursor: pointer; line-height: 1.15; letter-spacing: -1px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
 .sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
 .sm-scope .sm-panel-item:hover { color: var(--sm-accent, #ff0000); }
 .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }
