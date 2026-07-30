@@ -8,9 +8,9 @@ import React, { useEffect, useState } from 'react'
 export interface CarouselProps {
   items: React.ReactNode[]
   initialScroll?: number
-  /** Continuous auto-scroll while idle. Off for reduced motion. */
+  /** Auto-advance one card at a time while idle. Off for reduced motion. */
   autoScroll?: boolean
-  /** Seconds to drift across one card's width. */
+  /** Seconds to hold on each card before advancing to the next. */
   autoScrollSecondsPerCard?: number
 }
 
@@ -115,31 +115,18 @@ export const Carousel = ({
     }
   }
 
-  // Continuous auto-drift while idle, driven by rAF so it moves at display
-  // refresh rate instead of visible discrete steps. Paused on hover/touch/
-  // focus so reading a card doesn't fight the user, and skipped under
-  // prefers-reduced-motion.
+  // Auto-advance one card at a time, like a normal carousel — smooth-scroll
+  // to the next card, hold, repeat — rather than a continuous drift. Paused
+  // on hover/touch/focus so reading a card doesn't fight the user, and
+  // skipped under prefers-reduced-motion.
   useEffect(() => {
     if (!autoScroll || reduceMotion || paused || !loopEnabled) return
 
-    const pxPerMs = step() / (autoScrollSecondsPerCard * 1000)
-    let raf = 0
-    let last = 0
+    const id = window.setInterval(() => {
+      scrollRightBy(step())
+    }, autoScrollSecondsPerCard * 1000)
 
-    const tick = (now: number) => {
-      const el = carouselRef.current
-      if (el) {
-        if (last) {
-          el.scrollBy({ left: pxPerMs * (now - last), behavior: 'instant' })
-          rewindIfNeeded()
-        }
-        last = now
-      }
-      raf = window.requestAnimationFrame(tick)
-    }
-
-    raf = window.requestAnimationFrame(tick)
-    return () => window.cancelAnimationFrame(raf)
+    return () => window.clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoScroll, autoScrollSecondsPerCard, reduceMotion, paused, loopEnabled])
 
