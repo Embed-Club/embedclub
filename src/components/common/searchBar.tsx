@@ -59,19 +59,6 @@ const searchControlLabelClassName = cn(
 )
 
 const searchBarStyles = `
-@keyframes placeholder-slide-up {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-    filter: blur(0px);
-  }
-  100% {
-    transform: translateY(-50%);
-    opacity: 0;
-    filter: blur(3px);
-  }
-}
-
 @keyframes placeholder-slide-in {
   0% {
     transform: translateY(50%);
@@ -129,7 +116,6 @@ export function SearchBar({
   ...props
 }: SearchBarProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [_isFocused, setIsFocused] = useState(false)
   const [dateFrom, setDateFrom] = useState<string>('')
@@ -137,14 +123,18 @@ export function SearchBar({
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    if (inputValue) return
+    // Nothing to rotate between, and typing shows the real value instead.
+    if (inputValue || placeholders.length <= 1) return
 
+    // One step: swap the text, and let `key={currentIndex}` below trigger a
+    // fresh mount animation for whatever comes in. The previous version
+    // staged this as slide-out (via setTimeout 300ms) then swap-and-slide-in;
+    // that second setTimeout could fire late under main-thread contention
+    // (e.g. right after navigation, or while a dropdown is opening) and leave
+    // the outgoing text visibly stuck mid slide-up for longer than intended.
+    // A single swap removes that failure mode outright.
     const timer = window.setInterval(() => {
-      setIsAnimating(true)
-      window.setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % placeholders.length)
-        setIsAnimating(false)
-      }, 300)
+      setCurrentIndex((prev) => (prev + 1) % placeholders.length)
     }, interval)
 
     return () => window.clearInterval(timer)
@@ -273,7 +263,7 @@ export function SearchBar({
                 onKeyDown={handleKeyDown}
                 className={`
                   w-full h-full bg-transparent
-                  text-zinc-200 text-[15px]
+                  text-zinc-200 text-[15px] leading-none
                   outline-none
                   placeholder-transparent
                   pr-4
@@ -284,13 +274,13 @@ export function SearchBar({
 
               {!inputValue && (
                 <div className="absolute inset-0 flex items-center pointer-events-none overflow-hidden">
+                  {/* `key` remounts on each rotation, so the mount-triggered
+                      animation always plays for the incoming text only — no
+                      separate slide-out stage to get stuck mid-transition. */}
                   <span
-                    className="text-zinc-500 text-[15px] transition-all duration-300 ease-in-out"
-                    style={{
-                      animation: isAnimating
-                        ? 'placeholder-slide-up 0.3s ease-in-out forwards'
-                        : 'placeholder-slide-in 0.3s ease-in-out forwards',
-                    }}
+                    key={currentIndex}
+                    className="text-zinc-500 text-[15px] leading-none"
+                    style={{ animation: 'placeholder-slide-in 0.3s ease-out forwards' }}
                   >
                     {placeholders[currentIndex]}
                   </span>
@@ -478,121 +468,6 @@ export function SearchBar({
           </div>
         )}
       </div>
-    </>
-  )
-}
-
-type SearchBarMinimalProps = Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  'onChange' | 'value' | 'defaultValue'
-> & {
-  placeholders?: string[]
-  interval?: number
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onSubmit?: (value: string) => void
-  className?: string
-}
-
-export function SearchBarMinimal({
-  placeholders = ['Search...', 'Type something...', 'What are you looking for?'],
-  interval = 3000,
-  onChange,
-  onSubmit,
-  className = '',
-  ...props
-}: SearchBarMinimalProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [inputValue, setInputValue] = useState('')
-  const [isFocused, setIsFocused] = useState(false)
-
-  useEffect(() => {
-    if (inputValue || isFocused) return
-
-    const timer = window.setInterval(() => {
-      setIsAnimating(true)
-      window.setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % placeholders.length)
-        setIsAnimating(false)
-      }, 300)
-    }, interval)
-
-    return () => window.clearInterval(timer)
-  }, [placeholders.length, interval, inputValue, isFocused])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value)
-    onChange?.(e)
-  }
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    onSubmit?.(inputValue)
-  }
-
-  return (
-    <>
-      <style>{searchBarStyles}</style>
-      <form onSubmit={handleSubmit} className={`relative w-full max-w-md ${className}`}>
-        <div
-          className={`
-            relative flex items-center w-full h-11
-            bg-zinc-950
-            border border-zinc-800
-            rounded-lg
-            transition-all duration-200
-            hover:border-zinc-700
-            focus-within:border-zinc-600
-            focus-within:ring-2 focus-within:ring-zinc-800
-          `}
-        >
-          <div className="flex items-center justify-center w-10 text-zinc-600">
-            <svg
-              role="img"
-              aria-label="Search"
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
-          </div>
-
-          <div className="relative flex-1 h-full">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleChange}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              className="w-full h-full bg-transparent text-zinc-300 text-sm outline-none placeholder-transparent pr-3"
-              {...props}
-            />
-
-            {!inputValue && (
-              <div className="absolute inset-0 flex items-center pointer-events-none overflow-hidden">
-                <span
-                  className="text-zinc-600 text-sm transition-all duration-300 ease-in-out"
-                  style={{
-                    animation: isAnimating
-                      ? 'placeholder-slide-up 0.3s ease-in-out forwards'
-                      : 'placeholder-slide-in 0.3s ease-in-out forwards',
-                  }}
-                >
-                  {placeholders[currentIndex]}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      </form>
     </>
   )
 }
