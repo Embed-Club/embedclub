@@ -148,8 +148,12 @@ The site keeps every decision — which form issues certificates, when they go
 out, who already has one, what to retry — and POSTs one recipient at a time to
 the web app, authenticated with a shared secret. Immediate sends go through
 `after()` so a slow call never makes a student wait or costs them their
-submission; scheduled sends go out from the hourly `/api/cron/certificates`
-route, guarded by `CRON_SECRET`.
+submission; scheduled sends go out from the `/api/cron/certificates` route,
+guarded by `CRON_SECRET`, triggered every 15 minutes by a GitHub Actions
+workflow (`.github/workflows/certificate-cron.yml`) rather than Vercel Cron —
+the Hobby plan limits Vercel's own cron to once a day, too coarse for
+same-day batches, and a hourly `vercel.json` cron block was silently failing
+every deployment on that plan.
 
 Each form can point at its own Slides template
 (`certificateTemplateDriveId`); empty falls back to the script's default.
