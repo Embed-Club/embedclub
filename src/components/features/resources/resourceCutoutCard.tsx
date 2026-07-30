@@ -52,11 +52,12 @@ export const ResourceCutoutCard = React.memo(
             'flex h-full flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           )}
         >
-          <CutoutCardMedia className="h-44 shrink-0">
+          <CutoutCardMedia className="h-44 shrink-0 bg-muted">
             <CutoutCardImage
               alt={card.title}
               src={card.image}
               sizes="(max-width: 768px) 100vw, 20rem"
+              className="object-contain"
             />
             <CutoutCardOverlay />
 

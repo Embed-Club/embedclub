@@ -1,16 +1,17 @@
 'use client'
 
 import type { SimulatorCardData } from '@/app/(frontend)/simulators/simulatorsPageContent'
+import {
+  CutoutCardInsetLabel,
+  CutoutCorner,
+  cutoutCardSurfaceShadowClassName,
+} from '@/components/common/cutoutCard'
 import { BlockRenderer } from '@/components/features/resources/blockRenderer'
 import { SimulatorVideo } from '@/components/features/simulators/simulatorVideo'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 import { ExternalLink, SquareArrowOutUpRight } from 'lucide-react'
+import Image from 'next/image'
 
 interface SimulatorModalProps {
   simulator: SimulatorCardData | null
@@ -27,18 +28,45 @@ interface SimulatorModalProps {
 export function SimulatorModal({ simulator, open, onOpenChange }: SimulatorModalProps) {
   if (!simulator) return null
 
-  const { title, description, launchUrl, videoUrl, content } = simulator
+  const { title, description, image, launchUrl, videoUrl, content } = simulator
   const hasInstructions = Array.isArray(content) && content.length > 0
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-3xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
+      <DialogContent
+        className={cn(
+          'max-h-[90vh] w-[95vw] max-w-3xl overflow-y-auto rounded-2xl bg-card p-0 text-card-foreground',
+          cutoutCardSurfaceShadowClassName,
+        )}
+      >
+        {/* sr-only — the visible name lives on the cutout label below, same
+            treatment as the card it was opened from. Radix still needs a
+            real Title/Description pair for screen readers. */}
+        <DialogTitle className="sr-only">{title}</DialogTitle>
+        <DialogDescription className="sr-only">{description}</DialogDescription>
 
-        <div className="flex flex-col gap-6">
+        <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-t-2xl bg-muted">
+          <Image
+            alt={title}
+            src={image}
+            fill
+            sizes="(max-width: 768px) 95vw, 48rem"
+            className="object-contain"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
+
+          <CutoutCardInsetLabel className="bottom-0 left-0 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-2.5">
+            <span className="text-lg font-semibold leading-snug text-card-foreground">
+              {title}
+            </span>
+            <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+            <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+          </CutoutCardInsetLabel>
+        </div>
+
+        <div className="flex flex-col gap-6 p-6">
+          <p className="text-sm text-muted-foreground">{description}</p>
+
           {videoUrl ? <SimulatorVideo url={videoUrl} title={title} /> : null}
 
           {launchUrl ? (

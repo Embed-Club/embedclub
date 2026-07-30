@@ -54,7 +54,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
     <div className="space-y-6">
       {/* Date + mode */}
       {(dateLabel || isOnline) && (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-600 dark:text-neutral-300">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           {dateLabel && (
             <span className="flex items-center gap-1.5 font-medium">
               <CalendarDays className="h-4 w-4 text-primary" />
@@ -96,14 +96,14 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Venue Information */}
         {hasVenue && (
-          <div className="rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800">
-            <p className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+          <div className="rounded-lg bg-muted p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Venue
             </p>
-            <div className="mt-2 space-y-1 text-sm text-neutral-900 dark:text-white">
+            <div className="mt-2 space-y-1 text-sm text-foreground">
               {event.venue?.roomName && <p>{event.venue.roomName}</p>}
               {event.venue?.floor && (
-                <p className="text-xs text-neutral-600 dark:text-neutral-300">
+                <p className="text-xs text-muted-foreground">
                   {event.venue.floor}
                 </p>
               )}
@@ -113,11 +113,11 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
 
         {/* Location Information */}
         {!isOnline && event.location?.address && (
-          <div className="rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800">
-            <p className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+          <div className="rounded-lg bg-muted p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Location
             </p>
-            <p className="mt-2 text-sm text-neutral-900 dark:text-white">
+            <p className="mt-2 text-sm text-foreground">
               {event.location.address}
             </p>
           </div>
@@ -127,10 +127,10 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
       {/* Description Section */}
       {hasDescription && (
         <div className="space-y-2">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             About Event
           </h3>
-          <div className="text-sm text-neutral-700 dark:text-neutral-300 line-clamp-3">
+          <div className="text-sm text-foreground/90 line-clamp-3">
             {Array.isArray(event.description) ? (
               <div className="space-y-2">
                 {event.description.map((block: Record<string, unknown>, idx: number) => {
@@ -150,9 +150,9 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
 
       {/* Map Section */}
       {!isOnline && event.location?.coords?.lat && event.location?.coords?.lng && (
-        <div className="space-y-2 rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800">
+        <div className="space-y-2 rounded-lg bg-muted p-4">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Map
             </p>
 
@@ -160,14 +160,14 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
               href={`https://www.google.com/maps?q=${event.location.coords.lat},${event.location.coords.lng}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md px-2 py-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition text-xs font-semibold "
+              className="rounded-md px-2 py-1 text-xs font-semibold transition hover:bg-accent"
             >
               Open in Google Maps
             </a>
           </div>
 
           <Suspense fallback={<Skeleton className="h-[240px] w-full rounded-lg" />}>
-            <div className="relative h-[240px] w-full overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-700">
+            <div className="relative h-[240px] w-full overflow-hidden rounded-lg border border-border">
               <LeafletMap
                 lat={event.location.coords.lat}
                 lng={event.location.coords.lng}
@@ -182,15 +182,15 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
 
       {/* Contact Information */}
       {hasContact && (
-        <div className="space-y-2 rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800">
-          <p className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+        <div className="space-y-2 rounded-lg bg-muted p-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Contact
           </p>
           <div className="space-y-2 text-sm">
             {event.contact?.email && (
               <a
                 href={`mailto:${event.contact.email}`}
-                className="block text-blue-600 hover:underline dark:text-blue-400"
+                className="block text-primary hover:underline"
               >
                 {event.contact.email}
               </a>
@@ -198,7 +198,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
             {event.contact?.phone && (
               <a
                 href={`tel:${event.contact.phone}`}
-                className="block text-blue-600 hover:underline dark:text-blue-400"
+                className="block text-primary hover:underline"
               >
                 {event.contact.phone}
               </a>
@@ -209,8 +209,8 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
 
       {/* Empty State */}
       {!hasDescription && !hasLocation && !hasContact && !hasVenue && (
-        <div className="rounded-lg bg-neutral-50 p-8 text-center dark:bg-neutral-800">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+        <div className="rounded-lg bg-muted p-8 text-center">
+          <p className="text-sm text-muted-foreground">
             No additional details available for this event.
           </p>
         </div>
