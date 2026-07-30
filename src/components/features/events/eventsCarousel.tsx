@@ -78,21 +78,27 @@ export const Carousel = ({
         />
 
         <div className="overflow-hidden py-10 md:py-20" ref={emblaRef}>
-          <div className="flex flex-row justify-start gap-4 pl-4">
+          {/* Slide elements are plain divs on purpose. Embla's loop works by
+              writing `transform: translateX(...)` onto individual slides to
+              reposition them around the wrap point — if the slide is a
+              `motion.div`, Framer Motion writes `transform` on the same
+              element and clobbers that, which stalls the carousel at the end
+              and then snaps it back. Motion goes *inside* the slide instead. */}
+          <div className="-ml-4 flex flex-row justify-start">
             {items.map((item, index) => (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.5, delay: 0.2 * index, ease: 'easeOut' },
-                }}
-                // biome-ignore lint/suspicious/noArrayIndexKey: stable, unreordered list
-                key={`card${index}`}
-                className="min-w-0 shrink-0 rounded-3xl"
-              >
-                {item}
-              </motion.div>
+              // biome-ignore lint/suspicious/noArrayIndexKey: stable, unreordered list
+              <div key={`card${index}`} className="min-w-0 flex-[0_0_auto] pl-4">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: 1,
+                    transition: { duration: 0.5, delay: 0.2 * index, ease: 'easeOut' },
+                  }}
+                  className="rounded-3xl"
+                >
+                  {item}
+                </motion.div>
+              </div>
             ))}
           </div>
         </div>
