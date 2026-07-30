@@ -1,0 +1,37 @@
+name: Certificate cron
+
+# Triggers /api/cron/certificates on a schedule. This replaces Vercel Cron,
+# which the Hobby plan limits to once per day — too coarse for same-day
+# certificate batches (e.g. one group at 5pm, another at 9pm). GitHub Actions
+# has no such limit and this workflow is free on a public or normal-usage
+# private repo.
+#
+# Setup — repo Settings → Secrets and variables → Actions → New repository
+# secret:
+#   SITE_URL      e.g. https://embedclub.vercel.app  (no trailing slash)
+#   CRON_SECRET   the exact same value as CRON_SECRET in Vercel's env vars
+#
+# Runs every 15 minutes. Change the cron expression below to taste — GitHub
+# Actions schedules are UTC.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  # Lets you fire it by hand from the Actions tab to test without waiting.
+  workflow_dispatch: {}
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call certificate cron endpoint
+        run: |
+          status=$(curl -s -o /tmp/response.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.SITE_URL }}/api/cron/certificates")
+          echo "HTTP $status"
+          cat /tmp/response.json
+          if [ "$status" -ge 300 ]; then
+            echo "Cron endpoint returned $status"
+            exit 1
+          fi
