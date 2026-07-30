@@ -277,7 +277,115 @@ export const Forms: CollectionConfig = {
       admin: {
         condition: (data) => data.showCertificate && data.certificateDelivery === 'scheduled',
         date: { pickerAppearance: 'dayAndTime' },
-        description: 'When the certificates go out',
+        description:
+          'Default send time. Anyone not matched by a batch below goes out at this time.',
+      },
+    },
+    {
+      name: 'certificateBatches',
+      type: 'array',
+      admin: {
+        condition: (data) => data.showCertificate && data.certificateDelivery === 'scheduled',
+        description:
+          'Optional — send different groups at different times, e.g. "Section A gets theirs at 5pm, Section B at 9pm". A batch is matched against one of this form\'s questions. Anyone who matches no batch falls back to the send time above.',
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'label',
+              type: 'text',
+              required: true,
+              admin: { placeholder: 'e.g. Section B', width: '33%' },
+            },
+            {
+              name: 'matchField',
+              label: 'Question',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'Exact wording of the question that identifies the group',
+                placeholder: 'e.g. Which section are you in?',
+                width: '34%',
+              },
+            },
+            {
+              name: 'matchValue',
+              label: 'Answer',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'The answer that puts someone in this batch',
+                placeholder: 'e.g. Section B',
+                width: '33%',
+              },
+            },
+          ],
+        },
+        {
+          name: 'sendAt',
+          type: 'date',
+          required: true,
+          admin: { date: { pickerAppearance: 'dayAndTime' } },
+        },
+      ],
+    },
+    {
+      type: 'row',
+      admin: { condition: (data) => data.showCertificate },
+      fields: [
+        {
+          name: 'certificateNameCase',
+          label: 'Name on Certificate',
+          type: 'select',
+          defaultValue: 'asTyped',
+          options: [
+            { label: 'As typed', value: 'asTyped' },
+            { label: 'UPPERCASE', value: 'upper' },
+            { label: 'Title Case', value: 'title' },
+          ],
+          admin: {
+            width: '50%',
+            description: 'How the name prints where {{name}} appears on the certificate itself',
+          },
+        },
+        {
+          name: 'certificateEmailNameCase',
+          label: 'Name in Email Greeting',
+          type: 'select',
+          defaultValue: 'asTyped',
+          options: [
+            { label: 'As typed', value: 'asTyped' },
+            { label: 'UPPERCASE', value: 'upper' },
+            { label: 'Title Case', value: 'title' },
+          ],
+          admin: {
+            width: '50%',
+            description: 'How the name reads in the email body, independent of the certificate',
+          },
+        },
+      ],
+    },
+    {
+      name: 'certificateEmailSubject',
+      type: 'text',
+      admin: {
+        condition: (data) => data.showCertificate,
+        placeholder: 'Your certificate — {{event}}',
+        description:
+          'Optional. {{event}} is replaced with this form’s title. Leave empty for the default subject.',
+      },
+    },
+    {
+      name: 'certificateEmailBody',
+      type: 'textarea',
+      admin: {
+        condition: (data) => data.showCertificate,
+        placeholder:
+          'Dear {{name}},\n\nThank you for attending {{event}}. Your certificate is attached.\n\nRegards,\nEmbed Club',
+        description:
+          'Optional. {{name}} and {{event}} are replaced per recipient. Leave empty for the default message.',
       },
     },
     {

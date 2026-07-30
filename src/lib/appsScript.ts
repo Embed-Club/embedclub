@@ -16,11 +16,18 @@ import 'server-only'
  *   APPS_SCRIPT_SECRET   must match SHARED_SECRET inside the script
  */
 export interface CertificateRequest {
-  name: string
+  /** Printed wherever {{name}} appears on the certificate itself. */
+  certificateName: string
+  /** Used in the email greeting/body — independently case-formed, per form. */
+  emailName: string
   email: string
   formTitle: string
   /** Overrides the script's default template, for forms with their own design. */
   templateId?: string
+  /** Overrides the script's default subject. {{event}} is resolved on the site side. */
+  emailSubject?: string
+  /** Overrides the script's default body. {{name}}/{{event}} resolved on the site side. */
+  emailBody?: string
 }
 
 export function appsScriptConfigured(): boolean {

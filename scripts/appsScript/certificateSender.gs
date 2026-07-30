@@ -15,6 +15,13 @@
  * ours, but it is real infrastructure — keeping it in git means the next
  * committee can find it, read it, and change it.
  *
+ * The secret and default template id are NOT written in this file — they are
+ * read from Script Properties (Apps Script's equivalent of environment
+ * variables). This file gets committed to a public-ish repo; a secret typed
+ * directly into it would sit in git history forever, readable by anyone the
+ * repo is ever shared with. Script Properties live only inside the Apps
+ * Script project, set through the UI, never in source.
+ *
  *
  * SETUP
  * -----
@@ -25,7 +32,12 @@
  *
  * 2. script.google.com → New project → paste this file in.
  *
- * 3. Fill in the two constants below.
+ * 3. Project Settings (gear icon, left sidebar) → Script Properties →
+ *    Add script property, twice:
+ *      SHARED_SECRET        any long random string — this is the shared
+ *                            secret, generate one yourself, don't reuse an
+ *                            example
+ *      DEFAULT_TEMPLATE_ID   the Slides file id from step 1
  *
  * 4. Deploy → New deployment → type "Web app":
  *      Execute as:       Me (embedclub@pace.edu.in)
@@ -36,23 +48,23 @@
  *
  * 5. On the website set:
  *      APPS_SCRIPT_URL     = the /exec URL
- *      APPS_SCRIPT_SECRET  = the same string as SHARED_SECRET
+ *      APPS_SCRIPT_SECRET  = the exact same string as SHARED_SECRET in step 3
  *
- * 6. Run `doPost` once manually (or send a test) to trigger Google's
- *    authorisation prompt. It will ask for Drive, Slides and Gmail access.
- *    Nothing sends until that is granted.
+ * 6. Run `doGet` once (visit the /exec URL in a browser) to confirm both
+ *    properties are read. It will report secretConfigured/templateConfigured
+ *    without revealing either value. Then send a real test through the site
+ *    to trigger Google's authorisation prompt (Drive, Slides, Gmail). Nothing
+ *    sends until that is granted.
  *
  *
  * The website decides *when* to send — immediately on submit, or once the
  * form's scheduled time passes — and tracks who has received one. This script
- * only does the work it is asked to do.
+ * only does the work it is asked to do for whichever recipient it is given.
  */
 
-/** Must match APPS_SCRIPT_SECRET on the website. Change it. */
-var SHARED_SECRET = 'CHANGE_ME'
-
-/** File id of the Google Slides certificate template containing {{name}}. */
-var DEFAULT_TEMPLATE_ID = ''
+function scriptProps() {
+  return PropertiesService.getScriptProperties()
+}
 
 function jsonResponse(payload) {
   return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(
@@ -67,28 +79,41 @@ function doPost(e) {
     }
 
     var body = JSON.parse(e.postData.contents)
+    var props = scriptProps()
+    var secret = props.getProperty('SHARED_SECRET')
 
-    if (!SHARED_SECRET || body.secret !== SHARED_SECRET) {
+    if (!secret || body.secret !== secret) {
       return jsonResponse({ ok: false, error: 'Unauthorized' })
     }
 
-    var name = (body.name || '').trim()
+    // certificateName / emailName arrive already case-formed by the site
+    // (forms.certificateNameCase / certificateEmailNameCase) — this script
+    // never decides casing, it just places whichever strings it is given.
+    var certificateName = (body.certificateName || '').trim()
+    var emailName = (body.emailName || '').trim()
     var email = (body.email || '').trim()
-    if (!name || !email) {
-      return jsonResponse({ ok: false, error: 'Missing name or email' })
+    if (!certificateName || !emailName || !email) {
+      return jsonResponse({ ok: false, error: 'Missing certificateName, emailName, or email' })
     }
 
-    var templateId = (body.templateId || DEFAULT_TEMPLATE_ID || '').trim()
+    var templateId = (body.templateId || props.getProperty('DEFAULT_TEMPLATE_ID') || '').trim()
     if (!templateId) {
       return jsonResponse({ ok: false, error: 'No certificate template configured' })
     }
 
     var formTitle = body.formTitle || 'Embed Club'
-    var pdf = buildCertificate(templateId, name, formTitle)
+    var pdf = buildCertificate(templateId, certificateName, formTitle)
 
-    GmailApp.sendEmail(email, 'Your certificate — ' + formTitle, certificateBody(name, formTitle), {
+    // emailSubject/emailBody arrive fully resolved ({{name}}/{{event}} already
+    // filled in) when the form has a custom message; otherwise fall back to
+    // the plain default here.
+    var subject = body.emailSubject || 'Your certificate — ' + formTitle
+    var textBody = body.emailBody || certificateBody(emailName, formTitle)
+    var htmlBody = body.emailBody ? textBody.replace(/\n/g, '<br>') : certificateHtml(emailName, formTitle)
+
+    GmailApp.sendEmail(email, subject, textBody, {
       name: 'Embed Club',
-      htmlBody: certificateHtml(name, formTitle),
+      htmlBody: htmlBody,
       attachments: [pdf],
     })
 
@@ -99,23 +124,24 @@ function doPost(e) {
 }
 
 /**
- * Copy the template, swap {{name}}, export as PDF, bin the copy.
+ * Copy the template, swap {{name}} with the already-case-formed certificate
+ * name, export as PDF, bin the copy.
  *
  * Working on a copy rather than the template itself is what makes concurrent
  * sends safe — two people submitting at once would otherwise overwrite each
  * other's name in the same deck.
  */
-function buildCertificate(templateId, name, formTitle) {
+function buildCertificate(templateId, certificateName, formTitle) {
   var copy = null
   try {
-    copy = DriveApp.getFileById(templateId).makeCopy('certificate-' + name)
+    copy = DriveApp.getFileById(templateId).makeCopy('certificate-' + certificateName)
     var deck = SlidesApp.openById(copy.getId())
-    deck.replaceAllText('{{name}}', name)
+    deck.replaceAllText('{{name}}', certificateName)
     deck.replaceAllText('{{event}}', formTitle)
     deck.saveAndClose()
 
     var pdf = DriveApp.getFileById(copy.getId()).getAs(MimeType.PDF)
-    pdf.setName('EmbedClub_Certificate_' + name.replace(/[^\w]+/g, '_') + '.pdf')
+    pdf.setName('EmbedClub_Certificate_' + certificateName.replace(/[^\w]+/g, '_') + '.pdf')
     return pdf
   } finally {
     // Don't leave a copy per recipient sitting in Drive.
@@ -125,14 +151,18 @@ function buildCertificate(templateId, name, formTitle) {
   }
 }
 
-function certificateBody(name, formTitle) {
-  return 'Hi ' + name + ',\n\nYour certificate for ' + formTitle + ' is attached.\n\n— Embed Club'
+/** Default plain-text body, used only when a form has no custom message. */
+function certificateBody(emailName, formTitle) {
+  return (
+    'Hi ' + emailName + ',\n\nYour certificate for ' + formTitle + ' is attached.\n\n— Embed Club'
+  )
 }
 
-function certificateHtml(name, formTitle) {
+/** Default HTML body, used only when a form has no custom message. */
+function certificateHtml(emailName, formTitle) {
   return (
     '<p>Hi ' +
-    name +
+    emailName +
     ',</p><p>Your certificate for <strong>' +
     formTitle +
     '</strong> is attached.</p><p>— Embed Club</p>'
@@ -141,13 +171,15 @@ function certificateHtml(name, formTitle) {
 
 /**
  * Handy for checking the deployment is alive without sending anything.
- * Visit the /exec URL in a browser.
+ * Visit the /exec URL in a browser. Reports whether each property is SET, not
+ * its value — this response is not a secret-safe place.
  */
 function doGet() {
+  var props = scriptProps()
   return jsonResponse({
     ok: true,
     service: 'embed-club-certificates',
-    templateConfigured: Boolean(DEFAULT_TEMPLATE_ID),
-    secretConfigured: SHARED_SECRET !== 'CHANGE_ME' && Boolean(SHARED_SECRET),
+    templateConfigured: Boolean(props.getProperty('DEFAULT_TEMPLATE_ID')),
+    secretConfigured: Boolean(props.getProperty('SHARED_SECRET')),
   })
 }
