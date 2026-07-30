@@ -5,9 +5,9 @@ import {
   CutoutCard,
   CutoutCardContent,
   CutoutCardImage,
+  CutoutCardInsetLabel,
   CutoutCardMedia,
   CutoutCardOverlay,
-  CutoutCardPin,
   CutoutCorner,
   cutoutCardSurfaceClassName,
 } from '@/components/common/cutoutCard'
@@ -37,29 +37,28 @@ export const SimulatorCard = React.memo(({ card, onOpen }: SimulatorCardProps) =
           'flex h-full w-full flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         )}
       >
-        <CutoutCardMedia className="h-44 shrink-0">
+        <CutoutCardMedia className="h-44 shrink-0 bg-muted">
           <CutoutCardImage
             alt={card.title}
             src={card.image}
             sizes="(max-width: 768px) 100vw, 20rem"
+            className="object-contain"
           />
           <CutoutCardOverlay />
 
-          {/* Play affordance — the card launches a tool, not an article */}
-          <CutoutCardPin className="top-0 right-0 rounded-bl-[16px] bg-primary px-3 py-2">
-            <Play className="h-4 w-4 fill-primary-foreground text-primary-foreground" />
-            <CutoutCorner className="absolute -left-[27px] -top-px -rotate-90 text-primary" />
-            <CutoutCorner className="absolute -bottom-[27px] -right-px -rotate-90 text-primary" />
-          </CutoutCardPin>
+          {/* Name lives on the media, same cutout inset used for the modal's
+              header — one label, not a repeated title in the content below. */}
+          <CutoutCardInsetLabel className="bottom-0 left-0 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-2">
+            <span className="font-semibold leading-snug line-clamp-1 text-card-foreground">
+              {card.title}
+            </span>
+            <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+            <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+          </CutoutCardInsetLabel>
         </CutoutCardMedia>
 
         <CutoutCardContent className="flex flex-1 flex-col gap-2 p-4">
-          <h3 className="font-semibold leading-snug transition-colors line-clamp-2 group-hover/cutout:text-primary">
-            {card.title}
-          </h3>
-          <p className="text-sm text-muted-foreground line-clamp-2">{card.description}</p>
-
-          <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+          <div className="mt-auto flex items-center justify-between gap-2">
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
               {card.difficulty && (
                 <span className="flex items-center gap-1 capitalize">
@@ -75,7 +74,7 @@ export const SimulatorCard = React.memo(({ card, onOpen }: SimulatorCardProps) =
               ) : null}
             </div>
             <span className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-all group-hover/cutout:border-primary group-hover/cutout:bg-primary group-hover/cutout:text-primary-foreground">
-              <Play className="h-3 w-3" />
+              <Play className="h-3 w-3 fill-current" />
             </span>
           </div>
         </CutoutCardContent>
