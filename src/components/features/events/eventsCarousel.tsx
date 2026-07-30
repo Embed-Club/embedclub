@@ -115,25 +115,31 @@ export const Carousel = ({
     }
   }
 
-  // Continuous auto-drift while idle, driven by a plain interval rather than
-  // rAF or the browser's smooth-scroll timer — both get throttled to zero in
-  // backgrounded/inactive tabs, where a timer keeps ticking. Paused on
-  // hover/touch/focus so reading a card doesn't fight the user, and skipped
-  // under prefers-reduced-motion.
+  // Continuous auto-drift while idle, driven by rAF so it moves at display
+  // refresh rate instead of visible discrete steps. Paused on hover/touch/
+  // focus so reading a card doesn't fight the user, and skipped under
+  // prefers-reduced-motion.
   useEffect(() => {
     if (!autoScroll || reduceMotion || paused || !loopEnabled) return
 
-    const TICK_MS = 50
-    const pxPerTick = step() / ((autoScrollSecondsPerCard * 1000) / TICK_MS)
+    const pxPerMs = step() / (autoScrollSecondsPerCard * 1000)
+    let raf = 0
+    let last = 0
 
-    const id = window.setInterval(() => {
+    const tick = (now: number) => {
       const el = carouselRef.current
-      if (!el) return
-      el.scrollBy({ left: pxPerTick, behavior: 'instant' })
-      rewindIfNeeded()
-    }, TICK_MS)
+      if (el) {
+        if (last) {
+          el.scrollBy({ left: pxPerMs * (now - last), behavior: 'instant' })
+          rewindIfNeeded()
+        }
+        last = now
+      }
+      raf = window.requestAnimationFrame(tick)
+    }
 
-    return () => window.clearInterval(id)
+    raf = window.requestAnimationFrame(tick)
+    return () => window.cancelAnimationFrame(raf)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoScroll, autoScrollSecondsPerCard, reduceMotion, paused, loopEnabled])
 
