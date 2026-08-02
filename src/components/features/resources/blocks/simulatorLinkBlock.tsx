@@ -35,8 +35,8 @@ export function SimulatorLinkBlock({ block }: SimulatorLinkBlockProps) {
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-2xl md:text-3xl font-bold text-white">Ready to try it out?</h3>
-            <p className="text-zinc-400 max-w-md mx-auto">
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground">Ready to try it out?</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
               Launch the {title} and explore the concepts interactively.
             </p>
           </div>
