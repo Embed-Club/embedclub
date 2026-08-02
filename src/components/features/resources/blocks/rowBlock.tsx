@@ -1,14 +1,19 @@
+import { splitHeadingIds } from '@/lib/richTextHeadings'
 import type { RowBlock as RowBlockType } from '@/payload/payload-types'
 import { BlockMapper } from '../blockMapper'
 
 interface RowBlockProps {
   block: RowBlockType
+  /** Anchor ids for headings inside this row, in document order. */
+  headingIds?: string[]
 }
 
-export function RowBlock({ block }: RowBlockProps) {
+export function RowBlock({ block, headingIds }: RowBlockProps) {
   const { columns, blocks } = block
 
   if (!blocks || blocks.length === 0) return null
+
+  const idsPerBlock = splitHeadingIds(blocks, headingIds ?? [])
 
   const gridCols = {
     '1': 'grid-cols-1',
@@ -23,7 +28,7 @@ export function RowBlock({ block }: RowBlockProps) {
       {blocks.map((subBlock, i) => (
         <div key={subBlock.id || i} className="flex flex-col">
           {/* @ts-ignore - Block types might have slight mismatches in nesting */}
-          <BlockMapper block={subBlock} index={i} />
+          <BlockMapper block={subBlock} index={i} headingIds={idsPerBlock[i]} />
         </div>
       ))}
     </div>

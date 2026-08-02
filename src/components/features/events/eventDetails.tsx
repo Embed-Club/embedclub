@@ -103,9 +103,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
             <div className="mt-2 space-y-1 text-sm text-foreground">
               {event.venue?.roomName && <p>{event.venue.roomName}</p>}
               {event.venue?.floor && (
-                <p className="text-xs text-muted-foreground">
-                  {event.venue.floor}
-                </p>
+                <p className="text-xs text-muted-foreground">{event.venue.floor}</p>
               )}
             </div>
           </div>
@@ -117,9 +115,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Location
             </p>
-            <p className="mt-2 text-sm text-foreground">
-              {event.location.address}
-            </p>
+            <p className="mt-2 text-sm text-foreground">{event.location.address}</p>
           </div>
         )}
       </div>
@@ -152,9 +148,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
       {!isOnline && event.location?.coords?.lat && event.location?.coords?.lng && (
         <div className="space-y-2 rounded-lg bg-muted p-4">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Map
-            </p>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Map</p>
 
             <a
               href={`https://www.google.com/maps?q=${event.location.coords.lat},${event.location.coords.lng}`}
@@ -196,10 +190,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
               </a>
             )}
             {event.contact?.phone && (
-              <a
-                href={`tel:${event.contact.phone}`}
-                className="block text-primary hover:underline"
-              >
+              <a href={`tel:${event.contact.phone}`} className="block text-primary hover:underline">
                 {event.contact.phone}
               </a>
             )}

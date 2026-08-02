@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { buildLearningFields, learningHooks } from './learningFields'
+import { buildLearningFields, buildLearningPreview, learningHooks } from './learningFields'
 
 /**
  * Step-by-step tutorials. Same document shape as Resources — they were one
@@ -17,6 +17,7 @@ export const Tutorials: CollectionConfig = {
     description: 'Step-by-step walkthroughs. Drag rows to set the order they appear on the site.',
     defaultColumns: ['title', 'difficulty', 'badge', 'updatedAt'],
     group: 'Content',
+    ...buildLearningPreview('tutorials'),
   },
   fields: buildLearningFields({ noun: 'Tutorial' }),
   hooks: learningHooks,

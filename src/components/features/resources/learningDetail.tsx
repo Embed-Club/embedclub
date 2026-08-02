@@ -1,4 +1,6 @@
 import { BlockRenderer } from '@/components/features/resources/blockRenderer'
+import { TableOfContents } from '@/components/features/resources/tableOfContents'
+import { collectHeadings } from '@/lib/richTextHeadings'
 import type { Resource, Tutorial } from '@/payload/payload-types'
 import { BarChart, Calendar, ChevronLeft, Clock } from 'lucide-react'
 import Link from 'next/link'
@@ -24,8 +26,14 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
     year: 'numeric',
   })
 
+  const headings = collectHeadings(doc.content)
+
   return (
-    <div className="w-full min-h-screen bg-[#09090b] text-zinc-100 pb-24">
+    // No background of its own: ContentPanel already paints `bg-background`
+    // plus the `.texture-panel` grain, and an opaque colour here would cover
+    // both — which is what pinned this page to near-black in light mode and
+    // hid the site texture.
+    <div className="w-full min-h-screen text-foreground pb-24">
       {/* Hero Section */}
       <div className="relative w-full py-16 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
@@ -33,9 +41,9 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
         <div className="container relative z-10 mx-auto px-4 md:px-6 max-w-5xl">
           <Link
             href={basePath}
-            className="group inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors mb-6 md:mb-10"
+            className="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6 md:mb-10"
           >
-            <div className="p-1 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+            <div className="p-1 rounded-full bg-foreground/5 group-hover:bg-foreground/10 transition-colors">
               <ChevronLeft className="h-4 w-4" />
             </div>
             Back to {backLabel}
@@ -56,13 +64,15 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
               })}
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white max-w-4xl leading-[1.1]">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground max-w-4xl leading-[1.1]">
               {doc.title}
             </h1>
 
-            <p className="text-xl text-zinc-400 max-w-3xl leading-relaxed">{doc.description}</p>
+            <p className="text-xl text-muted-foreground max-w-3xl leading-relaxed">
+              {doc.description}
+            </p>
 
-            <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-zinc-500">
+            <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 <span>Last updated {formattedDate}</span>
@@ -91,19 +101,18 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
             <BlockRenderer blocks={doc.content || []} />
           </div>
 
-          {/* Table of Contents / Sidebar - Placeholder for now */}
-          <aside className="hidden lg:block w-64 h-fit sticky top-32">
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
-              <h4 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
-                On this page
-              </h4>
-              <nav className="flex flex-col gap-3">
-                <p className="text-xs text-zinc-500 italic">
-                  Table of contents generated automatically from headings...
-                </p>
-              </nav>
-            </div>
-          </aside>
+          {/* Table of contents — hidden entirely when the doc has no headings,
+              rather than showing an empty shell. */}
+          {headings.length > 0 && (
+            <aside className="hidden lg:block w-64 h-fit sticky top-32">
+              <div className="p-6 rounded-2xl bg-card/60 border border-border backdrop-blur-sm">
+                <h4 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">
+                  On this page
+                </h4>
+                <TableOfContents headings={headings} />
+              </div>
+            </aside>
+          )}
         </div>
       </div>
     </div>

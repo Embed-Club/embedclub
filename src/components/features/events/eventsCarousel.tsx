@@ -1,11 +1,12 @@
 'use client'
 import { CarouselContext } from '@/components/features/events/eventsCards'
 import { cn } from '@/lib/utils'
-import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
+import useEmblaCarousel from 'embla-carousel-react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import type React from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface CarouselProps {
   items: React.ReactNode[]

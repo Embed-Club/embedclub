@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { buildLearningFields, learningHooks } from './learningFields'
+import { buildLearningFields, buildLearningPreview, learningHooks } from './learningFields'
 
 export const Resources: CollectionConfig = {
   slug: 'resources',
@@ -17,6 +17,7 @@ export const Resources: CollectionConfig = {
       'Reference material and guides. Drag rows to set the order they appear on the site.',
     defaultColumns: ['title', 'difficulty', 'badge', 'updatedAt'],
     group: 'Content',
+    ...buildLearningPreview('resources'),
   },
   fields: buildLearningFields({ noun: 'Resource' }),
   hooks: learningHooks,

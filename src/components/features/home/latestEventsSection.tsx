@@ -1,6 +1,8 @@
 import { EmptyState } from '@/components/common/emptyState'
 import { EventCutoutCard } from '@/components/features/home/eventCutoutCard'
-import { LogoMarquee } from '@/components/features/home/logoMarquee'
+// Temporarily unused — the desktop marquee is commented out below, pending a
+// decision on where it moves to. See also heroSection.tsx (mobile copy).
+// import { LogoMarquee } from '@/components/features/home/logoMarquee'
 import type { Event } from '@/payload/payload-types'
 import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
@@ -40,12 +42,19 @@ export function LatestEventsContent({
   )
 }
 
-/** Second section: a logo marquee (desktop only — mobile shows it in the hero),
- *  then the latest events as cutout cards. */
+/** Second section: the latest events as cutout cards. */
 export function LatestEventsSection({ events }: { events: Event[] }) {
   return (
-    <section id="events" className="relative flex min-h-[100svh] w-full flex-col gap-12 pb-16">
+    // `pt-24` clears the fixed 64px nav header on mobile, plus a little air.
+    // Desktop doesn't need it — the content centres itself in the full-height
+    // section, well clear of the header.
+    <section
+      id="events"
+      className="relative flex min-h-[100svh] w-full flex-col gap-12 pb-16 pt-24 lg:pt-0"
+    >
+      {/* Logo marquee — parked for now, moving somewhere else later.
       <LogoMarquee className="hidden lg:block" />
+      */}
       <div className="flex flex-1 flex-col justify-center px-6 md:px-12 lg:px-20">
         <LatestEventsContent events={events} />
       </div>

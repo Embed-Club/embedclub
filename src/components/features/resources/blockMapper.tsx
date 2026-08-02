@@ -7,6 +7,7 @@ import type {
   RowBlock,
   SimulatorLinkBlock as SimulatorLinkBlockType,
   TableBlock,
+  VideoBlock,
 } from '@/payload/payload-types'
 import { CodeBlockServer } from './blocks/codeBlockServer'
 import { GraphBlock as GraphBlockComp } from './blocks/graphBlock'
@@ -14,10 +15,15 @@ import { ImageBlock as ImageBlockComp } from './blocks/imageBlock'
 import { RowBlock as RowBlockComp } from './blocks/rowBlock'
 import { SimulatorLinkBlock as SimulatorLinkBlockComp } from './blocks/simulatorLinkBlock'
 import { TableBlock as TableBlockComp } from './blocks/tableBlock'
+import { VideoBlock as VideoBlockComp } from './blocks/videoBlock'
 
 type Block = NonNullable<Resource['content']>[number]
 
-export function BlockMapper({ block, index }: { block: Block; index: number }) {
+export function BlockMapper({
+  block,
+  index,
+  headingIds,
+}: { block: Block; index: number; headingIds?: string[] }) {
   const b = block
   switch (b.blockType) {
     case 'textBlock':
@@ -26,7 +32,7 @@ export function BlockMapper({ block, index }: { block: Block; index: number }) {
           key={b.id || index}
           className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75"
         >
-          <RichTextRender content={b.text} />
+          <RichTextRender content={b.text} headingIds={headingIds} />
         </section>
       )
     case 'codeBlock':
@@ -37,8 +43,10 @@ export function BlockMapper({ block, index }: { block: Block; index: number }) {
       return <TableBlockComp key={b.id || index} block={b as TableBlock} />
     case 'graphBlock':
       return <GraphBlockComp key={b.id || index} block={b as GraphBlock} />
+    case 'videoBlock':
+      return <VideoBlockComp key={b.id || index} block={b as VideoBlock} />
     case 'rowBlock':
-      return <RowBlockComp key={b.id || index} block={b as RowBlock} />
+      return <RowBlockComp key={b.id || index} block={b as RowBlock} headingIds={headingIds} />
     case 'simulatorLinkBlock':
       return <SimulatorLinkBlockComp key={b.id || index} block={b as SimulatorLinkBlockType} />
     default:

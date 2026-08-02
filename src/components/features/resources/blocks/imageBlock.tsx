@@ -23,7 +23,7 @@ export function ImageBlock({ block }: ImageBlockProps) {
     <figure
       className={`my-12 flex flex-col gap-3 ${sizeClasses[size || 'large']} animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200`}
     >
-      <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 group">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-muted/40 group">
         <Image
           src={media.url}
           alt={caption || media.alt || ''}
@@ -31,10 +31,10 @@ export function ImageBlock({ block }: ImageBlockProps) {
           height={media.height || 800}
           className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none dark:from-black/40" />
       </div>
       {caption && (
-        <figcaption className="text-center text-sm text-zinc-500 font-medium italic">
+        <figcaption className="text-center text-sm text-muted-foreground font-medium italic">
           {caption}
         </figcaption>
       )}

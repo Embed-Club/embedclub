@@ -2,7 +2,7 @@
 
 ## Theme
 
-Dark-first with a light mode via `next-themes` (`.dark` class strategy). The scene: a student checking the club site on a phone in a dim electronics lab between classes — dark base, warm copper accents like solder under bench light. A subtle `fabric-of-squares` texture overlays surfaces site-wide; the home page adds an animated star-field.
+Dark-first with a light mode via `next-themes` (`.dark` class strategy). The scene: a student checking the club site on a phone in a dim electronics lab between classes — dark base, warm copper accents like solder under bench light. A subtle `fabric-of-squares` texture overlays surfaces site-wide.
 
 **Color strategy: Committed** — copper carries identity across links, active states, badges, fills, and glows on a graphite-black base.
 
@@ -55,7 +55,7 @@ Tokens are shadcn-style HSL triplets in `src/app/(frontend)/globals.css`.
 - **Cards**: `CutoutCard` (cult-ui) is the standard content card for Resources/Tutorials — masked-corner cutout with inset label; `featured` and auto-`NEW` badges come from Payload. Gallery uses `Masonry`; events use carousel + focus cards.
 - **Intro**: logo fill + banner slide choreography on first home load (`FrontendShell`), scales to viewport on mobile, gates page reveal and background audio.
 - **Buttons**: shadcn `Button` + animate-ui `FlipButton` for icon toggles (theme, audio) — flip-on-hover from bottom.
-- **Texture**: `BgImageTexture` overlay (`/fabric-of-squares.png`) across the frontend shell, blend-mode tuned per theme.
+- **Texture**: `.texture-panel` class in `globals.css` (`/textures/fabric-of-squares.png`) on the content panel, sidebar, and menu flyout — a real background layer, blend-mode tuned per theme (`multiply` light, `overlay` dark).
 - Block-based CMS content rendered via `BlockRenderer` → text/code(shiki)/table/graph(mermaid)/image/row/simulator-link blocks.
 
 ## Layout
