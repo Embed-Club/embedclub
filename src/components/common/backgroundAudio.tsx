@@ -17,6 +17,30 @@ let audio: HTMLAudioElement | null = null
 // True when playback was paused because the page went to the background, so we
 // know to resume on return — and to never resume a track the user paused by hand.
 let pausedByVisibility = false
+// True once the user has pressed pause. Persisted, so the choice survives a
+// reload and a fresh mount — otherwise every refresh re-armed autoplay and the
+// next tap anywhere on the page started the music again.
+let userMuted = false
+
+const MUTED_STORAGE_KEY = 'embedClub.backgroundAudioMuted'
+
+function readMutedPreference() {
+  try {
+    return localStorage.getItem(MUTED_STORAGE_KEY) === '1'
+  } catch {
+    // Private mode / storage disabled — fall back to the default (unmuted).
+    return false
+  }
+}
+
+function setMutedPreference(muted: boolean) {
+  userMuted = muted
+  try {
+    localStorage.setItem(MUTED_STORAGE_KEY, muted ? '1' : '0')
+  } catch {
+    // Preference is still honoured for this page view via `userMuted`.
+  }
+}
 let snapshot: AudioSnapshot = { available: false, playing: false }
 const listeners = new Set<() => void>()
 
@@ -44,6 +68,9 @@ function getServerSnapshot(): AudioSnapshot {
 
 async function play() {
   if (!audio) return
+  // Single chokepoint for the mute preference — every start path routes through
+  // here, so no stray listener or resume can override a deliberate pause.
+  if (userMuted) return
   try {
     await audio.play()
     setSnapshot({ available: true, playing: true })
@@ -62,8 +89,10 @@ function pause() {
 export function toggleBackgroundAudio() {
   if (!audio) return
   if (audio.paused) {
+    setMutedPreference(false)
     void play()
   } else {
+    setMutedPreference(true)
     pause()
   }
 }
@@ -81,13 +110,16 @@ export function BackgroundAudio() {
     if (!audio) {
       audio = new Audio('/Home.m4a')
       audio.loop = true
-      audio.volume = 0.15 // Subtle, non-intrusive background volume
+      audio.volume = 0.075 // Subtle, non-intrusive background volume
     }
+    userMuted = readMutedPreference()
     setSnapshot({ available: true, playing: !audio.paused })
 
     // MainbarShell fades the page content in 600ms after the intro finishes —
     // start the music together with that reveal, not with the logo animation.
     const startTimer = setTimeout(() => {
+      // Muted by choice on a previous visit — stay silent until they press play.
+      if (userMuted) return
       // Don't start music into a backgrounded tab — resume when they return.
       if (document.visibilityState === 'visible') {
         void play()
@@ -98,7 +130,19 @@ export function BackgroundAudio() {
 
     // If the browser blocked autoplay, the first user gesture starts playback.
     // Not `once` — keeps retrying until play() actually succeeds.
-    const handleInteraction = () => {
+    const handleInteraction = (event: Event) => {
+      // Taps on an audio control are that control's business — let its own
+      // handler decide. Needed because `touchstart` on window fires *before*
+      // React's click, so without this a tap on the toggle would start playback
+      // here and then be immediately paused by the toggle itself.
+      const target = event.target
+      if (target instanceof Element && target.closest('[data-audio-control]')) return
+      // The pause click itself bubbles up to window, so without this the toggle
+      // would restart the track it just stopped — as would any later tap.
+      if (userMuted) {
+        removeListeners()
+        return
+      }
       if (audio?.paused && !snapshot.playing) {
         void play().then(() => {
           if (audio && !audio.paused) removeListeners()
@@ -112,9 +156,11 @@ export function BackgroundAudio() {
       window.removeEventListener('touchstart', handleInteraction)
       window.removeEventListener('keydown', handleInteraction)
     }
-    window.addEventListener('click', handleInteraction)
-    window.addEventListener('touchstart', handleInteraction)
-    window.addEventListener('keydown', handleInteraction)
+    if (!userMuted) {
+      window.addEventListener('click', handleInteraction)
+      window.addEventListener('touchstart', handleInteraction)
+      window.addEventListener('keydown', handleInteraction)
+    }
 
     // Pause whenever the page isn't the user's active view, and resume on
     // return. The two signals cover different cases:
@@ -137,7 +183,7 @@ export function BackgroundAudio() {
           pausedByVisibility = true
           setSnapshot({ available: true, playing: false })
         }
-      } else if (pausedByVisibility) {
+      } else if (pausedByVisibility && !userMuted) {
         pausedByVisibility = false
         void play()
       }
@@ -188,6 +234,7 @@ export function AudioToggleMini() {
   return (
     <button
       type="button"
+      data-audio-control
       onClick={toggleBackgroundAudio}
       aria-label={playing ? 'Pause background music' : 'Play background music'}
       className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/60 text-foreground backdrop-blur-sm transition-colors hover:text-primary hover:border-primary/60"

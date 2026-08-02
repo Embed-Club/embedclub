@@ -11,6 +11,14 @@ const nextConfig = {
       { protocol: 'https', hostname: 'via.placeholder.com' },
     ],
   },
+  // Allow dev-server requests proxied through a tunnel (ngrok / Tailscale Funnel).
+  allowedDevOrigins: [
+    '*.ngrok-free.dev',
+    '*.ngrok-free.app',
+    '*.ngrok.app',
+    '*.ngrok.io',
+    '*.ts.net',
+  ],
   experimental: {
     optimizePackageImports: ['lucide-react', 'motion'],
   },
