@@ -62,8 +62,8 @@ them to update it first.
   and update the import — do not leave kebab files in the tree.
 - Component homes:
   - `ui/` — shadcn primitives only (button, input, dialog, select, …)
-  - `common/` — shared custom components (cutoutCard, bgImageTexture,
-    borderGlow, focusCards, emptyState, searchBar, …)
+  - `common/` — shared custom components (cutoutCard, borderGlow,
+    focusCards, emptyState, searchBar, …)
   - `layout/` — app shell (frontendShell, sidebar menus, contentPanel)
   - `theme/` — theme provider / toggles
   - `admin/` — Payload admin field components
