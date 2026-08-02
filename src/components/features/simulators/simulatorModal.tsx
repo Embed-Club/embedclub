@@ -56,9 +56,7 @@ export function SimulatorModal({ simulator, open, onOpenChange }: SimulatorModal
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
 
           <CutoutCardInsetLabel className="bottom-0 left-0 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-2.5">
-            <span className="text-lg font-semibold leading-snug text-card-foreground">
-              {title}
-            </span>
+            <span className="text-lg font-semibold leading-snug text-card-foreground">{title}</span>
             <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
             <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
           </CutoutCardInsetLabel>
