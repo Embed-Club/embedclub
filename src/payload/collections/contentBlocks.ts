@@ -161,11 +161,24 @@ export const GraphBlock: Block = {
       required: true,
       options: [
         { label: 'Mermaid Diagram', value: 'mermaid' },
+        { label: 'draw.io Diagram', value: 'drawio' },
         { label: 'Chart Data (JSON)', value: 'chartData' },
         { label: 'Custom HTML', value: 'html' },
       ],
       admin: {
         description: 'Type of graph or diagram to display',
+      },
+    },
+    {
+      name: 'drawioUrl',
+      label: 'draw.io Share Link or Image URL',
+      type: 'text',
+      required: false,
+      admin: {
+        description:
+          'Draw your diagram free at https://app.diagrams.net — no account needed. Then either: (1) File → Publish → Link, and paste that link here, or (2) File → Export as → SVG/PNG, upload it as an Image Block instead. Both work on desktop and mobile.',
+        placeholder: 'https://viewer.diagrams.net/?...  or  https://.../diagram.svg',
+        condition: (data) => data?.graphType === 'drawio',
       },
     },
     {
@@ -251,6 +264,43 @@ export const ImageBlock: Block = {
 }
 
 /**
+ * VideoBlock: An embedded YouTube video.
+ *
+ * Stores the URL an editor pastes from the browser rather than a bare video id —
+ * asking for an id means explaining where to find one. The id is parsed at
+ * render time, which also accepts youtu.be, /embed/, /shorts/, and /live/ forms.
+ */
+export const VideoBlock: Block = {
+  slug: 'videoBlock',
+  interfaceName: 'VideoBlock',
+  labels: {
+    singular: 'Video Block',
+    plural: 'Video Blocks',
+  },
+  fields: [
+    {
+      name: 'url',
+      label: 'YouTube URL',
+      type: 'text',
+      required: true,
+      admin: {
+        description:
+          'Paste any YouTube link — watch, share (youtu.be), Shorts, or live. The player appears on the page automatically.',
+        placeholder: 'https://www.youtube.com/watch?v=...',
+      },
+    },
+    {
+      name: 'caption',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Optional caption shown under the video',
+      },
+    },
+  ],
+}
+
+/**
  * SimulatorLinkBlock: Link to an interactive simulator
  */
 export const SimulatorLinkBlock: Block = {
@@ -311,7 +361,15 @@ export const RowBlock: Block = {
       name: 'blocks',
       type: 'blocks',
       required: false,
-      blocks: [TextBlock, CodeBlock, TableBlock, GraphBlock, ImageBlock, SimulatorLinkBlock],
+      blocks: [
+        TextBlock,
+        CodeBlock,
+        TableBlock,
+        GraphBlock,
+        ImageBlock,
+        VideoBlock,
+        SimulatorLinkBlock,
+      ],
       admin: {
         description: 'Blocks to display in this row (nested RowBlocks not supported)',
       },

@@ -8,6 +8,7 @@ import {
   SimulatorLinkBlock,
   TableBlock,
   TextBlock,
+  VideoBlock,
 } from './contentBlocks'
 import { CARD_DESCRIPTION_MAX_LENGTH, generateSlug } from './learningFields'
 
@@ -132,6 +133,7 @@ export const Projects: CollectionConfig = {
                 TableBlock,
                 GraphBlock,
                 ImageBlock,
+                VideoBlock,
                 RowBlock,
                 SimulatorLinkBlock,
               ],

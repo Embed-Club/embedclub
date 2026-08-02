@@ -13,6 +13,8 @@ import * as migration_20260728_150000_form_sheet_id from './20260728_150000_form
 import * as migration_20260730_100000_certificate_drive_template from './20260730_100000_certificate_drive_template';
 import * as migration_20260730_110000_certificate_batches from './20260730_110000_certificate_batches';
 import * as migration_20260730_120000_certificate_customization from './20260730_120000_certificate_customization';
+import * as migration_20260803_100000_video_and_drawio_blocks from './20260803_100000_video_and_drawio_blocks';
+import * as migration_20260803_110000_drizzle_snapshot_baseline from './20260803_110000_drizzle_snapshot_baseline';
 
 export const migrations = [
   {
@@ -38,7 +40,7 @@ export const migrations = [
   {
     up: migration_20260713_120901_admin_qol_batch.up,
     down: migration_20260713_120901_admin_qol_batch.down,
-    name: '20260713_120901_admin_qol_batch'
+    name: '20260713_120901_admin_qol_batch',
   },
   {
     up: migration_20260713_130000_gallery_photos_captions.up,
@@ -89,5 +91,15 @@ export const migrations = [
     up: migration_20260730_120000_certificate_customization.up,
     down: migration_20260730_120000_certificate_customization.down,
     name: '20260730_120000_certificate_customization',
+  },
+  {
+    up: migration_20260803_100000_video_and_drawio_blocks.up,
+    down: migration_20260803_100000_video_and_drawio_blocks.down,
+    name: '20260803_100000_video_and_drawio_blocks',
+  },
+  {
+    up: migration_20260803_110000_drizzle_snapshot_baseline.up,
+    down: migration_20260803_110000_drizzle_snapshot_baseline.down,
+    name: '20260803_110000_drizzle_snapshot_baseline',
   },
 ];

@@ -1,3 +1,4 @@
+import { getServerSideURL } from '@/lib/getUrl'
 import type { CollectionConfig, Field } from 'payload'
 
 import {
@@ -8,6 +9,7 @@ import {
   SimulatorLinkBlock,
   TableBlock,
   TextBlock,
+  VideoBlock,
 } from './contentBlocks'
 
 /**
@@ -153,12 +155,13 @@ export function buildLearningFields({ noun }: { noun: string }): Field[] {
                 TableBlock,
                 GraphBlock,
                 ImageBlock,
+                VideoBlock,
                 RowBlock,
                 SimulatorLinkBlock,
               ],
               admin: {
                 description:
-                  'Build the page with flexible content blocks. Add text, code, tables, images, diagrams, and more.',
+                  'Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, and more.',
               },
             },
           ],
@@ -166,6 +169,22 @@ export function buildLearningFields({ noun }: { noun: string }): Field[] {
       ],
     },
   ]
+}
+
+/**
+ * "Preview" button in the admin, opening the real published page in a new tab.
+ *
+ * Deliberately points at the live route rather than a draft renderer: these
+ * collections have no drafts/versions, so the saved document *is* what visitors
+ * see. Editors save, then preview.
+ */
+export function buildLearningPreview(basePath: string): CollectionConfig['admin'] {
+  return {
+    preview: (doc) => {
+      const slug = typeof doc?.slug === 'string' ? doc.slug : null
+      return slug ? `${getServerSideURL()}/${basePath}/${slug}` : null
+    },
+  }
 }
 
 /** Auto-fill the slug from the title the first time a doc is saved. */

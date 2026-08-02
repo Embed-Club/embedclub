@@ -564,9 +564,11 @@ export interface Resource {
    */
   badge?: ('featured' | 'popular' | 'essential') | null;
   /**
-   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, and more.
+   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, and more.
    */
-  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
+  content?:
+    | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -688,7 +690,11 @@ export interface GraphBlock {
   /**
    * Type of graph or diagram to display
    */
-  graphType: 'mermaid' | 'chartData' | 'html';
+  graphType: 'mermaid' | 'drawio' | 'chartData' | 'html';
+  /**
+   * Draw your diagram free at https://app.diagrams.net — no account needed. Then either: (1) File → Publish → Link, and paste that link here, or (2) File → Export as → SVG/PNG, upload it as an Image Block instead. Both work on desktop and mobile.
+   */
+  drawioUrl?: string | null;
   /**
    * Mermaid diagram syntax (e.g., graph TD, flowchart, etc.)
    */
@@ -740,6 +746,23 @@ export interface ImageBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoBlock".
+ */
+export interface VideoBlock {
+  /**
+   * Paste any YouTube link — watch, share (youtu.be), Shorts, or live. The player appears on the page automatically.
+   */
+  url: string;
+  /**
+   * Optional caption shown under the video
+   */
+  caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'videoBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "RowBlock".
  */
 export interface RowBlock {
@@ -750,7 +773,7 @@ export interface RowBlock {
   /**
    * Blocks to display in this row (nested RowBlocks not supported)
    */
-  blocks?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | SimulatorLinkBlock)[] | null;
+  blocks?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | SimulatorLinkBlock)[] | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'rowBlock';
@@ -808,7 +831,9 @@ export interface Simulator {
   /**
    * Optional — setup steps, login notes, download instructions. Shown under the video in the modal.
    */
-  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
+  content?:
+    | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -851,9 +876,11 @@ export interface Tutorial {
    */
   badge?: ('featured' | 'popular' | 'essential') | null;
   /**
-   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, and more.
+   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, and more.
    */
-  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
+  content?:
+    | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -902,7 +929,9 @@ export interface Project {
   /**
    * The write-up: how it works, what it took, what broke. Optional.
    */
-  content?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | RowBlock | SimulatorLinkBlock)[] | null;
+  content?:
+    | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1529,6 +1558,7 @@ export interface ResourcesSelect<T extends boolean = true> {
         tableBlock?: T | TableBlockSelect<T>;
         graphBlock?: T | GraphBlockSelect<T>;
         imageBlock?: T | ImageBlockSelect<T>;
+        videoBlock?: T | VideoBlockSelect<T>;
         rowBlock?: T | RowBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
@@ -1586,6 +1616,7 @@ export interface TableBlockSelect<T extends boolean = true> {
  */
 export interface GraphBlockSelect<T extends boolean = true> {
   graphType?: T;
+  drawioUrl?: T;
   mermaidDefinition?: T;
   chartData?: T;
   html?: T;
@@ -1606,6 +1637,16 @@ export interface ImageBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoBlock_select".
+ */
+export interface VideoBlockSelect<T extends boolean = true> {
+  url?: T;
+  caption?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "RowBlock_select".
  */
 export interface RowBlockSelect<T extends boolean = true> {
@@ -1618,6 +1659,7 @@ export interface RowBlockSelect<T extends boolean = true> {
         tableBlock?: T | TableBlockSelect<T>;
         graphBlock?: T | GraphBlockSelect<T>;
         imageBlock?: T | ImageBlockSelect<T>;
+        videoBlock?: T | VideoBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
   id?: T;
@@ -1655,6 +1697,7 @@ export interface TutorialsSelect<T extends boolean = true> {
         tableBlock?: T | TableBlockSelect<T>;
         graphBlock?: T | GraphBlockSelect<T>;
         imageBlock?: T | ImageBlockSelect<T>;
+        videoBlock?: T | VideoBlockSelect<T>;
         rowBlock?: T | RowBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
@@ -1684,6 +1727,7 @@ export interface SimulatorsSelect<T extends boolean = true> {
         tableBlock?: T | TableBlockSelect<T>;
         graphBlock?: T | GraphBlockSelect<T>;
         imageBlock?: T | ImageBlockSelect<T>;
+        videoBlock?: T | VideoBlockSelect<T>;
         rowBlock?: T | RowBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
@@ -1713,6 +1757,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         tableBlock?: T | TableBlockSelect<T>;
         graphBlock?: T | GraphBlockSelect<T>;
         imageBlock?: T | ImageBlockSelect<T>;
+        videoBlock?: T | VideoBlockSelect<T>;
         rowBlock?: T | RowBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
