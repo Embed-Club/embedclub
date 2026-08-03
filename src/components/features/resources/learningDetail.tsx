@@ -96,17 +96,22 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
 
       {/* Content Section */}
       <div className="container mx-auto px-6 mt-12">
-        <div className="flex flex-col lg:flex-row gap-12">
-          <div className="flex-1 max-w-4xl">
+        {/* `justify-between` plus a capped prose column pushes the contents
+            panel out to the right edge instead of letting it sit immediately
+            beside the text. */}
+        <div className="flex flex-col lg:flex-row lg:justify-between gap-12 xl:gap-20">
+          {/* `data-toc-scope` bounds the reading-progress calculation to the
+              article, so the full-viewport footer below doesn't count. */}
+          <div data-toc-scope className="flex-1 min-w-0 max-w-4xl">
             <BlockRenderer blocks={doc.content || []} />
           </div>
 
           {/* Table of contents — hidden entirely when the doc has no headings,
               rather than showing an empty shell. */}
           {headings.length > 0 && (
-            <aside className="hidden lg:block w-64 h-fit sticky top-32">
-              <div className="p-6 rounded-2xl bg-card/60 border border-border backdrop-blur-sm">
-                <h4 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">
+            <aside className="hidden lg:block w-60 xl:w-64 shrink-0 h-fit sticky top-24">
+              <div className="p-5 rounded-2xl bg-card/60 border border-border backdrop-blur-sm">
+                <h4 className="text-xs font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
                   On this page
                 </h4>
                 <TableOfContents headings={headings} />

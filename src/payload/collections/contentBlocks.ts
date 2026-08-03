@@ -178,7 +178,12 @@ export const GraphBlock: Block = {
         description:
           'Draw your diagram free at https://app.diagrams.net — no account needed. Then either: (1) File → Publish → Link, and paste that link here, or (2) File → Export as → SVG/PNG, upload it as an Image Block instead. Both work on desktop and mobile.',
         placeholder: 'https://viewer.diagrams.net/?...  or  https://.../diagram.svg',
-        condition: (data) => data?.graphType === 'drawio',
+        // `siblingData`, not `data`: inside a block, `data` is the whole
+        // document, so `data.graphType` is always undefined and the field
+        // stays hidden no matter what is selected. Every condition below had
+        // that bug, which is why the Graph block only ever showed its type and
+        // caption.
+        condition: (_data, siblingData) => siblingData?.graphType === 'drawio',
       },
     },
     {
@@ -187,7 +192,7 @@ export const GraphBlock: Block = {
       required: false,
       admin: {
         description: 'Mermaid diagram syntax (e.g., graph TD, flowchart, etc.)',
-        condition: (data) => data?.graphType === 'mermaid',
+        condition: (_data, siblingData) => siblingData?.graphType === 'mermaid',
       },
     },
     {
@@ -196,7 +201,7 @@ export const GraphBlock: Block = {
       required: false,
       admin: {
         description: 'Chart data in JSON format (Chart.js compatible)',
-        condition: (data) => data?.graphType === 'chartData',
+        condition: (_data, siblingData) => siblingData?.graphType === 'chartData',
       },
     },
     {
@@ -205,7 +210,7 @@ export const GraphBlock: Block = {
       required: false,
       admin: {
         description: 'Custom HTML for embedding (use with caution)',
-        condition: (data) => data?.graphType === 'html',
+        condition: (_data, siblingData) => siblingData?.graphType === 'html',
       },
     },
     {

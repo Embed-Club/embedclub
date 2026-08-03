@@ -19,7 +19,11 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
   return (
     <div
       className={cn(
-        'group relative my-8 w-full overflow-hidden rounded-xl bg-zinc-950/50 border border-white/5 shadow-2xl',
+        // Opaque, not `bg-zinc-950/50`: Shiki renders with the `github-dark`
+        // theme in both colour modes, and a half-transparent surface let the
+        // light-mode page bleed through to a mid grey that the dark syntax
+        // colours were unreadable against.
+        'group relative my-8 w-full overflow-hidden rounded-xl bg-zinc-950 border border-white/10 shadow-2xl',
         className,
       )}
     >

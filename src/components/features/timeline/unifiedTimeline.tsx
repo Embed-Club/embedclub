@@ -197,9 +197,12 @@ export function Timeline({
               ref={timelineBarRef}
               className={cn('absolute top-0 bottom-20 w-3 pointer-events-none', barPositionClass)}
             >
-              <div className="absolute top-0 bottom-0 w-full rounded-full border-2 border-foreground/40 dark:border-white/40 bg-transparent" />
+              {/* Copper (`--primary`) rather than the old black-on-light /
+                  white-on-dark pair, so the progress rail keeps one identity
+                  across both colour modes instead of inverting with them. */}
+              <div className="absolute top-0 bottom-0 w-full rounded-full border-2 border-primary/40 bg-transparent" />
               <motion.div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-[8px] bg-foreground dark:bg-white rounded-full origin-top"
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-[8px] bg-primary rounded-full origin-top"
                 style={{
                   height: useTransform(scrollYProgress, [0, 1], ['0%', '100%']),
                 }}
@@ -273,11 +276,11 @@ function TimelineItemWrapper({
       {/* Node Circle with progressive fill */}
       <div ref={registerNode(index)} className="absolute left-1/2 -translate-x-1/2 w-7 h-7 z-20">
         {/* Outer border */}
-        <div className="absolute inset-0 rounded-full border-2 border-foreground/40 dark:border-white/40 bg-background" />
+        <div className="absolute inset-0 rounded-full border-2 border-primary/40 bg-background" />
 
         {/* Fill circle that grows */}
         <motion.div
-          className="absolute inset-0 rounded-full border-2 border-foreground dark:border-white bg-foreground dark:bg-white"
+          className="absolute inset-0 rounded-full border-2 border-primary bg-primary"
           style={{
             clipPath: `inset(${(1 - nodeFillProgress) * 100}% 0 0 0)`,
           }}
@@ -422,11 +425,11 @@ function TimelineNode({ index }: TimelineNodeProps) {
       style={{ top: '20px' }}
     >
       {/* Outer border */}
-      <div className="absolute inset-0 rounded-full border-2 border-foreground/40 dark:border-white/40 bg-background" />
+      <div className="absolute inset-0 rounded-full border-2 border-primary/40 bg-background" />
 
       {/* Fill circle */}
       <motion.div
-        className="absolute inset-0 rounded-full border-2 border-foreground dark:border-white bg-foreground dark:bg-white"
+        className="absolute inset-0 rounded-full border-2 border-primary bg-primary"
         style={{
           clipPath: `inset(${(1 - nodeFillProgress) * 100}% 0 0 0)`,
         }}
