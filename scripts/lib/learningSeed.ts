@@ -93,6 +93,73 @@ export const codeBlock = (language: CodeBlock['language'], snippet: string, capt
   ...(caption ? { caption } : {}),
 })
 
+/**
+ * A card linking out to a simulator. `simulatorId` is a `simulators` document id
+ * — resolve it with `simulatorId(payload, 'arduino-ide')` rather than hardcoding
+ * a number.
+ */
+export const simulatorLinkBlock = (simulator: number, buttonText?: string) => ({
+  blockType: 'simulatorLinkBlock' as const,
+  simulator,
+  ...(buttonText ? { buttonText } : {}),
+})
+
+/**
+ * Insert blocks immediately after the block carrying `caption`.
+ *
+ * Used to drop a simulator card into the middle of an existing page — next to
+ * the step that tells the reader to install the Arduino IDE, rather than at the
+ * bottom where nobody looks for it. Anchored on the caption text so it survives
+ * the page being reordered; throws rather than silently appending if the anchor
+ * is gone, since a link that quietly moves to the end is worse than a failure.
+ */
+export function insertAfterCaption<T, U>(
+  blocks: T[],
+  caption: string,
+  // Separate type parameter: the inserted block is a different shape from the
+  // ones already in the array, and requiring it to match T would mean every
+  // caller widening its content array by hand.
+  ...inserted: U[]
+): (T | U)[] {
+  const index = blocks.findIndex(
+    (block) => (block as { caption?: string })?.caption?.includes(caption) ?? false,
+  )
+  if (index === -1) throw new Error(`no block with caption containing "${caption}"`)
+  return [...blocks.slice(0, index + 1), ...inserted, ...blocks.slice(index + 1)]
+}
+
+/** Look up a simulator's id by slug, so seeds name it instead of numbering it. */
+export async function simulatorId(payload: Payload, slug: string): Promise<number> {
+  const found = await payload.find({
+    collection: 'simulators',
+    where: { slug: { equals: slug } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  const doc = found.docs[0]
+  if (!doc) throw new Error(`no simulator with slug "${slug}"`)
+  return doc.id as number
+}
+
+/** One collapsible section. `blocks` may not contain rows or further accordions. */
+export const accordionItem = (
+  title: string,
+  blocks: unknown[],
+  opts: { summary?: string; defaultOpen?: boolean } = {},
+) => ({
+  title,
+  blocks,
+  ...(opts.summary ? { summary: opts.summary } : {}),
+  defaultOpen: opts.defaultOpen ?? false,
+})
+
+/** A set of collapsible sections. */
+export const accordionBlock = (items: ReturnType<typeof accordionItem>[], heading?: string) => ({
+  blockType: 'accordionBlock' as const,
+  items,
+  ...(heading ? { heading } : {}),
+})
+
 type ImageSize = 'small' | 'medium' | 'large'
 
 /** A real image block, referencing an uploaded media id. */

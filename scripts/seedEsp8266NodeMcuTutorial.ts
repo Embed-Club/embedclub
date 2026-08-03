@@ -22,15 +22,21 @@ import {
   ensureTagIds,
   flushExit,
   heading,
+  insertAfterCaption,
   list,
   paragraph,
   placeholderImage,
+  simulatorId,
+  simulatorLinkBlock,
   text,
   textBlock,
   upsertLearningDoc,
 } from './lib/learningSeed'
 
 const SLUG = 'esp8266-nodemcu-setup-and-wifi'
+
+/** Caption of the block that ends the board-support step; the IDE card follows it. */
+const IDE_STEP_MARKER = 'Boards Manager URL'
 
 const BOARD_URL = 'https://arduino.esp8266.com/stable/package_esp8266com_index.json'
 
@@ -414,9 +420,14 @@ async function main() {
   const payload = await getPayload({ config })
   const placeholderId = await ensurePlaceholderMedia(payload)
   const tags = await ensureTagIds(payload, ['ESP8266', 'Microcontroller', 'IoT'])
+  const arduinoIdeSim = await simulatorId(payload, 'arduino-ide')
 
-  const content = CONTENT.map((block) =>
-    block.blockType === 'imageBlock' ? { ...block, image: placeholderId } : block,
+  const content = insertAfterCaption(
+    CONTENT.map((block) =>
+      block.blockType === 'imageBlock' ? { ...block, image: placeholderId } : block,
+    ),
+    IDE_STEP_MARKER,
+    simulatorLinkBlock(arduinoIdeSim, 'Download the Arduino IDE'),
   )
 
   await upsertLearningDoc({

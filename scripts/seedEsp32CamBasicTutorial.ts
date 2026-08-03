@@ -22,16 +22,22 @@ import {
   ensurePlaceholderMedia,
   flushExit,
   heading,
+  insertAfterCaption,
   italic,
   list,
   paragraph,
   placeholderImage,
+  simulatorId,
+  simulatorLinkBlock,
   text,
   textBlock,
   upsertLearningDoc,
 } from './lib/learningSeed'
 
 const SLUG = 'esp32-cam-live-video-streaming'
+
+/** Caption of the block that ends the board-support step; the IDE card follows it. */
+const IDE_STEP_MARKER = 'Boards Manager URL'
 /**
  * Board photo used as the thumbnail. `ensureMediaFromFile` matches on the webp
  * name Payload derives, so this reuses the media doc the object-detection seed
@@ -253,8 +259,14 @@ async function main() {
     'ESP32-CAM board with OV2640 camera module',
   )
 
-  const content = CONTENT.map((block) =>
-    block.blockType === 'imageBlock' ? { ...block, image: placeholderId } : block,
+  const arduinoIdeSim = await simulatorId(payload, 'arduino-ide')
+
+  const content = insertAfterCaption(
+    CONTENT.map((block) =>
+      block.blockType === 'imageBlock' ? { ...block, image: placeholderId } : block,
+    ),
+    IDE_STEP_MARKER,
+    simulatorLinkBlock(arduinoIdeSim, 'Download the Arduino IDE'),
   )
 
   await upsertLearningDoc({

@@ -16,6 +16,7 @@ import * as migration_20260730_120000_certificate_customization from './20260730
 import * as migration_20260803_100000_video_and_drawio_blocks from './20260803_100000_video_and_drawio_blocks';
 import * as migration_20260803_110000_drizzle_snapshot_baseline from './20260803_110000_drizzle_snapshot_baseline';
 import * as migration_20260803_133059_add_coming_soon_badge from './20260803_133059_add_coming_soon_badge';
+import * as migration_20260803_170606_add_accordion_block from './20260803_170606_add_accordion_block';
 
 export const migrations = [
   {
@@ -106,6 +107,11 @@ export const migrations = [
   {
     up: migration_20260803_133059_add_coming_soon_badge.up,
     down: migration_20260803_133059_add_coming_soon_badge.down,
-    name: '20260803_133059_add_coming_soon_badge'
+    name: '20260803_133059_add_coming_soon_badge',
+  },
+  {
+    up: migration_20260803_170606_add_accordion_block.up,
+    down: migration_20260803_170606_add_accordion_block.down,
+    name: '20260803_170606_add_accordion_block'
   },
 ];

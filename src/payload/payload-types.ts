@@ -564,10 +564,20 @@ export interface Resource {
    */
   badge?: ('featured' | 'popular' | 'essential' | 'comingSoon') | null;
   /**
-   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, and more.
+   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, collapsible sections, and more.
    */
   content?:
-    | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
+    | (
+        | TextBlock
+        | CodeBlock
+        | TableBlock
+        | GraphBlock
+        | ImageBlock
+        | VideoBlock
+        | RowBlock
+        | AccordionBlock
+        | SimulatorLinkBlock
+      )[]
     | null;
   updatedAt: string;
   createdAt: string;
@@ -838,6 +848,38 @@ export interface Simulator {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AccordionBlock".
+ */
+export interface AccordionBlock {
+  /**
+   * Optional heading shown above the collapsible sections
+   */
+  heading?: string | null;
+  /**
+   * Each row becomes one collapsible section, in this order
+   */
+  items: {
+    /**
+     * The clickable title of this section
+     */
+    title: string;
+    /**
+     * Optional one-line description shown under the title, while collapsed
+     */
+    summary?: string | null;
+    /**
+     * Start this section expanded
+     */
+    defaultOpen?: boolean | null;
+    blocks?: (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | SimulatorLinkBlock)[] | null;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'accordionBlock';
+}
+/**
  * Step-by-step walkthroughs. Drag rows to set the order they appear on the site.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -876,10 +918,20 @@ export interface Tutorial {
    */
   badge?: ('featured' | 'popular' | 'essential' | 'comingSoon') | null;
   /**
-   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, and more.
+   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, collapsible sections, and more.
    */
   content?:
-    | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
+    | (
+        | TextBlock
+        | CodeBlock
+        | TableBlock
+        | GraphBlock
+        | ImageBlock
+        | VideoBlock
+        | RowBlock
+        | AccordionBlock
+        | SimulatorLinkBlock
+      )[]
     | null;
   updatedAt: string;
   createdAt: string;
@@ -1560,6 +1612,7 @@ export interface ResourcesSelect<T extends boolean = true> {
         imageBlock?: T | ImageBlockSelect<T>;
         videoBlock?: T | VideoBlockSelect<T>;
         rowBlock?: T | RowBlockSelect<T>;
+        accordionBlock?: T | AccordionBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
   updatedAt?: T;
@@ -1677,6 +1730,34 @@ export interface SimulatorLinkBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AccordionBlock_select".
+ */
+export interface AccordionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        summary?: T;
+        defaultOpen?: T;
+        blocks?:
+          | T
+          | {
+              textBlock?: T | TextBlockSelect<T>;
+              codeBlock?: T | CodeBlockSelect<T>;
+              tableBlock?: T | TableBlockSelect<T>;
+              graphBlock?: T | GraphBlockSelect<T>;
+              imageBlock?: T | ImageBlockSelect<T>;
+              videoBlock?: T | VideoBlockSelect<T>;
+              simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tutorials_select".
  */
 export interface TutorialsSelect<T extends boolean = true> {
@@ -1699,6 +1780,7 @@ export interface TutorialsSelect<T extends boolean = true> {
         imageBlock?: T | ImageBlockSelect<T>;
         videoBlock?: T | VideoBlockSelect<T>;
         rowBlock?: T | RowBlockSelect<T>;
+        accordionBlock?: T | AccordionBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
   updatedAt?: T;

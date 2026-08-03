@@ -23,14 +23,25 @@ import {
   ensureTagIds,
   flushExit,
   heading,
+  insertAfterCaption,
   italic,
   list,
   paragraph,
   placeholderImage,
+  simulatorId,
+  simulatorLinkBlock,
   text,
   textBlock,
   upsertLearningDoc,
 } from './lib/learningSeed'
+
+/**
+ * Caption of the image that closes the "install the IDE" step. The simulator
+ * card is inserted straight after it, so the download link sits where the
+ * reader is being told to go and get the IDE — matched on the caption rather
+ * than a hardcoded index, which would silently move as the page is edited.
+ */
+const IDE_STEP_MARKER = 'The Arduino IDE 2.x download page'
 
 const SLUG = 'arduino-uno-setup-and-first-sketch'
 
@@ -425,9 +436,14 @@ async function main() {
   const payload = await getPayload({ config })
   const placeholderId = await ensurePlaceholderMedia(payload)
   const tags = await ensureTagIds(payload, ['Arduino', 'Microcontroller'])
+  const arduinoIdeSim = await simulatorId(payload, 'arduino-ide')
 
-  const content = CONTENT.map((block) =>
-    block.blockType === 'imageBlock' ? { ...block, image: placeholderId } : block,
+  const content = insertAfterCaption(
+    CONTENT.map((block) =>
+      block.blockType === 'imageBlock' ? { ...block, image: placeholderId } : block,
+    ),
+    IDE_STEP_MARKER,
+    simulatorLinkBlock(arduinoIdeSim, 'Download the Arduino IDE'),
   )
 
   await upsertLearningDoc({

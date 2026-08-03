@@ -337,6 +337,89 @@ export const SimulatorLinkBlock: Block = {
 }
 
 /**
+ * AccordionBlock: collapsible sections, for a page that is several self-contained
+ * parts rather than one continuous read — a multi-session workshop, say.
+ *
+ * Each section holds its own blocks, so a section can be text, code, images and a
+ * simulator link, not just a paragraph. Nested AccordionBlocks and RowBlocks are
+ * left out of that list for the same reason RowBlock leaves itself out: the
+ * nesting has no natural bottom.
+ */
+export const AccordionBlock: Block = {
+  slug: 'accordionBlock',
+  interfaceName: 'AccordionBlock',
+  labels: {
+    singular: 'Accordion Section',
+    plural: 'Accordion Sections',
+  },
+  fields: [
+    {
+      name: 'heading',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Optional heading shown above the collapsible sections',
+        placeholder: 'e.g., Workshop Sessions',
+      },
+    },
+    {
+      name: 'items',
+      label: 'Sections',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      labels: { singular: 'Section', plural: 'Sections' },
+      admin: {
+        description: 'Each row becomes one collapsible section, in this order',
+      },
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+          admin: {
+            description: 'The clickable title of this section',
+            placeholder: 'e.g., Session 1 — Setup & VNC',
+          },
+        },
+        {
+          name: 'summary',
+          type: 'text',
+          required: false,
+          admin: {
+            description: 'Optional one-line description shown under the title, while collapsed',
+          },
+        },
+        {
+          name: 'defaultOpen',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description: 'Start this section expanded',
+          },
+        },
+        {
+          name: 'blocks',
+          label: 'Section content',
+          type: 'blocks',
+          required: false,
+          minRows: 0,
+          blocks: [
+            TextBlock,
+            CodeBlock,
+            TableBlock,
+            GraphBlock,
+            ImageBlock,
+            VideoBlock,
+            SimulatorLinkBlock,
+          ],
+        },
+      ],
+    },
+  ],
+}
+
+/**
  * RowBlock: Layout container for horizontal grouping of other blocks
  * Note: Does NOT include nested RowBlocks to avoid infinite recursion
  */

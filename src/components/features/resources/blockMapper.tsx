@@ -1,5 +1,6 @@
 import RichTextRender from '@/components/common/richTextRender'
 import type {
+  AccordionBlock as AccordionBlockType,
   CodeBlock,
   GraphBlock,
   ImageBlock,
@@ -9,6 +10,7 @@ import type {
   TableBlock,
   VideoBlock,
 } from '@/payload/payload-types'
+import { AccordionBlock as AccordionBlockComp } from './blocks/accordionBlock'
 import { CodeBlockServer } from './blocks/codeBlockServer'
 import { GraphBlock as GraphBlockComp } from './blocks/graphBlock'
 import { ImageBlock as ImageBlockComp } from './blocks/imageBlock'
@@ -47,6 +49,14 @@ export function BlockMapper({
       return <VideoBlockComp key={b.id || index} block={b as VideoBlock} />
     case 'rowBlock':
       return <RowBlockComp key={b.id || index} block={b as RowBlock} headingIds={headingIds} />
+    case 'accordionBlock':
+      return (
+        <AccordionBlockComp
+          key={b.id || index}
+          block={b as AccordionBlockType}
+          headingIds={headingIds}
+        />
+      )
     case 'simulatorLinkBlock':
       return <SimulatorLinkBlockComp key={b.id || index} block={b as SimulatorLinkBlockType} />
     default:

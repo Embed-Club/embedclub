@@ -2,6 +2,7 @@ import { getServerSideURL } from '@/lib/getUrl'
 import type { CollectionConfig, Field } from 'payload'
 
 import {
+  AccordionBlock,
   CodeBlock,
   GraphBlock,
   ImageBlock,
@@ -158,11 +159,12 @@ export function buildLearningFields({ noun }: { noun: string }): Field[] {
                 ImageBlock,
                 VideoBlock,
                 RowBlock,
+                AccordionBlock,
                 SimulatorLinkBlock,
               ],
               admin: {
                 description:
-                  'Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, and more.',
+                  'Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, collapsible sections, and more.',
               },
             },
           ],

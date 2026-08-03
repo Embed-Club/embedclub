@@ -24,16 +24,22 @@ import {
   ensureTagIds,
   flushExit,
   heading,
+  insertAfterCaption,
   italic,
   list,
   paragraph,
   placeholderImage,
+  simulatorId,
+  simulatorLinkBlock,
   text,
   textBlock,
   upsertLearningDoc,
 } from './lib/learningSeed'
 
 const SLUG = 'arduino-nano-setup-and-first-sketch'
+
+/** Caption of the image closing the IDE/driver step; the IDE card follows it. */
+const IDE_STEP_MARKER = 'An Arduino Nano seated across the centre channel'
 
 const BLINK = `// Blink — pin 13 again, but on the Nano the LED sits right next to the
 // "L" silkscreen on the board.
@@ -348,9 +354,14 @@ async function main() {
   const payload = await getPayload({ config })
   const placeholderId = await ensurePlaceholderMedia(payload)
   const tags = await ensureTagIds(payload, ['Arduino', 'Microcontroller'])
+  const arduinoIdeSim = await simulatorId(payload, 'arduino-ide')
 
-  const content = CONTENT.map((block) =>
-    block.blockType === 'imageBlock' ? { ...block, image: placeholderId } : block,
+  const content = insertAfterCaption(
+    CONTENT.map((block) =>
+      block.blockType === 'imageBlock' ? { ...block, image: placeholderId } : block,
+    ),
+    IDE_STEP_MARKER,
+    simulatorLinkBlock(arduinoIdeSim, 'Download the Arduino IDE'),
   )
 
   await upsertLearningDoc({
