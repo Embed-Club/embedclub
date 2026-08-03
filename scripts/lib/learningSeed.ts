@@ -8,6 +8,7 @@
  */
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import { generateSlug } from '@/payload/collections/learningFields'
 import type { CodeBlock } from '@/payload/payload-types'
 import type { Payload } from 'payload'
 
@@ -176,6 +177,41 @@ export async function ensurePlaceholderMedia(payload: Payload): Promise<number> 
     overrideAccess: true,
   })
   return media.id as number
+}
+
+/**
+ * Resolve tag names to ids, creating any that do not exist yet.
+ *
+ * Seed scripts name their tags rather than hardcoding ids: the ids are database
+ * state an officer can change from the admin, and a stale number silently tags a
+ * document with the wrong thing rather than failing. Matching is exact on
+ * `name`, which the collection already declares unique.
+ */
+export async function ensureTagIds(payload: Payload, names: string[]): Promise<number[]> {
+  const ids: number[] = []
+  for (const name of names) {
+    const found = await payload.find({
+      collection: 'tags',
+      where: { name: { equals: name } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (found.docs.length > 0) {
+      ids.push(found.docs[0].id as number)
+      continue
+    }
+    // The collection's own hook would fill `slug`, but it is a required field,
+    // so the create call has to satisfy the type before the hook ever runs.
+    // `generateSlug` is the same function that hook uses.
+    const created = await payload.create({
+      collection: 'tags',
+      data: { name, slug: generateSlug(name) },
+      overrideAccess: true,
+    })
+    ids.push(created.id as number)
+    console.log(`Created tag ${created.id} (${name}).`)
+  }
+  return ids
 }
 
 /**

@@ -19,9 +19,13 @@ import { getPayload } from 'payload'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const IMAGE_PATH = path.resolve(dirname, '../public/esp32-cam.png')
-const SLUG = 'esp32-cam-object-detection-setup'
-/** Previous slug, so a re-run renames the existing document instead of leaving an orphan. */
-const LEGACY_SLUGS = ['esp32-cam-edge-impulse-object-detection']
+/**
+ * The live slug — the published document was renamed to this from the admin, so
+ * the script follows it rather than renaming the page back and breaking the URL.
+ */
+const SLUG = 'esp32-cam-object-detection'
+/** Previous slugs, so a re-run updates the existing document instead of leaving an orphan. */
+const LEGACY_SLUGS = ['esp32-cam-object-detection-setup', 'esp32-cam-edge-impulse-object-detection']
 
 /**
  * Filenames this script's own upload can produce: Payload rewrites the source

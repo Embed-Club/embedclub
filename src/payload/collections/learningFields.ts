@@ -132,11 +132,12 @@ export function buildLearningFields({ noun }: { noun: string }): Field[] {
                 { label: 'Featured', value: 'featured' },
                 { label: 'Popular', value: 'popular' },
                 { label: 'Essential', value: 'essential' },
+                { label: 'Coming Soon', value: 'comingSoon' },
               ],
               admin: {
                 position: 'sidebar',
                 description:
-                  'Optional label shown on the card. "New" is added automatically for the first 14 days',
+                  'Optional label shown on the card. "New" is added automatically for the first 14 days. "Coming Soon" also makes the card non-clickable, for a page announced before it is written',
               },
             },
           ],

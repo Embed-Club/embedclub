@@ -15,6 +15,7 @@ import * as migration_20260730_110000_certificate_batches from './20260730_11000
 import * as migration_20260730_120000_certificate_customization from './20260730_120000_certificate_customization';
 import * as migration_20260803_100000_video_and_drawio_blocks from './20260803_100000_video_and_drawio_blocks';
 import * as migration_20260803_110000_drizzle_snapshot_baseline from './20260803_110000_drizzle_snapshot_baseline';
+import * as migration_20260803_133059_add_coming_soon_badge from './20260803_133059_add_coming_soon_badge';
 
 export const migrations = [
   {
@@ -101,5 +102,10 @@ export const migrations = [
     up: migration_20260803_110000_drizzle_snapshot_baseline.up,
     down: migration_20260803_110000_drizzle_snapshot_baseline.down,
     name: '20260803_110000_drizzle_snapshot_baseline',
+  },
+  {
+    up: migration_20260803_133059_add_coming_soon_badge.up,
+    down: migration_20260803_133059_add_coming_soon_badge.down,
+    name: '20260803_133059_add_coming_soon_badge'
   },
 ];

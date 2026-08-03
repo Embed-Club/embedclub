@@ -560,9 +560,9 @@ export interface Resource {
    */
   estimatedReadTime?: number | null;
   /**
-   * Optional label shown on the card. "New" is added automatically for the first 14 days
+   * Optional label shown on the card. "New" is added automatically for the first 14 days. "Coming Soon" also makes the card non-clickable, for a page announced before it is written
    */
-  badge?: ('featured' | 'popular' | 'essential') | null;
+  badge?: ('featured' | 'popular' | 'essential' | 'comingSoon') | null;
   /**
    * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, and more.
    */
@@ -872,9 +872,9 @@ export interface Tutorial {
    */
   estimatedReadTime?: number | null;
   /**
-   * Optional label shown on the card. "New" is added automatically for the first 14 days
+   * Optional label shown on the card. "New" is added automatically for the first 14 days. "Coming Soon" also makes the card non-clickable, for a page announced before it is written
    */
-  badge?: ('featured' | 'popular' | 'essential') | null;
+  badge?: ('featured' | 'popular' | 'essential' | 'comingSoon') | null;
   /**
    * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, and more.
    */
