@@ -52,6 +52,12 @@ const NODE_FILL_DISTANCE = 20
  * defers while a scroll gesture is in flight: the rail visibly froze mid-scroll
  * and snapped to the right value once the wheel stopped. Only `activeId` is
  * state, because it changes a handful of times per page rather than per frame.
+ *
+ * The rail height and node fills track the same continuous scroll `progress`
+ * as the bar above the nav — not which item is "active" — the same approach
+ * the achievements timeline uses for its bar and node fills. `activeId` (which
+ * label is bold/coloured) is the one thing that still snaps at the active
+ * line, since a label has no in-between state to ease through.
  */
 export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
   const [activeId, setActiveId] = useState<string | null>(headings[0]?.id ?? null)
@@ -114,13 +120,15 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
       setActiveId(current)
     }
 
-    // The rail fills to the active item rather than to the raw scroll
-    // percentage. The two disagree whenever sections are uneven in length, and
-    // following the list is what reads as correct next to a list.
+    // The rail tracks the same continuous `progress` as the bar above it
+    // (pixels scrolled, not "which item is active"). Driving it off
+    // currentIndex instead made it jump in one big step the instant a heading
+    // crossed the active line, rather than sweeping down as you scroll toward
+    // it — this is the same continuous-bar approach the achievements timeline
+    // uses.
     const nav = navRef.current
     if (!nav) return
-    const railFill = headings.length > 0 ? (currentIndex + 1) / headings.length : 0
-    if (railRef.current) railRef.current.style.height = `${railFill * 100}%`
+    if (railRef.current) railRef.current.style.height = `${progress * 100}%`
 
     // Node fill, measured the way the achievements timeline measures it:
     // convert the rail's height back into pixels, then fill each node by how
@@ -128,7 +136,7 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
     // a two-line heading is taller — so distributing fill by index instead
     // would drift out of step with the bar it is supposed to be tracking.
     const navTop = nav.getBoundingClientRect().top
-    const barBottom = railFill * nav.clientHeight
+    const barBottom = progress * nav.clientHeight
 
     for (const [index, item] of itemRefs.current.slice(0, headings.length).entries()) {
       const node = nodeFillRefs.current[index]
@@ -198,12 +206,12 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
           className="absolute inset-y-0 left-1.5 w-1.5 -translate-x-1/2 rounded-full border border-primary/40"
           aria-hidden
         />
-        {/* Height still eases: unlike the bar above it, this only changes when
-            the active section does, so the transition animates a step rather
-            than lagging a continuous value. */}
+        {/* No height transition, same reasoning as the bar above it: this is
+            written every frame from the scroll handler, so an easing curve
+            would only ever be chasing a value that already moved. */}
         <div
           ref={railRef}
-          className="absolute left-1.5 top-0 h-0 w-[3px] -translate-x-1/2 origin-top rounded-full bg-primary transition-[height] duration-300 ease-out"
+          className="absolute left-1.5 top-0 h-0 w-[3px] -translate-x-1/2 origin-top rounded-full bg-primary"
           aria-hidden
         />
 

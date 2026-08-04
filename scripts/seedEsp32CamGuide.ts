@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url'
 import type { CodeBlock } from '@/payload/payload-types'
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { insertAfterCaption, simulatorId, simulatorLinkBlock } from './lib/learningSeed'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const IMAGE_PATH = path.resolve(dirname, '../public/esp32-cam.png')
@@ -26,6 +27,8 @@ const IMAGE_PATH = path.resolve(dirname, '../public/esp32-cam.png')
 const SLUG = 'esp32-cam-object-detection'
 /** Previous slugs, so a re-run updates the existing document instead of leaving an orphan. */
 const LEGACY_SLUGS = ['esp32-cam-object-detection-setup', 'esp32-cam-edge-impulse-object-detection']
+/** Caption of the board-select code block — the simulator card anchors here. */
+const BOARD_SELECT_CAPTION = 'esp32_camera.ino — select the board (required)'
 
 /**
  * Filenames this script's own upload can produce: Payload rewrites the source
@@ -397,7 +400,7 @@ const CONTENT = [
     ]),
   ]),
 
-  codeBlock('cpp', CAMERA_CONFIG, 'esp32_camera.ino — select the board (required)'),
+  codeBlock('cpp', CAMERA_CONFIG, BOARD_SELECT_CAPTION),
 
   textBlock([
     paragraph([
@@ -584,6 +587,13 @@ async function main() {
     console.log(`Uploaded media ${thumbnailId} from ${IMAGE_PATH}.`)
   }
 
+  const arduinoIdeSim = await simulatorId(payload, 'arduino-ide')
+  const content = insertAfterCaption(
+    CONTENT,
+    BOARD_SELECT_CAPTION,
+    simulatorLinkBlock(arduinoIdeSim, 'Download the Arduino IDE'),
+  )
+
   const data = {
     title: 'ESP32-CAM Object Detection Setup',
     slug: SLUG,
@@ -595,7 +605,7 @@ async function main() {
     tags: [3, 5, 1],
     estimatedReadTime: 25,
     badge: 'featured' as const,
-    content: CONTENT,
+    content,
   }
 
   // Legacy slugs are included so a rename updates the document that is already

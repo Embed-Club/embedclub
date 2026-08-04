@@ -21,15 +21,21 @@ import {
   ensureTagIds,
   flushExit,
   heading,
+  insertAfterCaption,
   italic,
   list,
   paragraph,
+  simulatorId,
+  simulatorLinkBlock,
   text,
   textBlock,
   upsertLearningDoc,
 } from './lib/learningSeed'
 
 const SLUG = 'esp32-print-string-on-16x2-lcd'
+
+/** Caption of the parallel-wiring code block — the simulator card anchors here. */
+const WIRING_CODE_CAPTION = 'esp32Lcd.ino'
 
 const PARALLEL = `// esp32Lcd.ino — "Hello" on a 16x2 character LCD, wired in 4-bit mode.
 #include <LiquidCrystal.h>
@@ -168,7 +174,7 @@ const CONTENT = [
   ]),
 
   textBlock([heading('h2', [text('The Code')])]),
-  codeBlock('cpp', PARALLEL, 'esp32Lcd.ino'),
+  codeBlock('cpp', PARALLEL, WIRING_CODE_CAPTION),
 
   textBlock([
     paragraph([
@@ -259,6 +265,13 @@ async function main() {
   const payload = await getPayload({ config })
   const placeholderId = await ensurePlaceholderMedia(payload)
   const tags = await ensureTagIds(payload, ['ESP32', 'Microcontroller'])
+  const wokwiSim = await simulatorId(payload, 'wokwi')
+
+  const content = insertAfterCaption(
+    CONTENT,
+    WIRING_CODE_CAPTION,
+    simulatorLinkBlock(wokwiSim, 'Try the Wiring in Wokwi'),
+  )
 
   await upsertLearningDoc({
     payload,
@@ -274,7 +287,7 @@ async function main() {
       difficulty: 'beginner',
       tags,
       estimatedReadTime: 8,
-      content: CONTENT,
+      content,
     },
   })
 }
