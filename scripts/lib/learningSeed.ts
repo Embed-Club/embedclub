@@ -29,6 +29,19 @@ export const bold = (value: string) => text(value, BOLD)
 export const italic = (value: string) => text(value, ITALIC)
 export const code = (value: string) => text(value, CODE)
 
+/** An inline link, e.g. `link([bold('the tutorial')], '/tutorials/some-slug')`. */
+export function link(children: Node[], url: string, opts: { newTab?: boolean } = {}): Node {
+  return {
+    type: 'link',
+    version: 1,
+    children,
+    direction: 'ltr',
+    format: '',
+    indent: 0,
+    fields: { linkType: 'custom', url, newTab: opts.newTab ?? false },
+  }
+}
+
 export function heading(tag: 'h1' | 'h2' | 'h3', children: Node[], format = ''): Node {
   return { tag, type: 'heading', format, indent: 0, version: 1, children, direction: 'ltr' }
 }

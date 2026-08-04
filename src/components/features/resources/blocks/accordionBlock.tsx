@@ -39,13 +39,18 @@ export function AccordionBlock({ block, headingIds }: AccordionBlockProps) {
             className="group overflow-hidden rounded-2xl border border-border bg-card/60 backdrop-blur-sm transition-colors open:border-primary/40"
           >
             {/* `list-none` plus the webkit pseudo-element rule kills the default
-                triangle marker, which no browser lets you style. */}
-            <summary className="flex cursor-pointer list-none items-start gap-4 p-5 [&::-webkit-details-marker]:hidden">
+                triangle marker, which no browser lets you style. Padding is
+                tighter on mobile: an accordion already eats into the content
+                column with its own border and this padding, on top of the
+                page's own side padding, so mobile keeps as much of that width
+                as it can for what's actually inside (a code block, a
+                screenshot) rather than for the accordion's own chrome. */}
+            <summary className="flex cursor-pointer list-none items-start gap-3 sm:gap-4 p-4 sm:p-5 [&::-webkit-details-marker]:hidden">
               <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/40 text-primary transition-transform duration-300 group-open:rotate-180">
                 <ChevronDown className="h-4 w-4" />
               </span>
 
-              <span className="flex flex-col gap-1">
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
                   {item.title}
                 </span>
@@ -55,7 +60,7 @@ export function AccordionBlock({ block, headingIds }: AccordionBlockProps) {
               </span>
             </summary>
 
-            <div className="border-t border-border px-5 pb-5 pt-4">
+            <div className="border-t border-border px-4 sm:px-5 pb-4 sm:pb-5 pt-3 sm:pt-4">
               {(item.blocks ?? []).map((inner, innerIndex) => (
                 <BlockMapper
                   key={inner.id || innerIndex}

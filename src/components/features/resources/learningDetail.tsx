@@ -95,7 +95,7 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
       </div>
 
       {/* Content Section */}
-      <div className="container mx-auto px-6 mt-12">
+      <div className="container mx-auto px-4 md:px-6 mt-12">
         {/* `justify-between` plus a capped prose column pushes the contents
             panel out to the right edge instead of letting it sit immediately
             beside the text. */}

@@ -65,7 +65,10 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.2 }}
-            className="p-4 overflow-x-auto text-[13px] leading-relaxed shiki-container"
+            // rem, not px: a fixed pixel size ignores the reader's OS/browser
+            // text-size setting, so code stayed small while surrounding prose
+            // scaled up around it.
+            className="p-4 overflow-x-auto text-[0.8125rem] leading-relaxed shiki-container"
           >
             {codes[activeTab].highlightedHtml ? (
               // biome-ignore lint/security/noDangerouslySetInnerHtml: shiki-highlighted code generated server-side from CMS content

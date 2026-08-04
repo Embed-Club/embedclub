@@ -1,12 +1,13 @@
 /**
- * Seed the "Raspberry Pi Workshop: Four Sessions" tutorial.
+ * Seed the "Raspberry Pi Workshop: Four Sessions" resource.
  *
  *   pnpm tsx scripts/seedRaspberryPiSessionsTutorial.ts
  *
  * Ports the club's four-part Raspberry Pi course into one page built from the
  * AccordionBlock, so each session is a collapsible part rather than one very long
- * scroll. Session 1 points at the existing Raspberry Pi 3/4/5 tutorial instead of
- * repeating the Imager and VNC steps it already covers.
+ * scroll. A Resource, not a Tutorial — it assumes a Pi you can already SSH into,
+ * rather than teaching setup itself. Session 1 links out to the Raspberry Pi
+ * 3/4/5 Setup tutorial for that instead of repeating its Imager and VNC steps.
  *
  * Screenshots come from a folder outside this repo (see IMAGE_DIR) and are
  * matched on filename, so this reuses the media the Pi tutorial already
@@ -28,6 +29,7 @@ import {
   heading,
   imageBlock,
   italic,
+  link,
   list,
   paragraph,
   text,
@@ -280,8 +282,11 @@ function buildContent(id: (key: string) => number) {
               ]),
               paragraph([
                 bold('That is covered in full, with screenshots, in the '),
-                bold('Raspberry Pi 3/4/5 Setup'),
-                bold(' tutorial. '),
+                link(
+                  [bold('Raspberry Pi 3/4/5 Setup tutorial')],
+                  '/tutorials/raspberry-pi-345-setup',
+                ),
+                bold('. '),
                 text(
                   'Rather than repeat it here, work through that page and come back — the rest of these sessions assume a Pi you can ',
                 ),
@@ -532,7 +537,7 @@ async function main() {
 
   await upsertLearningDoc({
     payload,
-    collection: 'tutorials',
+    collection: 'resources',
     slug: SLUG,
     data: {
       title: 'Raspberry Pi Workshop: Four Sessions',
