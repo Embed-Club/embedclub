@@ -53,11 +53,13 @@ const NODE_FILL_DISTANCE = 20
  * and snapped to the right value once the wheel stopped. Only `activeId` is
  * state, because it changes a handful of times per page rather than per frame.
  *
- * The rail height and node fills track the same continuous scroll `progress`
- * as the bar above the nav — not which item is "active" — the same approach
- * the achievements timeline uses for its bar and node fills. `activeId` (which
- * label is bold/coloured) is the one thing that still snaps at the active
- * line, since a label has no in-between state to ease through.
+ * The rail height and node fills track `currentIndex`, interpolated against
+ * the next heading's position — not the raw scroll `progress` the bar above
+ * the nav uses. Sections vary wildly in length (a step with three screenshots
+ * vs. one line of text), so raw scroll percentage and "which item is active"
+ * disagree constantly; the interpolation is what makes the fill move smoothly
+ * (like the achievements timeline's bar) while still landing on the same item
+ * `activeId` highlights, instead of racing ahead of or lagging behind it.
  */
 export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
   const [activeId, setActiveId] = useState<string | null>(headings[0]?.id ?? null)
@@ -101,11 +103,17 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
 
     const activeLine = scroller.clientHeight * ACTIVE_LINE_RATIO
 
-    let currentIndex = 0
-    for (const [index, heading] of headings.entries()) {
+    // One DOM read per heading, reused below for both the active index and
+    // the rail's fill fraction. A heading that is not in the DOM is pinned to
+    // +Infinity so it never counts as "passed".
+    const tops = headings.map((heading) => {
       const el = document.getElementById(heading.id)
-      if (!el) continue
-      if (el.getBoundingClientRect().top - scrollerTop <= activeLine) {
+      return el ? el.getBoundingClientRect().top - scrollerTop : Number.POSITIVE_INFINITY
+    })
+
+    let currentIndex = 0
+    for (const [index, top] of tops.entries()) {
+      if (top <= activeLine) {
         currentIndex = index
       } else {
         // Headings are in document order, so the first one still below the
@@ -120,15 +128,31 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
       setActiveId(current)
     }
 
-    // The rail tracks the same continuous `progress` as the bar above it
-    // (pixels scrolled, not "which item is active"). Driving it off
-    // currentIndex instead made it jump in one big step the instant a heading
-    // crossed the active line, rather than sweeping down as you scroll toward
-    // it — this is the same continuous-bar approach the achievements timeline
-    // uses.
+    // The rail fills to the active item, interpolated smoothly across the gap
+    // to the next one — not to raw scroll percentage. Sections are wildly
+    // uneven in length (a step with three screenshots vs. one line of text),
+    // so tracking raw scroll made the rail disagree with which item was
+    // actually highlighted as active. Tracking currentIndex alone was smooth
+    // in principle but jumped a whole node the instant the active line
+    // crossed a heading; interpolating against the *next* heading's position
+    // fills that gap continuously while still landing on the right node.
     const nav = navRef.current
     if (!nav) return
-    if (railRef.current) railRef.current.style.height = `${progress * 100}%`
+    const currentTop = tops[currentIndex]
+    const nextTop = tops[currentIndex + 1]
+    const sectionFraction =
+      currentTop === Number.POSITIVE_INFINITY
+        ? 0
+        : nextTop === undefined || !Number.isFinite(nextTop) || nextTop <= currentTop
+          ? 1
+          : Math.min(1, Math.max(0, (activeLine - currentTop) / (nextTop - currentTop)))
+    const railFill =
+      headings.length > 1
+        ? (currentIndex + sectionFraction) / (headings.length - 1)
+        : currentTop === Number.POSITIVE_INFINITY
+          ? 0
+          : 1
+    if (railRef.current) railRef.current.style.height = `${railFill * 100}%`
 
     // Node fill, measured the way the achievements timeline measures it:
     // convert the rail's height back into pixels, then fill each node by how
@@ -136,7 +160,7 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
     // a two-line heading is taller — so distributing fill by index instead
     // would drift out of step with the bar it is supposed to be tracking.
     const navTop = nav.getBoundingClientRect().top
-    const barBottom = progress * nav.clientHeight
+    const barBottom = railFill * nav.clientHeight
 
     for (const [index, item] of itemRefs.current.slice(0, headings.length).entries()) {
       const node = nodeFillRefs.current[index]
