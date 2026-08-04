@@ -112,9 +112,11 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
     })
 
     let currentIndex = 0
+    let anyPassed = false
     for (const [index, top] of tops.entries()) {
       if (top <= activeLine) {
         currentIndex = index
+        anyPassed = true
       } else {
         // Headings are in document order, so the first one still below the
         // line means every later one is too.
@@ -128,45 +130,57 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
       setActiveId(current)
     }
 
-    // The rail fills to the active item, interpolated smoothly across the gap
-    // to the next one — not to raw scroll percentage. Sections are wildly
-    // uneven in length (a step with three screenshots vs. one line of text),
-    // so tracking raw scroll made the rail disagree with which item was
-    // actually highlighted as active. Tracking currentIndex alone was smooth
-    // in principle but jumped a whole node the instant the active line
-    // crossed a heading; interpolating against the *next* heading's position
-    // fills that gap continuously while still landing on the right node.
-    const nav = navRef.current
-    if (!nav) return
+    // How far scrolled into the current section, 0 at its heading and 1 once
+    // the next heading's would-be line is reached. Drives both the rail and
+    // the node fill below.
     const currentTop = tops[currentIndex]
     const nextTop = tops[currentIndex + 1]
     const sectionFraction =
       currentTop === Number.POSITIVE_INFINITY
         ? 0
         : nextTop === undefined || !Number.isFinite(nextTop) || nextTop <= currentTop
-          ? 1
-          : Math.min(1, Math.max(0, (activeLine - currentTop) / (nextTop - currentTop)))
-    const railFill =
-      headings.length > 1
-        ? (currentIndex + sectionFraction) / (headings.length - 1)
-        : currentTop === Number.POSITIVE_INFINITY
           ? 0
-          : 1
-    if (railRef.current) railRef.current.style.height = `${railFill * 100}%`
+          : Math.min(1, Math.max(0, (activeLine - currentTop) / (nextTop - currentTop)))
 
-    // Node fill, measured the way the achievements timeline measures it:
-    // convert the rail's height back into pixels, then fill each node by how
-    // far the bar has advanced past its centre. Items are not uniform height —
-    // a two-line heading is taller — so distributing fill by index instead
-    // would drift out of step with the bar it is supposed to be tracking.
+    // The rail's pixel target is the *actual* position of the current nav
+    // item, interpolated toward the next item's actual position — not a
+    // uniform fraction of the nav's total height. Nav rows are not uniform
+    // height (a three-line entry like "Step 7: Accessing the Desktop Remotely
+    // (RealVNC)" next to one-line ones), so assuming even spacing put the bar
+    // short of — or past — where a given item actually sits, leaving its dot
+    // unfilled even once it was the active item. Reading each item's own
+    // `getBoundingClientRect()` keeps the bar and the dots in the same
+    // coordinate space they're rendered in.
+    const nav = navRef.current
+    if (!nav) return
     const navTop = nav.getBoundingClientRect().top
-    const barBottom = railFill * nav.clientHeight
-
-    for (const [index, item] of itemRefs.current.slice(0, headings.length).entries()) {
-      const node = nodeFillRefs.current[index]
-      if (!item || !node) continue
+    const centres = itemRefs.current.slice(0, headings.length).map((item) => {
+      if (!item) return null
       const rect = item.getBoundingClientRect()
-      const centre = rect.top - navTop + rect.height / 2
+      return rect.top - navTop + rect.height / 2
+    })
+
+    const currentCentre = centres[currentIndex] ?? 0
+    const nextCentre = centres[currentIndex + 1]
+    // Before the first heading is reached, currentIndex defaults to 0 with
+    // nothing actually passed yet — the bar has to stay at 0 rather than
+    // jump straight to item 0's position. Once something has been passed,
+    // it's clamped to the current item's own position when that item is the
+    // last one (or its neighbour hasn't rendered) — nothing beyond it to
+    // interpolate toward, so the bar stops there instead of overshooting.
+    const barBottom = !anyPassed
+      ? 0
+      : nextCentre == null
+        ? currentCentre
+        : currentCentre + (nextCentre - currentCentre) * sectionFraction
+
+    if (railRef.current) {
+      railRef.current.style.height = `${nav.clientHeight > 0 ? (barBottom / nav.clientHeight) * 100 : 0}%`
+    }
+
+    for (const [index, node] of nodeFillRefs.current.slice(0, headings.length).entries()) {
+      const centre = centres[index]
+      if (!node || centre == null) continue
       const distance = centre - barBottom
       const fill =
         distance <= 0 ? 1 : distance <= NODE_FILL_DISTANCE ? 1 - distance / NODE_FILL_DISTANCE : 0
