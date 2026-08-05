@@ -1,5 +1,6 @@
 import type { GraphBlock as GraphBlockType } from '@/payload/payload-types'
 import { MermaidRenderer } from './mermaidRenderer'
+import { GestureWrapper } from './gestureWrapper'
 
 interface GraphBlockProps {
   block: GraphBlockType
@@ -51,11 +52,13 @@ export function GraphBlock({ block }: GraphBlockProps) {
 
         {graphType === 'drawio' &&
           (drawio?.kind === 'image' ? (
-            <img
-              src={drawio.src}
-              alt={caption || 'Diagram'}
-              className="w-full rounded-xl border border-border bg-muted/40 p-4"
-            />
+            <GestureWrapper className="max-h-[600px]">
+              <img
+                src={drawio.src}
+                alt={caption || 'Diagram'}
+                className="max-w-full h-auto"
+              />
+            </GestureWrapper>
           ) : drawio?.kind === 'iframe' ? (
             <iframe
               src={drawio.src}

@@ -2,6 +2,7 @@
 
 import { useTheme } from 'next-themes'
 import { useEffect, useId, useRef, useState } from 'react'
+import { GestureWrapper } from './gestureWrapper'
 
 interface MermaidRendererProps {
   definition: string
@@ -77,9 +78,11 @@ export function MermaidRenderer({ definition }: MermaidRendererProps) {
   }
 
   return (
-    <div
-      className="bg-muted/40 p-6 rounded-xl border border-border overflow-x-auto flex justify-center"
-      ref={containerRef}
-    />
+    <GestureWrapper className="max-h-[600px]">
+      <div
+        className="flex justify-center"
+        ref={containerRef}
+      />
+    </GestureWrapper>
   )
 }
