@@ -33,6 +33,12 @@ function drawioEmbed(rawUrl: string): { kind: 'image' | 'iframe'; src: string } 
     'drive.google.com',
   ]
   if (allowed.includes(host)) {
+    // `lightbox=1` (draw.io's default share-link param) renders a small
+    // click-to-expand teaser anchored top-left of the iframe, leaving the
+    // rest of the fixed-height box blank. `fit=1` scales the diagram to
+    // fill the iframe instead.
+    url.searchParams.delete('lightbox')
+    url.searchParams.set('fit', '1')
     return { kind: 'iframe', src: url.toString() }
   }
 
@@ -65,7 +71,7 @@ export function GraphBlock({ block }: GraphBlockProps) {
               src={drawio.src}
               title={caption || 'draw.io diagram'}
               loading="lazy"
-              className="h-[480px] w-full rounded-xl border border-border bg-muted/40"
+              className="h-[320px] w-full rounded-xl border border-border bg-muted/40 md:h-[420px]"
             />
           ) : (
             <div className="rounded-xl border border-border bg-muted/40 p-6 text-center">
