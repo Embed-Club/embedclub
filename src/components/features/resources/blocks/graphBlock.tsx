@@ -56,7 +56,8 @@ export function GraphBlock({ block }: GraphBlockProps) {
               <img
                 src={drawio.src}
                 alt={caption || 'Diagram'}
-                className="max-w-full h-auto"
+                className="block max-w-full h-auto"
+                style={{ display: 'block' }}
               />
             </GestureWrapper>
           ) : drawio?.kind === 'iframe' ? (
