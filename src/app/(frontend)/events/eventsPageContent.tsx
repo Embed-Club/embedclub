@@ -90,7 +90,7 @@ export function EventsPageContent({ events }: { events: Event[] }) {
       <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
         RECENT EVENTS
       </h1>
-      <div className="w-full py-6 md:py-12">
+      <div className="w-full py-4 md:py-8">
         {recent.length === 0 ? (
           <EmptyState title="No Events Yet" />
         ) : (
@@ -102,7 +102,7 @@ export function EventsPageContent({ events }: { events: Event[] }) {
         )}
       </div>
 
-      <div className="w-full px-6 pb-10 pt-6 md:px-12 lg:px-16">
+      <div className="w-full px-6 pb-12 pt-8 md:px-12 lg:px-16 md:pb-10 md:pt-6">
         <h2 className="relative text-2xl font-bold md:text-4xl mb-8">ALL EVENTS</h2>
         {totalPages > 1 && <div className="mt-6 flex w-full justify-end pb-6">{pager}</div>}
         {events.length === 0 ? (

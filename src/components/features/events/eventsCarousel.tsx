@@ -78,7 +78,7 @@ export const Carousel = ({
           )}
         />
 
-        <div className="overflow-hidden py-10 md:py-20" ref={emblaRef}>
+        <div className="overflow-hidden py-4 md:py-8" ref={emblaRef}>
           {/* Slide elements are plain divs on purpose. Embla's loop works by
               writing `transform: translateX(...)` onto individual slides to
               reposition them around the wrap point — if the slide is a
