@@ -162,7 +162,7 @@ function renderNode(
         href={href}
         target={target}
         rel={rel}
-        className="text-primary underline underline-offset-2 transition-colors hover:text-primary/80"
+        className="text-primary underline underline-offset-2 transition-colors hover:text-primary/80 break-words"
       >
         {linkChildren}
       </a>
