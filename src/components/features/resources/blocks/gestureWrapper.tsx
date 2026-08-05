@@ -93,8 +93,8 @@ export function GestureWrapper({ children, className = '' }: GestureWrapperProps
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden bg-muted/40 rounded-xl border border-border ${className}`}
-      style={{ width: '100%', maxWidth: '100%', touchAction: 'none' }}
+      className={`relative overflow-hidden bg-muted/40 rounded-xl border border-border flex justify-center items-start ${className}`}
+      style={{ width: '100%', maxWidth: '100%', touchAction: 'none', height: 'auto' }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -107,10 +107,8 @@ export function GestureWrapper({ children, className = '' }: GestureWrapperProps
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
           transformOrigin: 'center',
           transition: 'transform 0.1s ease-out',
-          width: 'fit-content',
-          margin: '0 auto',
+          display: 'inline-block',
         }}
-        className="p-4"
       >
         {children}
       </div>

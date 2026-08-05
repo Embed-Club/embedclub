@@ -78,9 +78,8 @@ export function MermaidRenderer({ definition }: MermaidRendererProps) {
   }
 
   return (
-    <GestureWrapper className="max-h-[600px]">
+    <GestureWrapper>
       <div
-        className="flex justify-center"
         ref={containerRef}
       />
     </GestureWrapper>

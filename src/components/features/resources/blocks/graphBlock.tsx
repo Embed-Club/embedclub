@@ -52,7 +52,7 @@ export function GraphBlock({ block }: GraphBlockProps) {
 
         {graphType === 'drawio' &&
           (drawio?.kind === 'image' ? (
-            <GestureWrapper className="max-h-[600px]">
+            <GestureWrapper>
               <img
                 src={drawio.src}
                 alt={caption || 'Diagram'}
