@@ -70,4 +70,6 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-green_dots.txt
+
+# Scratch output from local seed/screenshot scripts
+/scripts/tmp-*.png

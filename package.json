@@ -1,7 +1,7 @@
 {
-  "name": "embed-club4",
+  "name": "embed-club",
   "version": "1.0.1",
-  "description": "A blank template to get started with Payload 3.0",
+  "description": "Embed Club website — Next.js 15 frontend with a Payload 3 CMS backend",
   "license": "MIT",
   "type": "module",
   "scripts": {
