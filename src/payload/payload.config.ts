@@ -117,10 +117,5 @@ export default buildConfig({
           }),
         ]
       : []),
-    // mcpPlugin({
-    //   collections: {
-    //     ...
-    //   },
-    // }),
   ],
 })
