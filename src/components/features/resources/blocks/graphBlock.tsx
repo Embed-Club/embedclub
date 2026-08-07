@@ -1,6 +1,6 @@
 import type { GraphBlock as GraphBlockType } from '@/payload/payload-types'
-import { MermaidRenderer } from './mermaidRenderer'
 import { GestureWrapper } from './gestureWrapper'
+import { MermaidRenderer } from './mermaidRenderer'
 
 interface GraphBlockProps {
   block: GraphBlockType

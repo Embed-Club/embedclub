@@ -79,9 +79,7 @@ export function MermaidRenderer({ definition }: MermaidRendererProps) {
 
   return (
     <GestureWrapper>
-      <div
-        ref={containerRef}
-      />
+      <div ref={containerRef} />
     </GestureWrapper>
   )
 }
