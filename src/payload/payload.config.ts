@@ -95,6 +95,17 @@ export default buildConfig({
     Users,
   ],
   globals: [AboutPage, HomeFeaturedMembers],
+  // "Payload Settings" on the account view is a translation string, not config,
+  // so the admin.meta rebrand can't reach it. Overrides merge over the defaults.
+  i18n: {
+    translations: {
+      en: {
+        general: {
+          payloadSettings: 'Embed Club Settings',
+        },
+      },
+    },
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
