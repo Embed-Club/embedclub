@@ -88,76 +88,102 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
               transition={{ duration: 0.8, ease: 'easeInOut' }}
               className="fixed inset-0 z-[1000] flex items-center justify-center bg-background pointer-events-none"
             >
+              {/* The lockup keeps a constant 460px box so it is always centred:
+                  introScale is computed against that width, so the whole thing
+                  sits inside the viewport with 16px to spare at every frame.
+                  Animating the box's width instead (144 -> 440) centred it only
+                  once the animation finished — while it was still narrow, its
+                  centred left edge pushed the left-anchored 460px banner off the
+                  right of small screens, cutting the text mid-reveal.
+                  shrink-0 matters too: the overlay is a flex container narrower
+                  than 460px on phones, and without it the lockup is compressed
+                  to the viewport width, which breaks the scale maths. */}
               <motion.div
                 layoutId="master-logo"
-                className="relative flex items-center"
+                className="relative h-[144px] w-[460px] shrink-0 overflow-hidden"
                 initial={false}
-                animate={isExpanded ? { width: 440 } : { width: 144 }}
                 style={{ scale: introScale }}
                 transition={{
                   duration: 1.0,
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
-                {/* 1. Shield (Icon) - Always the anchor */}
-                <div className="relative w-[144px] h-[144px] shrink-0 z-20 bg-background">
-                  {/* Greyscale Base */}
-                  <img
-                    alt=""
-                    src="/embedClubLogo-Dark.svg"
-                    className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 hidden dark:block"
-                  />
-                  <img
-                    alt=""
-                    src="/embedClubLogo-Light.svg"
-                    className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 dark:hidden"
-                  />
-
-                  {/* Colored Fill */}
-                  <div
-                    className="absolute inset-0 overflow-hidden"
-                    style={{ clipPath: `inset(${(1 - fillProgress) * 100}% 0 0 0)` }}
-                  >
+                {/* Shield and banner slide as one group, so the shield stays
+                    flush with the banner's left edge and keeps masking it — it
+                    is the mask, being opaque and z-20 over the z-10 banner.
+                    Moving the shield alone would uncover the box's left 158px
+                    and expose the text sitting there before it slides out.
+                    x=158 (230 - 72) puts the shield's centre on the box's, so
+                    collapsed still reads as a centred shield. */}
+                <motion.div
+                  className="relative flex h-full w-full items-center"
+                  initial={false}
+                  animate={{ x: isExpanded ? 0 : 158 }}
+                  transition={{
+                    duration: 1.0,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                >
+                  {/* 1. Shield (Icon) - Always the anchor */}
+                  <div className="relative w-[144px] h-[144px] shrink-0 z-20 bg-background">
+                    {/* Greyscale Base */}
                     <img
                       alt=""
                       src="/embedClubLogo-Dark.svg"
-                      className="w-full h-full object-contain hidden dark:block"
+                      className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 hidden dark:block"
                     />
                     <img
                       alt=""
                       src="/embedClubLogo-Light.svg"
-                      className="w-full h-full object-contain dark:hidden"
+                      className="absolute inset-0 w-full h-full object-contain grayscale opacity-10 dark:hidden"
                     />
-                  </div>
-                </div>
 
-                {/* 2. Banner Text - Slides out from behind the icon */}
-                {/* w-[440px] + clip at 120px = 320px of visible text area */}
-                {/* Clip at 120px (not 144) so the "E" in EMBED isn't cut off */}
-                <div className="absolute left-0 top-0 h-full w-[460px] pointer-events-none z-10 overflow-hidden">
-                  <motion.div
-                    initial={{ x: -296, opacity: 0 }}
-                    animate={isExpanded ? { x: 0, opacity: 1 } : { x: -296, opacity: 0 }}
-                    transition={{
-                      duration: 1.2,
-                      ease: [0.22, 1, 0.36, 1],
-                      delay: 0.2,
-                    }}
-                    className="w-full h-full"
-                  >
-                    {/* InlineSVG injects SVG inline so @font-face rules work */}
-                    <div className="w-full h-full" style={{ clipPath: 'inset(0 0 0 120px)' }}>
-                      <InlineSVG
-                        src="/EmbedClubBanner-Dark.svg"
-                        className="w-full h-full hidden dark:block [&>svg]:w-full [&>svg]:h-full"
+                    {/* Colored Fill */}
+                    <div
+                      className="absolute inset-0 overflow-hidden"
+                      style={{ clipPath: `inset(${(1 - fillProgress) * 100}% 0 0 0)` }}
+                    >
+                      <img
+                        alt=""
+                        src="/embedClubLogo-Dark.svg"
+                        className="w-full h-full object-contain hidden dark:block"
                       />
-                      <InlineSVG
-                        src="/EmbedClubBanner-Light.svg"
-                        className="w-full h-full block dark:hidden [&>svg]:w-full [&>svg]:h-full"
+                      <img
+                        alt=""
+                        src="/embedClubLogo-Light.svg"
+                        className="w-full h-full object-contain dark:hidden"
                       />
                     </div>
-                  </motion.div>
-                </div>
+                  </div>
+
+                  {/* 2. Banner Text - Slides out from behind the icon */}
+                  {/* w-[460px] + clip at 120px = 340px of visible text area */}
+                  {/* Clip at 120px (not 144) so the "E" in EMBED isn't cut off */}
+                  <div className="absolute left-0 top-0 h-full w-[460px] pointer-events-none z-10 overflow-hidden">
+                    <motion.div
+                      initial={{ x: -296, opacity: 0 }}
+                      animate={isExpanded ? { x: 0, opacity: 1 } : { x: -296, opacity: 0 }}
+                      transition={{
+                        duration: 1.2,
+                        ease: [0.22, 1, 0.36, 1],
+                        delay: 0.2,
+                      }}
+                      className="w-full h-full"
+                    >
+                      {/* InlineSVG injects SVG inline so @font-face rules work */}
+                      <div className="w-full h-full" style={{ clipPath: 'inset(0 0 0 120px)' }}>
+                        <InlineSVG
+                          src="/EmbedClubBanner-Dark.svg"
+                          className="w-full h-full hidden dark:block [&>svg]:w-full [&>svg]:h-full"
+                        />
+                        <InlineSVG
+                          src="/EmbedClubBanner-Light.svg"
+                          className="w-full h-full block dark:hidden [&>svg]:w-full [&>svg]:h-full"
+                        />
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
               </motion.div>
             </motion.div>
           )}
