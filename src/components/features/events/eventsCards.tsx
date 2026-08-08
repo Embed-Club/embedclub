@@ -257,14 +257,49 @@ export const EventModal = ({
 
 export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }: ImageProps) => {
   const [isLoading, setLoading] = useState(true)
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  // The blur must never outlive the image, and `onLoad` alone can't guarantee
+  // that: a cached image is already `complete` before React attaches the
+  // handler, and our CDN images can stay `complete === false` indefinitely even
+  // once they have decoded and painted. So drive the state off the element —
+  // `decode()` settles as soon as the bitmap is usable, and resolves
+  // immediately for an already-decoded one. Rejection (decode error, or the
+  // src being swapped mid-flight) also clears, since a stuck blur is worse
+  // than an unblurred broken image.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-run per src
+  useEffect(() => {
+    const img = imgRef.current
+    if (!img) return
+    let cancelled = false
+    const clear = () => {
+      if (!cancelled) setLoading(false)
+    }
+    // `naturalWidth`, not `complete`: a lazy image restored from cache inside
+    // the carousel's overflow-hidden track can sit at `complete === false`
+    // forever, with neither `load` nor `decode()` ever settling — but it has
+    // real dimensions and paints fine. Dimensions mean there is a bitmap.
+    if (img.naturalWidth > 0) {
+      clear()
+      return
+    }
+    img.decode().then(clear, clear)
+    return () => {
+      cancelled = true
+    }
+  }, [src])
+
   return (
     <img
+      ref={imgRef}
       className={cn(
         'h-full w-full transition duration-300',
         isLoading ? 'blur-sm' : 'blur-0',
         className,
       )}
       onLoad={() => setLoading(false)}
+      // A broken image must not stay blurred behind a permanent placeholder.
+      onError={() => setLoading(false)}
       src={src as string}
       width={width}
       height={height}
