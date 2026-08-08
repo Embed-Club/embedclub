@@ -38,6 +38,26 @@ export default buildConfig({
     meta: {
       titleSuffix: '- Embed Club',
       description: 'Admin panel for the Embed Club website.',
+      // Otherwise the tab icon stays payload-favicon-*.png. Paired light/dark
+      // the way Payload does its own: the dark-artwork mark is the default, and
+      // the light one takes over under a dark browser theme.
+      icons: [
+        { rel: 'icon', type: 'image/svg+xml', url: '/embedClubLogo-Light.svg' },
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          url: '/embedClubLogo-Dark.svg',
+          media: '(prefers-color-scheme: dark)',
+        },
+      ],
+      // openGraph does not inherit `description` above — left alone it keeps
+      // advertising Payload ("a headless CMS and application framework...")
+      // in og:description, twitter:description and the generated og:image.
+      openGraph: {
+        siteName: 'Embed Club',
+        title: 'Embed Club Admin',
+        description: 'Admin panel for the Embed Club website.',
+      },
     },
     components: {
       graphics: {
