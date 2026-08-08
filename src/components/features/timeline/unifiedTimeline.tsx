@@ -53,8 +53,6 @@ function useTimelineContext() {
 export interface TimelineProps {
   items: TimelineItemData[]
   fillDistance?: number
-  showHeader?: boolean
-  headerText?: string
   className?: string
   mobilePosition?: 'left' | 'right'
 }
@@ -62,12 +60,9 @@ export interface TimelineProps {
 export function Timeline({
   items,
   fillDistance = 100,
-  showHeader = true,
-  headerText = 'Timeline',
   className,
   mobilePosition = 'right',
 }: TimelineProps) {
-  const containerRef = React.useRef<HTMLDivElement>(null)
   const contentRef = React.useRef<HTMLDivElement>(null)
   const timelineBarRef = React.useRef<HTMLDivElement>(null)
   const nodeRefs = React.useRef<(HTMLDivElement | null)[]>([])
@@ -76,7 +71,7 @@ export function Timeline({
   )
   const [scrollProgress, setScrollProgress] = React.useState(0)
 
-  const { scrollYProgress, isMobile } = useTimelineScroll(containerRef)
+  const { scrollYProgress, isMobile } = useTimelineScroll(contentRef)
 
   // Calculate node fill based on white bar position
   React.useEffect(() => {
@@ -145,93 +140,57 @@ export function Timeline({
 
   const barPositionClass = getBarPositionClass()
 
-  // Container scroll styles - only for desktop
-  const containerScrollStyles = !isMobile
-    ? {
-        scrollbarWidth: 'none' as const,
-        msOverflowStyle: 'none' as const,
-        WebkitOverflowScrolling: 'touch' as const,
-        touchAction: 'pan-y' as const,
-        overscrollBehavior: 'contain' as const,
-      }
-    : {}
-
   return (
     <TimelineContext.Provider value={contextValue}>
-      <div className={cn('relative w-full h-full', className)}>
-        {/* Fixed Header - Desktop only */}
-        {showHeader && !isMobile && (
-          <div className="absolute top-0 left-0 right-0 z-10 p-8 bg-gradient-to-b from-background to-transparent pointer-events-none" />
+      {/* Flows in the page's own scroll container (ScrollContainerContext) —
+          no private scroll box, so this scrolls together with the footer
+          instead of fighting it for the wheel. */}
+      <div
+        ref={contentRef}
+        className={cn('relative w-full min-h-full pt-16 pb-24 md:pt-32', className)}
+      >
+        {/* Fixed Header Gradient for mobile (timeline bar only). Flush to the
+            container edge rather than reusing barPositionClass's translate-x-1/2
+            centering trick — that trick only stays in bounds for elements
+            narrower than 2x the anchor offset, and this one (w-20) isn't. */}
+        {isMobile && (
+          <div
+            className={cn(
+              'absolute top-0 z-10 h-16 w-20 pointer-events-none bg-gradient-to-b from-background to-transparent',
+              mobilePosition === 'left' ? 'left-0' : 'right-0',
+            )}
+          />
         )}
 
-        {/* Scrollable Content - only scrollable on desktop */}
+        {/* Timeline Bar */}
         <div
-          ref={containerRef}
-          data-timeline-scroll
-          className={cn('w-full h-full', !isMobile && 'overflow-y-scroll overflow-x-hidden')}
-          style={containerScrollStyles}
+          ref={timelineBarRef}
+          className={cn('absolute top-0 bottom-20 w-3 pointer-events-none', barPositionClass)}
         >
-          <div
-            ref={contentRef}
-            className={cn('relative w-full', !isMobile ? 'min-h-full pt-12 pb-24' : 'pt-16 pb-12')}
-          >
-            {/* Timeline heading inside scroll container for desktop */}
-            {showHeader && !isMobile && (
-              <div className="relative mb-16 px-8 md:left-10">
-                <h1 className="text-xl md:left-20 font-medium md:text-4xl">{headerText}</h1>
-              </div>
-            )}
-
-            {/* Fixed Header Gradient for mobile (timeline bar only) */}
-            {isMobile && (
-              <div
-                className={cn(
-                  'absolute top-0 z-10 h-16 w-20 pointer-events-none bg-gradient-to-b from-background to-transparent',
-                  barPositionClass,
-                )}
-              />
-            )}
-
-            {/* Timeline Bar */}
-            <div
-              ref={timelineBarRef}
-              className={cn('absolute top-0 bottom-20 w-3 pointer-events-none', barPositionClass)}
-            >
-              {/* Copper (`--primary`) rather than the old black-on-light /
-                  white-on-dark pair, so the progress rail keeps one identity
-                  across both colour modes instead of inverting with them. */}
-              <div className="absolute top-0 bottom-0 w-full rounded-full border-2 border-primary/40 bg-transparent" />
-              <motion.div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-[8px] bg-primary rounded-full origin-top"
-                style={{
-                  height: useTransform(scrollYProgress, [0, 1], ['0%', '100%']),
-                }}
-              />
-            </div>
-
-            {/* Timeline Items */}
-            <div className="relative">
-              {items.map((item, index) => (
-                <TimelineItemWrapper
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  totalItems={items.length}
-                  mobilePosition={mobilePosition}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Copper (`--primary`) rather than the old black-on-light /
+              white-on-dark pair, so the progress rail keeps one identity
+              across both colour modes instead of inverting with them. */}
+          <div className="absolute top-0 bottom-0 w-full rounded-full border-2 border-primary/40 bg-transparent" />
+          <motion.div
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-[8px] bg-primary rounded-full origin-top"
+            style={{
+              height: useTransform(scrollYProgress, [0, 1], ['0%', '100%']),
+            }}
+          />
         </div>
 
-        <style>{`
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-          }
-          [data-timeline-scroll]::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
+        {/* Timeline Items */}
+        <div className="relative">
+          {items.map((item, index) => (
+            <TimelineItemWrapper
+              key={item.id}
+              item={item}
+              index={index}
+              totalItems={items.length}
+              mobilePosition={mobilePosition}
+            />
+          ))}
+        </div>
       </div>
     </TimelineContext.Provider>
   )
