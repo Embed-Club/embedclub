@@ -72,9 +72,12 @@ export const Carousel = ({
   return (
     <CarouselContext.Provider value={{ onCardClose: handleCardClose, currentIndex }}>
       <div className="relative w-full">
+        {/* Desktop-only edge fade. `bg-gradient-to-l` alone renders nothing —
+            it needs colour stops — and on mobile the track bleeds to the screen
+            edge, where any fade just reads as a dark bar cutting the card. */}
         <div
           className={cn(
-            'pointer-events-none absolute inset-y-10 right-0 z-[1000] w-[5%] overflow-hidden bg-gradient-to-l md:inset-y-20',
+            'pointer-events-none absolute inset-y-20 right-0 z-[1000] hidden w-[5%] overflow-hidden bg-gradient-to-l from-background to-transparent md:block',
           )}
         />
 
@@ -103,7 +106,9 @@ export const Carousel = ({
             ))}
           </div>
         </div>
-        <div className="mr-10 flex justify-end gap-2">
+        {/* No right margin — the arrows align with the right edge of the card
+            track, which runs the full width of this container. */}
+        <div className="flex justify-end gap-2">
           <button
             type="button"
             className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"

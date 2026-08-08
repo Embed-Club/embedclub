@@ -87,10 +87,18 @@ export function EventsPageContent({ events }: { events: Event[] }) {
 
   return (
     <>
-      <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
+      {/* z-30 keeps the heading above the cards, whose root is `relative z-10` —
+          without it they paint over the title wherever the two overlap. */}
+      <h1 className="absolute left-5 top-5 z-30 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
         RECENT EVENTS
       </h1>
-      <div className="w-full px-6 py-4 md:px-12 md:py-8 lg:px-16">
+      {/* pt-16/md:pt-32 reserves room for the absolutely-positioned heading, the
+          same clearance every other listing page uses. It used to come from the
+          carousel's own py-10/md:py-20, which was removed to kill the black bar. */}
+      {/* No right padding on mobile: the carousel clips at its own edge, so
+          padding there cuts the next card short and leaves a strip of page
+          background beside it. Let the track bleed off the screen instead. */}
+      <div className="w-full pl-6 pr-0 pt-16 pb-4 md:px-12 md:pt-32 md:pb-8 lg:px-16">
         {recent.length === 0 ? (
           <EmptyState title="No Events Yet" />
         ) : (
