@@ -294,7 +294,14 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
       ref={imgRef}
       className={cn(
         'h-full w-full transition duration-300',
-        isLoading ? 'blur-sm' : 'blur-0',
+        // No filter class once loaded, rather than `blur-0`. `blur(0px)` is not
+        // `none`: it still promotes the image to its own composited layer and
+        // routes it through the filter pipeline, and stacked with the card's
+        // transition-transform and Embla's translate3d on the track, Chrome
+        // rasterises that layer at the wrong scale — leaving the image
+        // permanently soft long after it has finished loading. The grid cards
+        // never set a filter, which is why only the carousel looked blurry.
+        isLoading && 'blur-sm',
         className,
       )}
       onLoad={() => setLoading(false)}
