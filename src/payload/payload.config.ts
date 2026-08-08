@@ -33,6 +33,18 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    // Payload brands the admin as its own otherwise: the login screen shows the
+    // Payload wordmark and every tab title ends in "- Payload".
+    meta: {
+      titleSuffix: '- Embed Club',
+      description: 'Admin panel for the Embed Club website.',
+    },
+    components: {
+      graphics: {
+        Logo: '@/components/admin/adminLogo',
+        Icon: '@/components/admin/adminIcon',
+      },
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
