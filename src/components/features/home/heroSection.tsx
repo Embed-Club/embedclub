@@ -1,6 +1,7 @@
 'use client'
 import DashboardTitle from '@/app/(frontend)/title'
 import { AudioToggleMini, BackgroundAudio } from '@/components/common/backgroundAudio'
+import Image from 'next/image'
 // Temporarily unused — the mobile hero marquee is commented out below, pending
 // a decision on where it moves to.
 // import { LogoMarquee } from '@/components/features/home/logoMarquee'
@@ -28,7 +29,36 @@ export function HeroSection() {
     // absolutely positioned, so there are no flex items left to distribute.
     // With the marquee gone it keeps the title + video stack visually centred
     // instead of top-anchored above a tall empty gap.
-    <section className="relative -mt-16 flex min-h-[100svh] w-full flex-col justify-center overflow-hidden bg-background lg:mt-0">
+    <section className="relative -mt-16 flex min-h-[100svh] w-full flex-col justify-start overflow-hidden bg-background lg:mt-0">
+      {/* Hardware cutouts — mobile only. The stack above is top-anchored
+          (`justify-start`) precisely so this band at the bottom stays free:
+          both hands rise into it from below the fold. Both are decorative
+          (empty alt + aria-hidden) and sit at z-0, under the z-10 title block.
+          The negative translate pushes each wrist past the section edge so the
+          arm reads as entering the frame rather than floating; the section's
+          own `overflow-hidden` does the cropping.
+          Sources are trimmed-to-alpha WebP derivatives of the PNGs in /public —
+          `sizes` is what keeps next/image from shipping the full-width file to
+          a phone. */}
+      <Image
+        aria-hidden
+        alt=""
+        src="/esp32Hand.webp"
+        width={1100}
+        height={1053}
+        sizes="(max-width: 1024px) 65vw, 1px"
+        className="pointer-events-none absolute bottom-[9%] left-0 z-0 w-[62%] max-w-[265px] -translate-x-[44%] translate-y-[10%] rotate-[16deg] select-none [mask-image:linear-gradient(to_bottom,#000_60%,transparent_95%)] lg:hidden"
+      />
+      <Image
+        aria-hidden
+        alt=""
+        src="/oledEmbed.webp"
+        width={797}
+        height={970}
+        sizes="(max-width: 1024px) 72vw, 1px"
+        className="pointer-events-none absolute bottom-0 left-1/2 z-0 w-[70%] max-w-[300px] -translate-x-1/2 translate-y-[6%] select-none lg:hidden"
+      />
+
       {/* Title + tagline — mobile: at the top; desktop: centered overlay */}
       <div className="relative z-10 flex w-full flex-col items-center gap-4 px-4 pt-16 lg:absolute lg:inset-0 lg:justify-center lg:gap-6 lg:pt-0">
         <DashboardTitle />
