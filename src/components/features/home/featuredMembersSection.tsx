@@ -12,7 +12,7 @@ export function FeaturedMembersSection({ rows }: { rows: FeaturedRow[] }) {
   const visibleRows = rows.filter((r) => r.members.length > 0)
 
   return (
-    <section className="relative flex min-h-[100svh] w-full flex-col items-center justify-center gap-12 px-6 py-20 md:px-12 lg:px-20">
+    <section className="relative flex min-h-[100svh] w-full flex-col items-center justify-center gap-12 px-4 py-20 md:px-12 lg:px-20">
       <div className="text-center">
         <h2 className="text-3xl font-bold md:text-5xl">Meet the Team</h2>
         <p className="mt-2 text-muted-foreground">The people building Embed Club.</p>
@@ -29,9 +29,13 @@ export function FeaturedMembersSection({ rows }: { rows: FeaturedRow[] }) {
                   {row.category}
                 </span>
               )}
-              <div className="flex flex-wrap items-stretch justify-center gap-6">
+              {/* Two cards per row on a phone, so the card width is set by the
+                  section padding and this gap rather than the w-* below — those
+                  are an upper bound the cards shrink under. Tighter gap here is
+                  what actually makes them bigger on mobile. */}
+              <div className="flex flex-wrap items-stretch justify-center gap-4 sm:gap-6">
                 {row.members.map((m) => (
-                  <div key={m.id} className="w-40 sm:w-48 md:w-56">
+                  <div key={m.id} className="w-44 sm:w-52 md:w-64">
                     <MemberCutoutCard member={m} />
                   </div>
                 ))}
