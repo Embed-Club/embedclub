@@ -121,6 +121,59 @@ async function appendRow(sheetId: string, values: string[]): Promise<void> {
   }
 }
 
+/** A1 column letter for a zero-based index (0 → A, 26 → AA). */
+function columnLetter(index: number): string {
+  let n = index
+  let out = ''
+  do {
+    out = String.fromCharCode(65 + (n % 26)) + out
+    n = Math.floor(n / 26) - 1
+  } while (n >= 0)
+  return out
+}
+
+/**
+ * Map of Submission ID → 1-based sheet row, read from whichever column holds
+ * the ids.
+ *
+ * This is what makes the sync idempotent against the sheet itself rather than
+ * against `sheetSyncedAt` alone. The flag is written in a second call after the
+ * row lands, so an append that succeeds while the flag write fails — or two
+ * cron runs overlapping — would otherwise re-append the same submission.
+ */
+async function readRowIndex(sheetId: string, headers: string[]): Promise<Map<string, number>> {
+  const idColumn = headers.indexOf('Submission ID')
+  const index = new Map<string, number>()
+  if (idColumn === -1) return index
+
+  const letter = columnLetter(idColumn)
+  const res = await sheetsFetch(`${sheetId}/values/${letter}:${letter}`)
+  if (!res.ok) {
+    throw new Error(`Reading sheet ids failed (${res.status}): ${await res.text()}`)
+  }
+
+  const json = (await res.json()) as { values?: string[][] }
+  const column = json.values ?? []
+  // Row 1 is the header; data starts at row 2.
+  for (let i = 1; i < column.length; i += 1) {
+    const id = column[i]?.[0]?.trim()
+    if (id) index.set(id, i + 1)
+  }
+  return index
+}
+
+/** Overwrite one existing row, so a re-synced submission corrects itself. */
+async function writeRow(sheetId: string, row: number, values: string[]): Promise<void> {
+  const range = `A${row}:${columnLetter(values.length - 1)}${row}`
+  const res = await sheetsFetch(`${sheetId}/values/${range}?valueInputOption=RAW`, {
+    method: 'PUT',
+    body: JSON.stringify({ values: [values] }),
+  })
+  if (!res.ok) {
+    throw new Error(`Sheets row update failed (${res.status}): ${await res.text()}`)
+  }
+}
+
 function questionLabels(form: Form): string[] {
   const labels: string[] = []
   for (const step of form.steps ?? []) {
@@ -215,8 +268,10 @@ export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResu
     if (!sheetId) continue // this form simply isn't mirrored
 
     let headers: string[]
+    let rowIndex: Map<string, number>
     try {
       headers = await reconcileHeaders(sheetId, [...BASE_HEADERS, ...questionLabels(form)])
+      rowIndex = await readRowIndex(sheetId, headers)
     } catch (error) {
       console.error(`[Sheets] Header setup failed for form "${form.slug}":`, error)
       failed += submissions.length
@@ -241,7 +296,16 @@ export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResu
           }
         })
 
-        await appendRow(sheetId, values)
+        // Upsert on Submission ID: a row already carrying this id is rewritten
+        // in place, so re-syncing an edited response corrects the sheet rather
+        // than adding a second row for the same person.
+        const existingRow = rowIndex.get(String(submission.id))
+        if (existingRow) {
+          await writeRow(sheetId, existingRow, values)
+        } else {
+          await appendRow(sheetId, values)
+        }
+
         await payload.update({
           collection: 'form-submissions',
           id: submission.id,
