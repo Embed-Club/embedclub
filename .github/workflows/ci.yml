@@ -30,6 +30,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # importMap.js is generated and gitignored, but the Payload admin routes
+      # import it — without this the typecheck fails on three missing modules.
+      # Generation only loads the config, so throwaway values are enough.
+      - name: Generate import map
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/unused
+          PAYLOAD_SECRET: ci-not-a-real-secret
+        run: pnpm run generate:importmap
+
       - name: Biome check
         run: pnpm run check:ci
 
@@ -74,6 +83,11 @@ jobs:
 
       - name: Run migrations
         run: pnpm run payload migrate
+
+      # `build:app` is `next build` alone — the importMap step lives in the
+      # full `build` script, which CI skips because it re-runs migrations.
+      - name: Generate import map
+        run: pnpm run generate:importmap
 
       - name: Build
         run: pnpm run build:app
