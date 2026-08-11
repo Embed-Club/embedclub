@@ -51,14 +51,16 @@ export function MemberCutoutCard({ member }: { member: Member }) {
         <CutoutCardImage alt={member.fullName} src={src} sizes="(max-width: 768px) 45vw, 16rem" />
         <CutoutCardOverlay />
       </CutoutCardMedia>
-      <CutoutCardContent className="p-4 text-center">
+      {/* Tighter than the default p-6 so the text block gets more of the card's
+          width — full names were being truncated to "Habeeb Ur R...". */}
+      <CutoutCardContent className="px-2.5 py-3 text-center">
         <p
           title={member.fullName}
-          className="truncate font-semibold text-foreground transition-colors group-hover/cutout:text-primary"
+          className="line-clamp-2 font-semibold leading-tight text-foreground transition-colors group-hover/cutout:text-primary"
         >
           {member.fullName}
         </p>
-        {role && <p className="mt-1 truncate text-sm text-primary">{role}</p>}
+        {role && <p className="mt-0.5 line-clamp-2 text-xs leading-tight text-primary">{role}</p>}
       </CutoutCardContent>
     </>
   )

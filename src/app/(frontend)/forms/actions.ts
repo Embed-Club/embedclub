@@ -174,7 +174,10 @@ export async function submitForm(
         collection: 'form-submissions',
         id: existingId,
         overrideAccess: true,
-        data,
+        // Clearing the sync stamp puts the corrected answers back in the sheet
+        // queue. The sync upserts on Submission ID, so this rewrites their
+        // existing row rather than adding a second one.
+        data: { ...data, sheetSyncedAt: null },
       })
     } else {
       await payload.create({ collection: 'form-submissions', overrideAccess: true, data })

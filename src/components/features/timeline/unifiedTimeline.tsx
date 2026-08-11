@@ -149,14 +149,14 @@ export function Timeline({
         ref={contentRef}
         className={cn('relative w-full min-h-full pt-16 pb-24 md:pt-32', className)}
       >
-        {/* Fixed Header Gradient for mobile (timeline bar only). Flush to the
-            container edge rather than reusing barPositionClass's translate-x-1/2
-            centering trick — that trick only stays in bounds for elements
-            narrower than 2x the anchor offset, and this one (w-20) isn't. */}
+        {/* Fixed Header Gradient for mobile. Scoped to the bar's own width
+            (w-8 over a w-3 bar) so it stops washing out the page background
+            beside it, and only partially opaque so the fade reads as a
+            softening rather than a visible panel. */}
         {isMobile && (
           <div
             className={cn(
-              'absolute top-0 z-10 h-16 w-20 pointer-events-none bg-gradient-to-b from-background to-transparent',
+              'absolute top-0 z-10 h-16 w-8 pointer-events-none bg-gradient-to-b from-background/70 to-transparent',
               mobilePosition === 'left' ? 'left-0' : 'right-0',
             )}
           />
