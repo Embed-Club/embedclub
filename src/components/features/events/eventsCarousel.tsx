@@ -106,9 +106,10 @@ export const Carousel = ({
             ))}
           </div>
         </div>
-        {/* No right margin — the arrows align with the right edge of the card
-            track, which runs the full width of this container. */}
-        <div className="flex justify-end gap-2">
+        {/* On mobile the card track bleeds to the screen edge, so the arrows
+            need their own inset to avoid sitting flush against it; from md up
+            the track is inset already and they align with its right edge. */}
+        <div className="flex justify-end gap-2 pr-4 md:pr-0">
           <button
             type="button"
             className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
