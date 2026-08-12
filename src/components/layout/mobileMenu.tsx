@@ -23,6 +23,7 @@ const navItems = [
   { label: 'PROJECTS', ariaLabel: 'Projects', link: '/projects' },
   { label: 'GLLERY', ariaLabel: 'Gallery', link: '/gallery' },
   { label: 'EBERS', ariaLabel: 'Members', link: '/members' },
+  { label: 'FORS', ariaLabel: 'Forms', link: '/forms' },
   { label: 'FEEDBCK', ariaLabel: 'Feedback', link: '/feedback' },
 ]
 

@@ -112,6 +112,11 @@ const data = {
       icon: UsersRound,
     },
     {
+      title: 'FORS',
+      url: '/forms',
+      icon: SquareChartGantt,
+    },
+    {
       title: 'FEEDBCK',
       url: '/feedback',
       icon: SquareTerminal,
