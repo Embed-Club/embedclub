@@ -65,6 +65,34 @@ export const FormSubmissions: CollectionConfig = {
       },
     },
     {
+      name: 'attachments',
+      type: 'array',
+      admin: {
+        readOnly: true,
+        description:
+          'Photos this person attached. The files live in the form’s Google Drive folder, never in this site’s storage — the previews below stream through an admin-only proxy.',
+        components: {
+          RowLabel: '@/components/admin/formAttachmentRowLabel',
+        },
+      },
+      fields: [
+        { name: 'label', type: 'text' },
+        { name: 'fieldId', type: 'text' },
+        { name: 'driveFileId', type: 'text' },
+        { name: 'fileName', type: 'text' },
+        { name: 'mimeType', type: 'text' },
+        {
+          name: 'preview',
+          type: 'ui',
+          admin: {
+            components: {
+              Field: '@/components/admin/formAttachmentPreview',
+            },
+          },
+        },
+      ],
+    },
+    {
       name: 'certificateStatus',
       type: 'select',
       required: true,

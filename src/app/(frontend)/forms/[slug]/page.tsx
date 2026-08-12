@@ -1,5 +1,6 @@
 import { EmptyState } from '@/components/common/emptyState'
 import { CertificateGenerator } from '@/components/features/feedback/certificateGenerator'
+import { FormImage } from '@/components/features/forms/formImage'
 import { FormWizard } from '@/components/features/forms/formWizard'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import config from '@/payload/payload.config'
@@ -61,13 +62,18 @@ export default async function FormPage({ params }: FormPageProps) {
   return (
     <SidebarShell>
       <MainbarShell>
-        <div className="max-w-3xl mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-20 space-y-8">
+        {/* Wider than a typical prose column: the step card lays questions out
+            two-up on desktop, so 768px squeezed a pair of half-width fields
+            into something narrower than either deserved. */}
+        <div className="max-w-5xl mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-20 space-y-8">
           <div className="text-center space-y-3">
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{form.title}</h1>
             {form.description && (
               <p className="text-muted-foreground max-w-xl mx-auto">{form.description}</p>
             )}
           </div>
+
+          <FormImage media={form.headerImage} slot="header" priority />
 
           {closed ? (
             <EmptyState

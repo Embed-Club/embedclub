@@ -10,6 +10,7 @@ import sharp from 'sharp'
 
 import { Achievements } from './collections/achievements'
 import { Events } from './collections/events'
+import { FormMedia } from './collections/formMedia'
 import { FormSubmissions } from './collections/formSubmissions'
 import { Forms } from './collections/forms'
 import { Gallery } from './collections/gallery'
@@ -88,6 +89,7 @@ export default buildConfig({
     // Forms
     Forms,
     FormSubmissions,
+    FormMedia,
     // Library
     Media,
     Tags,
@@ -146,6 +148,9 @@ export default buildConfig({
               media: true,
               'member-photo': true,
               gallery: true,
+              // Officer-authored form artwork only. Files respondents upload
+              // never touch this bucket — they go to Google Drive.
+              'form-media': true,
             },
             bucket: process.env.S3_BUCKET || '',
             config: {

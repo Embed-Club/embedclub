@@ -3,18 +3,43 @@ import { APIError } from 'payload'
 
 import { generateSlug } from './learningFields'
 
-type FieldRow = { role?: string | null }
+type FieldRow = {
+  role?: string | null
+  fieldType?: string | null
+  label?: string | null
+  displayImage?: unknown
+}
 type StepRow = { fields?: FieldRow[] | null }
+
+/**
+ * Field types that hold no typed answer, so they can never be the question
+ * that supplies a name or an email address for a certificate.
+ */
+const ROLELESS_TYPES = ['image', 'imageUpload']
 
 /** Count how many questions across the whole form carry a given role. */
 function countRole(steps: StepRow[] | null | undefined, role: string): number {
   let n = 0
   for (const step of steps ?? []) {
     for (const field of step.fields ?? []) {
+      if (ROLELESS_TYPES.includes(field.fieldType ?? '')) continue
       if (field.role === role) n += 1
     }
   }
   return n
+}
+
+/** Every standalone image row must actually carry an image. */
+function imageRowsWithoutPicture(steps: StepRow[] | null | undefined): string[] {
+  const missing: string[] = []
+  for (const step of steps ?? []) {
+    for (const field of step.fields ?? []) {
+      if (field.fieldType === 'image' && !field.displayImage) {
+        missing.push(field.label || 'Untitled')
+      }
+    }
+  }
+  return missing
 }
 
 /**
@@ -106,6 +131,14 @@ export const Forms: CollectionConfig = {
       },
     },
     {
+      name: 'headerImage',
+      type: 'upload',
+      relationTo: 'form-media',
+      admin: {
+        description: 'Optional banner shown once, under the form title.',
+      },
+    },
+    {
       name: 'steps',
       type: 'array',
       minRows: 1,
@@ -124,6 +157,14 @@ export const Forms: CollectionConfig = {
           name: 'stepDescription',
           type: 'text',
           admin: { placeholder: 'e.g. Tell us who you are' },
+        },
+        {
+          name: 'stepImage',
+          type: 'upload',
+          relationTo: 'form-media',
+          admin: {
+            description: 'Optional image shown at the top of this step, under its description.',
+          },
         },
         {
           name: 'fields',
@@ -154,6 +195,8 @@ export const Forms: CollectionConfig = {
                     { label: 'Multiple Choice (one answer)', value: 'radio' },
                     { label: 'Checkboxes (many answers)', value: 'checkbox' },
                     { label: 'Date', value: 'date' },
+                    { label: 'Image Upload (respondent attaches a photo)', value: 'imageUpload' },
+                    { label: 'Image (no answer — just shows a picture)', value: 'image' },
                   ],
                 },
               ],
@@ -168,6 +211,7 @@ export const Forms: CollectionConfig = {
                 { label: "The person's email", value: 'email' },
               ],
               admin: {
+                condition: (_data, siblingData) => !ROLELESS_TYPES.includes(siblingData?.fieldType),
                 description:
                   'Marks which question holds the name and which holds the email. Required for certificates — the name is printed on them and the email is where they are sent.',
               },
@@ -179,6 +223,9 @@ export const Forms: CollectionConfig = {
                   name: 'required',
                   type: 'checkbox',
                   defaultValue: false,
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.fieldType !== 'image',
+                  },
                 },
                 {
                   name: 'width',
@@ -197,12 +244,41 @@ export const Forms: CollectionConfig = {
             {
               name: 'placeholder',
               type: 'text',
+              admin: {
+                condition: (_data, siblingData) =>
+                  !['image', 'imageUpload'].includes(siblingData?.fieldType),
+              },
             },
             {
               name: 'helpText',
               type: 'text',
               admin: {
                 description: 'Optional hint shown under the field',
+              },
+            },
+            {
+              // Decoration attached to a question — the diagram the question is
+              // about, sitting between the label and the input.
+              name: 'image',
+              type: 'upload',
+              relationTo: 'form-media',
+              admin: {
+                condition: (_data, siblingData) => siblingData?.fieldType !== 'image',
+                description: 'Optional picture shown under this question’s label.',
+              },
+            },
+            {
+              // The standalone "Image" item. Same upload, but it *is* the row —
+              // there is no input beside it. Not `required`, because that would
+              // apply to every other field type too (admin conditions hide a
+              // field, they do not relax its validation); the collection's
+              // beforeValidate enforces it only for image rows.
+              name: 'displayImage',
+              type: 'upload',
+              relationTo: 'form-media',
+              admin: {
+                condition: (_data, siblingData) => siblingData?.fieldType === 'image',
+                description: 'The picture to show. The label above is used as its caption.',
               },
             },
             {
@@ -244,6 +320,25 @@ export const Forms: CollectionConfig = {
           ({ value }) => {
             if (typeof value !== 'string') return value
             const match = value.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/)
+            return match ? match[1] : value.trim()
+          },
+        ],
+      },
+    },
+    {
+      name: 'driveFolderId',
+      label: 'Google Drive Folder',
+      type: 'text',
+      admin: {
+        description:
+          'Where photos that respondents attach are stored — nothing is uploaded to this site. Paste the folder URL (or its id) and share it with the service account address as an Editor first, or uploads will fail. Use a folder on a Shared Drive: a service account has no storage quota of its own, so a plain My Drive folder is rejected. Leave empty to use the default folder.',
+      },
+      hooks: {
+        // Officers will paste the whole URL from the address bar; keep the id.
+        beforeValidate: [
+          ({ value }) => {
+            if (typeof value !== 'string') return value
+            const match = value.match(/\/folders\/([a-zA-Z0-9-_]+)/)
             return match ? match[1] : value.trim()
           },
         ],
@@ -437,6 +532,16 @@ export const Forms: CollectionConfig = {
       ({ data }) => {
         if (data?.title && !data?.slug) {
           data.slug = generateSlug(data.title)
+        }
+
+        // An image row renders nothing but its picture, so a missing one is a
+        // blank gap on the live form rather than a visible mistake in admin.
+        const pictureless = imageRowsWithoutPicture(data?.steps)
+        if (pictureless.length > 0) {
+          throw new APIError(
+            `Image questions need a picture. Missing on: ${pictureless.join(', ')}.`,
+            400,
+          )
         }
 
         // A certificate needs a name to print and an address to send to. Catch

@@ -1,6 +1,7 @@
 'use server'
 
 import { dispatchCertificatesForForm } from '@/lib/certificateDispatch'
+import { driveConfigured, getDriveFileMeta } from '@/lib/googleDrive'
 import type { Form } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { after } from 'next/server'
@@ -46,6 +47,15 @@ function rateLimited(key: string): boolean {
 }
 
 type FormField = NonNullable<NonNullable<Form['steps']>[number]['fields']>[number]
+
+/** One verified respondent upload, recorded alongside the answers. */
+interface Attachment {
+  label: string
+  fieldId: string
+  driveFileId: string
+  fileName: string
+  mimeType: string
+}
 
 function eachField(form: Form): FormField[] {
   const out: FormField[] = []
@@ -93,12 +103,17 @@ export async function submitForm(
     const fieldErrors: Record<string, string> = {}
     const byId: Record<string, string | string[]> = {}
     const byLabel: Record<string, string | string[]> = {}
+    const attachments: Attachment[] = []
     let submitterName: string | undefined
     let submitterEmail: string | undefined
 
     for (const field of eachField(form)) {
       const key = field.id
       if (!key) continue
+
+      // An image row is decoration the officer placed in the form; there is no
+      // input beside it, so there is nothing to validate or store.
+      if (field.fieldType === 'image') continue
 
       const value = answers[key]
       const isEmpty =
@@ -122,6 +137,33 @@ export async function submitForm(
           fieldErrors[key] = `Invalid choice for ${field.label}`
           continue
         }
+      }
+
+      // An upload answer is a Drive file id the browser got back from
+      // /api/form-uploads. Anyone can post an arbitrary id here, so it is only
+      // accepted if Drive says we uploaded it for *this* form and question.
+      if (field.fieldType === 'imageUpload') {
+        if (typeof value !== 'string' || !driveConfigured()) {
+          fieldErrors[key] = `Re-attach the photo for ${field.label}`
+          continue
+        }
+        let meta: Awaited<ReturnType<typeof getDriveFileMeta>> = null
+        try {
+          meta = await getDriveFileMeta(value)
+        } catch (err) {
+          console.error('[Forms] Attachment lookup failed:', err)
+        }
+        if (!meta || meta.formSlug !== form.slug || meta.fieldId !== key) {
+          fieldErrors[key] = `That photo could not be verified — re-attach it for ${field.label}`
+          continue
+        }
+        attachments.push({
+          label: field.label,
+          fieldId: key,
+          driveFileId: meta.id,
+          fileName: meta.name,
+          mimeType: meta.mimeType,
+        })
       }
 
       byId[key] = value
@@ -166,6 +208,7 @@ export async function submitForm(
       submitterEmail,
       answers: byId,
       answersByLabel: byLabel,
+      attachments,
       certificateStatus: issuesCertificate ? ('pending' as const) : ('notApplicable' as const),
     }
 

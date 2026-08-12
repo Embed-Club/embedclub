@@ -80,6 +80,7 @@ export interface Config {
     'member-photo': MemberPhoto;
     forms: Form;
     'form-submissions': FormSubmission;
+    'form-media': FormMedia;
     media: Media;
     tags: Tag;
     users: User;
@@ -110,6 +111,7 @@ export interface Config {
     'member-photo': MemberPhotoSelect<false> | MemberPhotoSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
+    'form-media': FormMediaSelect<false> | FormMediaSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -294,14 +296,33 @@ export interface Form {
    */
   description?: string | null;
   /**
+   * Optional banner shown once, under the form title.
+   */
+  headerImage?: (number | null) | FormMedia;
+  /**
    * Each step is one screen of the wizard
    */
   steps: {
     stepTitle: string;
     stepDescription?: string | null;
+    /**
+     * Optional image shown at the top of this step, under its description.
+     */
+    stepImage?: (number | null) | FormMedia;
     fields: {
       label: string;
-      fieldType: 'text' | 'email' | 'phone' | 'number' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'date';
+      fieldType:
+        | 'text'
+        | 'email'
+        | 'phone'
+        | 'number'
+        | 'textarea'
+        | 'select'
+        | 'radio'
+        | 'checkbox'
+        | 'date'
+        | 'imageUpload'
+        | 'image';
       /**
        * Marks which question holds the name and which holds the email. Required for certificates — the name is printed on them and the email is where they are sent.
        */
@@ -316,6 +337,14 @@ export interface Form {
        * Optional hint shown under the field
        */
       helpText?: string | null;
+      /**
+       * Optional picture shown under this question’s label.
+       */
+      image?: (number | null) | FormMedia;
+      /**
+       * The picture to show. The label above is used as its caption.
+       */
+      displayImage?: (number | null) | FormMedia;
       /**
        * Choices offered for this question
        */
@@ -334,6 +363,10 @@ export interface Form {
    * Optional. Paste the Sheet URL (or its id) to mirror this form’s responses there — one sheet per form. Share it with the service account address as an Editor first, or nothing will be written. Leave empty to use the default sheet, or to skip Sheets entirely.
    */
   sheetId?: string | null;
+  /**
+   * Where photos that respondents attach are stored — nothing is uploaded to this site. Paste the folder URL (or its id) and share it with the service account address as an Editor first, or uploads will fail. Use a folder on a Shared Drive: a service account has no storage quota of its own, so a plain My Drive folder is rejected. Leave empty to use the default folder.
+   */
+  driveFolderId?: string | null;
   /**
    * Give respondents a certificate (usually for feedback forms)
    */
@@ -396,6 +429,48 @@ export interface Form {
   };
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Images shown inside forms — posters, payment QR codes, instructions. Separate from the site media library.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-media".
+ */
+export interface FormMedia {
+  id: number;
+  /**
+   * Describes the image for screen readers, e.g. "UPI payment QR code".
+   */
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    inline?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * Every image used across the site. Drag files in to upload in bulk.
@@ -1143,6 +1218,19 @@ export interface FormSubmission {
     | boolean
     | null;
   /**
+   * Photos this person attached. The files live in the form’s Google Drive folder, never in this site’s storage — the previews below stream through an admin-only proxy.
+   */
+  attachments?:
+    | {
+        label?: string | null;
+        fieldId?: string | null;
+        driveFileId?: string | null;
+        fileName?: string | null;
+        mimeType?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Whether this person has been sent their certificate.
    */
   certificateStatus: 'notApplicable' | 'pending' | 'sent' | 'failed';
@@ -1426,6 +1514,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'form-submissions';
         value: number | FormSubmission;
+      } | null)
+    | ({
+        relationTo: 'form-media';
+        value: number | FormMedia;
       } | null)
     | ({
         relationTo: 'media';
@@ -1958,11 +2050,13 @@ export interface FormsSelect<T extends boolean = true> {
   active?: T;
   deadline?: T;
   description?: T;
+  headerImage?: T;
   steps?:
     | T
     | {
         stepTitle?: T;
         stepDescription?: T;
+        stepImage?: T;
         fields?:
           | T
           | {
@@ -1973,6 +2067,8 @@ export interface FormsSelect<T extends boolean = true> {
               width?: T;
               placeholder?: T;
               helpText?: T;
+              image?: T;
+              displayImage?: T;
               options?:
                 | T
                 | {
@@ -1985,6 +2081,7 @@ export interface FormsSelect<T extends boolean = true> {
       };
   confirmationMessage?: T;
   sheetId?: T;
+  driveFolderId?: T;
   showCertificate?: T;
   certificateDelivery?: T;
   certificateSendAt?: T;
@@ -2024,12 +2121,64 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   submitterEmail?: T;
   answers?: T;
   answersByLabel?: T;
+  attachments?:
+    | T
+    | {
+        label?: T;
+        fieldId?: T;
+        driveFileId?: T;
+        fileName?: T;
+        mimeType?: T;
+        id?: T;
+      };
   certificateStatus?: T;
   certificateSentAt?: T;
   certificateError?: T;
   sheetSyncedAt?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-media_select".
+ */
+export interface FormMediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        inline?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2434,6 +2583,7 @@ export interface TaskCreateCollectionExport {
       | 'member-photo'
       | 'forms'
       | 'form-submissions'
+      | 'form-media'
       | 'media'
       | 'tags'
       | 'users'

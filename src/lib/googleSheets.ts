@@ -1,9 +1,10 @@
 import 'server-only'
 
-import crypto from 'node:crypto'
 import type { Form, FormSubmission } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
+import { SHEETS_SCOPE, accessToken, googleCredentialsPresent } from './googleAuth'
+import { driveViewUrl } from './googleDrive'
 
 /**
  * Optional mirror of form submissions into Google Sheets — one spreadsheet per
@@ -20,67 +21,20 @@ import { getPayload } from 'payload'
  *
  * Each form carries its own `sheetId`. Whichever spreadsheet is used must be
  * shared with the service account address as an Editor — that sharing *is* the
- * authorisation model. No OAuth consent flow and no refresh tokens, which is
- * why this was chosen over creating real Google Forms (a service account
- * cannot usefully own one).
- *
- * Auth is a self-signed JWT exchanged for an access token via node:crypto, so
- * no Google SDK is pulled in for two REST calls.
+ * authorisation model (see `googleAuth.ts`). No OAuth consent flow and no
+ * refresh tokens, which is why this was chosen over creating real Google Forms
+ * (a service account cannot usefully own one).
  */
-const TOKEN_URL = 'https://oauth2.googleapis.com/token'
-const SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 
 /** Fixed columns that lead every sheet, before the form's own questions. */
 const BASE_HEADERS = ['Submission ID', 'Submitted At', 'Name', 'Email'] as const
 
 export function sheetsCredentialsPresent(): boolean {
-  return Boolean(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY)
-}
-
-function base64url(input: Buffer | string): string {
-  return Buffer.from(input)
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
-}
-
-let cachedToken: { value: string; expiresAt: number } | null = null
-
-async function accessToken(): Promise<string> {
-  if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) return cachedToken.value
-
-  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL as string
-  // Env vars can't hold real newlines, so the key is stored with literal \n.
-  const key = (process.env.GOOGLE_PRIVATE_KEY as string).replace(/\\n/g, '\n')
-
-  const now = Math.floor(Date.now() / 1000)
-  const header = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
-  const claims = base64url(
-    JSON.stringify({ iss: email, scope: SCOPE, aud: TOKEN_URL, iat: now, exp: now + 3600 }),
-  )
-  const signature = base64url(crypto.sign('RSA-SHA256', Buffer.from(`${header}.${claims}`), key))
-
-  const res = await fetch(TOKEN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion: `${header}.${claims}.${signature}`,
-    }),
-  })
-
-  if (!res.ok) {
-    throw new Error(`Google token exchange failed (${res.status}): ${await res.text()}`)
-  }
-
-  const json = (await res.json()) as { access_token: string; expires_in: number }
-  cachedToken = { value: json.access_token, expiresAt: Date.now() + json.expires_in * 1000 }
-  return cachedToken.value
+  return googleCredentialsPresent()
 }
 
 async function sheetsFetch(path: string, init?: RequestInit): Promise<Response> {
-  const token = await accessToken()
+  const token = await accessToken(SHEETS_SCOPE)
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${path}`, {
     ...init,
     headers: {
@@ -174,19 +128,40 @@ async function writeRow(sheetId: string, row: number, values: string[]): Promise
   }
 }
 
+/**
+ * The form's answerable questions, in order. `image` rows are decoration the
+ * officer placed between questions — they hold no answer, so they get no
+ * column.
+ */
 function questionLabels(form: Form): string[] {
   const labels: string[] = []
   for (const step of form.steps ?? []) {
     for (const field of step.fields ?? []) {
+      if (field.fieldType === 'image') continue
       if (field.label && !labels.includes(field.label)) labels.push(field.label)
     }
   }
   return labels
 }
 
-function cellValue(answer: unknown): string {
+/** Labels whose answer is a Drive file id rather than text. */
+function uploadLabels(form: Form): Set<string> {
+  const labels = new Set<string>()
+  for (const step of form.steps ?? []) {
+    for (const field of step.fields ?? []) {
+      if (field.fieldType === 'imageUpload' && field.label) labels.add(field.label)
+    }
+  }
+  return labels
+}
+
+function cellValue(answer: unknown, isUpload = false): string {
   if (answer === undefined || answer === null) return ''
-  if (Array.isArray(answer)) return answer.join(', ')
+  if (Array.isArray(answer)) {
+    return answer.map((a) => cellValue(a, isUpload)).join(', ')
+  }
+  // A bare Drive id is useless in a spreadsheet; officers want the link.
+  if (isUpload && typeof answer === 'string' && answer !== '') return driveViewUrl(answer)
   return String(answer)
 }
 
@@ -267,6 +242,8 @@ export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResu
     const sheetId = resolveSheetId(form)
     if (!sheetId) continue // this form simply isn't mirrored
 
+    const uploads = uploadLabels(form)
+
     let headers: string[]
     let rowIndex: Map<string, number>
     try {
@@ -292,7 +269,7 @@ export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResu
             case 'Email':
               return submission.submitterEmail ?? ''
             default:
-              return cellValue(answers[header])
+              return cellValue(answers[header], uploads.has(header))
           }
         })
 

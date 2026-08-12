@@ -17,8 +17,9 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import type { Form } from '@/payload/payload-types'
-import { ArrowLeft, ArrowRight, Check, ChevronRight, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { ArrowLeft, ArrowRight, Check, ChevronRight, ImagePlus, Loader2 } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { FormImage } from './formImage'
 
 type Step = NonNullable<Form['steps']>[number]
 type Field = NonNullable<Step['fields']>[number]
@@ -45,12 +46,16 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
   const [answers, setAnswers] = useState<FormAnswers>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
+  // Field ids with a photo still going to Drive. Moving on mid-upload would
+  // submit an answer whose file does not exist yet.
+  const [uploading, setUploading] = useState<Set<string>>(new Set())
   const [result, setResult] = useState<SubmitFormResult | null>(null)
   // Bots fill every field they find; people never see this one.
   const [honeypot, setHoneypot] = useState('')
 
   const step = steps[stepIndex]
   const isLast = stepIndex === steps.length - 1
+  const busyUploading = uploading.size > 0
 
   const setAnswer = (key: string, value: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [key]: value }))
@@ -65,6 +70,8 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
   const validateStep = (): boolean => {
     const next: Record<string, string> = {}
     for (const field of step?.fields ?? []) {
+      // Image rows are decoration — nothing to fill in, nothing to check.
+      if (field.fieldType === 'image') continue
       const key = fieldKey(field)
       const value = answers[key]
       const empty =
@@ -193,11 +200,14 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
 
       {/* ── Step card ──────────────────────────────────────────────────── */}
       <div className={cn('rounded-2xl bg-card p-6 md:p-10', cutoutCardSurfaceShadowClassName)}>
-        <div className="mb-8 space-y-1">
-          <h2 className="text-xl md:text-2xl font-bold">{step?.stepTitle}</h2>
-          {step?.stepDescription && (
-            <p className="text-sm text-muted-foreground">{step.stepDescription}</p>
-          )}
+        <div className="mb-8 space-y-4">
+          <div className="space-y-1">
+            <h2 className="text-xl md:text-2xl font-bold">{step?.stepTitle}</h2>
+            {step?.stepDescription && (
+              <p className="text-sm text-muted-foreground">{step.stepDescription}</p>
+            )}
+          </div>
+          <FormImage media={step?.stepImage} slot="step" />
         </div>
 
         {/* Honeypot: off-screen rather than display:none, which some bots skip.
@@ -220,9 +230,18 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
             <WizardField
               key={fieldKey(field)}
               field={field}
+              formSlug={form.slug}
               value={answers[fieldKey(field)]}
               error={errors[fieldKey(field)]}
               onChange={(v) => setAnswer(fieldKey(field), v)}
+              onUploadingChange={(busy) =>
+                setUploading((prev) => {
+                  const next = new Set(prev)
+                  if (busy) next.add(fieldKey(field))
+                  else next.delete(fieldKey(field))
+                  return next
+                })
+              }
             />
           ))}
         </div>
@@ -240,17 +259,17 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
             Previous
           </Button>
           {isLast ? (
-            <Button type="button" onClick={handleSubmit} disabled={submitting}>
+            <Button type="button" onClick={handleSubmit} disabled={submitting || busyUploading}>
               {submitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Check className="mr-2 h-4 w-4" />
               )}
-              {submitting ? 'Submitting…' : 'Submit'}
+              {submitting ? 'Submitting…' : busyUploading ? 'Uploading photo…' : 'Submit'}
             </Button>
           ) : (
-            <Button type="button" onClick={handleNext}>
-              Next
+            <Button type="button" onClick={handleNext} disabled={busyUploading}>
+              {busyUploading ? 'Uploading photo…' : 'Next'}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
@@ -264,19 +283,49 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
 
 interface WizardFieldProps {
   field: Field
+  formSlug: string
   value: string | string[] | undefined
   error?: string
   onChange: (value: string | string[]) => void
+  onUploadingChange: (busy: boolean) => void
 }
 
-function WizardField({ field, value, error, onChange }: WizardFieldProps) {
+function WizardField({
+  field,
+  formSlug,
+  value,
+  error,
+  onChange,
+  onUploadingChange,
+}: WizardFieldProps) {
   const id = fieldKey(field)
   const options = (field.options ?? []).map((o) => o.option)
   const str = typeof value === 'string' ? value : ''
   const arr = Array.isArray(value) ? value : []
 
+  // A standalone image row is the whole cell — no label, no control, no
+  // required marker. It exists to show a poster or a payment QR mid-form.
+  if (field.fieldType === 'image') {
+    return (
+      <div className={cn(field.width === 'half' ? 'md:col-span-1' : 'md:col-span-2')}>
+        <FormImage media={field.displayImage} slot="standalone" caption={field.label} />
+        {field.helpText && <p className="mt-2 text-xs text-muted-foreground">{field.helpText}</p>}
+      </div>
+    )
+  }
+
   const control = (() => {
     switch (field.fieldType) {
+      case 'imageUpload':
+        return (
+          <ImageUploadControl
+            fieldId={id}
+            formSlug={formSlug}
+            value={str}
+            onChange={onChange}
+            onUploadingChange={onUploadingChange}
+          />
+        )
       case 'textarea':
         return (
           <Textarea
@@ -369,11 +418,140 @@ function WizardField({ field, value, error, onChange }: WizardFieldProps) {
         {field.label}
         {field.required && <span className="text-primary"> *</span>}
       </Label>
+      <FormImage media={field.image} slot="question" />
       {control}
       {field.helpText && !error && (
         <p className="text-xs text-muted-foreground">{field.helpText}</p>
       )}
       {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
+  )
+}
+
+// ── Respondent photo upload ───────────────────────────────────────────────
+
+interface ImageUploadControlProps {
+  fieldId: string
+  formSlug: string
+  value: string
+  onChange: (value: string) => void
+  onUploadingChange: (busy: boolean) => void
+}
+
+/**
+ * Sends the picked image straight to the form's Google Drive folder and keeps
+ * only the returned file id as the answer — nothing is uploaded to this site.
+ *
+ * The preview is a local object URL, so it costs no round trip: the file we
+ * just read is already in the browser. Nobody but an officer can read it back
+ * from Drive afterwards, which is the point.
+ */
+function ImageUploadControl({
+  fieldId,
+  formSlug,
+  value,
+  onChange,
+  onUploadingChange,
+}: ImageUploadControlProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [busy, setBusy] = useState(false)
+  const [failure, setFailure] = useState<string | null>(null)
+  const [preview, setPreview] = useState<{ url: string; name: string } | null>(null)
+
+  const handlePick = async (file: File | undefined) => {
+    if (!file) return
+
+    setFailure(null)
+    setBusy(true)
+    onUploadingChange(true)
+
+    // Revoke the previous preview before replacing it, or a respondent who
+    // re-picks a few times leaks a blob per attempt.
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev.url)
+      return { url: URL.createObjectURL(file), name: file.name }
+    })
+
+    try {
+      const body = new FormData()
+      body.append('file', file)
+      body.append('formSlug', formSlug)
+      body.append('fieldId', fieldId)
+
+      const res = await fetch('/api/form-uploads', { method: 'POST', body })
+      const json = (await res.json()) as { id?: string; error?: string }
+
+      if (!res.ok || !json.id) {
+        throw new Error(json.error || 'Upload failed — please try again.')
+      }
+      onChange(json.id)
+    } catch (err) {
+      setFailure(err instanceof Error ? err.message : 'Upload failed — please try again.')
+      onChange('')
+      setPreview((prev) => {
+        if (prev) URL.revokeObjectURL(prev.url)
+        return null
+      })
+    } finally {
+      setBusy(false)
+      onUploadingChange(false)
+    }
+  }
+
+  const clear = () => {
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev.url)
+      return null
+    })
+    setFailure(null)
+    onChange('')
+    if (inputRef.current) inputRef.current.value = ''
+  }
+
+  return (
+    <div className="space-y-3">
+      <input
+        ref={inputRef}
+        id={fieldId}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => handlePick(e.target.files?.[0])}
+      />
+
+      {preview && (
+        <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-muted/30 p-3">
+          {/* Plain <img>: a blob: URL from the file the user just picked, which
+              next/image cannot optimise. */}
+          <img src={preview.url} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+          <span className="min-w-0 flex-1 truncate text-sm">{preview.name}</span>
+          {busy ? (
+            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+          ) : value ? (
+            <Check className="h-4 w-4 shrink-0 text-primary" />
+          ) : null}
+        </div>
+      )}
+
+      <div className="flex items-center gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+        >
+          <ImagePlus className="mr-2 h-4 w-4" />
+          {value ? 'Replace photo' : 'Choose photo'}
+        </Button>
+        {value && !busy && (
+          <Button type="button" variant="ghost" size="sm" onClick={clear}>
+            Remove
+          </Button>
+        )}
+      </div>
+
+      {failure && <p className="text-xs text-destructive">{failure}</p>}
     </div>
   )
 }

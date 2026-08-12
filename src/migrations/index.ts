@@ -17,6 +17,7 @@ import * as migration_20260803_100000_video_and_drawio_blocks from './20260803_1
 import * as migration_20260803_110000_drizzle_snapshot_baseline from './20260803_110000_drizzle_snapshot_baseline';
 import * as migration_20260803_133059_add_coming_soon_badge from './20260803_133059_add_coming_soon_badge';
 import * as migration_20260803_170606_add_accordion_block from './20260803_170606_add_accordion_block';
+import * as migration_20260812_064517_addFormMediaAndUploads from './20260812_064517_addFormMediaAndUploads';
 
 export const migrations = [
   {
@@ -112,6 +113,11 @@ export const migrations = [
   {
     up: migration_20260803_170606_add_accordion_block.up,
     down: migration_20260803_170606_add_accordion_block.down,
-    name: '20260803_170606_add_accordion_block'
+    name: '20260803_170606_add_accordion_block',
+  },
+  {
+    up: migration_20260812_064517_addFormMediaAndUploads.up,
+    down: migration_20260812_064517_addFormMediaAndUploads.down,
+    name: '20260812_064517_addFormMediaAndUploads'
   },
 ];
