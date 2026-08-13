@@ -1,7 +1,13 @@
 import 'server-only'
 
 import crypto from 'node:crypto'
-import { DRIVE_SCOPE, accessToken, googleCredentialsPresent } from './googleAuth'
+import {
+  DRIVE_SCOPE,
+  accessToken,
+  googleCredentialsPresent,
+  oauthAccessToken,
+  oauthRefreshTokenPresent,
+} from './googleAuth'
 
 /**
  * Google Drive is where files that *respondents* attach to a form are kept —
@@ -14,27 +20,28 @@ import { DRIVE_SCOPE, accessToken, googleCredentialsPresent } from './googleAuth
  * else's problem, and officers can open the folder directly.
  *
  * Each form carries its own `driveFolderId`; `GOOGLE_DRIVE_FOLDER_ID` is the
- * fallback for forms that set none. The folder must be shared with the service
- * account address as an Editor, exactly like the Sheets mirror.
+ * fallback for forms that set none. The folder has to be reachable by whoever
+ * the site is authorised as — in practice, owned by that account.
  *
  * A service account has no storage quota of its own, and Drive refuses any
- * write where the new file would end up owned by one. There are exactly two
- * ways around that, and one of them must be true or every upload 403s with
- * "Service Accounts do not have storage quota":
+ * write where the new file would end up owned by one — every upload 403s with
+ * "Service Accounts do not have storage quota". So the file needs a real
+ * owner. Two ways, and the first is what this site uses:
  *
- *   1. Put the folder on a **Shared Drive**. Files there are owned by the
- *      drive, not the uploader, so no personal quota is involved. Add the
- *      service account as a Content Manager. This is why every call passes
- *      `supportsAllDrives`.
+ *   1. **The club account's own OAuth refresh token**
+ *      (`GOOGLE_DRIVE_REFRESH_TOKEN`, minted by `pnpm drive:auth`). That
+ *      account consents once, to itself, and uploads are owned by it. The
+ *      credential reaches exactly one Drive and nothing else.
  *
- *   2. Set `GOOGLE_DRIVE_IMPERSONATE_USER` to a real account in the club's
- *      Workspace. The token is then minted *as that person*, so the file is
- *      theirs and uses their quota. Requires a Workspace admin to grant this
- *      service account's client id domain-wide delegation for the Drive scope;
- *      without that Google returns `unauthorized_client` at token exchange.
+ *   2. **A Shared Drive folder**, where files are owned by the drive rather
+ *      than any person, with the service account as a Content Manager — hence
+ *      `supportsAllDrives` on every call. Needs a Workspace edition that
+ *      includes Shared Drives, which pace.edu.in's does not.
  *
- * Option 1 is preferable — no admin console work, and the files belong to the
- * club rather than to one person's account.
+ * Domain-wide delegation is the third way the internet will suggest. It works,
+ * but it lets this service account act as *any* account in the domain for
+ * Drive — a college-wide capability created to solve a club-website problem —
+ * and it needs a Workspace admin. Deliberately not used.
  */
 const UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3/files'
 const FILES_URL = 'https://www.googleapis.com/drive/v3/files'
@@ -51,7 +58,7 @@ export interface DriveFileMeta {
 }
 
 export function driveConfigured(): boolean {
-  return googleCredentialsPresent()
+  return oauthRefreshTokenPresent() || googleCredentialsPresent()
 }
 
 /** The folder a given form's uploads land in, or null when none is configured. */
@@ -60,7 +67,13 @@ export function resolveDriveFolderId(formFolderId?: string | null): string | nul
 }
 
 async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
-  const token = await accessToken(DRIVE_SCOPE, process.env.GOOGLE_DRIVE_IMPERSONATE_USER?.trim())
+  // The refresh token wins when present: it is the narrowest credential we
+  // have, so falling back to the service account would be a downgrade. The
+  // service account path only reaches a Shared Drive.
+  const token = oauthRefreshTokenPresent()
+    ? await oauthAccessToken()
+    : await accessToken(DRIVE_SCOPE)
+
   return fetch(url, {
     ...init,
     headers: { ...init?.headers, Authorization: `Bearer ${token}` },
@@ -73,13 +86,13 @@ async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
  */
 function explainDriveError(status: number, body: string): string {
   if (body.includes('storageQuotaExceeded')) {
-    return 'the folder is on My Drive. A service account cannot own files there — move it to a Shared Drive (add the service account as Content Manager), or set GOOGLE_DRIVE_IMPERSONATE_USER'
+    return 'no GOOGLE_DRIVE_REFRESH_TOKEN is set, so this fell back to the service account, which cannot own files on My Drive. Run `pnpm drive:auth`'
   }
   if (body.includes('has not been used in project') || body.includes('accessNotConfigured')) {
     return 'the Google Drive API is not enabled on the Cloud project'
   }
   if (status === 404) {
-    return 'the folder id is wrong, or it is not shared with the service account'
+    return 'the folder id is wrong, or that folder is not reachable by the authorised account'
   }
   return body
 }

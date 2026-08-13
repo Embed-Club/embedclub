@@ -331,7 +331,7 @@ export const Forms: CollectionConfig = {
       type: 'text',
       admin: {
         description:
-          'Where photos that respondents attach are stored — nothing is uploaded to this site. Paste the folder URL (or its id) and share it with the service account address as an Editor first, or uploads will fail. Use a folder on a Shared Drive: a service account has no storage quota of its own, so a plain My Drive folder is rejected. Leave empty to use the default folder.',
+          'Where photos that respondents attach are stored — nothing is uploaded to this site. Paste the folder URL (or its id). It must live in the Drive of the account the site is authorised as, which is the account that ran the Drive setup. Leave empty to use the default folder.',
       },
       hooks: {
         // Officers will paste the whole URL from the address bar; keep the id.
