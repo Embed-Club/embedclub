@@ -15,6 +15,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import type { ImageProps } from 'next/image'
 import type React from 'react'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 type EventCardData = {
   src: string
@@ -160,7 +161,19 @@ export const EventModal = ({
 }) => {
   const isFallback = Boolean(card.isFallback)
 
-  return (
+  // Rendered into <body> rather than in place. `position: fixed` is only
+  // relative to the viewport while no ancestor is transformed — and Embla
+  // moves the carousel by writing `transform: translate3d(...)` on the slide
+  // track, which makes that track the containing block for anything fixed
+  // inside it. Opening a card from the carousel therefore drew the whole modal
+  // inside one slide, clipped by the track's overflow-hidden. The grid below
+  // was fine only because nothing there is transformed.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  if (!mounted) return null
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 md:py-6 overflow-auto">
@@ -251,7 +264,8 @@ export const EventModal = ({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   )
 }
 
