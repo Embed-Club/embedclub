@@ -1,4 +1,4 @@
-import { formToCard } from '@/components/features/forms/formCutoutCard'
+import { formToCard } from '@/components/features/forms/formCardData'
 import { FormsListing } from '@/components/features/forms/formsListing'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import config from '@/payload/payload.config'

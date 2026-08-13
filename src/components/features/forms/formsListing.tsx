@@ -1,5 +1,6 @@
 import { EmptyState } from '@/components/common/emptyState'
-import { type FormCardData, FormCutoutCard } from '@/components/features/forms/formCutoutCard'
+import type { FormCardData } from '@/components/features/forms/formCardData'
+import { FormCutoutCard } from '@/components/features/forms/formCutoutCard'
 
 interface FormsListingProps {
   cards: FormCardData[]

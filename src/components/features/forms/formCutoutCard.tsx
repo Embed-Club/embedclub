@@ -7,36 +7,11 @@ import {
   CutoutCorner,
   cutoutCardSurfaceClassName,
 } from '@/components/common/cutoutCard'
+import type { FormCardData } from '@/components/features/forms/formCardData'
 import { cn } from '@/lib/utils'
-import type { Event, Form } from '@/payload/payload-types'
 import { ArrowUpRight, CalendarDays, Clock, Lock } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
-
-export interface FormCardData {
-  id: string
-  title: string
-  slug: string
-  description?: string | null
-  deadline?: string | null
-  closed: boolean
-  eventTitle?: string | null
-}
-
-/** Map a Payload form doc to card data, resolving open/closed consistently. */
-export function formToCard(form: Form, now: number = Date.now()): FormCardData {
-  const relatedEvent = form.relatedEvent as Event | number | null | undefined
-  return {
-    id: String(form.id),
-    title: form.title,
-    slug: form.slug,
-    description: form.description,
-    deadline: form.deadline,
-    closed: !form.active || (form.deadline ? new Date(form.deadline).getTime() < now : false),
-    eventTitle:
-      typeof relatedEvent === 'object' && relatedEvent !== null ? relatedEvent.title : null,
-  }
-}
 
 function formatDeadline(deadline: string): string {
   return new Date(deadline).toLocaleString('en-IN', {
