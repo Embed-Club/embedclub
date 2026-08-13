@@ -29,7 +29,7 @@ export function ImageBlock({ block }: ImageBlockProps) {
           alt={caption || media.alt || ''}
           width={media.width || 1200}
           height={media.height || 800}
-          className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
+          className="w-full h-auto"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none dark:from-black/40" />
       </div>

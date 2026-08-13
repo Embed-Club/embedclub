@@ -61,7 +61,7 @@ function MasonryCard({ item, index }: { item: MasonryItem; index: number }) {
             decoding="async"
             onLoad={() => setLoaded(true)}
             className={cn(
-              'absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover/cutout:scale-110',
+              'absolute inset-0 h-full w-full object-cover',
               loaded ? 'opacity-100' : 'opacity-0',
             )}
           />

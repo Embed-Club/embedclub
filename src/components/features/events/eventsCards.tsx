@@ -102,7 +102,7 @@ export const Card = ({
           src={card.src}
           alt={card.title}
           fill
-          className="absolute inset-0 z-10 object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] group-hover/cutout:scale-105"
+          className="absolute inset-0 z-10 object-cover"
         />
         <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-background/35 via-transparent to-transparent dark:from-background/50" />
 

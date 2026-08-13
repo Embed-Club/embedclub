@@ -222,7 +222,9 @@ export function CutoutCardImage({
     <Image
       alt={alt}
       className={cn(
-        'object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] group-hover/cutout:scale-105',
+        // No hover scale: the cutout notch is cut to the card's edge, so a
+        // scaling image slides under it and the geometry visibly breaks.
+        'object-cover',
         fill && 'h-full w-full',
         className,
       )}

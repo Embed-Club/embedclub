@@ -44,7 +44,7 @@ export const Card = React.memo(
         <img
           src={card.src}
           alt={card.title}
-          className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover/cutout:scale-105"
+          className="absolute inset-0 h-full w-full object-cover object-center"
         />
         <div
           className={cn(
