@@ -1,6 +1,5 @@
 'use client'
 import { CarouselContext } from '@/components/features/events/eventsCards'
-import { cn } from '@/lib/utils'
 import Autoplay from 'embla-carousel-autoplay'
 import useEmblaCarousel from 'embla-carousel-react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
@@ -72,15 +71,11 @@ export const Carousel = ({
   return (
     <CarouselContext.Provider value={{ onCardClose: handleCardClose, currentIndex }}>
       <div className="relative w-full">
-        {/* Desktop-only edge fade. `bg-gradient-to-l` alone renders nothing —
-            it needs colour stops — and on mobile the track bleeds to the screen
-            edge, where any fade just reads as a dark bar cutting the card. */}
-        <div
-          className={cn(
-            'pointer-events-none absolute inset-y-20 right-0 z-[1000] hidden w-[5%] overflow-hidden bg-gradient-to-l from-background to-transparent md:block',
-          )}
-        />
-
+        {/* No edge fade. It was meant to suggest more cards off-screen, but
+            `inset-y-20` kept it clear of the card's top and bottom, so instead
+            of fading the track edge it painted a hard-edged column down the
+            middle of whichever card sat under it — invisible on the light
+            theme, an obvious grey stripe on the dark one. */}
         <div className="overflow-hidden py-4 md:py-8" ref={emblaRef}>
           {/* Slide elements are plain divs on purpose. Embla's loop works by
               writing `transform: translateX(...)` onto individual slides to

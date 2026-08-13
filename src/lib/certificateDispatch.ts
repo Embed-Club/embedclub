@@ -6,6 +6,13 @@ import type { Form, FormSubmission } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 
+/**
+ * Recorded on a due submission when the site has no way to send its
+ * certificate. Compared against on later runs, so the message is written once
+ * rather than on every cron pass.
+ */
+const NOT_CONFIGURED = 'Apps Script is not configured (APPS_SCRIPT_URL / APPS_SCRIPT_SECRET)'
+
 /** Fill {{name}}/{{event}} in an officer-supplied subject/body template. */
 function fillPlaceholders(template: string, name: string, event: string): string {
   return template.replaceAll('{{name}}', name).replaceAll('{{event}}', event)
@@ -66,17 +73,21 @@ export async function dispatchCertificatesForForm(
 ): Promise<DispatchResult> {
   const result: DispatchResult = { attempted: 0, sent: 0, failed: 0, skipped: [] }
 
-  if (!appsScriptConfigured()) {
-    result.skipped.push('Apps Script is not configured')
-    return result
-  }
-
   const payload = await getPayload({ config })
   const form = await payload.findByID({ collection: 'forms', id: formId, depth: 0 })
 
   if (!form?.showCertificate) {
     result.skipped.push('form does not issue certificates')
     return result
+  }
+
+  // Missing config used to return here silently, which left every affected
+  // submission sitting at `pending` with an empty error — indistinguishable in
+  // the admin from one that is simply not due yet. The reason is recorded on
+  // the rows it actually blocks instead, so an officer can see why.
+  const notConfigured = !appsScriptConfigured()
+  if (notConfigured) {
+    result.skipped.push(NOT_CONFIGURED)
   }
 
   const pending = await payload.find({
@@ -94,6 +105,22 @@ export async function dispatchCertificatesForForm(
   for (const submission of pending.docs) {
     const due = dueAt(form, submission)
     if (!due || due.getTime() > now) continue // not due yet — stays pending
+
+    // Due, but there is nothing to send it with. Stay `pending` — this is a
+    // deployment problem that will fix itself the moment the env vars land,
+    // and flipping to `failed` would imply the recipient needs attention.
+    // Written once; later runs see the same message and leave it alone.
+    if (notConfigured) {
+      if (submission.certificateError !== NOT_CONFIGURED) {
+        await payload.update({
+          collection: 'form-submissions',
+          id: submission.id,
+          overrideAccess: true,
+          data: { certificateError: NOT_CONFIGURED },
+        })
+      }
+      continue
+    }
 
     const name = submission.submitterName?.trim()
     const email = submission.submitterEmail?.trim()

@@ -30,7 +30,7 @@ export function SimulatorLinkBlock({ block }: SimulatorLinkBlockProps) {
         <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity duration-700" />
 
         <div className="relative z-10 flex flex-col items-center gap-6">
-          <div className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_20px_hsl(var(--primary)/0.3)] group-hover:scale-110 transition-transform duration-500">
+          <div className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_20px_hsl(var(--primary)/0.3)]">
             <Rocket className="h-8 w-8" />
           </div>
 
