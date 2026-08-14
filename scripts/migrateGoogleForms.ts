@@ -406,49 +406,77 @@ async function buildSteps(payload: PayloadClient, googleForm: GoogleForm): Promi
 }
 
 /**
+ * Wording, reduced to what two forms asking the same thing have in common.
+ *
+ * Sections of one event were often built by different officers in different
+ * years, so the same question appears as "E-mail I'd " and "E-mail ID". Case,
+ * spacing and punctuation carry no meaning here; the letters do.
+ */
+function normaliseLabel(label: string): string {
+  return label.toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+/**
  * Which Payload field each Google question's answers belong in.
  *
- * Matched on the question wording, not on position, because a section's answers
- * are being filed against a template built from a *different* Google form —
- * every form has its own question ids, so there is nothing else shared. Position
- * is the fallback, and anything that had to fall back is reported: it means the
- * section asked something the template does not have.
+ * Matched on wording rather than position, because a section's answers are
+ * being filed against a template built from a *different* Google form — every
+ * form has its own question ids, so wording is all they share. `aliases` covers
+ * the cases wording alone cannot: "Payment Mode" and "Payment method" are the
+ * same question, and only a human can say so.
+ *
+ * Position is used only when both forms ask the same number of questions. That
+ * restraint is the point: where one section asks something the other does not,
+ * every question after it shifts by one, and filing answers under the wrong
+ * field silently is far worse than leaving them out and saying so.
  */
 function mapAnswersToTemplate(
   googleForm: GoogleForm,
   templateFields: FormField[],
-): { map: Map<string, { id: string; label: string }>; unmatched: string[] } {
+  aliases: Record<string, string> = {},
+): { map: Map<string, { id: string; label: string }>; byPosition: string[]; dropped: string[] } {
   const answerable = templateFields.filter((f) => f.fieldType !== 'image')
   const byLabel = new Map<string, FormField[]>()
   for (const field of answerable) {
-    byLabel.set(field.label, [...(byLabel.get(field.label) ?? []), field])
+    const key = normaliseLabel(field.label)
+    byLabel.set(key, [...(byLabel.get(key) ?? []), field])
   }
 
-  const map = new Map<string, { id: string; label: string }>()
-  const unmatched: string[] = []
-  const seen = new Map<string, number>()
+  const aliasByKey = new Map(
+    Object.entries(aliases).map(([from, to]) => [normaliseLabel(from), normaliseLabel(to)]),
+  )
 
-  planSteps(googleForm)
+  const sources = planSteps(googleForm)
     .flatMap((step) => step.fields)
     .filter((field): field is MappedField => !isImageRow(field))
-    .forEach((source, index) => {
-      const candidates = byLabel.get(source.label)
-      let target: FormField | undefined
 
-      if (candidates?.length) {
-        // A form can legitimately repeat a label; take them in order.
-        const used = seen.get(source.label) ?? 0
-        target = candidates[Math.min(used, candidates.length - 1)]
-        seen.set(source.label, used + 1)
-      } else {
-        target = answerable[index]
-        unmatched.push(source.label)
-      }
+  const sameShape = sources.length === answerable.length
+  const map = new Map<string, { id: string; label: string }>()
+  const byPosition: string[] = []
+  const dropped: string[] = []
+  const seen = new Map<string, number>()
 
-      if (target?.id) map.set(source.googleQuestionId, { id: target.id, label: target.label })
-    })
+  sources.forEach((source, index) => {
+    const key = aliasByKey.get(normaliseLabel(source.label)) ?? normaliseLabel(source.label)
+    const candidates = byLabel.get(key)
+    let target: FormField | undefined
 
-  return { map, unmatched }
+    if (candidates?.length) {
+      // A form can legitimately repeat a label; take them in order.
+      const used = seen.get(key) ?? 0
+      target = candidates[Math.min(used, candidates.length - 1)]
+      seen.set(key, used + 1)
+    } else if (sameShape) {
+      target = answerable[index]
+      byPosition.push(source.label)
+    } else {
+      dropped.push(source.label)
+    }
+
+    if (target?.id) map.set(source.googleQuestionId, { id: target.id, label: target.label })
+  })
+
+  return { map, byPosition, dropped }
 }
 
 /** Copy one Google form's responses onto an existing Payload form. */
@@ -458,12 +486,41 @@ async function importResponses(
   googleForm: GoogleForm,
   templateFields: FormField[],
   token: string,
+  aliases: Record<string, string> = {},
+  defaults: Record<string, string> = {},
 ): Promise<void> {
-  const { map: byGoogleId, unmatched } = mapAnswersToTemplate(googleForm, templateFields)
-  if (unmatched.length > 0) {
+  const {
+    map: byGoogleId,
+    byPosition,
+    dropped,
+  } = mapAnswersToTemplate(googleForm, templateFields, aliases)
+
+  if (byPosition.length > 0) {
     console.warn(
-      `  ! ${unmatched.length} question(s) not in the template, matched by position: ${unmatched.join('; ')}`,
+      `  ! matched by position (same shape, different wording): ${byPosition.join('; ')}`,
     )
+  }
+  if (dropped.length > 0) {
+    console.warn(
+      `  ! NOT in the template, answers dropped: ${dropped.join('; ')}` +
+        '\n    Add an alias in the manifest if these are the same question under another name.',
+    )
+  }
+
+  // Constants this section's responses carry for questions its form never
+  // asked, resolved to the template fields they belong in.
+  const defaulted = Object.entries(defaults).flatMap(([label, value]) => {
+    const field = templateFields.find(
+      (f) => f.fieldType !== 'image' && normaliseLabel(f.label) === normaliseLabel(label),
+    )
+    if (!field?.id) {
+      console.warn(`  ! default for "${label}" ignored — no such question in the template`)
+      return []
+    }
+    return [{ id: field.id, label: field.label, value }]
+  })
+  if (defaulted.length > 0) {
+    console.log(`  filling ${defaulted.map((d) => `${d.label}="${d.value}"`).join(', ')}`)
   }
 
   const responses = await fetchResponses(googleForm.formId, token)
@@ -511,6 +568,14 @@ async function importResponses(
       const value = values.length > 1 ? values : (values[0] ?? '')
       answers[target.id] = value
       answersByLabel[target.label] = value
+    }
+
+    // Only where the respondent gave nothing — a real answer always wins.
+    for (const fill of defaulted) {
+      if (answers[fill.id] === undefined || answers[fill.id] === '') {
+        answers[fill.id] = fill.value
+        answersByLabel[fill.label] = fill.value
+      }
     }
 
     const submitterName = nameField?.id ? String(answers[nameField.id] ?? '') : ''
@@ -620,11 +685,22 @@ async function importSectioned(
 
   let parent = existing.docs[0]
   if (!parent) {
-    const templateSource = await fetchForm(sections[0].formId, token)
+    const templateSource = await fetchForm(entry.templateFrom ?? sections[0].formId, token)
     const steps = await buildSteps(payload, templateSource)
     if (steps.length === 0) {
       console.log(`\n${entry.title}: template form has no questions — skipping`)
       return
+    }
+
+    for (const [label, choices] of Object.entries(entry.templateOptions ?? {})) {
+      const field = steps
+        .flatMap((step) => step.fields ?? [])
+        .find((f) => normaliseLabel(f.label) === normaliseLabel(label))
+      if (!field) {
+        console.warn(`  ! templateOptions for "${label}" ignored — no such question`)
+        continue
+      }
+      field.options = choices.map((option) => ({ option }))
     }
     parent = (await payload.create({
       collection: 'forms',
@@ -679,6 +755,8 @@ async function importSectioned(
       await fetchForm(section.formId, token),
       templateFields,
       token,
+      section.aliases,
+      section.defaults,
     )
   }
 }
@@ -695,12 +773,42 @@ async function importSectioned(
  * file also means the run is repeatable — and arguable — after the fact.
  */
 interface ManifestEntry {
-  /** A single form. Omit when this entry is a container with sections. */
+  /** A single form. Omit when this entry has sections. */
   formId?: string
   title: string
   type?: 'registration' | 'feedback' | 'general'
   relatedEvent?: number
-  sections?: { formId: string; label: string; title?: string; order?: number }[]
+  /**
+   * Which section's questions become the template. Defaults to the first.
+   * Point it at the fullest one where sections differ — a question the template
+   * lacks has nowhere to put its answers, while one no section asked is merely
+   * empty.
+   */
+  templateFrom?: string
+  /**
+   * Replaces the choices on a template question, by wording.
+   *
+   * The template is one section's form, so a question that records *which*
+   * section answered only offers that section's own value — B's form offers
+   * "B" and nothing else. Widening it here makes the template describe the
+   * whole event rather than the half it was copied from.
+   */
+  templateOptions?: Record<string, string[]>
+  sections?: {
+    formId: string
+    label: string
+    title?: string
+    order?: number
+    /** Google question wording → template wording, where they disagree. */
+    aliases?: Record<string, string>
+    /**
+     * Values every response from this section gets for questions it never
+     * asked. A form used only by the A section did not need to ask which
+     * section you were in; the answer is still "A", and leaving it blank would
+     * lose something the form's existence already tells us.
+     */
+    defaults?: Record<string, string>
+  }[]
 }
 
 async function importManifest(
@@ -736,7 +844,46 @@ async function importManifest(
  * design: the shape of what it produces changed once already, and re-importing
  * from Google is more trustworthy than migrating a half-right copy.
  */
-async function resetImported(payload: PayloadClient): Promise<void> {
+async function resetImported(payload: PayloadClient, onlySlug?: string): Promise<void> {
+  // A single entry, so one mapping can be corrected without re-importing the
+  // whole archive: the parent by slug, and the sections that hang off it.
+  if (onlySlug) {
+    const parents = await payload.find({
+      collection: 'forms',
+      where: { slug: { equals: onlySlug } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const parent = parents.docs[0]
+    if (!parent) {
+      console.log(`No form with slug "${onlySlug}".`)
+      return
+    }
+    const children = await payload.find({
+      collection: 'forms',
+      where: { sectionOf: { equals: parent.id } },
+      limit: 100,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const ids = [parent.id, ...children.docs.map((c) => c.id)]
+    const submissions = await payload.delete({
+      collection: 'form-submissions',
+      where: { form: { in: ids } },
+      overrideAccess: true,
+    })
+    const forms = await payload.delete({
+      collection: 'forms',
+      where: { id: { in: ids } },
+      overrideAccess: true,
+    })
+    console.log(
+      `Reset "${onlySlug}": ${forms.docs.length} form(s), ${submissions.docs.length} submission(s).`,
+    )
+    return
+  }
+
   const imported = await payload.find({
     collection: 'forms',
     where: { googleFormId: { exists: true } },
@@ -777,11 +924,11 @@ async function resetImported(payload: PayloadClient): Promise<void> {
 async function main() {
   const args = process.argv.slice(2)
   const plan = args.includes('--plan')
-  const reset = args.includes('--reset')
+  const resetArg = args.find((a) => a === '--reset' || a.startsWith('--reset='))
 
-  if (reset) {
+  if (resetArg) {
     const payload = await getPayload({ config })
-    await resetImported(payload)
+    await resetImported(payload, resetArg.includes('=') ? resetArg.split('=')[1] : undefined)
     if (!args.some((a) => a.startsWith('--manifest='))) return
   }
   const manifestArg = args.find((a) => a.startsWith('--manifest='))
