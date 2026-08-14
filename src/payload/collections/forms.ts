@@ -577,29 +577,6 @@ export const Forms: CollectionConfig = {
         },
       ],
     },
-    {
-      name: 'certificateTemplate',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        condition: (data) => data.showCertificate && data.certificateDelivery === 'immediate',
-        description:
-          'Only for the on-the-spot download. Emailed certificates come from the Google Slides template above.',
-      },
-    },
-    {
-      name: 'certificateConfig',
-      type: 'group',
-      admin: {
-        condition: (data) => data.showCertificate,
-      },
-      fields: [
-        { name: 'nameX', type: 'number', defaultValue: 400 },
-        { name: 'nameY', type: 'number', defaultValue: 300 },
-        { name: 'fontSize', type: 'number', defaultValue: 40 },
-        { name: 'color', type: 'text', defaultValue: '#000000' },
-      ],
-    },
   ],
   hooks: {
     beforeValidate: [

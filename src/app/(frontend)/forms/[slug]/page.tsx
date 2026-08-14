@@ -1,5 +1,4 @@
 import { EmptyState } from '@/components/common/emptyState'
-import { CertificateGenerator } from '@/components/features/feedback/certificateGenerator'
 import { FormImage } from '@/components/features/forms/formImage'
 import { FormWizard } from '@/components/features/forms/formWizard'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
@@ -50,15 +49,6 @@ export default async function FormPage({ params }: FormPageProps) {
   const closed =
     !form.active || (form.deadline ? new Date(form.deadline).getTime() < Date.now() : false)
 
-  // Only the "straight after they submit" mode offers a download on the
-  // success screen. Scheduled certificates arrive by email instead.
-  const certificateTemplate =
-    form.showCertificate &&
-    form.certificateDelivery === 'immediate' &&
-    typeof form.certificateTemplate === 'object'
-      ? form.certificateTemplate?.url
-      : null
-
   return (
     <SidebarShell>
       <MainbarShell>
@@ -81,22 +71,7 @@ export default async function FormPage({ params }: FormPageProps) {
               message="Submissions are no longer accepted — contact the organizers if you think this is a mistake."
             />
           ) : (
-            <FormWizard
-              form={form}
-              successExtra={
-                certificateTemplate ? (
-                  <CertificateGenerator
-                    templateUrl={certificateTemplate}
-                    config={{
-                      nameX: form.certificateConfig?.nameX || 400,
-                      nameY: form.certificateConfig?.nameY || 300,
-                      fontSize: form.certificateConfig?.fontSize || 40,
-                      color: form.certificateConfig?.color || '#000000',
-                    }}
-                  />
-                ) : undefined
-              }
-            />
+            <FormWizard form={form} />
           )}
         </div>
       </MainbarShell>

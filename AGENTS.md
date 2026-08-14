@@ -100,8 +100,7 @@ them to update it first.
   settings), never to bake the value into the code. Config that must ship in the
   repo goes through a documented env var with the real value set per environment.
 - Keep dependencies lean: `motion` (never framer-motion), gsap, shiki, mermaid
-  (lazy-loaded), pdf-lib (lazy-loaded). Adding a dependency needs justification
-  in the PR description.
+  (lazy-loaded). Adding a dependency needs justification in the PR description.
 
 ## 5. Things that look like bugs but aren't
 

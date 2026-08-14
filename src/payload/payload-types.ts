@@ -438,16 +438,6 @@ export interface Form {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Only for the on-the-spot download. Emailed certificates come from the Google Slides template above.
-   */
-  certificateTemplate?: (number | null) | Media;
-  certificateConfig?: {
-    nameX?: number | null;
-    nameY?: number | null;
-    fontSize?: number | null;
-    color?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -2128,15 +2118,6 @@ export interface FormsSelect<T extends boolean = true> {
         questionLabel?: T;
         fixedValue?: T;
         id?: T;
-      };
-  certificateTemplate?: T;
-  certificateConfig?:
-    | T
-    | {
-        nameX?: T;
-        nameY?: T;
-        fontSize?: T;
-        color?: T;
       };
   updatedAt?: T;
   createdAt?: T;

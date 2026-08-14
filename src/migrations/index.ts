@@ -19,6 +19,7 @@ import * as migration_20260803_133059_add_coming_soon_badge from './20260803_133
 import * as migration_20260803_170606_add_accordion_block from './20260803_170606_add_accordion_block';
 import * as migration_20260812_064517_addFormMediaAndUploads from './20260812_064517_addFormMediaAndUploads';
 import * as migration_20260814_005629_addCertificatePlaceholders from './20260814_005629_addCertificatePlaceholders';
+import * as migration_20260814_081142_dropLegacyCertificateDownload from './20260814_081142_dropLegacyCertificateDownload';
 
 export const migrations = [
   {
@@ -124,6 +125,11 @@ export const migrations = [
   {
     up: migration_20260814_005629_addCertificatePlaceholders.up,
     down: migration_20260814_005629_addCertificatePlaceholders.down,
-    name: '20260814_005629_addCertificatePlaceholders'
+    name: '20260814_005629_addCertificatePlaceholders',
+  },
+  {
+    up: migration_20260814_081142_dropLegacyCertificateDownload.up,
+    down: migration_20260814_081142_dropLegacyCertificateDownload.down,
+    name: '20260814_081142_dropLegacyCertificateDownload'
   },
 ];

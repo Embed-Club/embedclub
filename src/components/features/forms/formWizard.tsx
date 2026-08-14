@@ -36,11 +36,9 @@ function fieldKey(field: Field): string {
 
 interface FormWizardProps {
   form: Form
-  /** Rendered inside the success screen (e.g. certificate download). */
-  successExtra?: React.ReactNode
 }
 
-export function FormWizard({ form, successExtra }: FormWizardProps) {
+export function FormWizard({ form }: FormWizardProps) {
   const steps = form.steps ?? []
   const [stepIndex, setStepIndex] = useState(0)
   const [answers, setAnswers] = useState<FormAnswers>({})
@@ -139,7 +137,6 @@ export function FormWizard({ form, successExtra }: FormWizardProps) {
           </h2>
           <p className="text-muted-foreground max-w-md mx-auto">{result.message}</p>
         </div>
-        {result.success && successExtra}
         {!result.success && (
           <Button onClick={() => setResult(null)} variant="outline">
             Try again
