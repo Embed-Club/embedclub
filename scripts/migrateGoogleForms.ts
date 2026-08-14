@@ -502,8 +502,7 @@ async function importResponses(
   }
   if (dropped.length > 0) {
     console.warn(
-      `  ! NOT in the template, answers dropped: ${dropped.join('; ')}` +
-        '\n    Add an alias in the manifest if these are the same question under another name.',
+      `  ! NOT in the template, answers dropped: ${dropped.join('; ')}\n    Add an alias in the manifest if these are the same question under another name.`,
     )
   }
 
