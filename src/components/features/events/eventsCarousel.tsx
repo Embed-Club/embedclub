@@ -1,8 +1,8 @@
 'use client'
+import { CarouselNav } from '@/components/features/events/carouselNav'
 import { CarouselContext } from '@/components/features/events/eventsCards'
 import Autoplay from 'embla-carousel-autoplay'
 import useEmblaCarousel from 'embla-carousel-react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -29,6 +29,7 @@ export const Carousel = ({
 }: CarouselProps) => {
   const reduceMotion = useReducedMotion()
   const [currentIndex, setCurrentIndex] = useState(0)
+  const autoScrolls = autoScroll && !reduceMotion && items.length > 1
 
   const autoplay = useRef(
     Autoplay({
@@ -40,17 +41,22 @@ export const Carousel = ({
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: items.length > 1, align: 'start', skipSnaps: false, dragFree: false },
-    autoScroll && !reduceMotion && items.length > 1 ? [autoplay.current] : [],
+    autoScrolls ? [autoplay.current] : [],
   )
 
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
+  // Snaps rather than items: with `align: 'start'` Embla drops the snaps it
+  // cannot scroll to, so a wide viewport showing the last three cards at once
+  // has fewer snaps than cards — one dot per card would leave dead dots.
+  const [snapCount, setSnapCount] = useState(0)
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return
     setCurrentIndex(emblaApi.selectedScrollSnap())
     setCanScrollPrev(emblaApi.canScrollPrev())
     setCanScrollNext(emblaApi.canScrollNext())
+    setSnapCount(emblaApi.scrollSnapList().length)
   }, [emblaApi])
 
   useEffect(() => {
@@ -67,6 +73,42 @@ export const Carousel = ({
   const handleCardClose = (index: number) => {
     emblaApi?.scrollTo(index)
   }
+
+  // The nav draws a countdown to the next card, so it needs to know when the
+  // autoplay timer is actually running. Taken from the plugin's own events
+  // rather than inferred from hover: the plugin also stops on drag, on focus
+  // entering a slide, and whenever the document is hidden — a backgrounded tab
+  // stops it outright — and a countdown reproducing only the hover rule fills
+  // steadily through all of those while nothing is going to advance.
+  const [autoRunning, setAutoRunning] = useState(false)
+  // Bumped every time a fresh timer is set, which is what restarts the
+  // countdown. It is not the same as the card changing: leaving the carousel
+  // with the mouse restarts the full delay on the card you are already on.
+  const [timerEpoch, setTimerEpoch] = useState(0)
+
+  useEffect(() => {
+    if (!emblaApi) return
+
+    const onPlay = () => setAutoRunning(true)
+    const onStop = () => setAutoRunning(false)
+    const onTimerSet = () => {
+      setAutoRunning(true)
+      setTimerEpoch((epoch) => epoch + 1)
+    }
+
+    // The plugin starts on init, which is before this effect can subscribe, so
+    // the first timer is already running by now and emits nothing to catch.
+    setAutoRunning(emblaApi.plugins().autoplay?.isPlaying() ?? false)
+
+    emblaApi.on('autoplay:play', onPlay)
+    emblaApi.on('autoplay:stop', onStop)
+    emblaApi.on('autoplay:timerset', onTimerSet)
+    return () => {
+      emblaApi.off('autoplay:play', onPlay)
+      emblaApi.off('autoplay:stop', onStop)
+      emblaApi.off('autoplay:timerset', onTimerSet)
+    }
+  }, [emblaApi])
 
   return (
     <CarouselContext.Provider value={{ onCardClose: handleCardClose, currentIndex }}>
@@ -101,26 +143,25 @@ export const Carousel = ({
             ))}
           </div>
         </div>
-        {/* On mobile the card track bleeds to the screen edge, so the arrows
-            need their own inset to avoid sitting flush against it; from md up
-            the track is inset already and they align with its right edge. */}
-        <div className="flex justify-end gap-2 pr-4 md:pr-0">
-          <button
-            type="button"
-            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
-            onClick={() => emblaApi?.scrollPrev()}
-            disabled={!canScrollPrev}
-          >
-            <ArrowLeft className="h-6 w-6" />
-          </button>
-          <button
-            type="button"
-            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
-            onClick={() => emblaApi?.scrollNext()}
-            disabled={!canScrollNext}
-          >
-            <ArrowRight className="h-6 w-6" />
-          </button>
+        {/* Centred, not flush right as the bare arrows were: it now carries the
+            dots too, so it reads as the carousel's own controls rather than a
+            pair of buttons parked in a corner. The px keeps it off the screen
+            edge on mobile, where the card track bleeds to it. */}
+        <div className="relative z-40 px-4 md:px-0">
+          <CarouselNav
+            snapCount={snapCount}
+            selectedIndex={currentIndex}
+            canScrollPrev={canScrollPrev}
+            canScrollNext={canScrollNext}
+            onPrev={() => emblaApi?.scrollPrev()}
+            onNext={() => emblaApi?.scrollNext()}
+            onSelect={(index) => emblaApi?.scrollTo(index)}
+            // Undefined when nothing auto-advances, so the dot shows a plain
+            // fill rather than a countdown to an advance that never comes.
+            autoDelaySeconds={autoScrolls ? autoScrollSecondsPerCard : undefined}
+            autoRunning={autoRunning}
+            restartKey={timerEpoch}
+          />
         </div>
       </div>
     </CarouselContext.Provider>
