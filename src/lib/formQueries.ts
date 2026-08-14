@@ -7,10 +7,11 @@ import { getPayload } from 'payload'
 /**
  * Lookups shared by the form page and its section pages.
  *
- * A form is either standalone, a container, or a section of a container. The
- * container holds the title, description and event; the sections hold the
- * questions and collect their own responses, because that is how the answers
- * were gathered — an A section and a B section are two sets of replies, not one.
+ * A form either stands alone, or is answered separately by sections. In the
+ * second case the questions live once on the parent and every section asks
+ * exactly them; a section exists to keep its own responses apart. That is why
+ * answers from every section share one set of field ids, and so can be read
+ * together or apart without translating anything.
  */
 export async function getFormBySlug(slug: string): Promise<Form | null> {
   try {
@@ -48,11 +49,40 @@ export async function getSections(containerId: number | string): Promise<Form[]>
   }
 }
 
-/** One section of a container, addressed the way the URL addresses it. */
+/** One section of a parent form, addressed the way the URL addresses it. */
 export async function getSection(containerSlug: string, sectionSlug: string): Promise<Form | null> {
   const container = await getFormBySlug(containerSlug)
   if (!container?.sectionGroup) return null
 
   const sections = await getSections(container.id)
   return sections.find((section) => section.sectionSlug === sectionSlug) ?? null
+}
+
+/**
+ * A form with the questions it actually asks.
+ *
+ * A section stores none of its own — it asks its parent's — so everything that
+ * renders or validates a form has to resolve them first. Returning a merged doc
+ * rather than the two halves means callers keep using `form.steps` and
+ * `form.id` exactly as they did: the id is still the section's, so a response
+ * is recorded against the section that collected it.
+ */
+export async function withResolvedSteps(form: Form): Promise<Form> {
+  if (!form.sectionOf) return form
+
+  const parent =
+    typeof form.sectionOf === 'object' ? form.sectionOf : await getFormById(form.sectionOf)
+
+  return { ...form, steps: parent?.steps ?? [] }
+}
+
+/** Used when a relationship came back as a bare id rather than a document. */
+export async function getFormById(id: number): Promise<Form | null> {
+  try {
+    const payload = await getPayload({ config })
+    return await payload.findByID({ collection: 'forms', id, depth: 0 })
+  } catch (error) {
+    console.error('[Forms] Error fetching form by id:', error)
+    return null
+  }
 }

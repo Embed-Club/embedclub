@@ -1,6 +1,7 @@
 'use server'
 
 import { dispatchCertificatesForForm } from '@/lib/certificateDispatch'
+import { withResolvedSteps } from '@/lib/formQueries'
 import { driveConfigured, getDriveFileMeta } from '@/lib/googleDrive'
 import type { Form } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
@@ -90,8 +91,13 @@ export async function submitForm(
       limit: 1,
       depth: 0,
     })
-    const form = result.docs[0]
-    if (!form) return { success: false, message: 'This form no longer exists.' }
+    const found = result.docs[0]
+    if (!found) return { success: false, message: 'This form no longer exists.' }
+
+    // A section stores no questions of its own — it asks its parent's. Validate
+    // against those, and keep the section's id so the response is filed under
+    // the group that gave it.
+    const form = await withResolvedSteps(found)
 
     if (!form.active) return { success: false, message: 'This form is closed.' }
     if (form.deadline && new Date(form.deadline).getTime() < Date.now()) {

@@ -2,7 +2,7 @@ import { EmptyState } from '@/components/common/emptyState'
 import { FormImage } from '@/components/features/forms/formImage'
 import { FormWizard } from '@/components/features/forms/formWizard'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
-import { getFormBySlug, getSection } from '@/lib/formQueries'
+import { getFormBySlug, getSection, withResolvedSteps } from '@/lib/formQueries'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -40,6 +40,9 @@ export default async function FormSectionPage({ params }: SectionPageProps) {
   if (!doc) notFound()
 
   const container = await getFormBySlug(slug)
+  // The section asks its parent's questions; the id stays the section's, so the
+  // response is recorded against the group that gave it.
+  const form = await withResolvedSteps(doc)
   const closed =
     !doc.active || (doc.deadline ? new Date(doc.deadline).getTime() < Date.now() : false)
 
@@ -72,7 +75,7 @@ export default async function FormSectionPage({ params }: SectionPageProps) {
               message="Submissions are no longer accepted — contact the organizers if you think this is a mistake."
             />
           ) : (
-            <FormWizard form={doc} />
+            <FormWizard form={form} />
           )}
         </div>
       </MainbarShell>

@@ -368,49 +368,21 @@ async function importImage(
 }
 
 export interface ImportOptions {
-  /** Overrides the Google title. */
+  /** Overrides the Google title — most of the archive needs renaming. */
   title?: string
   type?: 'registration' | 'feedback' | 'general'
-  /** Container this form is a section of, plus what the section is called. */
-  sectionOf?: number
-  sectionLabel?: string
-  sectionOrder?: number
   relatedEvent?: number
 }
 
-async function importForm(
-  payload: PayloadClient,
-  googleForm: GoogleForm,
-  token: string,
-  options: ImportOptions,
-): Promise<void> {
-  const title = options.title ?? googleForm.info?.title?.trim() ?? 'Untitled form'
-  console.log(`\n${title}  (${googleForm.formId})`)
-
-  const existing = await payload.find({
-    collection: 'forms',
-    where: { googleFormId: { equals: googleForm.formId } },
-    limit: 1,
-    overrideAccess: true,
-  })
-  if (existing.docs.length > 0) {
-    console.log('  already imported — skipping')
-    return
-  }
-
-  const planned = planSteps(googleForm)
-  if (planned.length === 0) {
-    console.log('  no questions — skipping')
-    return
-  }
-
-  // Images first: a field row referencing one needs its id, and the collection
-  // refuses an image row without a picture.
+/** Turn a Google form into Payload steps, uploading any images it contains. */
+async function buildSteps(payload: PayloadClient, googleForm: GoogleForm): Promise<FormStep[]> {
   const steps: FormStep[] = []
-  for (const step of planned) {
+  for (const step of planSteps(googleForm)) {
     const fields: FormField[] = []
     for (const field of step.fields) {
       if (isImageRow(field)) {
+        // Images first: a field row referencing one needs its id, and the
+        // collection refuses an image row without a picture.
         const mediaId = await importImage(payload, field.imageUri, field.alt, field.label)
         if (!mediaId) continue
         fields.push({ label: field.label, fieldType: 'image', displayImage: mediaId })
@@ -430,55 +402,87 @@ async function importForm(
       steps.push({ stepTitle: step.stepTitle, stepDescription: step.stepDescription, fields })
     }
   }
+  return steps
+}
 
-  const created = (await payload.create({
-    collection: 'forms',
-    overrideAccess: true,
-    data: {
-      title,
-      // Set here rather than left to the collection hook: nine of the archived
-      // forms are called "Event Feedback" or "Event Registration", and the slug
-      // is unique — the caller disambiguates by passing a title, and this keeps
-      // the slug following whatever it chose.
-      slug: generateSlug(title),
-      type: options.type ?? 'registration',
-      description: googleForm.info?.description?.trim() || undefined,
-      // Imported forms are a record of something that already happened.
-      active: false,
-      googleFormId: googleForm.formId,
-      sectionOf: options.sectionOf,
-      sectionLabel: options.sectionLabel,
-      sectionOrder: options.sectionOrder,
-      relatedEvent: options.relatedEvent,
-      steps,
-    },
-  })) as Form
+/**
+ * Which Payload field each Google question's answers belong in.
+ *
+ * Matched on the question wording, not on position, because a section's answers
+ * are being filed against a template built from a *different* Google form —
+ * every form has its own question ids, so there is nothing else shared. Position
+ * is the fallback, and anything that had to fall back is reported: it means the
+ * section asked something the template does not have.
+ */
+function mapAnswersToTemplate(
+  googleForm: GoogleForm,
+  templateFields: FormField[],
+): { map: Map<string, { id: string; label: string }>; unmatched: string[] } {
+  const answerable = templateFields.filter((f) => f.fieldType !== 'image')
+  const byLabel = new Map<string, FormField[]>()
+  for (const field of answerable) {
+    byLabel.set(field.label, [...(byLabel.get(field.label) ?? []), field])
+  }
 
-  console.log(`  form #${created.id} — ${steps.length} step(s)`)
+  const map = new Map<string, { id: string; label: string }>()
+  const unmatched: string[] = []
+  const seen = new Map<string, number>()
 
-  // Answers are keyed by Payload's field row id, so the mapping from Google's
-  // question ids only exists once the form has been written and read back.
-  const byGoogleId = new Map<string, { id: string; label: string }>()
-  const flatPlanned = planned
+  planSteps(googleForm)
     .flatMap((step) => step.fields)
     .filter((field): field is MappedField => !isImageRow(field))
-  const flatCreated = (created.steps ?? []).flatMap((step) => step.fields ?? [])
-  let cursor = 0
-  for (const field of flatCreated) {
-    if (field.fieldType === 'image') continue
-    const source = flatPlanned[cursor++]
-    if (source && field.id)
-      byGoogleId.set(source.googleQuestionId, { id: field.id, label: field.label })
+    .forEach((source, index) => {
+      const candidates = byLabel.get(source.label)
+      let target: FormField | undefined
+
+      if (candidates?.length) {
+        // A form can legitimately repeat a label; take them in order.
+        const used = seen.get(source.label) ?? 0
+        target = candidates[Math.min(used, candidates.length - 1)]
+        seen.set(source.label, used + 1)
+      } else {
+        target = answerable[index]
+        unmatched.push(source.label)
+      }
+
+      if (target?.id) map.set(source.googleQuestionId, { id: target.id, label: target.label })
+    })
+
+  return { map, unmatched }
+}
+
+/** Copy one Google form's responses onto an existing Payload form. */
+async function importResponses(
+  payload: PayloadClient,
+  targetFormId: number,
+  googleForm: GoogleForm,
+  templateFields: FormField[],
+  token: string,
+): Promise<void> {
+  const { map: byGoogleId, unmatched } = mapAnswersToTemplate(googleForm, templateFields)
+  if (unmatched.length > 0) {
+    console.warn(
+      `  ! ${unmatched.length} question(s) not in the template, matched by position: ${unmatched.join('; ')}`,
+    )
   }
 
   const responses = await fetchResponses(googleForm.formId, token)
   console.log(`  ${responses.length} response(s)`)
 
-  const nameField = flatCreated.find((f) => f.role === 'name')
-  const emailField = flatCreated.find((f) => f.role === 'email')
+  const nameField = templateFields.find((f) => f.role === 'name')
+  const emailField = templateFields.find((f) => f.role === 'email')
   let written = 0
 
   for (const response of responses) {
+    // Re-running after a partial failure must not write a response twice.
+    const already = await payload.find({
+      collection: 'form-submissions',
+      where: { googleResponseId: { equals: response.responseId } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (already.docs.length > 0) continue
+
     const answers: Record<string, unknown> = {}
     const answersByLabel: Record<string, unknown> = {}
     const attachments = []
@@ -518,7 +522,7 @@ async function importForm(
       collection: 'form-submissions',
       overrideAccess: true,
       data: {
-        form: created.id,
+        form: targetFormId,
         submitterName: submitterName || undefined,
         // Google captures the signed-in address separately from any email
         // question, and it is the more reliable of the two.
@@ -537,6 +541,146 @@ async function importForm(
   }
 
   console.log(`  ${written} submission(s) written`)
+}
+
+/** A form that stands on its own: questions and responses from one Google form. */
+async function importForm(
+  payload: PayloadClient,
+  googleForm: GoogleForm,
+  token: string,
+  options: ImportOptions,
+): Promise<void> {
+  const title = options.title ?? googleForm.info?.title?.trim() ?? 'Untitled form'
+  console.log(`\n${title}  (${googleForm.formId})`)
+
+  const existing = await payload.find({
+    collection: 'forms',
+    where: { googleFormId: { equals: googleForm.formId } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (existing.docs.length > 0) {
+    console.log('  already imported — skipping')
+    return
+  }
+
+  const steps = await buildSteps(payload, googleForm)
+  if (steps.length === 0) {
+    console.log('  no questions — skipping')
+    return
+  }
+
+  const created = (await payload.create({
+    collection: 'forms',
+    overrideAccess: true,
+    data: {
+      title,
+      // Set here rather than left to the collection hook: nine of the archived
+      // forms are called "Event Feedback" or "Event Registration", and the slug
+      // is unique — the caller disambiguates by passing a title, and this keeps
+      // the slug following whatever it chose.
+      slug: generateSlug(title),
+      type: options.type ?? 'registration',
+      description: googleForm.info?.description?.trim() || undefined,
+      // Imported forms are a record of something that already happened.
+      active: false,
+      googleFormId: googleForm.formId,
+      relatedEvent: options.relatedEvent,
+      steps,
+    },
+  })) as Form
+
+  const fields = (created.steps ?? []).flatMap((step) => step.fields ?? [])
+  console.log(`  form #${created.id} — ${steps.length} step(s)`)
+  await importResponses(payload, created.id, googleForm, fields, token)
+}
+
+/**
+ * One set of questions answered separately by two or more groups.
+ *
+ * The questions are taken from the first section and written once, on the
+ * parent. Every section then files its answers against those same field ids,
+ * which is what lets the sections be read together as one form or apart as the
+ * groups that answered — a copy of the questions per section could do neither.
+ */
+async function importSectioned(
+  payload: PayloadClient,
+  entry: ManifestEntry,
+  token: string,
+): Promise<void> {
+  const sections = entry.sections ?? []
+  const slug = generateSlug(entry.title)
+
+  const existing = await payload.find({
+    collection: 'forms',
+    where: { slug: { equals: slug } },
+    limit: 1,
+    overrideAccess: true,
+  })
+
+  let parent = existing.docs[0]
+  if (!parent) {
+    const templateSource = await fetchForm(sections[0].formId, token)
+    const steps = await buildSteps(payload, templateSource)
+    if (steps.length === 0) {
+      console.log(`\n${entry.title}: template form has no questions — skipping`)
+      return
+    }
+    parent = (await payload.create({
+      collection: 'forms',
+      overrideAccess: true,
+      data: {
+        title: entry.title,
+        slug,
+        type: entry.type ?? 'feedback',
+        description: templateSource.info?.description?.trim() || undefined,
+        active: false,
+        sectionGroup: true,
+        relatedEvent: entry.relatedEvent,
+        steps,
+      },
+    })) as Form
+  }
+
+  const templateFields = (parent.steps ?? []).flatMap((step) => step.fields ?? [])
+  console.log(`\n${entry.title}  (#${parent.id}, ${templateFields.length} field(s))`)
+
+  for (const [index, section] of sections.entries()) {
+    console.log(`\n  ${section.label}  (${section.formId})`)
+
+    const already = await payload.find({
+      collection: 'forms',
+      where: { googleFormId: { equals: section.formId } },
+      limit: 1,
+      overrideAccess: true,
+    })
+
+    const sectionDoc =
+      already.docs[0] ??
+      ((await payload.create({
+        collection: 'forms',
+        overrideAccess: true,
+        data: {
+          title: section.title ?? `${entry.title} — ${section.label}`,
+          slug: generateSlug(section.title ?? `${entry.title} ${section.label}`),
+          type: entry.type ?? 'feedback',
+          active: false,
+          googleFormId: section.formId,
+          sectionOf: parent.id,
+          sectionLabel: section.label,
+          sectionOrder: section.order ?? index + 1,
+          relatedEvent: entry.relatedEvent,
+        },
+      })) as Form)
+
+    await importResponses(
+      payload,
+      sectionDoc.id,
+      await fetchForm(section.formId, token),
+      templateFields,
+      token,
+    )
+  }
 }
 
 /* -------------------------------------------------------------------- Main */
@@ -566,42 +710,7 @@ async function importManifest(
 ): Promise<void> {
   for (const entry of entries) {
     if (entry.sections?.length) {
-      // The container is created first: its sections need its id, and it is the
-      // thing that carries the title and the event for all of them.
-      const existing = await payload.find({
-        collection: 'forms',
-        where: { slug: { equals: generateSlug(entry.title) } },
-        limit: 1,
-        overrideAccess: true,
-      })
-
-      const container =
-        existing.docs[0] ??
-        (await payload.create({
-          collection: 'forms',
-          overrideAccess: true,
-          data: {
-            title: entry.title,
-            slug: generateSlug(entry.title),
-            type: entry.type ?? 'feedback',
-            active: false,
-            sectionGroup: true,
-            relatedEvent: entry.relatedEvent,
-          },
-        }))
-
-      console.log(`\n${entry.title}  (container #${container.id})`)
-
-      for (const [index, section] of entry.sections.entries()) {
-        await importForm(payload, await fetchForm(section.formId, token), token, {
-          title: section.title ?? `${entry.title} — ${section.label}`,
-          type: entry.type,
-          sectionOf: container.id,
-          sectionLabel: section.label,
-          sectionOrder: section.order ?? index + 1,
-          relatedEvent: entry.relatedEvent,
-        })
-      }
+      await importSectioned(payload, entry, token)
       continue
     }
 
@@ -618,9 +727,63 @@ async function importManifest(
   }
 }
 
+/**
+ * Delete everything a previous run of this script created.
+ *
+ * Only ever touches rows carrying a Google id, plus the parents those sections
+ * hang off — nothing authored on the site has one, so a form somebody wrote
+ * here cannot be caught by it. Exists because the import is re-runnable by
+ * design: the shape of what it produces changed once already, and re-importing
+ * from Google is more trustworthy than migrating a half-right copy.
+ */
+async function resetImported(payload: PayloadClient): Promise<void> {
+  const imported = await payload.find({
+    collection: 'forms',
+    where: { googleFormId: { exists: true } },
+    limit: 500,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  const ids = new Set<number>()
+  for (const form of imported.docs) {
+    ids.add(form.id)
+    // A parent holds the questions its sections were filed against, and is not
+    // itself a Google form, so it has no id of its own to find it by.
+    const parent = form.sectionOf
+    if (typeof parent === 'number') ids.add(parent)
+    else if (parent && typeof parent === 'object') ids.add(parent.id)
+  }
+
+  if (ids.size === 0) {
+    console.log('Nothing imported to reset.')
+    return
+  }
+
+  const submissions = await payload.delete({
+    collection: 'form-submissions',
+    where: { form: { in: [...ids] } },
+    overrideAccess: true,
+  })
+  const forms = await payload.delete({
+    collection: 'forms',
+    where: { id: { in: [...ids] } },
+    overrideAccess: true,
+  })
+
+  console.log(`Reset: ${forms.docs.length} form(s), ${submissions.docs.length} submission(s).`)
+}
+
 async function main() {
   const args = process.argv.slice(2)
   const plan = args.includes('--plan')
+  const reset = args.includes('--reset')
+
+  if (reset) {
+    const payload = await getPayload({ config })
+    await resetImported(payload)
+    if (!args.some((a) => a.startsWith('--manifest='))) return
+  }
   const manifestArg = args.find((a) => a.startsWith('--manifest='))
   const formIds = args.filter((a) => !a.startsWith('--'))
 

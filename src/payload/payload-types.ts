@@ -288,7 +288,7 @@ export interface Form {
    */
   active?: boolean | null;
   /**
-   * This form has no questions of its own — it lists the sections beneath it.
+   * The questions below are the template. Each section under this form asks exactly them, and keeps its own responses.
    */
   sectionGroup?: boolean | null;
   /**
@@ -296,7 +296,7 @@ export interface Form {
    */
   sectionOf?: (number | null) | Form;
   /**
-   * What this section is called under the container — e.g. A Section, Day 1.
+   * What this section is called — e.g. A Section, or Day 1.
    */
   sectionLabel?: string | null;
   /**

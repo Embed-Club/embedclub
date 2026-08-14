@@ -115,23 +115,27 @@ export const Forms: CollectionConfig = {
       },
     },
     {
-      // Some events collect the same feedback from two groups on different
-      // days, or from an A and a B section. Those are separate forms with
-      // separate responses, but one thing as far as anyone reading the site is
-      // concerned, and listing them as unrelated entries called "… (A Section)"
-      // and "… (B Section)" makes the reader do the grouping.
+      // Some events ask the same questions of two groups: an A and a B section,
+      // day one and day two of a workshop. One set of questions, answered
+      // separately, and the club wants both the split and the whole.
       //
-      // A container holds the title, description and event; the sections under
-      // it hold the questions. It is a checkbox rather than something inferred
-      // from whether children exist, because a container is created before its
-      // sections are — inferring it would make the first save invalid.
+      // So the questions live here once, on the form itself, and each section
+      // reuses them. Sections exist to keep their responses apart, not to hold
+      // a second copy of the same form — a copy would drift the moment somebody
+      // edited one of them, and answers to "the same" question would end up
+      // under different field ids, which is what makes combining them later
+      // impossible.
+      //
+      // A checkbox rather than something inferred from whether sections exist,
+      // because this is authored before they do.
       name: 'sectionGroup',
-      label: 'Container for sections',
+      label: 'Answered separately by sections',
       type: 'checkbox',
       defaultValue: false,
       admin: {
         position: 'sidebar',
-        description: 'This form has no questions of its own — it lists the sections beneath it.',
+        description:
+          'The questions below are the template. Each section under this form asks exactly them, and keeps its own responses.',
       },
     },
     {
@@ -154,7 +158,7 @@ export const Forms: CollectionConfig = {
       admin: {
         position: 'sidebar',
         condition: (data) => Boolean(data?.sectionOf),
-        description: 'What this section is called under the container — e.g. A Section, Day 1.',
+        description: 'What this section is called — e.g. A Section, or Day 1.',
       },
     },
     {
@@ -217,11 +221,12 @@ export const Forms: CollectionConfig = {
     {
       name: 'steps',
       type: 'array',
-      // Not `required` at the field level, because a container form legitimately
-      // has none. The beforeValidate hook enforces it for every other form,
-      // which is the same guarantee with the one exception carved out.
+      // Not `required` at the field level, because a section legitimately has
+      // none — it asks the questions its parent form defines. The
+      // beforeValidate hook enforces it for every other form, which is the same
+      // guarantee with the one exception carved out.
       admin: {
-        condition: (data) => !data?.sectionGroup,
+        condition: (data) => !data?.sectionOf,
         description: 'Each step is one screen of the wizard',
       },
       fields: [
@@ -663,18 +668,22 @@ export const Forms: CollectionConfig = {
           data.slug = generateSlug(data.title)
         }
 
-        // A container lists its sections instead of asking anything, so it is
-        // the one form allowed to have no steps. Everything else needs at least
-        // one, which the field itself can no longer require now that the
-        // exception exists.
-        if (!data?.sectionGroup && (data?.steps?.length ?? 0) === 0) {
-          throw new APIError('A form needs at least one step, or mark it as a container.', 400)
+        // A section asks its parent's questions, so it is the one form allowed
+        // to have no steps of its own. Everything else needs at least one,
+        // which the field itself can no longer require now that the exception
+        // exists.
+        if (!data?.sectionOf && (data?.steps?.length ?? 0) === 0) {
+          throw new APIError('A form needs at least one step.', 400)
         }
 
         if (data?.sectionOf) {
           if (!data?.sectionLabel?.trim()) {
             throw new APIError('A section needs a label — e.g. A Section, or Day 1.', 400)
           }
+          // Questions on a section are dropped rather than rejected: the parent
+          // is the single definition of them, and a second copy here would
+          // drift from it and split the answers across two sets of field ids.
+          data.steps = []
           // The label is what the URL segment comes from, so it is regenerated
           // on every save rather than only when empty: a renamed section whose
           // URL still said the old name would be worse than a changed link.
