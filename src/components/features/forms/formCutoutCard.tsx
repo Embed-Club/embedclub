@@ -118,7 +118,7 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
   return (
     <CutoutCard className="h-full">
       <Link
-        href={`/forms/${card.slug}`}
+        href={card.href}
         aria-label={`Open form: ${card.title}`}
         className={cn(
           cutoutCardSurfaceClassName,

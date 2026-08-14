@@ -288,6 +288,26 @@ export interface Form {
    */
   active?: boolean | null;
   /**
+   * This form has no questions of its own — it lists the sections beneath it.
+   */
+  sectionGroup?: boolean | null;
+  /**
+   * Leave empty for a normal, standalone form.
+   */
+  sectionOf?: (number | null) | Form;
+  /**
+   * What this section is called under the container — e.g. A Section, Day 1.
+   */
+  sectionLabel?: string | null;
+  /**
+   * Generated from the section label. Used in the URL.
+   */
+  sectionSlug?: string | null;
+  /**
+   * Lowest first. Sections without one fall back to their title.
+   */
+  sectionOrder?: number | null;
+  /**
    * Optional — the form closes automatically after this time
    */
   deadline?: string | null;
@@ -302,62 +322,64 @@ export interface Form {
   /**
    * Each step is one screen of the wizard
    */
-  steps: {
-    stepTitle: string;
-    stepDescription?: string | null;
-    /**
-     * Optional image shown at the top of this step, under its description.
-     */
-    stepImage?: (number | null) | FormMedia;
-    fields: {
-      label: string;
-      fieldType:
-        | 'text'
-        | 'email'
-        | 'phone'
-        | 'number'
-        | 'textarea'
-        | 'select'
-        | 'radio'
-        | 'checkbox'
-        | 'date'
-        | 'imageUpload'
-        | 'image';
-      /**
-       * Marks which question holds the name and which holds the email. Required for certificates — the name is printed on them and the email is where they are sent.
-       */
-      role?: ('none' | 'name' | 'email') | null;
-      required?: boolean | null;
-      /**
-       * Half-width fields pair up side by side on desktop
-       */
-      width?: ('full' | 'half') | null;
-      placeholder?: string | null;
-      /**
-       * Optional hint shown under the field
-       */
-      helpText?: string | null;
-      /**
-       * Optional picture shown under this question’s label.
-       */
-      image?: (number | null) | FormMedia;
-      /**
-       * The picture to show. The label above is used as its caption.
-       */
-      displayImage?: (number | null) | FormMedia;
-      /**
-       * Choices offered for this question
-       */
-      options?:
-        | {
-            option: string;
-            id?: string | null;
-          }[]
-        | null;
-      id?: string | null;
-    }[];
-    id?: string | null;
-  }[];
+  steps?:
+    | {
+        stepTitle: string;
+        stepDescription?: string | null;
+        /**
+         * Optional image shown at the top of this step, under its description.
+         */
+        stepImage?: (number | null) | FormMedia;
+        fields: {
+          label: string;
+          fieldType:
+            | 'text'
+            | 'email'
+            | 'phone'
+            | 'number'
+            | 'textarea'
+            | 'select'
+            | 'radio'
+            | 'checkbox'
+            | 'date'
+            | 'imageUpload'
+            | 'image';
+          /**
+           * Marks which question holds the name and which holds the email. Required for certificates — the name is printed on them and the email is where they are sent.
+           */
+          role?: ('none' | 'name' | 'email') | null;
+          required?: boolean | null;
+          /**
+           * Half-width fields pair up side by side on desktop
+           */
+          width?: ('full' | 'half') | null;
+          placeholder?: string | null;
+          /**
+           * Optional hint shown under the field
+           */
+          helpText?: string | null;
+          /**
+           * Optional picture shown under this question’s label.
+           */
+          image?: (number | null) | FormMedia;
+          /**
+           * The picture to show. The label above is used as its caption.
+           */
+          displayImage?: (number | null) | FormMedia;
+          /**
+           * Choices offered for this question
+           */
+          options?:
+            | {
+                option: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[];
+        id?: string | null;
+      }[]
+    | null;
   confirmationMessage?: string | null;
   /**
    * Optional. Paste the Sheet URL (or its id) to mirror this form’s responses there — one sheet per form. Share it with the service account address as an Editor first, or nothing will be written. Leave empty to use the default sheet, or to skip Sheets entirely.
@@ -2059,6 +2081,11 @@ export interface FormsSelect<T extends boolean = true> {
   type?: T;
   relatedEvent?: T;
   active?: T;
+  sectionGroup?: T;
+  sectionOf?: T;
+  sectionLabel?: T;
+  sectionSlug?: T;
+  sectionOrder?: T;
   deadline?: T;
   description?: T;
   headerImage?: T;

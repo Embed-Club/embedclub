@@ -115,6 +115,68 @@ export const Forms: CollectionConfig = {
       },
     },
     {
+      // Some events collect the same feedback from two groups on different
+      // days, or from an A and a B section. Those are separate forms with
+      // separate responses, but one thing as far as anyone reading the site is
+      // concerned, and listing them as unrelated entries called "… (A Section)"
+      // and "… (B Section)" makes the reader do the grouping.
+      //
+      // A container holds the title, description and event; the sections under
+      // it hold the questions. It is a checkbox rather than something inferred
+      // from whether children exist, because a container is created before its
+      // sections are — inferring it would make the first save invalid.
+      name: 'sectionGroup',
+      label: 'Container for sections',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'This form has no questions of its own — it lists the sections beneath it.',
+      },
+    },
+    {
+      name: 'sectionOf',
+      label: 'Section of',
+      type: 'relationship',
+      relationTo: 'forms',
+      index: true,
+      // Only containers, so sections cannot nest inside sections.
+      filterOptions: () => ({ sectionGroup: { equals: true } }),
+      admin: {
+        position: 'sidebar',
+        condition: (data) => !data?.sectionGroup,
+        description: 'Leave empty for a normal, standalone form.',
+      },
+    },
+    {
+      name: 'sectionLabel',
+      type: 'text',
+      admin: {
+        position: 'sidebar',
+        condition: (data) => Boolean(data?.sectionOf),
+        description: 'What this section is called under the container — e.g. A Section, Day 1.',
+      },
+    },
+    {
+      name: 'sectionSlug',
+      type: 'text',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        condition: (data) => Boolean(data?.sectionOf),
+        description: 'Generated from the section label. Used in the URL.',
+      },
+    },
+    {
+      name: 'sectionOrder',
+      type: 'number',
+      admin: {
+        position: 'sidebar',
+        condition: (data) => Boolean(data?.sectionOf),
+        description: 'Lowest first. Sections without one fall back to their title.',
+      },
+    },
+    {
       name: 'deadline',
       type: 'date',
       admin: {
@@ -141,9 +203,11 @@ export const Forms: CollectionConfig = {
     {
       name: 'steps',
       type: 'array',
-      minRows: 1,
-      required: true,
+      // Not `required` at the field level, because a container form legitimately
+      // has none. The beforeValidate hook enforces it for every other form,
+      // which is the same guarantee with the one exception carved out.
       admin: {
+        condition: (data) => !data?.sectionGroup,
         description: 'Each step is one screen of the wizard',
       },
       fields: [
@@ -583,6 +647,24 @@ export const Forms: CollectionConfig = {
       ({ data }) => {
         if (data?.title && !data?.slug) {
           data.slug = generateSlug(data.title)
+        }
+
+        // A container lists its sections instead of asking anything, so it is
+        // the one form allowed to have no steps. Everything else needs at least
+        // one, which the field itself can no longer require now that the
+        // exception exists.
+        if (!data?.sectionGroup && (data?.steps?.length ?? 0) === 0) {
+          throw new APIError('A form needs at least one step, or mark it as a container.', 400)
+        }
+
+        if (data?.sectionOf) {
+          if (!data?.sectionLabel?.trim()) {
+            throw new APIError('A section needs a label — e.g. A Section, or Day 1.', 400)
+          }
+          // The label is what the URL segment comes from, so it is regenerated
+          // on every save rather than only when empty: a renamed section whose
+          // URL still said the old name would be worse than a changed link.
+          data.sectionSlug = generateSlug(data.sectionLabel)
         }
 
         // An image row renders nothing but its picture, so a missing one is a

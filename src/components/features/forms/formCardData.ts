@@ -18,6 +18,12 @@ export interface FormCardData {
   id: string
   title: string
   slug: string
+  /**
+   * Where the card goes. Sections live under their container
+   * (`/forms/<container>/<section>`), so the link cannot always be derived
+   * from the slug alone.
+   */
+  href: string
   description?: string | null
   deadline?: string | null
   closed: boolean
@@ -27,10 +33,15 @@ export interface FormCardData {
 /** Map a Payload form doc to card data, resolving open/closed consistently. */
 export function formToCard(form: Form, now: number = Date.now()): FormCardData {
   const relatedEvent = form.relatedEvent as Event | number | null | undefined
+  const container = form.sectionOf as Form | number | null | undefined
   return {
     id: String(form.id),
-    title: form.title,
+    title: form.sectionLabel?.trim() || form.title,
     slug: form.slug,
+    href:
+      typeof container === 'object' && container !== null && form.sectionSlug
+        ? `/forms/${container.slug}/${form.sectionSlug}`
+        : `/forms/${form.slug}`,
     description: form.description,
     deadline: form.deadline,
     closed: !form.active || (form.deadline ? new Date(form.deadline).getTime() < now : false),

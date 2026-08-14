@@ -18,7 +18,15 @@ async function getFeedbackForms() {
     const payload = await getPayload({ config })
     const forms = await payload.find({
       collection: 'forms',
-      where: { type: { equals: 'feedback' } },
+      where: {
+        and: [
+          { type: { equals: 'feedback' } },
+          // Sections are reached through their container, which stands in for
+          // them here — the A and B sections of one workshop's feedback are not
+          // two things to choose between on this page.
+          { sectionOf: { exists: false } },
+        ],
+      },
       sort: '-createdAt',
       limit: 50,
       depth: 1,

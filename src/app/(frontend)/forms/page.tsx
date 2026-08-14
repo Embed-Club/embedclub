@@ -18,8 +18,16 @@ async function getForms() {
     const payload = await getPayload({ config })
     const forms = await payload.find({
       collection: 'forms',
-      // Feedback has its own page; this lists everything else.
-      where: { type: { not_equals: 'feedback' } },
+      where: {
+        and: [
+          // Feedback has its own page; this lists everything else.
+          { type: { not_equals: 'feedback' } },
+          // Sections are reached through their container, which is listed in
+          // their place — showing both would put "Day 1" and "Day 2" on the
+          // index as if they were unrelated forms.
+          { sectionOf: { exists: false } },
+        ],
+      },
       sort: '-createdAt',
       limit: 50,
       depth: 1,
