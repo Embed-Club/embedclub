@@ -25,6 +25,10 @@ async function getFeedbackForms() {
           // them here — the A and B sections of one workshop's feedback are not
           // two things to choose between on this page.
           { sectionOf: { exists: false } },
+          // Retired forms stay out of the list. Fifteen of the imported archive
+          // are feedback forms, and a visitor looking for the form for last
+          // week's workshop should not have to find it among six years of them.
+          { active: { equals: true } },
         ],
       },
       sort: '-createdAt',

@@ -26,6 +26,12 @@ async function getForms() {
           // their place — showing both would put "Day 1" and "Day 2" on the
           // index as if they were unrelated forms.
           { sectionOf: { exists: false } },
+          // Inactive means retired, not merely shut: the archive imported from
+          // Google in 2026-08 is thirty-odd forms going back to 2020, and
+          // listing them turns this page into a wall of closed cards. A form
+          // that has simply passed its deadline is still `active` and still
+          // appears, marked closed, which is the point of that state.
+          { active: { equals: true } },
         ],
       },
       sort: '-createdAt',
