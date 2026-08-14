@@ -304,6 +304,10 @@ export interface Form {
    */
   sectionSlug?: string | null;
   /**
+   * Set by the import script. Empty for forms authored here.
+   */
+  googleFormId?: string | null;
+  /**
    * Lowest first. Sections without one fall back to their title.
    */
   sectionOrder?: number | null;
@@ -1273,6 +1277,10 @@ export interface FormSubmission {
    */
   certificateError?: string | null;
   /**
+   * Set by the import script. Empty for responses submitted through the site.
+   */
+  googleResponseId?: string | null;
+  /**
    * When this row reached the optional Google Sheet mirror. Empty means not synced (or Sheets is not configured).
    */
   sheetSyncedAt?: string | null;
@@ -2085,6 +2093,7 @@ export interface FormsSelect<T extends boolean = true> {
   sectionOf?: T;
   sectionLabel?: T;
   sectionSlug?: T;
+  googleFormId?: T;
   sectionOrder?: T;
   deadline?: T;
   description?: T;
@@ -2172,6 +2181,7 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   certificateStatus?: T;
   certificateSentAt?: T;
   certificateError?: T;
+  googleResponseId?: T;
   sheetSyncedAt?: T;
   updatedAt?: T;
   createdAt?: T;

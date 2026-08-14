@@ -21,6 +21,7 @@ import * as migration_20260812_064517_addFormMediaAndUploads from './20260812_06
 import * as migration_20260814_005629_addCertificatePlaceholders from './20260814_005629_addCertificatePlaceholders';
 import * as migration_20260814_081142_dropLegacyCertificateDownload from './20260814_081142_dropLegacyCertificateDownload';
 import * as migration_20260814_175548_addFormSections from './20260814_175548_addFormSections';
+import * as migration_20260814_184315_addGoogleImportProvenance from './20260814_184315_addGoogleImportProvenance';
 
 export const migrations = [
   {
@@ -136,6 +137,11 @@ export const migrations = [
   {
     up: migration_20260814_175548_addFormSections.up,
     down: migration_20260814_175548_addFormSections.down,
-    name: '20260814_175548_addFormSections'
+    name: '20260814_175548_addFormSections',
+  },
+  {
+    up: migration_20260814_184315_addGoogleImportProvenance.up,
+    down: migration_20260814_184315_addGoogleImportProvenance.down,
+    name: '20260814_184315_addGoogleImportProvenance'
   },
 ];

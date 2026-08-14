@@ -168,6 +168,20 @@ export const Forms: CollectionConfig = {
       },
     },
     {
+      // Provenance for the forms imported from Google in 2026-08, and what
+      // makes re-running that import safe: a form already carrying an id is
+      // skipped rather than created twice.
+      name: 'googleFormId',
+      label: 'Imported from Google Form',
+      type: 'text',
+      index: true,
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Set by the import script. Empty for forms authored here.',
+      },
+    },
+    {
       name: 'sectionOrder',
       type: 'number',
       admin: {

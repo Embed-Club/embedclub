@@ -125,6 +125,18 @@ export const FormSubmissions: CollectionConfig = {
       },
     },
     {
+      // Which Google response this row came from, for the archive imported in
+      // 2026-08. It is what lets the import resume after a partial failure
+      // without writing every response a second time.
+      name: 'googleResponseId',
+      type: 'text',
+      index: true,
+      admin: {
+        readOnly: true,
+        description: 'Set by the import script. Empty for responses submitted through the site.',
+      },
+    },
+    {
       name: 'sheetSyncedAt',
       type: 'date',
       index: true,
