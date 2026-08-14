@@ -21,7 +21,13 @@ export const FormSubmissions: CollectionConfig = {
   access: {
     read: ({ req: { user } }) => Boolean(user), // admins only
     create: () => false, // written server-side by the submit action
-    update: () => false,
+    // Officers need to set the per-person certificate values — a placing is
+    // known only after the event, and only to them. The record of what the
+    // respondent actually said stays locked: the fields below carrying it deny
+    // update individually, so this opens the certificate columns and nothing
+    // else. Field access is enforced by Payload, unlike `admin.readOnly`,
+    // which only hides the input.
+    update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),
   },
   fields: [
@@ -31,11 +37,13 @@ export const FormSubmissions: CollectionConfig = {
       relationTo: 'forms',
       required: true,
       index: true,
+      access: { update: () => false },
     },
     {
       name: 'submitterName',
       type: 'text',
       index: true,
+      access: { update: () => false },
       admin: {
         description: 'Taken from the question marked as the name. Printed on certificates.',
       },
@@ -44,6 +52,7 @@ export const FormSubmissions: CollectionConfig = {
       name: 'submitterEmail',
       type: 'text',
       index: true,
+      access: { update: () => false },
       admin: {
         description: 'Taken from the question marked as the email. Certificates are sent here.',
       },
@@ -52,6 +61,7 @@ export const FormSubmissions: CollectionConfig = {
       name: 'answers',
       type: 'json',
       required: true,
+      access: { update: () => false },
       admin: {
         description: 'Field id → answer. Stable across question renames.',
       },
@@ -59,6 +69,7 @@ export const FormSubmissions: CollectionConfig = {
     {
       name: 'answersByLabel',
       type: 'json',
+      access: { update: () => false },
       admin: {
         description: 'The same answers against the question wording as it was at submit time.',
         readOnly: true,
@@ -67,6 +78,7 @@ export const FormSubmissions: CollectionConfig = {
     {
       name: 'attachments',
       type: 'array',
+      access: { update: () => false },
       admin: {
         readOnly: true,
         description:
@@ -89,6 +101,56 @@ export const FormSubmissions: CollectionConfig = {
               Field: '@/components/admin/formAttachmentPreview',
             },
           },
+        },
+      ],
+    },
+    {
+      /**
+       * Values an officer sets for this one person, for certificate markers the
+       * form itself cannot answer.
+       *
+       * A placing is the case: the winner cannot be asked to declare themselves
+       * on a feedback form, and a value fixed on the form would print "1st" on
+       * every certificate. So it is recorded here, against the person, after
+       * the event — the only point at which anyone knows it.
+       *
+       * Deliberately free-form rather than a list of the markers the form
+       * declares: this is edited one submission at a time, and a marker renamed
+       * on the form would otherwise silently empty every value already typed.
+       * The form's Certificate Fields say which markers are expected.
+       */
+      name: 'certificateValues',
+      label: 'Certificate Values (set by an officer)',
+      type: 'array',
+      admin: {
+        description:
+          'For markers the form marks as "Set per person" — e.g. Place = 1st. Anyone left unset gets the default from the form, which is usually nothing.',
+        components: {
+          RowLabel: '@/components/admin/certificateValueRowLabel',
+        },
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'key',
+              label: 'Marker',
+              type: 'text',
+              required: true,
+              admin: {
+                width: '40%',
+                description: 'Without the braces — for {{Place}} write Place.',
+                placeholder: 'Place',
+              },
+            },
+            {
+              name: 'value',
+              type: 'text',
+              required: true,
+              admin: { width: '60%', placeholder: '1st' },
+            },
+          ],
         },
       ],
     },
@@ -131,6 +193,7 @@ export const FormSubmissions: CollectionConfig = {
       name: 'googleResponseId',
       type: 'text',
       index: true,
+      access: { update: () => false },
       admin: {
         readOnly: true,
         description: 'Set by the import script. Empty for responses submitted through the site.',

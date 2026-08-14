@@ -452,7 +452,7 @@ export interface Form {
          * Without the braces — for {{USN}} write USN.
          */
         key: string;
-        source: 'question' | 'fixed';
+        source: 'question' | 'fixed' | 'perPerson';
         /**
          * Exact wording of the question whose answer goes here
          */
@@ -461,6 +461,10 @@ export interface Form {
          * Printed identically on every certificate for this form
          */
         fixedValue?: string | null;
+        /**
+         * Printed for anyone an officer did not set a value for. Leave empty to print nothing — which is usually right for a placing, since most people did not place.
+         */
+        defaultValue?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -1264,6 +1268,19 @@ export interface FormSubmission {
         driveFileId?: string | null;
         fileName?: string | null;
         mimeType?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * For markers the form marks as "Set per person" — e.g. Place = 1st. Anyone left unset gets the default from the form, which is usually nothing.
+   */
+  certificateValues?:
+    | {
+        /**
+         * Without the braces — for {{Place}} write Place.
+         */
+        key: string;
+        value: string;
         id?: string | null;
       }[]
     | null;
@@ -2153,6 +2170,7 @@ export interface FormsSelect<T extends boolean = true> {
         source?: T;
         questionLabel?: T;
         fixedValue?: T;
+        defaultValue?: T;
         id?: T;
       };
   updatedAt?: T;
@@ -2176,6 +2194,13 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
         driveFileId?: T;
         fileName?: T;
         mimeType?: T;
+        id?: T;
+      };
+  certificateValues?:
+    | T
+    | {
+        key?: T;
+        value?: T;
         id?: T;
       };
   certificateStatus?: T;

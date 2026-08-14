@@ -53,12 +53,31 @@ export function resolvePlaceholders(
     event: form.title,
   }
 
+  // What an officer typed against this person, matched case-insensitively for
+  // the same reason everything else here is: Slides substitutes that way, so
+  // {{Place}} and {{PLACE}} are one marker and it would be a trap for them to
+  // behave as two.
+  const perPerson = new Map<string, string>()
+  for (const entry of submission.certificateValues ?? []) {
+    const key = entry.key?.trim().toLowerCase()
+    if (key && entry.value) perPerson.set(key, entry.value)
+  }
+
   for (const mapping of form.certificatePlaceholders ?? []) {
     const key = mapping.key?.trim()
     if (!key) continue
 
     if (mapping.source === 'fixed') {
       if (mapping.fixedValue) values[key] = mapping.fixedValue
+      continue
+    }
+
+    if (mapping.source === 'perPerson') {
+      // The default is what most people get — nobody placed in a competition
+      // except the two or three who did — so an unset value is normal, not a
+      // gap. Empty stays empty, and the script blanks the marker.
+      const value = perPerson.get(key.toLowerCase()) ?? mapping.defaultValue
+      if (value) values[key] = value
       continue
     }
 

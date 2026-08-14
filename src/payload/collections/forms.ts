@@ -634,6 +634,10 @@ export const Forms: CollectionConfig = {
               options: [
                 { label: 'An answer from this form', value: 'question' },
                 { label: 'The same value for everyone', value: 'fixed' },
+                // Placings are the case this exists for: the winner cannot be
+                // asked to declare themselves on a feedback form, and one fixed
+                // value would print "1st" on all fifty certificates.
+                { label: 'Set per person, by an officer', value: 'perPerson' },
               ],
               admin: { width: '60%' },
             },
@@ -656,6 +660,16 @@ export const Forms: CollectionConfig = {
           admin: {
             condition: (_data, siblingData) => siblingData?.source === 'fixed',
             description: 'Printed identically on every certificate for this form',
+          },
+        },
+        {
+          name: 'defaultValue',
+          label: 'Default',
+          type: 'text',
+          admin: {
+            condition: (_data, siblingData) => siblingData?.source === 'perPerson',
+            description:
+              'Printed for anyone an officer did not set a value for. Leave empty to print nothing — which is usually right for a placing, since most people did not place.',
           },
         },
       ],
