@@ -1,11 +1,23 @@
 'use client'
 
-import { useAllFormFields, useField } from '@payloadcms/ui'
+import { useAllFormFields } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { useState } from 'react'
 
-interface Mapping {
-  key?: string | null
+/**
+ * Every marker an officer has already written a row for.
+ *
+ * Read out of form state by path rather than with `useField`, because the
+ * value Payload stores at an array field's own path is the number of rows,
+ * not the rows — iterating it threw and took the whole edit view down.
+ */
+const ROW_KEY = /^certificatePlaceholders\.\d+\.key$/
+
+function mappedKeys(fields: Record<string, { value?: unknown }>): string[] {
+  return Object.entries(fields)
+    .filter(([path]) => ROW_KEY.test(path))
+    .map(([, field]) => (typeof field?.value === 'string' ? field.value : ''))
+    .filter(Boolean)
 }
 
 /**
@@ -22,7 +34,6 @@ interface Mapping {
  */
 const CertificatePlaceholderScanner: UIFieldClientComponent = () => {
   const [fields] = useAllFormFields()
-  const { value: mappings } = useField<Mapping[]>({ path: 'certificatePlaceholders' })
 
   const [found, setFound] = useState<string[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -53,9 +64,8 @@ const CertificatePlaceholderScanner: UIFieldClientComponent = () => {
   // missing. Compared case-insensitively, matching how Slides substitutes —
   // a deck written {{NAME}} is filled by a mapping keyed `name`.
   const covered = new Set(['name', 'event'])
-  for (const mapping of mappings ?? []) {
-    const key = mapping?.key?.trim().toLowerCase()
-    if (key) covered.add(key)
+  for (const key of mappedKeys(fields ?? {})) {
+    covered.add(key.trim().toLowerCase())
   }
   const isCovered = (key: string) => covered.has(key.toLowerCase())
   const missing = (found ?? []).filter((key) => !isCovered(key))
