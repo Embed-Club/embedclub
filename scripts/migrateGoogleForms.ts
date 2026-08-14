@@ -684,7 +684,14 @@ async function importSectioned(
 
   let parent = existing.docs[0]
   if (!parent) {
-    const templateSource = await fetchForm(entry.templateFrom ?? sections[0].formId, token)
+    // The first section that actually has a form: an empty section has no
+    // questions to lend.
+    const templateFormId = entry.templateFrom ?? sections.find((s) => s.formId)?.formId
+    if (!templateFormId) {
+      console.log(`\n${entry.title}: no section has a form to take questions from — skipping`)
+      return
+    }
+    const templateSource = await fetchForm(templateFormId, token)
     const steps = await buildSteps(payload, templateSource)
     if (steps.length === 0) {
       console.log(`\n${entry.title}: template form has no questions — skipping`)
@@ -721,11 +728,16 @@ async function importSectioned(
   console.log(`\n${entry.title}  (#${parent.id}, ${templateFields.length} field(s))`)
 
   for (const [index, section] of sections.entries()) {
-    console.log(`\n  ${section.label}  (${section.formId})`)
+    console.log(`\n  ${section.label}  (${section.formId ?? 'no form — empty section'})`)
 
+    const slugForSection = generateSlug(section.title ?? `${entry.title} ${section.label}`)
     const already = await payload.find({
       collection: 'forms',
-      where: { googleFormId: { equals: section.formId } },
+      // A section with no Google form has no id to find it by, so fall back to
+      // its slug — which is what makes a re-run leave it alone.
+      where: section.formId
+        ? { googleFormId: { equals: section.formId } }
+        : { slug: { equals: slugForSection } },
       limit: 1,
       overrideAccess: true,
     })
@@ -737,16 +749,23 @@ async function importSectioned(
         overrideAccess: true,
         data: {
           title: section.title ?? `${entry.title} — ${section.label}`,
-          slug: generateSlug(section.title ?? `${entry.title} ${section.label}`),
+          slug: slugForSection,
           type: entry.type ?? 'feedback',
           active: false,
           googleFormId: section.formId,
           sectionOf: parent.id,
           sectionLabel: section.label,
           sectionOrder: section.order ?? index + 1,
-          relatedEvent: entry.relatedEvent,
+          // The event link stays on the parent. The event's admin panel lists
+          // every form pointing at it, and one entry that leads to its sections
+          // reads better there than the same form listed three times.
         },
       })) as Form)
+
+    if (!section.formId) {
+      console.log('  (no responses — the form for this section was not kept)')
+      continue
+    }
 
     await importResponses(
       payload,
@@ -794,7 +813,14 @@ interface ManifestEntry {
    */
   templateOptions?: Record<string, string[]>
   sections?: {
-    formId: string
+    /**
+     * Omit where the club has the section but not its form — the ESP32-CAM
+     * feedback survives only as the B section, and an A section that exists
+     * with no responses is a truer record than pretending there was only ever
+     * one group. It also gives the form somewhere to go if the missing one
+     * turns up.
+     */
+    formId?: string
     label: string
     title?: string
     order?: number
@@ -920,9 +946,49 @@ async function resetImported(payload: PayloadClient, onlySlug?: string): Promise
   console.log(`Reset: ${forms.docs.length} form(s), ${submissions.docs.length} submission(s).`)
 }
 
+/**
+ * Attach already-imported forms to their event, from the same manifest.
+ *
+ * Separate from the import because the archive was imported before anyone had
+ * decided which event each form belonged to, and because the answer is a
+ * judgement — the club ran "3D Printing Workshop" more than once, and only one
+ * of them has an Events record. Re-running the import would skip these forms
+ * entirely, so linking needs its own pass.
+ *
+ * Sections are left alone: the parent carries the link, and the event page
+ * showing one form that leads to its sections beats it listing three.
+ */
+async function relink(payload: PayloadClient, entries: ManifestEntry[]): Promise<void> {
+  for (const entry of entries) {
+    if (!entry.relatedEvent) continue
+
+    const slug = generateSlug(entry.title)
+    const found = await payload.find({
+      collection: 'forms',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    const form = found.docs[0]
+    if (!form) {
+      console.warn(`  ! no form with slug "${slug}" — not linked`)
+      continue
+    }
+
+    await payload.update({
+      collection: 'forms',
+      id: form.id,
+      data: { relatedEvent: entry.relatedEvent },
+      overrideAccess: true,
+    })
+    console.log(`  #${form.id} ${form.title} → event #${entry.relatedEvent}`)
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2)
   const plan = args.includes('--plan')
+  const relinkOnly = args.includes('--relink')
   const resetArg = args.find((a) => a === '--reset' || a.startsWith('--reset='))
 
   if (resetArg) {
@@ -936,9 +1002,16 @@ async function main() {
   if (manifestArg) {
     const path = manifestArg.slice('--manifest='.length)
     const entries = JSON.parse(await readFile(path, 'utf8')) as ManifestEntry[]
-    const token = await accessToken()
     const payload = await getPayload({ config })
-    await importManifest(payload, entries, token)
+
+    if (relinkOnly) {
+      console.log('Linking forms to events:')
+      await relink(payload, entries)
+      console.log('\nDone.')
+      return
+    }
+
+    await importManifest(payload, entries, await accessToken())
     console.log('\nDone.')
     return
   }
