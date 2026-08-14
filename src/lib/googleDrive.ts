@@ -171,6 +171,26 @@ export async function getDriveFileStream(fileId: string): Promise<Response> {
   return driveFetch(`${FILES_URL}/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`)
 }
 
+/**
+ * A Google-native file's text content, via Drive's export.
+ *
+ * Used to read a Slides certificate template and find out which
+ * `{{placeholders}}` it contains, without pulling in the Slides API (a
+ * separate scope and another quota) — Drive can already flatten a deck to
+ * plain text, and text is all we need.
+ */
+export async function exportDriveFileText(fileId: string): Promise<string> {
+  const res = await driveFetch(
+    `${FILES_URL}/${encodeURIComponent(fileId)}/export?mimeType=text/plain&supportsAllDrives=true`,
+  )
+  if (!res.ok) {
+    throw new Error(
+      `Drive export failed (${res.status}): ${explainDriveError(res.status, await res.text())}`,
+    )
+  }
+  return res.text()
+}
+
 /** Human-facing Drive link — what gets written into the Sheets mirror. */
 export function driveViewUrl(fileId: string): string {
   return `https://drive.google.com/file/d/${fileId}/view`

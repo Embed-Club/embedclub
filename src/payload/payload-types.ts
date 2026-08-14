@@ -418,6 +418,27 @@ export interface Form {
    */
   certificateTemplateDriveId?: string | null;
   /**
+   * What each {{marker}} in the Slides template is filled with. {{name}} and {{event}} are automatic — the rest go here.
+   */
+  certificatePlaceholders?:
+    | {
+        /**
+         * Without the braces — for {{USN}} write USN.
+         */
+        key: string;
+        source: 'question' | 'fixed';
+        /**
+         * Exact wording of the question whose answer goes here
+         */
+        questionLabel?: string | null;
+        /**
+         * Printed identically on every certificate for this form
+         */
+        fixedValue?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Only for the on-the-spot download. Emailed certificates come from the Google Slides template above.
    */
   certificateTemplate?: (number | null) | Media;
@@ -2099,6 +2120,15 @@ export interface FormsSelect<T extends boolean = true> {
   certificateEmailSubject?: T;
   certificateEmailBody?: T;
   certificateTemplateDriveId?: T;
+  certificatePlaceholders?:
+    | T
+    | {
+        key?: T;
+        source?: T;
+        questionLabel?: T;
+        fixedValue?: T;
+        id?: T;
+      };
   certificateTemplate?: T;
   certificateConfig?:
     | T

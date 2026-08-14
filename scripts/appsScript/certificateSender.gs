@@ -102,7 +102,7 @@ function doPost(e) {
     }
 
     var formTitle = body.formTitle || 'Embed Club'
-    var pdf = buildCertificate(templateId, certificateName, formTitle)
+    var pdf = buildCertificate(templateId, certificateName, formTitle, body.placeholders)
 
     // emailSubject/emailBody arrive fully resolved ({{name}}/{{event}} already
     // filled in) when the form has a custom message; otherwise fall back to
@@ -131,13 +131,28 @@ function doPost(e) {
  * sends safe — two people submitting at once would otherwise overwrite each
  * other's name in the same deck.
  */
-function buildCertificate(templateId, certificateName, formTitle) {
+function buildCertificate(templateId, certificateName, formTitle, placeholders) {
   var copy = null
   try {
     copy = DriveApp.getFileById(templateId).makeCopy('certificate-' + certificateName)
     var deck = SlidesApp.openById(copy.getId())
+
+    // The site resolves every marker for this recipient and sends them as a
+    // map, so a form can add {{USN}} or {{Place}} to its template without any
+    // change here. name/event are set first as a fallback for older templates
+    // and are overwritten if the map carries its own.
     deck.replaceAllText('{{name}}', certificateName)
     deck.replaceAllText('{{event}}', formTitle)
+
+    if (placeholders) {
+      Object.keys(placeholders).forEach(function (key) {
+        var value = placeholders[key]
+        deck.replaceAllText('{{' + key + '}}', value === null || value === undefined ? '' : String(value))
+      })
+    }
+
+    clearLeftoverMarkers(deck)
+
     deck.saveAndClose()
 
     var pdf = DriveApp.getFileById(copy.getId()).getAs(MimeType.PDF)
@@ -149,6 +164,36 @@ function buildCertificate(templateId, certificateName, formTitle) {
       copy.setTrashed(true)
     }
   }
+}
+
+/**
+ * Blank out any {{marker}} nothing filled in.
+ *
+ * Left alone they print literally — "{{Place}}" across fifty certificates —
+ * which is worse than an empty space. `replaceAllText` matches literal text
+ * only (no regex, unlike Docs), so the markers have to be found by reading the
+ * deck first and then replaced one by one.
+ */
+function clearLeftoverMarkers(deck) {
+  var pattern = /\{\{[^{}]*\}\}/g
+  var slides = deck.getSlides()
+  var seen = {}
+
+  for (var i = 0; i < slides.length; i++) {
+    var shapes = slides[i].getShapes()
+    for (var j = 0; j < shapes.length; j++) {
+      var text = shapes[j].getText().asString()
+      var match
+      // biome-ignore lint: Apps Script targets an old JS runtime; matchAll is unavailable.
+      while ((match = pattern.exec(text)) !== null) {
+        seen[match[0]] = true
+      }
+    }
+  }
+
+  Object.keys(seen).forEach(function (marker) {
+    deck.replaceAllText(marker, '')
+  })
 }
 
 /** Default plain-text body, used only when a form has no custom message. */

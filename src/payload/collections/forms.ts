@@ -504,6 +504,80 @@ export const Forms: CollectionConfig = {
       },
     },
     {
+      // Reads the Slides deck and reports which {{markers}} it contains, and
+      // which of them nothing fills in yet. Purely advisory — it writes no
+      // data, it just saves the officer from guessing.
+      name: 'certificatePlaceholderScan',
+      type: 'ui',
+      admin: {
+        condition: (data) => data.showCertificate,
+        components: {
+          Field: '@/components/admin/certificatePlaceholderScanner',
+        },
+      },
+    },
+    {
+      name: 'certificatePlaceholders',
+      label: 'Certificate Fields',
+      type: 'array',
+      admin: {
+        condition: (data) => data.showCertificate,
+        description:
+          'What each {{marker}} in the Slides template is filled with. {{name}} and {{event}} are automatic — the rest go here.',
+        components: {
+          RowLabel: '@/components/admin/certificatePlaceholderRowLabel',
+        },
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'key',
+              label: 'Marker',
+              type: 'text',
+              required: true,
+              admin: {
+                width: '40%',
+                description: 'Without the braces — for {{USN}} write USN.',
+                placeholder: 'USN',
+              },
+            },
+            {
+              name: 'source',
+              type: 'select',
+              required: true,
+              defaultValue: 'question',
+              options: [
+                { label: 'An answer from this form', value: 'question' },
+                { label: 'The same value for everyone', value: 'fixed' },
+              ],
+              admin: { width: '60%' },
+            },
+          ],
+        },
+        {
+          name: 'questionLabel',
+          label: 'Question',
+          type: 'text',
+          admin: {
+            condition: (_data, siblingData) => siblingData?.source === 'question',
+            description: 'Exact wording of the question whose answer goes here',
+            placeholder: 'e.g. USN',
+          },
+        },
+        {
+          name: 'fixedValue',
+          label: 'Value',
+          type: 'text',
+          admin: {
+            condition: (_data, siblingData) => siblingData?.source === 'fixed',
+            description: 'Printed identically on every certificate for this form',
+          },
+        },
+      ],
+    },
+    {
       name: 'certificateTemplate',
       type: 'upload',
       relationTo: 'media',

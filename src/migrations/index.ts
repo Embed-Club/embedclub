@@ -18,6 +18,7 @@ import * as migration_20260803_110000_drizzle_snapshot_baseline from './20260803
 import * as migration_20260803_133059_add_coming_soon_badge from './20260803_133059_add_coming_soon_badge';
 import * as migration_20260803_170606_add_accordion_block from './20260803_170606_add_accordion_block';
 import * as migration_20260812_064517_addFormMediaAndUploads from './20260812_064517_addFormMediaAndUploads';
+import * as migration_20260814_005629_addCertificatePlaceholders from './20260814_005629_addCertificatePlaceholders';
 
 export const migrations = [
   {
@@ -118,6 +119,11 @@ export const migrations = [
   {
     up: migration_20260812_064517_addFormMediaAndUploads.up,
     down: migration_20260812_064517_addFormMediaAndUploads.down,
-    name: '20260812_064517_addFormMediaAndUploads'
+    name: '20260812_064517_addFormMediaAndUploads',
+  },
+  {
+    up: migration_20260814_005629_addCertificatePlaceholders.up,
+    down: migration_20260814_005629_addCertificatePlaceholders.down,
+    name: '20260814_005629_addCertificatePlaceholders'
   },
 ];

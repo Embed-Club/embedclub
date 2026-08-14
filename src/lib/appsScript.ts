@@ -28,6 +28,13 @@ export interface CertificateRequest {
   emailSubject?: string
   /** Overrides the script's default body. {{name}}/{{event}} resolved on the site side. */
   emailBody?: string
+  /**
+   * Every `{{marker}}` the certificate should print, already resolved for this
+   * recipient — `{ USN: '4PA23CS102', Place: '1st' }`. The script substitutes
+   * them blindly, so a form can add a field to its template without any change
+   * here or in the script.
+   */
+  placeholders?: Record<string, string>
 }
 
 export function appsScriptConfigured(): boolean {

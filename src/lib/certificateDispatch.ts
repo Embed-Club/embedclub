@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { appsScriptConfigured, sendCertificate } from '@/lib/appsScript'
+import { resolvePlaceholders } from '@/lib/certificatePlaceholders'
 import { applyNameCase } from '@/lib/textCase'
 import type { Form, FormSubmission } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
@@ -150,6 +151,10 @@ export async function dispatchCertificatesForForm(
         emailName,
         email,
         formTitle: form.title,
+        // Whatever else this form's template prints — USN, section, anything
+        // the officer mapped. `name` and `event` are included for templates
+        // that predate the mapping and expect the script to fill them.
+        placeholders: resolvePlaceholders(form, submission, certificateName),
         templateId: form.certificateTemplateDriveId?.trim() || undefined,
         emailSubject: form.certificateEmailSubject
           ? fillPlaceholders(form.certificateEmailSubject, emailName, form.title)
