@@ -1053,14 +1053,13 @@ export interface Tutorial {
   createdAt: string;
 }
 /**
- * Member projects. Drag rows to set the order they appear on the site.
+ * Member projects. Add one and it appears on the site — the showcase arranges and sizes the cards itself.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".
  */
 export interface Project {
   id: number;
-  _order?: string | null;
   title: string;
   /**
    * Generated from the title.
@@ -1071,13 +1070,21 @@ export interface Project {
    */
   description: string;
   /**
-   * Image displayed on the project card
+   * Optional. Without one the card is typeset instead.
    */
-  thumbnail: number | Media;
+  thumbnail?: (number | null) | Media;
   /**
-   * Shown as a badge on the card
+   * The result, shown large on the card. Leave empty if there is none.
    */
-  status: 'planned' | 'inProgress' | 'completed';
+  award?: string | null;
+  /**
+   * Where it was won.
+   */
+  event?: string | null;
+  /**
+   * The year the project was built.
+   */
+  year?: number | null;
   /**
    * Who built this
    */
@@ -1971,12 +1978,13 @@ export interface SimulatorsSelect<T extends boolean = true> {
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
-  _order?: T;
   title?: T;
   slug?: T;
   description?: T;
   thumbnail?: T;
-  status?: T;
+  award?: T;
+  event?: T;
+  year?: T;
   team?: T;
   tags?: T;
   repoUrl?: T;

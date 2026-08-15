@@ -23,6 +23,9 @@ import * as migration_20260814_081142_dropLegacyCertificateDownload from './2026
 import * as migration_20260814_175548_addFormSections from './20260814_175548_addFormSections';
 import * as migration_20260814_184315_addGoogleImportProvenance from './20260814_184315_addGoogleImportProvenance';
 import * as migration_20260814_200026_addPerPersonCertificateValues from './20260814_200026_addPerPersonCertificateValues';
+import * as migration_20260815_072559_dropProjectStatus from './20260815_072559_dropProjectStatus';
+import * as migration_20260815_120641_addProjectAwardFields from './20260815_120641_addProjectAwardFields';
+import * as migration_20260815_162712_dropProjectOrder from './20260815_162712_dropProjectOrder';
 
 export const migrations = [
   {
@@ -148,6 +151,21 @@ export const migrations = [
   {
     up: migration_20260814_200026_addPerPersonCertificateValues.up,
     down: migration_20260814_200026_addPerPersonCertificateValues.down,
-    name: '20260814_200026_addPerPersonCertificateValues'
+    name: '20260814_200026_addPerPersonCertificateValues',
+  },
+  {
+    up: migration_20260815_072559_dropProjectStatus.up,
+    down: migration_20260815_072559_dropProjectStatus.down,
+    name: '20260815_072559_dropProjectStatus',
+  },
+  {
+    up: migration_20260815_120641_addProjectAwardFields.up,
+    down: migration_20260815_120641_addProjectAwardFields.down,
+    name: '20260815_120641_addProjectAwardFields',
+  },
+  {
+    up: migration_20260815_162712_dropProjectOrder.up,
+    down: migration_20260815_162712_dropProjectOrder.down,
+    name: '20260815_162712_dropProjectOrder'
   },
 ];

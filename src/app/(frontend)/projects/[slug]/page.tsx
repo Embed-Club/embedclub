@@ -11,12 +11,6 @@ interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  planned: 'Planned',
-  inProgress: 'In Progress',
-  completed: 'Completed',
-}
-
 async function getProject(slug: string) {
   try {
     const payload = await getPayload({ config })
@@ -85,9 +79,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
 
               <div className="space-y-6">
                 <div className="flex flex-wrap gap-3">
-                  <span className="px-3 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20 rounded-full">
-                    {STATUS_LABELS[project.status] ?? project.status}
-                  </span>
                   {project.tags?.map((tag) => {
                     const tagObj = typeof tag === 'object' ? tag : null
                     return tagObj ? (
@@ -100,6 +91,21 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                     ) : null
                   })}
                 </div>
+
+                {project.award && (
+                  <div>
+                    <p className="text-2xl font-bold uppercase tracking-tight text-primary md:text-3xl">
+                      {project.award}
+                    </p>
+                    {(project.event || project.year) && (
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                        {[project.event, project.year ? String(project.year) : null]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white max-w-4xl leading-[1.1]">
                   {project.title}

@@ -13,21 +13,27 @@ import {
 import { CARD_DESCRIPTION_MAX_LENGTH, generateSlug } from './learningFields'
 
 /**
- * Club projects — builds members have shipped or are working on. Distinct from
- * Resources/Tutorials (reference material) and Events (things that happen on a
- * date): a project has a status, the people who built it, and links out to the
- * code or a demo.
+ * Club projects — the builds worth showing off: competition entries, grant
+ * work, and anything the club is proud of. Distinct from Resources/Tutorials
+ * (reference material) and Events (things that happen on a date): a project has
+ * the people who built it and links out to the code or a demo.
+ *
+ * There is deliberately no status field. Everything listed here is finished
+ * work, so a "Completed" badge on every card said nothing.
  */
 export const Projects: CollectionConfig = {
   slug: 'projects',
   access: {
     read: () => true,
   },
-  orderable: true,
+  // Not orderable: the showcase deals its own arrangement on every page load, so
+  // a drag order here would be a control that silently does nothing.
+  defaultSort: '-createdAt',
   admin: {
     useAsTitle: 'title',
-    description: 'Member projects. Drag rows to set the order they appear on the site.',
-    defaultColumns: ['title', 'status', 'updatedAt'],
+    description:
+      'Member projects. Add one and it appears on the site — the showcase arranges and sizes the cards itself.',
+    defaultColumns: ['title', 'award', 'year', 'updatedAt'],
     group: 'Content',
   },
   fields: [
@@ -70,25 +76,42 @@ export const Projects: CollectionConfig = {
               label: 'Thumbnail Image',
               type: 'upload',
               relationTo: 'media',
-              required: true,
-              admin: { description: 'Image displayed on the project card' },
+              // Optional on purpose: the showcase grid gives a project with no
+              // photo a type-led tile instead of a broken placeholder.
+              admin: { description: 'Optional. Without one the card is typeset instead.' },
             },
           ],
         },
         {
           label: 'Details',
           fields: [
+            // The result is the headline on the showcase grid, so it is stored
+            // in pieces rather than as a sentence inside the description.
             {
-              name: 'status',
-              type: 'select',
-              required: true,
-              defaultValue: 'inProgress',
-              options: [
-                { label: 'Planned', value: 'planned' },
-                { label: 'In Progress', value: 'inProgress' },
-                { label: 'Completed', value: 'completed' },
-              ],
-              admin: { description: 'Shown as a badge on the card' },
+              name: 'award',
+              label: 'Award / Result',
+              type: 'text',
+              admin: {
+                placeholder: 'e.g., Winner, Second Place, KSCST Grant',
+                description: 'The result, shown large on the card. Leave empty if there is none.',
+              },
+            },
+            {
+              name: 'event',
+              label: 'Competition / Event',
+              type: 'text',
+              admin: {
+                placeholder: 'e.g., ADC, Kaushal',
+                description: 'Where it was won.',
+              },
+            },
+            {
+              name: 'year',
+              type: 'number',
+              admin: {
+                placeholder: 'e.g., 2023',
+                description: 'The year the project was built.',
+              },
             },
             {
               name: 'team',

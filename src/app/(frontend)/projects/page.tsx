@@ -2,21 +2,21 @@ import {
   type ProjectCardData,
   ProjectsPageContent,
 } from '@/app/(frontend)/projects/projectsPageContent'
+import { BlockRenderer } from '@/components/features/resources/blockRenderer'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import config from '@/payload/payload.config'
 import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 
-// ISR: rebuild this page at most every 60s so CMS edits show up without a redeploy
-export const revalidate = 60
+// Rendered per request, not ISR: the showcase deals itself a fresh arrangement
+// every time, and a cached page would serve the same "random" grid for a minute
+// at a stretch. CMS edits show up immediately as a side effect.
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Projects',
   description: 'Builds and experiments from the Embed Club workbench.',
 }
-
-const FALLBACK_IMAGE =
-  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop'
 
 async function getProjects(): Promise<ProjectCardData[]> {
   try {
@@ -27,12 +27,15 @@ async function getProjects(): Promise<ProjectCardData[]> {
       depth: 1,
       limit: 100,
       pagination: false,
-      // Drag-arranged order from the admin list view, top row first
-      sort: '_order',
+      // Newest first, but only to make the query deterministic — the showcase
+      // shuffles this list before laying it out.
+      sort: '-createdAt',
     })
 
     return result.docs.map((project) => {
-      let imageUrl = FALLBACK_IMAGE
+      // Null, not a stock photo: a project with no picture of the build gets a
+      // type-led tile in the showcase grid.
+      let imageUrl: string | null = null
 
       if (project.thumbnail) {
         if (
@@ -52,6 +55,14 @@ async function getProjects(): Promise<ProjectCardData[]> {
             .filter((name): name is string => Boolean(name))
         : []
 
+      const teamNames = Array.isArray(project.team)
+        ? project.team
+            .map((member) =>
+              typeof member === 'object' && member !== null ? member.fullName : null,
+            )
+            .filter((name): name is string => Boolean(name))
+        : []
+
       return {
         id: String(project.id),
         title: project.title || '',
@@ -59,8 +70,16 @@ async function getProjects(): Promise<ProjectCardData[]> {
         image: imageUrl,
         tags,
         slug: project.slug || '',
-        status: project.status || 'inProgress',
-        teamCount: Array.isArray(project.team) ? project.team.length : 0,
+        teamCount: teamNames.length,
+        teamNames,
+        award: project.award || undefined,
+        event: project.event || undefined,
+        year: project.year ?? undefined,
+        repoUrl: project.repoUrl || undefined,
+        demoUrl: project.demoUrl || undefined,
+        // Rendered here, on the server, so the client-side modal can show the
+        // write-up without importing the (server-only) block renderer.
+        details: <BlockRenderer blocks={project.content || []} />,
         createdAt: project.createdAt,
       }
     })
