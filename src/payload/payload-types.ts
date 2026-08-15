@@ -1202,6 +1202,10 @@ export interface MemberCategory {
   slug: string;
   description?: string | null;
   /**
+   * Which batch heading appears at the top of this category on the members page. Members inside a batch are always ordered by role.
+   */
+  batchOrder: 'oldestFirst' | 'newestFirst';
+  /**
    * Order in which this category appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other category automatically.
    */
   sortOrder: number;
@@ -2048,6 +2052,7 @@ export interface MemberCategoriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   description?: T;
+  batchOrder?: T;
   sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -15,7 +15,6 @@
     "check": "biome check --write .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "create:admin": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/createBackupAdmin.ts",
-    "seed:esp32cam": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedEsp32CamGuide.ts",
     "drive:auth": "node scripts/getDriveRefreshToken.mjs",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "typecheck": "tsc --noEmit",

@@ -1,8 +1,5 @@
 import { EmptyState } from '@/components/common/emptyState'
 import { EventCutoutCard } from '@/components/features/home/eventCutoutCard'
-// Temporarily unused — the desktop marquee is commented out below, pending a
-// decision on where it moves to. See also heroSection.tsx (mobile copy).
-// import { LogoMarquee } from '@/components/features/home/logoMarquee'
 import type { Event } from '@/payload/payload-types'
 import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
@@ -52,9 +49,6 @@ export function LatestEventsSection({ events }: { events: Event[] }) {
       id="events"
       className="relative flex min-h-[100svh] w-full flex-col gap-12 pb-16 pt-24 lg:pt-0"
     >
-      {/* Logo marquee — parked for now, moving somewhere else later.
-      <LogoMarquee className="hidden lg:block" />
-      */}
       <div className="flex flex-1 flex-col justify-center px-6 md:px-12 lg:px-20">
         <LatestEventsContent events={events} />
       </div>

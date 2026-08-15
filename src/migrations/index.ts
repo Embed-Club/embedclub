@@ -26,6 +26,7 @@ import * as migration_20260814_200026_addPerPersonCertificateValues from './2026
 import * as migration_20260815_072559_dropProjectStatus from './20260815_072559_dropProjectStatus';
 import * as migration_20260815_120641_addProjectAwardFields from './20260815_120641_addProjectAwardFields';
 import * as migration_20260815_162712_dropProjectOrder from './20260815_162712_dropProjectOrder';
+import * as migration_20260815_183351_addMemberCategoryBatchOrder from './20260815_183351_addMemberCategoryBatchOrder';
 
 export const migrations = [
   {
@@ -166,6 +167,11 @@ export const migrations = [
   {
     up: migration_20260815_162712_dropProjectOrder.up,
     down: migration_20260815_162712_dropProjectOrder.down,
-    name: '20260815_162712_dropProjectOrder'
+    name: '20260815_162712_dropProjectOrder',
+  },
+  {
+    up: migration_20260815_183351_addMemberCategoryBatchOrder.up,
+    down: migration_20260815_183351_addMemberCategoryBatchOrder.down,
+    name: '20260815_183351_addMemberCategoryBatchOrder'
   },
 ];

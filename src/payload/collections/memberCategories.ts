@@ -60,6 +60,24 @@ export const MemberCategories: CollectionConfig = {
     { name: 'slug', type: 'text', required: true, unique: true },
     { name: 'description', type: 'textarea' },
     {
+      // Per category, not global: Alumni reads best with the most recent batch
+      // at the top, while a current-members category usually wants the founding
+      // batch first. One switch for the whole page would force one of the two.
+      name: 'batchOrder',
+      label: 'Batch Order',
+      type: 'select',
+      required: true,
+      defaultValue: 'oldestFirst',
+      options: [
+        { label: 'Oldest batch first (2016 – 2020 … )', value: 'oldestFirst' },
+        { label: 'Latest batch first ( … 2016 – 2020)', value: 'newestFirst' },
+      ],
+      admin: {
+        description:
+          'Which batch heading appears at the top of this category on the members page. Members inside a batch are always ordered by role.',
+      },
+    },
+    {
       name: 'sortOrder',
       type: 'number',
       required: true,

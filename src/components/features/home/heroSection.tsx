@@ -1,9 +1,6 @@
 'use client'
 import DashboardTitle from '@/app/(frontend)/title'
 import { AudioToggleMini, BackgroundAudio } from '@/components/common/backgroundAudio'
-// Temporarily unused — the mobile hero marquee is commented out below, pending
-// a decision on where it moves to.
-// import { LogoMarquee } from '@/components/features/home/logoMarquee'
 
 /**
  * First hero section: brand title + tagline with a looping activities video
@@ -26,41 +23,11 @@ export function HeroSection() {
     // other page already relies on for its own title placement.
     // `justify-center` only matters on mobile — on desktop both children are
     // absolutely positioned, so there are no flex items left to distribute.
-    // With the marquee gone it keeps the title + video stack visually centred
-    // instead of top-anchored above a tall empty gap.
-    <section className="relative -mt-16 flex min-h-[100svh] w-full flex-col justify-start overflow-hidden bg-background lg:mt-0">
-      {/* Hardware cutouts — mobile only. The stack above is top-anchored
-          (`justify-start`) precisely so this band at the bottom stays free:
-          both hands rise into it from below the fold. Both are decorative
-          (empty alt + aria-hidden) and sit at z-0, under the z-10 title block.
-          The negative translate pushes each wrist past the section edge so the
-          arm reads as entering the frame rather than floating; the section's
-          own `overflow-hidden` does the cropping.
-          Sources are trimmed-to-alpha WebP derivatives of the PNGs in /public —
-          `sizes` is what keeps next/image from shipping the full-width file to
-          a phone. */}
-      {/* The still is now a keyed clip of the module being turned over. WebM
-          carries real alpha; Safari has no VP9-alpha support, so it falls back
-          to the MP4 with the light background already baked in.
-          The odd -29% translate is not a typo: the board sits at 29% of the
-          clip's width (measured over all 240 frames), with the hand filling
-          the rest, so centring the *element* would leave the module itself
-          off to the left. This lands the board on the screen's centre line. */}
-      <video
-        aria-hidden
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        poster="/oledEmbed.webp"
-        className="pointer-events-none absolute bottom-0 left-1/2 z-0 w-[72%] max-w-[320px] -translate-x-[29%] select-none lg:hidden"
-      >
-        <source src="/oledRotateCrop.webm" type="video/webm" />
-        <source src="/oledRotateCropLight.mp4" type="video/mp4" />
-      </video>
-
-      {/* Title + tagline — mobile: at the top; desktop: centered overlay */}
+    // The section used to be top-anchored to keep a band clear at the bottom
+    // for the OLED module clip; with that gone, centring the title + video
+    // stack is what stops it sitting above a tall empty gap.
+    <section className="relative -mt-16 flex min-h-[100svh] w-full flex-col justify-center overflow-hidden bg-background lg:mt-0">
+      {/* Title + tagline — mobile: centered stack; desktop: centered overlay */}
       <div className="relative z-10 flex w-full flex-col items-center gap-4 px-4 pt-16 lg:absolute lg:inset-0 lg:justify-center lg:gap-6 lg:pt-0">
         <DashboardTitle />
         <p className="max-w-2xl text-center text-base text-muted-foreground md:text-xl">
@@ -103,13 +70,6 @@ export function HeroSection() {
           <AudioToggleMini />
         </div>
       </div>
-
-      {/* Logo marquee — parked for now, moving somewhere else later. On desktop
-          it still renders at the top of the events section.
-      <div className="flex flex-1 items-center py-8 lg:hidden">
-        <LogoMarquee />
-      </div>
-      */}
     </section>
   )
 }

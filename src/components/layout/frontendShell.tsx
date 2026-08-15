@@ -215,17 +215,11 @@ export { ScrollContainerContext }
 export function MainbarShell({ children, borderless, hideScrollbar }: MainbarShellProps) {
   const isMobile = useIsMobile()
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
-  const { isIntroFinished } = React.useContext(IntroContext)
-  const [isContentVisible, setIsContentVisible] = useState(false)
 
-  React.useEffect(() => {
-    if (isIntroFinished || isMobile) {
-      // Delay content fade-in by another 600ms to let the logo glide finish
-      const timer = setTimeout(() => setIsContentVisible(true), isMobile ? 0 : 600)
-      return () => clearTimeout(timer)
-    }
-  }, [isIntroFinished, isMobile])
-
+  // Page content is painted as it arrives. It used to be held at opacity 0
+  // behind a masking overlay and faded in over 0.8s — on the landing page that
+  // waited out the logo glide, but every other page paid the same delay for an
+  // intro that was not running, so each load opened on a blank panel.
   return (
     <ScrollContainerContext.Provider value={scrollEl}>
       <ContentPanel
@@ -235,29 +229,7 @@ export function MainbarShell({ children, borderless, hideScrollbar }: MainbarShe
       >
         {/* min-h-full (not h-full) so tall pages grow past one viewport and the
             footer flows below them instead of overlapping overflowed content. */}
-        <div className="min-h-full w-full relative">
-          <AnimatePresence>
-            {!isContentVisible && !isMobile ? (
-              <motion.div
-                key="intro-overlay"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="absolute inset-0 bg-background z-50 flex items-center justify-center pointer-events-none"
-              >
-                {/* Visual placeholder for the main content area during glide */}
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isContentVisible || isMobile ? 1 : 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="min-h-full w-full"
-          >
-            {children}
-          </motion.div>
-        </div>
+        <div className="min-h-full w-full relative">{children}</div>
         <SiteFooter />
       </ContentPanel>
     </ScrollContainerContext.Provider>

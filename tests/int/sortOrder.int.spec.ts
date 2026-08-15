@@ -83,7 +83,15 @@ describe('member-categories sortOrder conflicts', () => {
     const slotOfA = a.sortOrder
     const c = (await payload.create({
       collection: SLUG,
-      data: { name: `SortTest C ${run}`, slug: testSlug('c'), sortOrder: slotOfA },
+      // batchOrder has a defaultValue, but the generated type marks it required
+      // on create — passed explicitly rather than suppressed, since this create
+      // already passes sortOrder and so cannot use the @ts-expect-error above.
+      data: {
+        name: `SortTest C ${run}`,
+        slug: testSlug('c'),
+        sortOrder: slotOfA,
+        batchOrder: 'oldestFirst',
+      },
     })) as unknown as { id: string | number; sortOrder: number }
     createdIds.push(c.id)
 

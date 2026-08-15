@@ -35,7 +35,7 @@ function getPrimaryRoleSortOrder(member: MemberDoc) {
 }
 
 function groupByCategorySorted(members: MemberDoc[]) {
-  const map = new Map<string, { items: MemberDoc[]; sortOrder: number }>()
+  const map = new Map<string, { items: MemberDoc[]; sortOrder: number; batchOrder: string }>()
   for (const m of members) {
     const catObj =
       typeof m.category === 'object' && m.category
@@ -43,10 +43,13 @@ function groupByCategorySorted(members: MemberDoc[]) {
         : undefined
     const catLabel = (catObj?.name as string) ?? (catObj?.slug as string) ?? 'Uncategorized'
     const sortOrder = (catObj?.sortOrder as number) ?? 999 // Use 999 for uncategorized so they appear last
+    // Set per category in the admin. Uncategorized members have no category doc
+    // to read it from, so they keep the historical oldest-first order.
+    const batchOrder = (catObj?.batchOrder as string) ?? 'oldestFirst'
 
     const entry = map.get(catLabel)
     if (!entry) {
-      const newEntry = { items: [m], sortOrder }
+      const newEntry = { items: [m], sortOrder, batchOrder }
       map.set(catLabel, newEntry)
     } else {
       entry.items.push(m)
@@ -54,9 +57,10 @@ function groupByCategorySorted(members: MemberDoc[]) {
   }
 
   // Within a category, members are grouped into batches (startYear–endYear).
-  // Batches run oldest-first; inside a batch, role sortOrder decides.
+  // Batch direction is the category's own setting; inside a batch, role
+  // sortOrder decides.
   const sorted = Array.from(map.entries())
-    .map(([category, { items, sortOrder }]) => {
+    .map(([category, { items, sortOrder, batchOrder }]) => {
       const batchMap = new Map<string, { startYear: number; items: MemberDoc[] }>()
       for (const m of items) {
         const start = m.startYear ?? 0
@@ -66,12 +70,13 @@ function groupByCategorySorted(members: MemberDoc[]) {
         else batchMap.set(label, { startYear: start, items: [m] })
       }
 
+      const newestFirst = batchOrder === 'newestFirst'
       const batches = Array.from(batchMap.entries())
         .map(([label, { startYear, items: batchItems }]) => {
           batchItems.sort((a, b) => getPrimaryRoleSortOrder(a) - getPrimaryRoleSortOrder(b))
           return { label, startYear, items: batchItems }
         })
-        .sort((a, b) => a.startYear - b.startYear) // oldest batch first
+        .sort((a, b) => (newestFirst ? b.startYear - a.startYear : a.startYear - b.startYear))
 
       return { category, batches, sortOrder }
     })

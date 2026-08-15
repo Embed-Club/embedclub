@@ -423,9 +423,22 @@ function TimelineContentMobile({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Card appears when 20% of it is visible
+        // Card appears when 20% of it is visible.
         if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
           setIsVisible(true)
+          return
+        }
+
+        // Out of view — but only rewind the reveal for a card that has dropped
+        // back *below* the fold, which is what scrolling up does. A card that
+        // leaves past the top on the way down stays as it is: fading it out
+        // there would undo an animation the reader has already scrolled past,
+        // and they would catch it flickering at the edge of the screen.
+        const bounds = entry.rootBounds
+        const belowFold = entry.boundingClientRect.top > (bounds ? bounds.top : 0)
+
+        if (belowFold) {
+          setIsVisible(false)
         }
       },
       {

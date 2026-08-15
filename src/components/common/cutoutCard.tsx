@@ -171,12 +171,14 @@ export function CutoutCard({
 
   return (
     <CutoutCardContext.Provider value={ctx}>
+      {/* No mount fade: cards are painted at full opacity as soon as they
+          render. Every card animating in from opacity 0 read as the whole page
+          fading in, since this primitive backs the grids on nearly every page.
+          Hover still animates — that is driven through the context below. */}
       <motion.div
-        animate={{ opacity: 1 }}
         className={cn(className)}
         data-slot="cutout-card"
         data-state={ctx.hovered ? 'hovered' : 'idle'}
-        initial={{ opacity: 0 }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         transition={
