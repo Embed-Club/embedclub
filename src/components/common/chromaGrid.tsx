@@ -47,6 +47,17 @@ const GlowingEffect = memo(
     const containerRef = useRef<HTMLDivElement>(null)
     const lastPosition = useRef({ x: 0, y: 0 })
     const animationFrameRef = useRef<number>(0)
+    /**
+     * The element's box, cached.
+     *
+     * One of these effects exists per card, so on the members page there are
+     * around 55 of them. Measuring on every event meant ~55 forced layouts per
+     * scroll frame, which is what made the page feel heavy. The box only moves
+     * when the page scrolls or resizes, so those mark it stale and the next
+     * pointer event pays for one re-measure.
+     */
+    const rectRef = useRef<DOMRect | null>(null)
+    const rectStaleRef = useRef(true)
 
     const handleMove = useCallback(
       (e?: MouseEvent | { x: number; y: number }) => {
@@ -60,7 +71,11 @@ const GlowingEffect = memo(
           const element = containerRef.current
           if (!element) return
 
-          const { left, top, width, height } = element.getBoundingClientRect()
+          if (rectStaleRef.current || !rectRef.current) {
+            rectRef.current = element.getBoundingClientRect()
+            rectStaleRef.current = false
+          }
+          const { left, top, width, height } = rectRef.current
           const mouseX = e?.x ?? lastPosition.current.x
           const mouseY = e?.y ?? lastPosition.current.y
 
@@ -109,10 +124,18 @@ const GlowingEffect = memo(
     useEffect(() => {
       if (disabled) return
 
-      const handleScroll = () => handleMove()
+      // Scrolling only invalidates the cached box — a boolean write, no layout
+      // and no animation work. Recomputing the glow here as well was the
+      // expensive part, and it bought little: the glow tracks the cursor, and
+      // the cursor has not moved relative to the viewport during a scroll. The
+      // next pointer movement picks up the new position.
+      const markRectStale = () => {
+        rectStaleRef.current = true
+      }
       const handlePointerMove = (e: PointerEvent) => handleMove(e)
 
-      window.addEventListener('scroll', handleScroll, { passive: true })
+      window.addEventListener('scroll', markRectStale, { passive: true })
+      window.addEventListener('resize', markRectStale, { passive: true })
       document.body.addEventListener('pointermove', handlePointerMove, {
         passive: true,
       })
@@ -121,7 +144,8 @@ const GlowingEffect = memo(
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current)
         }
-        window.removeEventListener('scroll', handleScroll)
+        window.removeEventListener('scroll', markRectStale)
+        window.removeEventListener('resize', markRectStale)
         document.body.removeEventListener('pointermove', handlePointerMove)
       }
     }, [handleMove, disabled])
