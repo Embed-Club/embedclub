@@ -5,6 +5,7 @@ import { withResolvedSteps } from '@/lib/formQueries'
 import { driveConfigured, getDriveFileMeta } from '@/lib/googleDrive'
 import type { Form } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
+import { headers } from 'next/headers'
 import { after } from 'next/server'
 import { getPayload } from 'payload'
 
@@ -26,10 +27,25 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
  * call and is reachable by anyone, so this stops a trivial flood. It resets on
  * deploy and is per-instance — good enough for a club site, and deliberately
  * not a substitute for a real WAF if this ever gets seriously targeted.
+ *
+ * Keyed per client *and* form. Keying on the form alone gave every visitor a
+ * shared budget, so five sign-ups in a minute locked the form for everyone —
+ * which is precisely what a registration form does when a session opens.
  */
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX = 5
 const recentSubmits = new Map<string, number[]>()
+
+/**
+ * Caller identity for the rate limit. Vercel sets `x-forwarded-for`; the first
+ * entry is the client. Falls back to a shared bucket when there is no header at
+ * all, which only happens off-platform.
+ */
+async function clientKey(slug: string): Promise<string> {
+  const headerList = await headers()
+  const ip = headerList.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+  return `${ip}:${slug}`
+}
 
 function rateLimited(key: string): boolean {
   const now = Date.now()
@@ -74,12 +90,14 @@ export async function submitForm(
 ): Promise<SubmitFormResult> {
   try {
     // Silently accept and discard obvious bots — telling them why just helps
-    // them adapt.
-    if (honeypot) {
+    // them adapt. Trimmed: a browser or password manager that autofills the
+    // hidden field with a space would otherwise bin a real person's answers
+    // behind a success message.
+    if (honeypot?.trim()) {
       return { success: true, message: 'Your response has been recorded. Thank you!' }
     }
 
-    if (rateLimited(slug)) {
+    if (rateLimited(await clientKey(slug))) {
       return { success: false, message: 'Too many submissions just now — try again in a minute.' }
     }
 

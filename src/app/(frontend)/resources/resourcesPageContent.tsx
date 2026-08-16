@@ -134,18 +134,18 @@ export function ResourcesPageContent({
   const hasSearched =
     debouncedQuery.trim().length > 0 || selectedTags.length > 0 || selectedCategory !== 'all'
 
-  // Humorous XSS Detection
+  /**
+   * Purely a joke shown above the results — React escapes the query, so none of
+   * these were ever dangerous to type.
+   *
+   * Matched narrowly, and only on markup that no one searches for by accident.
+   * Terms like `alert(`, `javascript:` and `document.cookie` were in here too,
+   * which is a problem on a page of programming tutorials: a student searching
+   * for any of them is asking a real question.
+   */
   const isXSSAttempt = useMemo(() => {
     const p = debouncedQuery.toLowerCase()
-    return (
-      p.includes('<script') ||
-      p.includes('alert(') ||
-      p.includes('onerror=') ||
-      p.includes('onload=') ||
-      p.includes('javascript:') ||
-      p.includes('document.cookie') ||
-      p.includes('windows.location')
-    )
+    return p.includes('<script') || p.includes('onerror=') || p.includes('onload=')
   }, [debouncedQuery])
 
   if (resources.length === 0) {
@@ -177,7 +177,9 @@ export function ResourcesPageContent({
 
       <XSSHoneypot isDetected={isXSSAttempt} />
 
-      {isXSSAttempt ? null : filteredResources.length === 0 && hasSearched ? (
+      {/* Results still render underneath the joke — hiding them meant a search
+          that happened to contain markup returned nothing at all. */}
+      {filteredResources.length === 0 && hasSearched ? (
         <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
           <p className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
             No Results Found

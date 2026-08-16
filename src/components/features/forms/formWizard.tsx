@@ -208,15 +208,24 @@ export function FormWizard({ form }: FormWizardProps) {
         </div>
 
         {/* Honeypot: off-screen rather than display:none, which some bots skip.
-            aria-hidden + tabIndex -1 keep it away from real users entirely. */}
+            aria-hidden + tabIndex -1 keep it away from real users entirely.
+
+            The name is deliberately meaningless. It used to be
+            "company-website", which is exactly what a browser or password
+            manager matches when it autofills an organisation URL — and a filled
+            honeypot silently bins the submission. The data-* attributes opt out
+            of the major password managers for the same reason. */}
         <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
-          <label htmlFor="company-website">Company website</label>
+          <label htmlFor="hp-control">Leave this field empty</label>
           <input
-            id="company-website"
-            name="company-website"
+            id="hp-control"
+            name="hp-control"
             type="text"
             tabIndex={-1}
             autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            data-form-type="other"
             value={honeypot}
             onChange={(e) => setHoneypot(e.target.value)}
           />
