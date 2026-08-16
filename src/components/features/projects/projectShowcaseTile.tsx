@@ -24,7 +24,12 @@ export const ProjectShowcaseTile = React.memo(
   ({ card, size = 1 }: { card: ProjectCardData; size?: TileSize }) => {
     const wide = size === 2
     const [open, setOpen] = React.useState(false)
-    const close = React.useCallback(() => setOpen(false), [])
+    // The tile's box, so the panel can grow out of exactly this card.
+    const [originRect, setOriginRect] = React.useState<DOMRect | null>(null)
+    const close = React.useCallback(() => {
+      setOpen(false)
+      setOriginRect(null)
+    }, [])
     const hasImage = Boolean(card.image)
     const meta = [card.event, card.year ? String(card.year) : null].filter(Boolean).join(' · ')
 
@@ -32,11 +37,14 @@ export const ProjectShowcaseTile = React.memo(
       <>
         {/* Mounted on demand: a portal per tile, open or not, cost the page
             its scroll performance. */}
-        {open && <ProjectModal card={card} onClose={close} />}
+        {open && <ProjectModal card={card} onClose={close} originRect={originRect} />}
 
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={(e) => {
+            setOriginRect(e.currentTarget.getBoundingClientRect())
+            setOpen(true)
+          }}
           aria-label={`Open project: ${card.title}`}
           className={cn(
             'group/tile relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 text-left md:p-6',

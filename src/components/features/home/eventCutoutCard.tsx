@@ -14,38 +14,36 @@ import { EventModal, eventToCard } from '@/components/features/events/eventsCard
 import { isNewEvent } from '@/lib/eventUtils'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 /** Cutout-styled event card for the home page. Click opens the shared event modal. */
 export function EventCutoutCard({ event }: { event: Event }) {
   const [open, setOpen] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  // The card's box, so the panel can grow out of exactly this card.
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null)
   const card = eventToCard(event)
   const showNew = isNewEvent(event.eventDate)
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open])
 
   return (
     <>
       <EventModal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false)
+          setOriginRect(null)
+        }}
         card={card}
         event={event}
-        containerRef={containerRef}
+        originRect={originRect}
       />
 
       <CutoutCard className="h-full">
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={(e) => {
+            setOriginRect(e.currentTarget.getBoundingClientRect())
+            setOpen(true)
+          }}
           aria-label={`View: ${card.title}`}
           className={cn(
             cutoutCardSurfaceClassName,

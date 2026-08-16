@@ -6,12 +6,13 @@ import {
   cutoutCardSurfaceShadowClassName,
 } from '@/components/common/cutoutCard'
 import { EventDetails } from '@/components/features/events/eventDetails'
+import { useCardMorph } from '@/hooks/useCardMorph'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { isNewEvent } from '@/lib/eventUtils'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
 import { X } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import type { ImageProps } from 'next/image'
 import type React from 'react'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
@@ -44,34 +45,21 @@ export const Card = ({
   event?: Event
 }) => {
   const [open, setOpen] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  // The card's box, so the panel can grow out of exactly this card.
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null)
   const { onCardClose } = useContext(CarouselContext)
 
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        handleClose()
-      }
-    }
+  // Escape, outside clicks and the scroll lock live in the panel now: it owns
+  // the closing animation, and routing them through here skipped it.
 
-    if (open) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'auto'
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open])
-
-  useOutsideClick(containerRef, () => handleClose())
-
-  const handleOpen = () => {
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
+    setOriginRect(e.currentTarget.getBoundingClientRect())
     setOpen(true)
   }
 
   const handleClose = () => {
     setOpen(false)
+    setOriginRect(null)
     onCardClose(index)
   }
 
@@ -82,7 +70,7 @@ export const Card = ({
         onClose={handleClose}
         card={card}
         event={event}
-        containerRef={containerRef}
+        originRect={originRect}
         layoutId={layout ? `card-${card.title}` : undefined}
       />
 
@@ -148,15 +136,16 @@ export const EventModal = ({
   onClose,
   card,
   event,
-  containerRef,
   layoutId,
+  originRect,
 }: {
   open: boolean
   onClose: () => void
   card: EventCardData
   event?: Event
-  containerRef?: React.RefObject<HTMLDivElement | null>
   layoutId?: string
+  /** The clicked card's box, so the panel can grow out of it. */
+  originRect?: DOMRect | null
 }) => {
   // Rendered into <body> rather than in place. `position: fixed` is only
   // relative to the viewport while no ancestor is transformed — and Embla
@@ -168,7 +157,9 @@ export const EventModal = ({
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
-  if (!mounted) return null
+  // Nothing rendered until it is open: the morph measures the panel in a layout
+  // effect, so the panel has to exist the moment that effect runs.
+  if (!mounted || !open) return null
 
   // `items-start` + `my-auto` on the panel, not `items-center`: a centred flex
   // child taller than its container overflows equally both ways and the top
@@ -176,87 +167,136 @@ export const EventModal = ({
   // still centres a short modal and scrolls a tall one from its actual top.
   // The env() padding keeps it clear of the notch and the gesture bar.
   return createPortal(
-    <AnimatePresence>
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-auto px-4 md:px-6"
-          style={{
-            paddingTop: 'max(1.5rem, env(safe-area-inset-top))',
-            paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 h-full w-full bg-black/80 backdrop-blur-lg"
-          />
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            ref={containerRef}
-            layoutId={layoutId}
-            className={cn(
-              // `svh`, not `vh`: mobile browsers size `vh` as though the URL bar
-              // were hidden, so a 90vh panel is taller than what is actually on
-              // screen and its top sits under the browser chrome.
-              'relative z-[60] my-auto max-h-[85svh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground md:max-h-[90svh]',
-              cutoutCardSurfaceShadowClassName,
-            )}
+    <EventModalPanel
+      onClose={onClose}
+      card={card}
+      event={event}
+      layoutId={layoutId}
+      originRect={originRect}
+    />,
+    document.body,
+  )
+}
+
+/** The panel itself. Split out so it mounts and unmounts with the open flag. */
+const EventModalPanel = ({
+  onClose,
+  card,
+  event,
+  layoutId,
+  originRect,
+}: {
+  onClose: () => void
+  card: EventCardData
+  event?: Event
+  layoutId?: string
+  originRect?: DOMRect | null
+}) => {
+  const reduceMotion = useReducedMotion()
+  const { panelRef, innerRef, bodyRef, overlayRef, requestClose } = useCardMorph({
+    originRect,
+    onClose,
+    reduceMotion,
+  })
+
+  useOutsideClick(panelRef, requestClose)
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') requestClose()
+    }
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = 'auto'
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [requestClose])
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-auto px-4 md:px-6"
+      style={{
+        paddingTop: 'max(1.5rem, env(safe-area-inset-top))',
+        paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
+      }}
+    >
+      {/* Blur from md up only: backdrop-filter is re-evaluated every frame
+              while the panel moves across it, which is costly on a weak phone. */}
+      <motion.div
+        ref={overlayRef}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        className="fixed inset-0 h-full w-full bg-black/80 md:backdrop-blur-lg"
+      />
+      <div
+        ref={panelRef}
+        style={{ opacity: 0 }}
+        className={cn(
+          // `svh`, not `vh`: mobile browsers size `vh` as though the URL bar
+          // were hidden, so a 90vh panel is taller than what is actually on
+          // screen and its top sits under the browser chrome.
+          'relative z-[60] my-auto max-h-[85svh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground md:max-h-[90svh]',
+          cutoutCardSurfaceShadowClassName,
+        )}
+      >
+        {/* Counter-scaled against the panel, so the content holds its true
+                proportions while the frame morphs. */}
+        <div ref={innerRef} className="h-full w-full">
+          <button
+            type="button"
+            className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 opacity-90 shadow-sm backdrop-blur-sm transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            onClick={requestClose}
+            aria-label="Close modal"
           >
-            <button
-              type="button"
-              className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 opacity-90 shadow-sm backdrop-blur-sm transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              onClick={onClose}
-              aria-label="Close modal"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <X className="h-4 w-4" />
+          </button>
 
-            <div className="grid h-full max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-2 md:gap-8 md:p-8 lg:p-10">
-              {/* Image Section — same cutout inset label as the card it opened from */}
-              <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted">
-                <BlurImage src={card.src} alt={card.title} fill className="object-contain" />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
+          <div
+            ref={bodyRef}
+            className="grid h-full max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-2 md:gap-8 md:p-8 lg:p-10"
+          >
+            {/* Image Section — same cutout inset label as the card it opened from */}
+            <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted">
+              <BlurImage src={card.src} alt={card.title} fill className="object-contain" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
 
-                <CutoutCardInsetLabel className="bottom-0 left-0 z-10 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-3 text-left">
-                  <motion.p
-                    layoutId={layoutId ? `category-${card.category}` : undefined}
-                    className="text-left text-[11px] font-semibold uppercase tracking-widest text-primary"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {card.category}
-                  </motion.p>
-                  <motion.p
-                    layoutId={layoutId ? `title-${card.title}` : undefined}
-                    className="mt-1 text-base font-semibold text-foreground md:text-xl [text-wrap:balance]"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                  >
-                    {card.title}
-                  </motion.p>
-                  <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
-                  <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
-                </CutoutCardInsetLabel>
-              </div>
+              <CutoutCardInsetLabel className="bottom-0 left-0 z-10 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-3 text-left">
+                <motion.p
+                  layoutId={layoutId ? `category-${card.category}` : undefined}
+                  className="text-left text-[11px] font-semibold uppercase tracking-widest text-primary"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {card.category}
+                </motion.p>
+                <motion.p
+                  layoutId={layoutId ? `title-${card.title}` : undefined}
+                  className="mt-1 text-base font-semibold text-foreground md:text-xl [text-wrap:balance]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  {card.title}
+                </motion.p>
+                <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+                <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+              </CutoutCardInsetLabel>
+            </div>
 
-              {/* Details Section */}
-              <div className="flex flex-col justify-start space-y-4 md:space-y-6">
-                {/* Content (Event Details) */}
-                <div className="flex-1 pr-4">
-                  {event ? <EventDetails event={event} /> : card.content}
-                </div>
+            {/* Details Section */}
+            <div className="flex flex-col justify-start space-y-4 md:space-y-6">
+              {/* Content (Event Details) */}
+              <div className="flex-1 pr-4">
+                {event ? <EventDetails event={event} /> : card.content}
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
-      )}
-    </AnimatePresence>,
-    document.body,
+      </div>
+    </div>
   )
 }
 

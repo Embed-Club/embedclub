@@ -7,11 +7,10 @@ import {
   cutoutCardSurfaceShadowClassName,
 } from '@/components/common/cutoutCard'
 import { EventModal, eventToCard } from '@/components/features/events/eventsCards'
-import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { isNewEvent } from '@/lib/eventUtils'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 export const Card = React.memo(
   ({
@@ -25,7 +24,7 @@ export const Card = React.memo(
     index: number
     hovered: number | null
     setHovered: React.Dispatch<React.SetStateAction<number | null>>
-    onClick: () => void
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
   }) => {
     const showNew = isNewEvent(card.event?.eventDate)
     const isOnline = card.event?.eventMode === 'online'
@@ -90,11 +89,10 @@ type Card = {
 export function FocusCards({ cards }: { cards: Card[] }) {
   const [hovered, setHovered] = useState<number | null>(null)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
-  const modalRef = useRef<HTMLDivElement>(null)
+  // The clicked card's box, so the panel can grow out of exactly that card.
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null)
 
   const activeEvent = activeIndex === null ? undefined : cards[activeIndex]?.event
-
-  useOutsideClick(modalRef, () => setActiveIndex(null))
 
   const activeCard = useMemo(() => {
     if (activeIndex === null) return null
@@ -120,16 +118,22 @@ export function FocusCards({ cards }: { cards: Card[] }) {
           index={index}
           hovered={hovered}
           setHovered={setHovered}
-          onClick={() => setActiveIndex(index)}
+          onClick={(e) => {
+            setOriginRect(e.currentTarget.getBoundingClientRect())
+            setActiveIndex(index)
+          }}
         />
       ))}
       {activeCard && (
         <EventModal
           open={activeIndex !== null}
-          onClose={() => setActiveIndex(null)}
+          onClose={() => {
+            setActiveIndex(null)
+            setOriginRect(null)
+          }}
           card={activeCard}
           event={activeEvent}
-          containerRef={modalRef}
+          originRect={originRect}
         />
       )}
     </div>
