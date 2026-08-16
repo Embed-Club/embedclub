@@ -205,9 +205,16 @@ export interface ChromaGridProps {
   ease?: string
   /** Receives the card's on-screen box so a modal can expand out of it. */
   onItemClick?: (item: ChromaItem, originRect?: DOMRect) => void
+  /** Id of the item whose modal is open — that card steps aside for it. */
+  activeId?: string | null
 }
 
-const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '', onItemClick }) => {
+const ChromaGrid: React.FC<ChromaGridProps> = ({
+  items,
+  className = '',
+  onItemClick,
+  activeId,
+}) => {
   const { theme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -335,7 +342,13 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '', onItemCl
             }}
             // biome-ignore lint/a11y/noNoninteractiveTabindex: making article clickable
             tabIndex={0}
-            className="group relative flex flex-col w-full sm:w-[300px] md:w-[320px] cursor-pointer"
+            className={cn(
+              'group relative flex flex-col w-full sm:w-[300px] md:w-[320px] cursor-pointer',
+              // Hidden, not unmounted: the panel morphs out of this card's box,
+              // so leaving a copy of it sitting underneath reads as duplication.
+              // Kept in the layout so the grid does not reflow around the gap.
+              c.id && c.id === activeId && 'opacity-0',
+            )}
             style={
               {
                 '--mouse-x': '50%',

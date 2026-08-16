@@ -250,6 +250,7 @@ export function MembersPageContent({ members }: { members: MemberDoc[] }) {
                   className="w-full"
                   items={toChromaItems(batch.items)}
                   onItemClick={openFromCard}
+                  activeId={activeId}
                 />
               </div>
             ))}

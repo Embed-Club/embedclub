@@ -77,11 +77,19 @@ function SocialRow({ platform, url }: { platform: string; url?: string }) {
   )
 }
 
-/** Where the panel starts from, expressed as a transform off its final box. */
+/**
+ * The card's box expressed as a transform off the panel's final box.
+ *
+ * Scaled per axis, not uniformly: the card is 4:5 and the panel is much wider
+ * than it is tall, so one scale factor cannot describe the change. The content
+ * is counter-scaled by the inverse of these, which is what keeps the text from
+ * stretching while the container morphs.
+ */
 interface FlipFrom {
   x: number
   y: number
-  scale: number
+  scaleX: number
+  scaleY: number
 }
 
 const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -99,6 +107,8 @@ export function MemberModal({
   originRect?: DOMRect | null
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
   const reduceMotion = useReducedMotion()
   const flipRef = useRef<FlipFrom | null>(null)
@@ -142,9 +152,23 @@ export function MemberModal({
       onClose()
     }
 
+    // The content goes first and faster, so the frame is empty before it
+    // shrinks — collapsing a full panel of text reads as a squash otherwise.
+    if (bodyRef.current) {
+      animate(bodyRef.current, { opacity: 0 }, { duration: DURATION * 0.35, ease: EASE_IN })
+    }
+
+    if (innerRef.current) {
+      animate(
+        innerRef.current,
+        { scaleX: 1 / flip.scaleX, scaleY: 1 / flip.scaleY },
+        { duration: DURATION, ease: EASE_IN },
+      )
+    }
+
     animate(
       panel,
-      { x: flip.x, y: flip.y, scale: flip.scale, opacity: 0 },
+      { x: flip.x, y: flip.y, scaleX: flip.scaleX, scaleY: flip.scaleY, opacity: 0 },
       { duration: DURATION, ease: EASE_IN },
     ).finished.then(finish, finish)
 
@@ -154,21 +178,31 @@ export function MemberModal({
   useOutsideClick(containerRef, requestClose)
 
   /**
-   * FLIP, measured once against the clicked card.
+   * Container transform: the panel morphs out of the clicked card's box.
    *
-   * Deliberately not motion's `layoutId`: that registers every card in the grid
-   * as a layout participant and measures the whole set on each open, which is
-   * what costs frames on a weak phone. Here one box is read, and the animation
-   * runs entirely on `transform` and `opacity` — compositor-only properties, so
-   * there is no layout or paint work per frame.
+   * The container is scaled per axis from the card's size to its own, and the
+   * inner wrapper is scaled by the *inverse* at the same time. The two cancel,
+   * so the content keeps its true proportions throughout while the frame around
+   * it changes shape — a card 320×400 becoming a panel 768×620 without the text
+   * stretching on the way.
    *
-   * The inverse transform is written synchronously in `useLayoutEffect`, before
-   * the browser paints. Setting it from a normal effect would show the panel at
-   * its final size for one frame first, which is the flash this avoids.
+   * Deliberately not width/height: those are layout properties, so every frame
+   * would relayout and repaint the panel, its image and its text. `transform`
+   * is composite-only, which is the difference between smooth and stuttering on
+   * a mid-range phone. Both surfaces already use a 16px radius, so there is no
+   * border-radius to animate either.
+   *
+   * Not motion's `layoutId` either: that registers all 55 cards as layout
+   * participants and measures the set on every open.
+   *
+   * `useLayoutEffect` so the inverted transform lands before the first paint;
+   * from a normal effect the panel would flash at full size for one frame.
    */
   useLayoutEffect(() => {
     const panel = containerRef.current
-    if (!panel) return
+    const inner = innerRef.current
+    const body = bodyRef.current
+    if (!panel || !inner) return
 
     // Same reasoning as the close path: on a hidden page the animation cannot
     // tick, so show the panel in its final state rather than inverted.
@@ -183,22 +217,47 @@ export function MemberModal({
       return
     }
 
-    // One uniform scale, taken from width. Scaling each axis to match the card
-    // exactly would stretch the panel's text and corner radius as it grows.
+    // Top-left origin on both, so the maths is a plain corner-to-corner offset
+    // rather than a centre offset that has to account for each scale.
     const flip: FlipFrom = {
-      x: originRect.left + originRect.width / 2 - (box.left + box.width / 2),
-      y: originRect.top + originRect.height / 2 - (box.top + box.height / 2),
-      scale: Math.max(0.2, Math.min(originRect.width / box.width, 1)),
+      x: originRect.left - box.left,
+      y: originRect.top - box.top,
+      scaleX: Math.max(0.05, originRect.width / box.width),
+      scaleY: Math.max(0.05, originRect.height / box.height),
     }
     flipRef.current = flip
 
-    // Invert now, play to identity next.
-    panel.style.transformOrigin = 'center center'
-    panel.style.transform = `translate(${flip.x}px, ${flip.y}px) scale(${flip.scale})`
+    panel.style.transformOrigin = '0 0'
+    inner.style.transformOrigin = '0 0'
+    panel.style.transform = `translate(${flip.x}px, ${flip.y}px) scale(${flip.scaleX}, ${flip.scaleY})`
+    inner.style.transform = `scale(${1 / flip.scaleX}, ${1 / flip.scaleY})`
     panel.style.opacity = '1'
     // Hinted only for the duration of the move; a permanent `will-change`
     // keeps a compositor layer alive and costs memory on weak devices.
-    panel.style.willChange = 'transform, opacity'
+    panel.style.willChange = 'transform'
+    inner.style.willChange = 'transform'
+
+    // The content is held back and faded in once the frame is most of the way
+    // there. Revealing it from the first frame is what makes a morph read as a
+    // squashed screenshot rather than a container opening.
+    if (body) {
+      animate(
+        body,
+        { opacity: [0, 1], y: [8, 0] },
+        { duration: DURATION * 0.55, delay: DURATION * 0.45, ease: EASE_OUT },
+      )
+    }
+
+    animate(
+      inner,
+      { scaleX: [1 / flip.scaleX, 1], scaleY: [1 / flip.scaleY, 1] },
+      { duration: DURATION, ease: EASE_OUT },
+    ).finished.then(
+      () => {
+        inner.style.willChange = 'auto'
+      },
+      () => {},
+    )
 
     // Separate x / y / scale rather than one `transform` string: motion
     // interpolates these natively and composes the matrix itself, where a full
@@ -207,7 +266,12 @@ export function MemberModal({
     // inversion above left the panel, with no first-frame jump.
     const controls = animate(
       panel,
-      { x: [flip.x, 0], y: [flip.y, 0], scale: [flip.scale, 1] },
+      {
+        x: [flip.x, 0],
+        y: [flip.y, 0],
+        scaleX: [flip.scaleX, 1],
+        scaleY: [flip.scaleY, 1],
+      },
       { duration: DURATION, ease: EASE_OUT },
     )
     controls.finished.then(
@@ -277,72 +341,86 @@ export function MemberModal({
           'shadow-[0_18px_50px_-12px_hsl(var(--foreground)/0.35)]',
         )}
       >
-        <button
-          type="button"
-          onClick={requestClose}
-          aria-label="Close member profile"
-          className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 opacity-90 shadow-sm backdrop-blur-sm transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <X className="h-4 w-4" />
-        </button>
+        {/* Counter-scaled against the container above, so the content keeps its
+            true proportions while the frame morphs. Sized to the container's
+            unscaled box — layout runs before transforms, so 100% here is the
+            panel's real size, not its scaled-down one. The container clips the
+            overflow, which is what makes the frame read as opening. */}
+        <div ref={innerRef} className="h-full w-full">
+          <button
+            type="button"
+            onClick={requestClose}
+            aria-label="Close member profile"
+            className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 opacity-90 shadow-sm backdrop-blur-sm transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <X className="h-4 w-4" />
+          </button>
 
-        <div className="grid max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-[minmax(0,17rem)_1fr] md:gap-8 md:p-8">
-          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-muted">
-            <img src={member.image} alt={member.fullName} className="h-full w-full object-cover" />
-            {member.years && (
-              <span className="absolute right-0 top-0 z-10 rounded-bl-[16px] bg-card px-3 py-1.5 text-xs font-semibold text-primary">
-                {member.years}
-                <CutoutCorner className="absolute -left-[27px] -top-px -rotate-90 text-card" />
-                <CutoutCorner className="absolute -bottom-[27px] -right-px -rotate-90 text-card" />
-              </span>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-5">
-            <div>
-              <h2 className="text-2xl font-bold leading-tight text-foreground md:text-3xl">
-                {member.fullName}
-              </h2>
-              {currentRole && (
-                <p className="mt-1 text-sm font-semibold uppercase tracking-widest text-primary">
-                  {currentRole}
-                </p>
+          <div
+            ref={bodyRef}
+            className="grid max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-[minmax(0,17rem)_1fr] md:gap-8 md:p-8"
+          >
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-muted">
+              <img
+                src={member.image}
+                alt={member.fullName}
+                className="h-full w-full object-cover"
+              />
+              {member.years && (
+                <span className="absolute right-0 top-0 z-10 rounded-bl-[16px] bg-card px-3 py-1.5 text-xs font-semibold text-primary">
+                  {member.years}
+                  <CutoutCorner className="absolute -left-[27px] -top-px -rotate-90 text-card" />
+                  <CutoutCorner className="absolute -bottom-[27px] -right-px -rotate-90 text-card" />
+                </span>
               )}
             </div>
 
-            {previousRoles.length > 0 && (
+            <div className="flex flex-col gap-5">
+              <div>
+                <h2 className="text-2xl font-bold leading-tight text-foreground md:text-3xl">
+                  {member.fullName}
+                </h2>
+                {currentRole && (
+                  <p className="mt-1 text-sm font-semibold uppercase tracking-widest text-primary">
+                    {currentRole}
+                  </p>
+                )}
+              </div>
+
+              {previousRoles.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    Previously
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {previousRoles.map((role) => (
+                      <span
+                        key={role}
+                        className="rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground"
+                      >
+                        {role}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {member.bio && (
+                <p className="text-sm leading-relaxed text-muted-foreground">{member.bio}</p>
+              )}
+
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  Previously
+                  Socials
                 </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {previousRoles.map((role) => (
-                    <span
-                      key={role}
-                      className="rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground"
-                    >
-                      {role}
-                    </span>
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {TRACKED_PLATFORMS.map((platform) => (
+                    <SocialRow key={platform} platform={platform} url={byPlatform.get(platform)} />
+                  ))}
+                  {extra.map((s) => (
+                    <SocialRow key={`${s.platform}-${s.url}`} platform={s.platform} url={s.url} />
                   ))}
                 </div>
-              </div>
-            )}
-
-            {member.bio && (
-              <p className="text-sm leading-relaxed text-muted-foreground">{member.bio}</p>
-            )}
-
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Socials
-              </p>
-              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {TRACKED_PLATFORMS.map((platform) => (
-                  <SocialRow key={platform} platform={platform} url={byPlatform.get(platform)} />
-                ))}
-                {extra.map((s) => (
-                  <SocialRow key={`${s.platform}-${s.url}`} platform={s.platform} url={s.url} />
-                ))}
               </div>
             </div>
           </div>
