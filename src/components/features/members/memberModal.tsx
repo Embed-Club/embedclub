@@ -4,7 +4,7 @@ import { CutoutCorner } from '@/components/common/cutoutCard'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { cn } from '@/lib/utils'
 import { Github, Globe, Instagram, Linkedin, Twitter, X, Youtube } from 'lucide-react'
-import { animate, motion, useReducedMotion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import type React from 'react'
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
@@ -92,9 +92,10 @@ interface FlipFrom {
   scaleY: number
 }
 
-const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1]
-const EASE_IN: [number, number, number, number] = [0.4, 0, 1, 1]
-const DURATION = 0.32
+// Milliseconds and CSS easing: these drive the Web Animations API, not motion.
+const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)'
+const EASE_IN = 'cubic-bezier(0.4, 0, 1, 1)'
+const DURATION = 320
 
 export function MemberModal({
   member,
@@ -128,21 +129,13 @@ export function MemberModal({
     const panel = containerRef.current
     const flip = flipRef.current
 
-    // Nothing to play to, or nobody watching. A hidden page throttles both rAF
-    // and timers — Chrome drops background timers to about once a minute — so
-    // an exit animation there does not merely look wrong, it strands the modal
-    // open until the tab is focused again.
-    if (!panel || !flip || reduceMotion || document.visibilityState !== 'visible') {
+    if (!panel || !flip || reduceMotion) {
       onClose()
       return
     }
 
-    if (overlayRef.current) {
-      animate(overlayRef.current, { opacity: 0 }, { duration: DURATION * 0.8, ease: EASE_IN })
-    }
-
     // Closing must not depend on the animation finishing. A browser that
-    // throttles rAF — a backgrounded tab is the easy case — never resolves
+    // throttles rAF — a backgrounded tab is the easy case — may never resolve
     // `finished`, and hanging the unmount off it alone leaves a modal that
     // cannot be dismissed. Whichever comes first wins.
     let done = false
@@ -152,27 +145,47 @@ export function MemberModal({
       onClose()
     }
 
+    const options: KeyframeAnimationOptions = {
+      duration: DURATION,
+      easing: EASE_IN,
+      fill: 'both',
+    }
+
+    overlayRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: DURATION * 0.8,
+      easing: EASE_IN,
+      fill: 'both',
+    })
+
     // The content goes first and faster, so the frame is empty before it
     // shrinks — collapsing a full panel of text reads as a squash otherwise.
-    if (bodyRef.current) {
-      animate(bodyRef.current, { opacity: 0 }, { duration: DURATION * 0.35, ease: EASE_IN })
-    }
+    bodyRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: DURATION * 0.35,
+      easing: EASE_IN,
+      fill: 'both',
+    })
 
-    if (innerRef.current) {
-      animate(
-        innerRef.current,
-        { scaleX: 1 / flip.scaleX, scaleY: 1 / flip.scaleY },
-        { duration: DURATION, ease: EASE_IN },
+    innerRef.current?.animate(
+      [
+        { transform: 'scale(1, 1)' },
+        { transform: `scale(${1 / flip.scaleX}, ${1 / flip.scaleY})` },
+      ],
+      options,
+    )
+
+    panel
+      .animate(
+        [
+          { transform: 'translate(0px, 0px) scale(1, 1)' },
+          {
+            transform: `translate(${flip.x}px, ${flip.y}px) scale(${flip.scaleX}, ${flip.scaleY})`,
+          },
+        ],
+        options,
       )
-    }
+      .finished.then(finish, finish)
 
-    animate(
-      panel,
-      { x: flip.x, y: flip.y, scaleX: flip.scaleX, scaleY: flip.scaleY, opacity: 0 },
-      { duration: DURATION, ease: EASE_IN },
-    ).finished.then(finish, finish)
-
-    setTimeout(finish, DURATION * 1000 + 80)
+    setTimeout(finish, DURATION + 80)
   }, [onClose, reduceMotion])
 
   useOutsideClick(containerRef, requestClose)
@@ -204,8 +217,9 @@ export function MemberModal({
     const body = bodyRef.current
     if (!panel || !inner) return
 
-    // Same reasoning as the close path: on a hidden page the animation cannot
-    // tick, so show the panel in its final state rather than inverted.
+    // A hidden page does not tick: the animation is created and reports as
+    // running, but currentTime stays at 0, so `fill: backwards` would hold the
+    // panel at card size until the tab is looked at again. Open plainly here.
     if (!originRect || reduceMotion || document.visibilityState !== 'visible') {
       panel.style.opacity = '1'
       return
@@ -227,61 +241,73 @@ export function MemberModal({
     }
     flipRef.current = flip
 
+    // Clear anything still attached. Closing one profile and opening another
+    // remounts this component, but React reuses the same DOM nodes, so the
+    // previous close animation survives — and with `fill: 'both'` it keeps
+    // asserting its end state against the opening one.
+    for (const el of [panel, inner, body]) {
+      if (el) for (const a of el.getAnimations()) a.cancel()
+    }
+
     panel.style.transformOrigin = '0 0'
     inner.style.transformOrigin = '0 0'
-    panel.style.transform = `translate(${flip.x}px, ${flip.y}px) scale(${flip.scaleX}, ${flip.scaleY})`
-    inner.style.transform = `scale(${1 / flip.scaleX}, ${1 / flip.scaleY})`
     panel.style.opacity = '1'
     // Hinted only for the duration of the move; a permanent `will-change`
     // keeps a compositor layer alive and costs memory on weak devices.
     panel.style.willChange = 'transform'
     inner.style.willChange = 'transform'
 
+    const from = `translate(${flip.x}px, ${flip.y}px) scale(${flip.scaleX}, ${flip.scaleY})`
+    const to = 'translate(0px, 0px) scale(1, 1)'
+    const innerFrom = `scale(${1 / flip.scaleX}, ${1 / flip.scaleY})`
+
+    // Native Web Animations rather than motion's imperative `animate`. That
+    // helper drives values from JavaScript on rAF and, on these elements, went
+    // straight to the end state — the modal simply appeared, with no morph at
+    // all. These run on the compositor, off the main thread, which is also why
+    // they hold up on a slow device.
+    //
+    // `backwards`, not `both`. Both would hold the *first* keyframe after the
+    // animation ends as well, so an interrupted or never-ticked opening leaves
+    // the panel frozen at card size — a modal stuck as a thumbnail. Backwards
+    // holds the start only before it begins; once done the element falls back
+    // to its own style, which is already the open state.
+    const options: KeyframeAnimationOptions = {
+      duration: DURATION,
+      easing: EASE_OUT,
+      fill: 'backwards',
+    }
+
+    const panelAnim = panel.animate([{ transform: from }, { transform: to }], options)
+    const innerAnim = inner.animate(
+      [{ transform: innerFrom }, { transform: 'scale(1, 1)' }],
+      options,
+    )
+
     // The content is held back and faded in once the frame is most of the way
     // there. Revealing it from the first frame is what makes a morph read as a
     // squashed screenshot rather than a container opening.
-    if (body) {
-      animate(
-        body,
-        { opacity: [0, 1], y: [8, 0] },
-        { duration: DURATION * 0.55, delay: DURATION * 0.45, ease: EASE_OUT },
-      )
-    }
+    const bodyAnim = body?.animate(
+      [
+        { opacity: 0, transform: 'translateY(8px)' },
+        { opacity: 1, transform: 'translateY(0px)' },
+      ],
+      { duration: DURATION * 0.55, delay: DURATION * 0.45, easing: EASE_OUT, fill: 'backwards' },
+    )
 
-    animate(
-      inner,
-      { scaleX: [1 / flip.scaleX, 1], scaleY: [1 / flip.scaleY, 1] },
-      { duration: DURATION, ease: EASE_OUT },
-    ).finished.then(
+    Promise.all([panelAnim.finished, innerAnim.finished]).then(
       () => {
+        panel.style.willChange = 'auto'
         inner.style.willChange = 'auto'
       },
       () => {},
     )
 
-    // Separate x / y / scale rather than one `transform` string: motion
-    // interpolates these natively and composes the matrix itself, where a full
-    // transform string is treated as a discrete value and simply snaps.
-    // Explicit two-value keyframes so the animation starts exactly where the
-    // inversion above left the panel, with no first-frame jump.
-    const controls = animate(
-      panel,
-      {
-        x: [flip.x, 0],
-        y: [flip.y, 0],
-        scaleX: [flip.scaleX, 1],
-        scaleY: [flip.scaleY, 1],
-      },
-      { duration: DURATION, ease: EASE_OUT },
-    )
-    controls.finished.then(
-      () => {
-        panel.style.willChange = 'auto'
-      },
-      () => {},
-    )
-
-    return () => controls.stop()
+    return () => {
+      panelAnim.cancel()
+      innerAnim.cancel()
+      bodyAnim?.cancel()
+    }
   }, [originRect, reduceMotion])
 
   useEffect(() => {
