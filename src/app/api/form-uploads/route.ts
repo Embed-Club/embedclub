@@ -1,4 +1,5 @@
 import { driveConfigured, resolveDriveFolderId, uploadFormFile } from '@/lib/googleDrive'
+import { isRateLimited } from '@/lib/rateLimit'
 import config from '@/payload/payload.config'
 import { type NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
@@ -55,25 +56,10 @@ function sniffImageType(bytes: ArrayBuffer): string | null {
 
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX = 10
-const recentUploads = new Map<string, number[]>()
-
-function rateLimited(key: string): boolean {
-  const now = Date.now()
-  const hits = (recentUploads.get(key) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
-  hits.push(now)
-  recentUploads.set(key, hits)
-
-  if (recentUploads.size > 500) {
-    for (const [k, v] of recentUploads) {
-      if (v.every((t) => now - t > RATE_LIMIT_WINDOW_MS)) recentUploads.delete(k)
-    }
-  }
-
-  return hits.length > RATE_LIMIT_MAX
-}
 
 function clientKey(req: NextRequest): string {
-  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+  return `upload:${ip}`
 }
 
 export async function POST(req: NextRequest) {
@@ -85,7 +71,12 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (rateLimited(clientKey(req))) {
+    const overLimit = await isRateLimited({
+      key: clientKey(req),
+      windowMs: RATE_LIMIT_WINDOW_MS,
+      max: RATE_LIMIT_MAX,
+    })
+    if (overLimit) {
       return NextResponse.json({ error: 'Too many uploads — wait a minute.' }, { status: 429 })
     }
 

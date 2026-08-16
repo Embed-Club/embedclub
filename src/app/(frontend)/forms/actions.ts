@@ -3,6 +3,7 @@
 import { dispatchCertificatesForForm } from '@/lib/certificateDispatch'
 import { withResolvedSteps } from '@/lib/formQueries'
 import { driveConfigured, getDriveFileMeta } from '@/lib/googleDrive'
+import { isRateLimited } from '@/lib/rateLimit'
 import type { Form } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { headers } from 'next/headers'
@@ -23,18 +24,14 @@ export interface SubmitFormResult {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /**
- * Crude in-process rate limit. The submit path writes to the database on every
- * call and is reachable by anyone, so this stops a trivial flood. It resets on
- * deploy and is per-instance — good enough for a club site, and deliberately
- * not a substitute for a real WAF if this ever gets seriously targeted.
- *
- * Keyed per client *and* form. Keying on the form alone gave every visitor a
- * shared budget, so five sign-ups in a minute locked the form for everyone —
- * which is precisely what a registration form does when a session opens.
+ * The submit path writes to the database on every call and is reachable by
+ * anyone, so it is rate limited per visitor and form. Keying on the form alone
+ * gave every visitor a shared budget, so five sign-ups in a minute locked the
+ * form for everyone — precisely what a registration form does when a session
+ * opens.
  */
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX = 5
-const recentSubmits = new Map<string, number[]>()
 
 /**
  * Caller identity for the rate limit. Vercel sets `x-forwarded-for`; the first
@@ -44,23 +41,7 @@ const recentSubmits = new Map<string, number[]>()
 async function clientKey(slug: string): Promise<string> {
   const headerList = await headers()
   const ip = headerList.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
-  return `${ip}:${slug}`
-}
-
-function rateLimited(key: string): boolean {
-  const now = Date.now()
-  const hits = (recentSubmits.get(key) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
-  hits.push(now)
-  recentSubmits.set(key, hits)
-
-  // Stop the map growing without bound on a long-lived instance
-  if (recentSubmits.size > 500) {
-    for (const [k, v] of recentSubmits) {
-      if (v.every((t) => now - t > RATE_LIMIT_WINDOW_MS)) recentSubmits.delete(k)
-    }
-  }
-
-  return hits.length > RATE_LIMIT_MAX
+  return `form:${slug}:${ip}`
 }
 
 type FormField = NonNullable<NonNullable<Form['steps']>[number]['fields']>[number]
@@ -97,7 +78,12 @@ export async function submitForm(
       return { success: true, message: 'Your response has been recorded. Thank you!' }
     }
 
-    if (rateLimited(await clientKey(slug))) {
+    const overLimit = await isRateLimited({
+      key: await clientKey(slug),
+      windowMs: RATE_LIMIT_WINDOW_MS,
+      max: RATE_LIMIT_MAX,
+    })
+    if (overLimit) {
       return { success: false, message: 'Too many submissions just now — try again in a minute.' }
     }
 
