@@ -2,6 +2,7 @@
 
 import ChromaScene from '@/components/common/chromaScene'
 import { EmptyState } from '@/components/common/emptyState'
+import { MemberModal, type MemberModalData } from '@/components/features/members/memberModal'
 import type { Member as MemberDoc, MemberPhoto as MemberPhotoDoc } from '@/payload/payload-types'
 import React from 'react'
 
@@ -141,16 +142,58 @@ function toChromaItems(items: MemberDoc[]) {
     const yearsLabel = m.startYear ? `${m.startYear}${m.endYear ? `–${m.endYear}` : ''}` : ''
     const subtitle = rolesLabel || yearsLabel || 'Member'
     const handle = yearsLabel || undefined
-    const url = m.linkedin || m.github || undefined
 
+    // No `url`: a card used to open whichever social account happened to be
+    // filled in, which meant most members were not clickable at all and the
+    // rest sent the reader off-site. Clicks open the profile modal instead.
     return {
+      id: String(m.id),
       image: src,
       title: m.fullName ?? 'Member',
       subtitle,
       handle,
-      url,
     }
   })
+}
+
+/** Role names in the order they are listed — first is the one held now. */
+function roleNames(member: MemberDoc): string[] {
+  const roles = member.roles as unknown
+  if (Array.isArray(roles)) {
+    return roles
+      .map((r) =>
+        typeof r === 'object' && r ? ((r as Record<string, unknown>).name as string) : null,
+      )
+      .filter((n): n is string => Boolean(n))
+  }
+  if (roles && typeof roles === 'object') {
+    const name = (roles as Record<string, unknown>).name
+    return typeof name === 'string' ? [name] : []
+  }
+  return []
+}
+
+function toModalData(member: MemberDoc): MemberModalData {
+  const photo = (member.photo as unknown as MemberPhotoDoc | null) ?? null
+  const socials = Array.isArray(member.socialAccounts)
+    ? member.socialAccounts
+        .map((s) => ({ platform: String(s?.platform ?? 'other'), url: String(s?.url ?? '') }))
+        .filter((s) => s.url)
+    : []
+
+  return {
+    id: String(member.id),
+    fullName: member.fullName ?? 'Member',
+    image: resolveImageSrc(photo) ?? fallbackAvatar(member.fullName ?? ''),
+    roles: roleNames(member),
+    years: member.startYear
+      ? `${member.startYear}${member.endYear ? `–${member.endYear}` : ''}`
+      : undefined,
+    bio: member.bio ?? undefined,
+    github: member.github ?? undefined,
+    linkedin: member.linkedin ?? undefined,
+    socials,
+  }
 }
 
 /**
@@ -159,6 +202,20 @@ function toChromaItems(items: MemberDoc[]) {
  */
 export function MembersPageContent({ members }: { members: MemberDoc[] }) {
   const grouped = React.useMemo(() => groupByCategorySorted(members), [members])
+  const [activeId, setActiveId] = React.useState<string | null>(null)
+
+  const byId = React.useMemo(() => {
+    const map = new Map<string, MemberDoc>()
+    for (const m of members) map.set(String(m.id), m)
+    return map
+  }, [members])
+
+  const activeMember = activeId ? byId.get(activeId) : undefined
+  const closeModal = React.useCallback(() => setActiveId(null), [])
+
+  const openFromCard = React.useCallback((item: { id?: string }) => {
+    if (item.id) setActiveId(item.id)
+  }, [])
 
   return (
     <ChromaScene radius={300} damping={0.45} fadeOut={0.6} ease="power3.out">
@@ -181,12 +238,18 @@ export function MembersPageContent({ members }: { members: MemberDoc[] }) {
                   </span>
                   <span className="h-px flex-1 bg-border" />
                 </div>
-                <ChromaGridWrapper className="w-full" items={toChromaItems(batch.items)} />
+                <ChromaGridWrapper
+                  className="w-full"
+                  items={toChromaItems(batch.items)}
+                  onItemClick={openFromCard}
+                />
               </div>
             ))}
           </section>
         ))}
       </div>
+
+      {activeMember && <MemberModal member={toModalData(activeMember)} onClose={closeModal} />}
     </ChromaScene>
   )
 }

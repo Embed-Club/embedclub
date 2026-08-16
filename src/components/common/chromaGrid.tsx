@@ -6,6 +6,8 @@ import type React from 'react'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
 export interface ChromaItem {
+  /** Identifies the source record, so a click can look up the full document. */
+  id?: string
   image: string
   title: string
   subtitle: string
