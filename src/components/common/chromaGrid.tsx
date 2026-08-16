@@ -203,7 +203,8 @@ export interface ChromaGridProps {
   damping?: number
   fadeOut?: number
   ease?: string
-  onItemClick?: (item: ChromaItem) => void
+  /** Receives the card's on-screen box so a modal can expand out of it. */
+  onItemClick?: (item: ChromaItem, originRect?: DOMRect) => void
 }
 
 const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '', onItemClick }) => {
@@ -288,9 +289,9 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '', onItemCl
 
   const data = items?.length ? items : demo
 
-  const handleCardClick = (item: ChromaItem) => {
+  const handleCardClick = (item: ChromaItem, el?: HTMLElement) => {
     if (onItemClick) {
-      onItemClick(item)
+      onItemClick(item, el?.getBoundingClientRect())
     } else if (item.url) {
       window.open(item.url, '_blank', 'noopener,noreferrer')
     }
@@ -325,11 +326,11 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({ items, className = '', onItemCl
                 `${e.clientY - rect.top}px`,
               )
             }}
-            onClick={() => handleCardClick(c)}
+            onClick={(e) => handleCardClick(c, e.currentTarget as HTMLElement)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault()
-                handleCardClick(c)
+                handleCardClick(c, e.currentTarget as HTMLElement)
               }
             }}
             // biome-ignore lint/a11y/noNoninteractiveTabindex: making article clickable

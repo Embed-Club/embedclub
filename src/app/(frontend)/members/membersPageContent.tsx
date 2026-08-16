@@ -203,6 +203,7 @@ function toModalData(member: MemberDoc): MemberModalData {
 export function MembersPageContent({ members }: { members: MemberDoc[] }) {
   const grouped = React.useMemo(() => groupByCategorySorted(members), [members])
   const [activeId, setActiveId] = React.useState<string | null>(null)
+  const [originRect, setOriginRect] = React.useState<DOMRect | null>(null)
 
   const byId = React.useMemo(() => {
     const map = new Map<string, MemberDoc>()
@@ -211,10 +212,17 @@ export function MembersPageContent({ members }: { members: MemberDoc[] }) {
   }, [members])
 
   const activeMember = activeId ? byId.get(activeId) : undefined
-  const closeModal = React.useCallback(() => setActiveId(null), [])
+  const closeModal = React.useCallback(() => {
+    setActiveId(null)
+    setOriginRect(null)
+  }, [])
 
-  const openFromCard = React.useCallback((item: { id?: string }) => {
-    if (item.id) setActiveId(item.id)
+  // The clicked card's box, so the panel can grow out of exactly that card
+  // rather than from the middle of the screen.
+  const openFromCard = React.useCallback((item: { id?: string }, rect?: DOMRect) => {
+    if (!item.id) return
+    setOriginRect(rect ?? null)
+    setActiveId(item.id)
   }, [])
 
   return (
@@ -249,7 +257,13 @@ export function MembersPageContent({ members }: { members: MemberDoc[] }) {
         ))}
       </div>
 
-      {activeMember && <MemberModal member={toModalData(activeMember)} onClose={closeModal} />}
+      {activeMember && (
+        <MemberModal
+          member={toModalData(activeMember)}
+          onClose={closeModal}
+          originRect={originRect}
+        />
+      )}
     </ChromaScene>
   )
 }
