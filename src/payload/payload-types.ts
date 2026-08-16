@@ -1117,7 +1117,14 @@ export interface Project {
 export interface Member {
   id: number;
   fullName: string;
-  photo: number | MemberPhoto;
+  /**
+   * Optional. Without one, an avatar is generated instead.
+   */
+  photo?: (number | null) | MemberPhoto;
+  /**
+   * Only used to pick a generated avatar. Never shown on the site.
+   */
+  gender?: ('male' | 'female' | 'unspecified') | null;
   category: number | MemberCategory;
   /**
    * A member can hold multiple roles over time (e.g. Member, then President). First role listed is shown most prominently.
@@ -1204,7 +1211,7 @@ export interface MemberCategory {
   /**
    * Ascending shows the latest year first. Descending shows the oldest year.
    */
-  batchOrder: 'newestFirst' | 'oldestFirst';
+  batchOrder: 'oldestFirst' | 'newestFirst';
   /**
    * Position in the list. Lower numbers appear first.
    */
@@ -2015,6 +2022,7 @@ export interface ProjectsSelect<T extends boolean = true> {
 export interface MembersSelect<T extends boolean = true> {
   fullName?: T;
   photo?: T;
+  gender?: T;
   category?: T;
   roles?: T;
   bio?: T;

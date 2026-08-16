@@ -15,7 +15,25 @@ export const Members: CollectionConfig = {
       label: 'Photo',
       type: 'upload',
       relationTo: 'member-photo', // changed from 'media'
-      required: true,
+      // Optional: a member without a photo gets a generated avatar on the site
+      // rather than a blank frame, so waiting for a photo is not a reason to
+      // leave someone off the page.
+      admin: { description: 'Optional. Without one, an avatar is generated instead.' },
+    },
+    {
+      // Admin-only. The site never prints this — it exists to pick the avatar
+      // used when there is no photo.
+      name: 'gender',
+      label: 'Gender',
+      type: 'select',
+      options: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+        { label: 'Prefer not to say', value: 'unspecified' },
+      ],
+      admin: {
+        description: 'Only used to pick a generated avatar. Never shown on the site.',
+      },
     },
     {
       name: 'category',

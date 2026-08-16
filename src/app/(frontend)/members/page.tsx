@@ -25,7 +25,12 @@ async function getMembers(): Promise<Member[]> {
       pagination: false,
       sort: '-startYear',
     })
-    return res.docs
+
+    // `gender` is admin-only — it exists to pick a generated avatar, nothing
+    // more. The page is a client component, so anything left on the doc ships
+    // in the RSC payload and is readable in page source: "not rendered" is not
+    // the same as "not published". Dropped here, at the boundary.
+    return res.docs.map(({ gender: _gender, ...member }) => member as Member)
   } catch (error) {
     console.error('[Members] Error fetching from Payload:', error)
     // Rethrow: an empty list here would render as "nothing published yet",

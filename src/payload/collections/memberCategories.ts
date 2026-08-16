@@ -67,9 +67,12 @@ export const MemberCategories: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'oldestFirst',
+      // Listed oldest-first to match the order the Postgres enum was created
+      // with. Reordering them here rewrites the enum type on every subsequent
+      // migration, which is a lot of churn for the sake of dropdown order.
       options: [
-        { label: 'Ascending', value: 'newestFirst' },
         { label: 'Descending', value: 'oldestFirst' },
+        { label: 'Ascending', value: 'newestFirst' },
       ],
       admin: {
         description: 'Ascending shows the latest year first. Descending shows the oldest year.',

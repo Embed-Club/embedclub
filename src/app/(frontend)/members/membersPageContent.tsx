@@ -92,10 +92,40 @@ function resolveImageSrc(photo: MemberPhotoDoc | null) {
   return sizes?.card?.url || sizes?.thumbnail?.url || photo.url || undefined
 }
 
+/** Two initials from a name, for the placeholder avatar. */
+function initialsOf(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return '?'
+  const first = parts[0][0] ?? ''
+  const last = parts.length > 1 ? (parts[parts.length - 1][0] ?? '') : ''
+  return (first + last).toUpperCase()
+}
+
+/**
+ * Stand-in avatar for a member with no photo uploaded.
+ *
+ * An inline SVG data URI rather than a request: it needs no network, no
+ * external placeholder service, and cannot 404. This is the seam where a real
+ * generated avatar goes once the package is chosen — `gender` is deliberately
+ * kept server-side, so that generation belongs on the server too, with only
+ * the finished image URL handed to this component.
+ */
+function fallbackAvatar(name: string): string {
+  const initials = initialsOf(name)
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+    <rect width="400" height="500" fill="#2a2724"/>
+    <circle cx="200" cy="200" r="78" fill="#3a3531"/>
+    <path d="M60 460c0-77 63-140 140-140s140 63 140 140z" fill="#3a3531"/>
+    <text x="200" y="215" font-family="system-ui,sans-serif" font-size="64" font-weight="600"
+      fill="#8a8078" text-anchor="middle">${initials}</text>
+  </svg>`
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+}
+
 function toChromaItems(items: MemberDoc[]) {
   return items.map((m) => {
     const photo = (m.photo as unknown as MemberPhotoDoc | null) ?? null
-    const src = resolveImageSrc(photo) ?? 'https://via.placeholder.com/600x600?text=Member'
+    const src = resolveImageSrc(photo) ?? fallbackAvatar(m.fullName ?? '')
     let rolesLabel = ''
     if (Array.isArray(m.roles)) {
       rolesLabel = (m.roles as unknown as Array<Record<string, unknown>>)
