@@ -52,8 +52,17 @@ export function ProjectModal({ card, onClose, layoutId }: ProjectModalProps) {
   // ancestor becomes the containing block for the fixed overlay.
   if (typeof document === 'undefined') return null
 
+  // `items-start` + `my-auto` on the panel, not `items-center`: a centred flex
+  // child taller than its container overflows both ways and its top becomes
+  // unreachable. The env() padding keeps it clear of the notch and gesture bar.
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto px-3 py-4 md:py-6">
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-auto px-4 md:px-6"
+      style={{
+        paddingTop: 'max(1.5rem, env(safe-area-inset-top))',
+        paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
+      }}
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -65,7 +74,9 @@ export function ProjectModal({ card, onClose, layoutId }: ProjectModalProps) {
         ref={containerRef}
         layoutId={layoutId}
         className={cn(
-          'relative z-[60] max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground',
+          // svh, not vh: mobile browsers size vh as though the URL bar were
+          // hidden, so the panel's top sits under the browser chrome.
+          'relative z-[60] my-auto max-h-[85svh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground md:max-h-[90svh]',
           'shadow-[0_18px_50px_-12px_hsl(var(--foreground)/0.35)]',
         )}
       >
@@ -78,7 +89,7 @@ export function ProjectModal({ card, onClose, layoutId }: ProjectModalProps) {
           <X className="h-4 w-4" />
         </button>
 
-        <div className="grid h-full max-h-[90vh] grid-cols-1 gap-8 overflow-y-auto p-2 md:grid-cols-2 md:p-8 lg:p-10">
+        <div className="grid h-full max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-2 md:gap-8 md:p-8 lg:p-10">
           {/* Image, with the title in the same notched inset label as the
                   card. With no photo the panel is typeset instead — same move
                   the showcase tile makes. */}

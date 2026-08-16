@@ -170,10 +170,21 @@ export const EventModal = ({
 
   if (!mounted) return null
 
+  // `items-start` + `my-auto` on the panel, not `items-center`: a centred flex
+  // child taller than its container overflows equally both ways and the top
+  // half becomes unreachable — no amount of scrolling gets back to it. This
+  // still centres a short modal and scrolls a tall one from its actual top.
+  // The env() padding keeps it clear of the notch and the gesture bar.
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 md:py-6 overflow-auto">
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-auto px-4 md:px-6"
+          style={{
+            paddingTop: 'max(1.5rem, env(safe-area-inset-top))',
+            paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
+          }}
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -187,7 +198,10 @@ export const EventModal = ({
             ref={containerRef}
             layoutId={layoutId}
             className={cn(
-              'relative z-[60] max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground',
+              // `svh`, not `vh`: mobile browsers size `vh` as though the URL bar
+              // were hidden, so a 90vh panel is taller than what is actually on
+              // screen and its top sits under the browser chrome.
+              'relative z-[60] my-auto max-h-[85svh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground md:max-h-[90svh]',
               cutoutCardSurfaceShadowClassName,
             )}
           >
@@ -200,7 +214,7 @@ export const EventModal = ({
               <X className="h-4 w-4" />
             </button>
 
-            <div className="grid h-full max-h-[90vh] grid-cols-1 gap-8 overflow-y-auto p-2 md:grid-cols-2 md:p-8 lg:p-10">
+            <div className="grid h-full max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-2 md:gap-8 md:p-8 lg:p-10">
               {/* Image Section — same cutout inset label as the card it opened from */}
               <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted">
                 <BlurImage src={card.src} alt={card.title} fill className="object-contain" />
