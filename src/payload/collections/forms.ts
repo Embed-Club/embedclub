@@ -102,7 +102,7 @@ export const Forms: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'The event this form belongs to. Events are created first, so the link is set here — the event page then shows a button to this form automatically.',
+          'The event this form belongs to. The event page then links to it automatically.',
       },
     },
     {
@@ -135,7 +135,7 @@ export const Forms: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'The questions below are the template. Each section under this form asks exactly them, and keeps its own responses.',
+          'The questions below are shared by every section, but responses are kept separate.',
       },
     },
     {
@@ -295,8 +295,7 @@ export const Forms: CollectionConfig = {
               ],
               admin: {
                 condition: (_data, siblingData) => !ROLELESS_TYPES.includes(siblingData?.fieldType),
-                description:
-                  'Marks which question holds the name and which holds the email. Required for certificates — the name is printed on them and the email is where they are sent.',
+                description: 'Which questions hold the name and email. Required for certificates.',
               },
             },
             {
@@ -395,7 +394,7 @@ export const Forms: CollectionConfig = {
       type: 'text',
       admin: {
         description:
-          'Optional. Paste the Sheet URL (or its id) to mirror this form’s responses there — one sheet per form. Share it with the service account address as an Editor first, or nothing will be written. Leave empty to use the default sheet, or to skip Sheets entirely.',
+          'Optional. Paste a Sheet URL to mirror responses there. Share it with the service account as an Editor first.',
       },
       hooks: {
         // Officers will paste the whole URL from the address bar; keep the id.
@@ -413,8 +412,7 @@ export const Forms: CollectionConfig = {
       label: 'Google Drive Folder',
       type: 'text',
       admin: {
-        description:
-          'Where photos that respondents attach are stored — nothing is uploaded to this site. Paste the folder URL (or its id). It must live in the Drive of the account the site is authorised as, which is the account that ran the Drive setup. Leave empty to use the default folder.',
+        description: 'Google Drive folder for attachments. Leave empty to use the default.',
       },
       hooks: {
         // Officers will paste the whole URL from the address bar; keep the id.
@@ -445,8 +443,7 @@ export const Forms: CollectionConfig = {
       ],
       admin: {
         condition: (data) => data.showCertificate,
-        description:
-          'Immediate also lets them download it on the spot. Scheduled emails everyone who has submitted once the time passes, and keeps emailing late submitters after that.',
+        description: 'Immediate sends on submit. Scheduled sends at the time you set below.',
       },
     },
     {
@@ -464,8 +461,7 @@ export const Forms: CollectionConfig = {
       type: 'array',
       admin: {
         condition: (data) => data.showCertificate && data.certificateDelivery === 'scheduled',
-        description:
-          'Optional — send different groups at different times, e.g. "Section A gets theirs at 5pm, Section B at 9pm". A batch is matched against one of this form\'s questions. Anyone who matches no batch falls back to the send time above.',
+        description: 'Optional. Send different groups at different times, matched on one question.',
       },
       fields: [
         {
@@ -562,8 +558,7 @@ export const Forms: CollectionConfig = {
         condition: (data) => data.showCertificate,
         placeholder:
           'Dear {{name}},\n\nThank you for attending {{event}}. Your certificate is attached.\n\nRegards,\nEmbed Club',
-        description:
-          'Optional. {{name}} and {{event}} are replaced per recipient. Leave empty for the default message.',
+        description: 'Optional. {{name}} and {{event}} are filled in per person.',
       },
     },
     {
@@ -572,8 +567,7 @@ export const Forms: CollectionConfig = {
       type: 'text',
       admin: {
         condition: (data) => data.showCertificate,
-        description:
-          'Paste the Google Slides link (or its id) for this event’s certificate. The slide must contain {{name}} where the name should print. Leave empty to use the default template configured in the Apps Script.',
+        description: 'Google Slides link for the certificate. The slide must contain {{name}}.',
       },
       hooks: {
         // Officers will paste the whole URL from the address bar; keep the id.
@@ -606,7 +600,7 @@ export const Forms: CollectionConfig = {
       admin: {
         condition: (data) => data.showCertificate,
         description:
-          'What each {{marker}} in the Slides template is filled with. {{name}} and {{event}} are automatic — the rest go here.',
+          'Fills the other {{markers}} in the template. {{name}} and {{event}} are automatic.',
         components: {
           RowLabel: '@/components/admin/certificatePlaceholderRowLabel',
         },
@@ -668,8 +662,7 @@ export const Forms: CollectionConfig = {
           type: 'text',
           admin: {
             condition: (_data, siblingData) => siblingData?.source === 'perPerson',
-            description:
-              'Printed for anyone an officer did not set a value for. Leave empty to print nothing — which is usually right for a placing, since most people did not place.',
+            description: 'Used when no per-person value is set. Leave empty to print nothing.',
           },
         },
       ],

@@ -176,7 +176,7 @@ export const GraphBlock: Block = {
       required: false,
       admin: {
         description:
-          'Draw your diagram free at https://app.diagrams.net — no account needed. Then either: (1) File → Publish → Link, and paste that link here, or (2) File → Export as → SVG/PNG, upload it as an Image Block instead. Both work on desktop and mobile.',
+          'Draw one free at app.diagrams.net, then File → Publish → Link and paste it here.',
         placeholder: 'https://viewer.diagrams.net/?...  or  https://.../diagram.svg',
         // `siblingData`, not `data`: inside a block, `data` is the whole
         // document, so `data.graphType` is always undefined and the field
@@ -289,8 +289,7 @@ export const VideoBlock: Block = {
       type: 'text',
       required: true,
       admin: {
-        description:
-          'Paste any YouTube link — watch, share (youtu.be), Shorts, or live. The player appears on the page automatically.',
+        description: 'Paste any YouTube link. The player appears on the page.',
         placeholder: 'https://www.youtube.com/watch?v=...',
       },
     },

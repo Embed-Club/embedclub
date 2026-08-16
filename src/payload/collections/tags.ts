@@ -41,7 +41,7 @@ export const Tags: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
-        description: 'URL-friendly version (auto-generated from name, but you can edit it)',
+        description: 'Auto-generates from the name. Enter your own if it clashes with another tag.',
         placeholder: 'Will auto-generate when you type the name',
       },
     },

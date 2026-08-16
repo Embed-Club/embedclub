@@ -21,8 +21,7 @@ export const FormMedia: CollectionConfig = {
   },
   admin: {
     group: 'Forms',
-    description:
-      'Images shown inside forms — posters, payment QR codes, instructions. Separate from the site media library.',
+    description: 'Images used inside forms, kept separate from the site media library.',
   },
   access: {
     read: () => true,

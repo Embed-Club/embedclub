@@ -66,18 +66,15 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
     })
   } catch (error) {
     console.error('[Simulators] Error fetching from Payload:', error)
-    return []
+    // Rethrow: an empty list here would render as "nothing published yet",
+    // which is a different thing than the query having failed. The route
+    // error boundary shows the outage and offers a retry.
+    throw error
   }
 }
 
 export default async function Page() {
-  let simulators: SimulatorCardData[] = []
-
-  try {
-    simulators = await getSimulators()
-  } catch (error) {
-    console.error('[Simulators Page] Error:', error)
-  }
+  const simulators = await getSimulators()
 
   return (
     <SidebarShell>

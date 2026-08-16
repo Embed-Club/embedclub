@@ -85,7 +85,6 @@ type Card = {
   title: string
   src: string
   event?: Event
-  isFallback?: boolean
 }
 
 export function FocusCards({ cards }: { cards: Card[] }) {
@@ -109,7 +108,6 @@ export function FocusCards({ cards }: { cards: Card[] }) {
       title: card.title,
       category: 'Event',
       content: null,
-      isFallback: card.isFallback,
     }
   }, [activeIndex, cards])
 

@@ -27,7 +27,10 @@ async function getEvents(): Promise<Event[]> {
     return res.docs
   } catch (error) {
     console.error('[Events] Error fetching from Payload:', error)
-    return []
+    // Rethrow: an empty list here would render as "nothing published yet",
+    // which is a different thing than the query having failed. The route
+    // error boundary shows the outage and offers a retry.
+    throw error
   }
 }
 

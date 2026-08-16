@@ -5,8 +5,7 @@
  *
  * It used to scramble in through `DecryptedText` on view, but the landing
  * intro's logo fill and glide covers the whole viewport while that plays — the
- * effect had always finished by the time anything was visible. `comingSoon`
- * still uses that component, where it does get seen.
+ * effect had always finished by the time anything was visible.
  */
 export default function DashboardTitle() {
   return (

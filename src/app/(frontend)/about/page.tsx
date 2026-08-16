@@ -22,7 +22,10 @@ async function getAboutPage() {
     return await payload.findGlobal({ slug: 'about-page' })
   } catch (error) {
     console.error('[About] Error fetching global:', error)
-    return null
+    // Rethrow: an empty list here would render as "nothing published yet",
+    // which is a different thing than the query having failed. The route
+    // error boundary shows the outage and offers a retry.
+    throw error
   }
 }
 

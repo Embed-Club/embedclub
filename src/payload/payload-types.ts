@@ -182,23 +182,23 @@ export interface Event {
   category: string;
   title: string;
   /**
-   * URL-friendly version (auto-generated from title, but you can edit it)
+   * Auto-generates from the title. Enter your own if it clashes with another event.
    */
   slug: string;
   /**
-   * When the event happens. Controls ordering and the automatic NEW badge.
+   * When the event happens. Recent events get a NEW badge.
    */
   eventDate: string;
   /**
-   * Online events hide the venue/map tabs and show a meeting link
+   * Online events show a meeting link instead of a venue.
    */
   eventMode: 'inPerson' | 'online';
   /**
-   * Google Meet / Zoom / stream URL shown for online events
+   * Link attendees join the event through.
    */
   meetingLink?: string | null;
   /**
-   * Registration and feedback forms attached to this event. Add one by creating a form and setting its Related Event.
+   * Forms attached to this event. Set the link from the form, not here.
    */
   forms?: {
     docs?: (number | Form)[];
@@ -206,15 +206,15 @@ export interface Event {
     totalDocs?: number;
   };
   /**
-   * Main image shown in carousel and modal
+   * Poster shown on the event card.
    */
   image: number | Media;
   /**
-   * Brief tagline shown on the carousel card (optional, max 200 characters)
+   * Short tagline shown on the event card (max 200 characters).
    */
   shortDescription?: string | null;
   /**
-   * Full details about the event (shown in modal popup)
+   * Full details, shown when the event card is opened.
    */
   description: {
     root: {
@@ -280,7 +280,7 @@ export interface Form {
   slug: string;
   type: 'registration' | 'feedback' | 'general';
   /**
-   * The event this form belongs to. Events are created first, so the link is set here — the event page then shows a button to this form automatically.
+   * The event this form belongs to. The event page then links to it automatically.
    */
   relatedEvent?: (number | null) | Event;
   /**
@@ -288,7 +288,7 @@ export interface Form {
    */
   active?: boolean | null;
   /**
-   * The questions below are the template. Each section under this form asks exactly them, and keeps its own responses.
+   * The questions below are shared by every section, but responses are kept separate.
    */
   sectionGroup?: boolean | null;
   /**
@@ -349,7 +349,7 @@ export interface Form {
             | 'imageUpload'
             | 'image';
           /**
-           * Marks which question holds the name and which holds the email. Required for certificates — the name is printed on them and the email is where they are sent.
+           * Which questions hold the name and email. Required for certificates.
            */
           role?: ('none' | 'name' | 'email') | null;
           required?: boolean | null;
@@ -386,11 +386,11 @@ export interface Form {
     | null;
   confirmationMessage?: string | null;
   /**
-   * Optional. Paste the Sheet URL (or its id) to mirror this form’s responses there — one sheet per form. Share it with the service account address as an Editor first, or nothing will be written. Leave empty to use the default sheet, or to skip Sheets entirely.
+   * Optional. Paste a Sheet URL to mirror responses there. Share it with the service account as an Editor first.
    */
   sheetId?: string | null;
   /**
-   * Where photos that respondents attach are stored — nothing is uploaded to this site. Paste the folder URL (or its id). It must live in the Drive of the account the site is authorised as, which is the account that ran the Drive setup. Leave empty to use the default folder.
+   * Google Drive folder for attachments. Leave empty to use the default.
    */
   driveFolderId?: string | null;
   /**
@@ -398,7 +398,7 @@ export interface Form {
    */
   showCertificate?: boolean | null;
   /**
-   * Immediate also lets them download it on the spot. Scheduled emails everyone who has submitted once the time passes, and keeps emailing late submitters after that.
+   * Immediate sends on submit. Scheduled sends at the time you set below.
    */
   certificateDelivery?: ('immediate' | 'scheduled') | null;
   /**
@@ -406,7 +406,7 @@ export interface Form {
    */
   certificateSendAt?: string | null;
   /**
-   * Optional — send different groups at different times, e.g. "Section A gets theirs at 5pm, Section B at 9pm". A batch is matched against one of this form's questions. Anyone who matches no batch falls back to the send time above.
+   * Optional. Send different groups at different times, matched on one question.
    */
   certificateBatches?:
     | {
@@ -436,15 +436,15 @@ export interface Form {
    */
   certificateEmailSubject?: string | null;
   /**
-   * Optional. {{name}} and {{event}} are replaced per recipient. Leave empty for the default message.
+   * Optional. {{name}} and {{event}} are filled in per person.
    */
   certificateEmailBody?: string | null;
   /**
-   * Paste the Google Slides link (or its id) for this event’s certificate. The slide must contain {{name}} where the name should print. Leave empty to use the default template configured in the Apps Script.
+   * Google Slides link for the certificate. The slide must contain {{name}}.
    */
   certificateTemplateDriveId?: string | null;
   /**
-   * What each {{marker}} in the Slides template is filled with. {{name}} and {{event}} are automatic — the rest go here.
+   * Fills the other {{markers}} in the template. {{name}} and {{event}} are automatic.
    */
   certificatePlaceholders?:
     | {
@@ -462,7 +462,7 @@ export interface Form {
          */
         fixedValue?: string | null;
         /**
-         * Printed for anyone an officer did not set a value for. Leave empty to print nothing — which is usually right for a placing, since most people did not place.
+         * Used when no per-person value is set. Leave empty to print nothing.
          */
         defaultValue?: string | null;
         id?: string | null;
@@ -472,7 +472,7 @@ export interface Form {
   createdAt: string;
 }
 /**
- * Images shown inside forms — posters, payment QR codes, instructions. Separate from the site media library.
+ * Images used inside forms, kept separate from the site media library.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-media".
@@ -652,7 +652,7 @@ export interface Resource {
   _order?: string | null;
   title: string;
   /**
-   * URL-friendly version (auto-generated from title, but you can edit it)
+   * Auto-generates from the title. Enter your own if it clashes with another page.
    */
   slug: string;
   /**
@@ -676,11 +676,11 @@ export interface Resource {
    */
   estimatedReadTime?: number | null;
   /**
-   * Optional label shown on the card. "New" is added automatically for the first 14 days. "Coming Soon" also makes the card non-clickable, for a page announced before it is written
+   * Optional badge on the card. "Coming Soon" also makes it unclickable.
    */
   badge?: ('featured' | 'popular' | 'essential' | 'comingSoon') | null;
   /**
-   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, collapsible sections, and more.
+   * The page body. Add text, code, images, diagrams and more as blocks.
    */
   content?:
     | (
@@ -708,7 +708,7 @@ export interface Tag {
   id: number;
   name: string;
   /**
-   * URL-friendly version (auto-generated from name, but you can edit it)
+   * Auto-generates from the name. Enter your own if it clashes with another tag.
    */
   slug: string;
   updatedAt: string;
@@ -818,7 +818,7 @@ export interface GraphBlock {
    */
   graphType: 'mermaid' | 'drawio' | 'chartData' | 'html';
   /**
-   * Draw your diagram free at https://app.diagrams.net — no account needed. Then either: (1) File → Publish → Link, and paste that link here, or (2) File → Export as → SVG/PNG, upload it as an Image Block instead. Both work on desktop and mobile.
+   * Draw one free at app.diagrams.net, then File → Publish → Link and paste it here.
    */
   drawioUrl?: string | null;
   /**
@@ -876,7 +876,7 @@ export interface ImageBlock {
  */
 export interface VideoBlock {
   /**
-   * Paste any YouTube link — watch, share (youtu.be), Shorts, or live. The player appears on the page automatically.
+   * Paste any YouTube link. The player appears on the page.
    */
   url: string;
   /**
@@ -951,7 +951,7 @@ export interface Simulator {
    */
   launchUrl: string;
   /**
-   * Optional YouTube, Vimeo, or direct .mp4 link. Plays inside the modal so students can follow along.
+   * Optional walkthrough video. Plays inside the simulator popup.
    */
   videoUrl?: string | null;
   /**
@@ -1006,7 +1006,7 @@ export interface Tutorial {
   _order?: string | null;
   title: string;
   /**
-   * URL-friendly version (auto-generated from title, but you can edit it)
+   * Auto-generates from the title. Enter your own if it clashes with another page.
    */
   slug: string;
   /**
@@ -1030,11 +1030,11 @@ export interface Tutorial {
    */
   estimatedReadTime?: number | null;
   /**
-   * Optional label shown on the card. "New" is added automatically for the first 14 days. "Coming Soon" also makes the card non-clickable, for a page announced before it is written
+   * Optional badge on the card. "Coming Soon" also makes it unclickable.
    */
   badge?: ('featured' | 'popular' | 'essential' | 'comingSoon') | null;
   /**
-   * Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, collapsible sections, and more.
+   * The page body. Add text, code, images, diagrams and more as blocks.
    */
   content?:
     | (
@@ -1053,7 +1053,7 @@ export interface Tutorial {
   createdAt: string;
 }
 /**
- * Member projects. Add one and it appears on the site — the showcase arranges and sizes the cards itself.
+ * Member projects. The showcase arranges the cards itself.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".
@@ -1202,11 +1202,11 @@ export interface MemberCategory {
   slug: string;
   description?: string | null;
   /**
-   * Which batch heading appears at the top of this category on the members page. Members inside a batch are always ordered by role.
+   * Ascending shows the latest year first. Descending shows the oldest year.
    */
-  batchOrder: 'oldestFirst' | 'newestFirst';
+  batchOrder: 'newestFirst' | 'oldestFirst';
   /**
-   * Order in which this category appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other category automatically.
+   * Position in the list. Lower numbers appear first.
    */
   sortOrder: number;
   updatedAt: string;
@@ -1222,7 +1222,7 @@ export interface MemberRole {
   slug: string;
   description?: string | null;
   /**
-   * Order in which this role appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other role automatically.
+   * Position in the list. Lower numbers appear first.
    */
   sortOrder: number;
   updatedAt: string;
@@ -1270,7 +1270,7 @@ export interface FormSubmission {
     | boolean
     | null;
   /**
-   * Photos this person attached. The files live in the form’s Google Drive folder, never in this site’s storage — the previews below stream through an admin-only proxy.
+   * Photos this person attached. Stored in the form’s Google Drive folder.
    */
   attachments?:
     | {
@@ -1283,7 +1283,7 @@ export interface FormSubmission {
       }[]
     | null;
   /**
-   * For markers the form marks as "Set per person" — e.g. Place = 1st. Anyone left unset gets the default from the form, which is usually nothing.
+   * Values printed on this person’s certificate. Unset ones use the form default.
    */
   certificateValues?:
     | {
@@ -1309,14 +1309,14 @@ export interface FormSubmission {
    */
   googleResponseId?: string | null;
   /**
-   * When this row reached the optional Google Sheet mirror. Empty means not synced (or Sheets is not configured).
+   * When this row was copied to the Google Sheet. Empty means not synced.
    */
   sheetSyncedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
- * Admin logins. New accounts cannot be created from here — run scripts/createBackupAdmin.ts to add one.
+ * Admin logins. Add new ones with scripts/createBackupAdmin.ts.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
@@ -2505,7 +2505,7 @@ export interface AboutPage {
     [k: string]: unknown;
   } | null;
   /**
-   * Richer building blocks rendered below the intro: banner headings, positioned images, and text sections. Reorder freely.
+   * Extra sections shown below the intro. Drag to reorder.
    */
   sections?:
     | (

@@ -60,7 +60,7 @@ export function buildLearningFields({ noun }: { noun: string }): Field[] {
               unique: true,
               admin: {
                 description:
-                  'URL-friendly version (auto-generated from title, but you can edit it)',
+                  'Auto-generates from the title. Enter your own if it clashes with another page.',
                 placeholder: 'Will auto-generate when you type the title',
               },
             },
@@ -137,8 +137,7 @@ export function buildLearningFields({ noun }: { noun: string }): Field[] {
               ],
               admin: {
                 position: 'sidebar',
-                description:
-                  'Optional label shown on the card. "New" is added automatically for the first 14 days. "Coming Soon" also makes the card non-clickable, for a page announced before it is written',
+                description: 'Optional badge on the card. "Coming Soon" also makes it unclickable.',
               },
             },
           ],
@@ -163,8 +162,7 @@ export function buildLearningFields({ noun }: { noun: string }): Field[] {
                 SimulatorLinkBlock,
               ],
               admin: {
-                description:
-                  'Build the page with flexible content blocks. Add text, code, tables, images, diagrams, videos, collapsible sections, and more.',
+                description: 'The page body. Add text, code, images, diagrams and more as blocks.',
               },
             },
           ],

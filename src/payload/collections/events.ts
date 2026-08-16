@@ -65,7 +65,7 @@ export const Events: CollectionConfig = {
               unique: true,
               admin: {
                 description:
-                  'URL-friendly version (auto-generated from title, but you can edit it)',
+                  'Auto-generates from the title. Enter your own if it clashes with another event.',
                 placeholder: 'Will auto-generate when you type the title',
               },
             },
@@ -76,8 +76,7 @@ export const Events: CollectionConfig = {
               required: true,
               admin: {
                 date: { pickerAppearance: 'dayAndTime', displayFormat: 'MMM d, yyyy h:mm a' },
-                description:
-                  'When the event happens. Controls ordering and the automatic NEW badge.',
+                description: 'When the event happens. Recent events get a NEW badge.',
               },
             },
             {
@@ -91,7 +90,7 @@ export const Events: CollectionConfig = {
                 { label: 'Online', value: 'online' },
               ],
               admin: {
-                description: 'Online events hide the venue/map tabs and show a meeting link',
+                description: 'Online events show a meeting link instead of a venue.',
               },
             },
             {
@@ -100,7 +99,7 @@ export const Events: CollectionConfig = {
               type: 'text',
               admin: {
                 condition: (data) => data?.eventMode === 'online',
-                description: 'Google Meet / Zoom / stream URL shown for online events',
+                description: 'Link attendees join the event through.',
               },
             },
             {
@@ -113,8 +112,7 @@ export const Events: CollectionConfig = {
               collection: 'forms',
               on: 'relatedEvent',
               admin: {
-                description:
-                  'Registration and feedback forms attached to this event. Add one by creating a form and setting its Related Event.',
+                description: 'Forms attached to this event. Set the link from the form, not here.',
               },
             },
             {
@@ -124,7 +122,7 @@ export const Events: CollectionConfig = {
               required: true,
               label: 'Event Poster/Image',
               admin: {
-                description: 'Main image shown in carousel and modal',
+                description: 'Poster shown on the event card.',
               },
             },
             {
@@ -134,7 +132,7 @@ export const Events: CollectionConfig = {
               required: false,
               maxLength: CARD_DESCRIPTION_MAX_LENGTH,
               admin: {
-                description: `Brief tagline shown on the carousel card (optional, max ${CARD_DESCRIPTION_MAX_LENGTH} characters)`,
+                description: `Short tagline shown on the event card (max ${CARD_DESCRIPTION_MAX_LENGTH} characters).`,
               },
             },
           ],
@@ -148,7 +146,7 @@ export const Events: CollectionConfig = {
               type: 'richText',
               required: true,
               admin: {
-                description: 'Full details about the event (shown in modal popup)',
+                description: 'Full details, shown when the event card is opened.',
               },
             },
             {

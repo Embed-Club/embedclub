@@ -68,7 +68,10 @@ async function getHomeData() {
     }
   } catch (error) {
     console.error('[Home] Error fetching data:', error)
-    return { events: [] as Event[], rows: [] as FeaturedRow[], galleryImages: [] as string[] }
+    // Rethrow: an empty list here would render as "nothing published yet",
+    // which is a different thing than the query having failed. The route
+    // error boundary shows the outage and offers a retry.
+    throw error
   }
 }
 

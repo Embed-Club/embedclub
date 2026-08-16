@@ -22,7 +22,6 @@ type EventCardData = {
   title: string
   category: string
   content: React.ReactNode
-  isFallback?: boolean
 }
 
 export const CarouselContext = createContext<{
@@ -159,8 +158,6 @@ export const EventModal = ({
   containerRef?: React.RefObject<HTMLDivElement | null>
   layoutId?: string
 }) => {
-  const isFallback = Boolean(card.isFallback)
-
   // Rendered into <body> rather than in place. `position: fixed` is only
   // relative to the viewport while no ancestor is transformed — and Embla
   // moves the carousel by writing `transform: translate3d(...)` on the slide
@@ -203,64 +200,44 @@ export const EventModal = ({
               <X className="h-4 w-4" />
             </button>
 
-            {isFallback ? (
-              <div className="flex h-full w-full flex-col items-center justify-center gap-6 p-6 md:p-10">
-                <img
-                  src="/placeholder/NoNetwork.svg"
-                  alt="Service unavailable"
-                  className="h-40 w-40 opacity-60 dark:invert md:h-56 md:w-56"
-                />
-                <div className="max-w-sm text-center">
-                  <p className="text-2xl font-bold text-foreground">
-                    Service Temporarily Unavailable
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                    We're unable to load event details at the moment. This could be due to a
-                    temporary database connection issue. Please try again in a few moments, or
-                    contact support if the problem persists.
-                  </p>
+            <div className="grid h-full max-h-[90vh] grid-cols-1 gap-8 overflow-y-auto p-2 md:grid-cols-2 md:p-8 lg:p-10">
+              {/* Image Section — same cutout inset label as the card it opened from */}
+              <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted">
+                <BlurImage src={card.src} alt={card.title} fill className="object-contain" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
+
+                <CutoutCardInsetLabel className="bottom-0 left-0 z-10 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-3 text-left">
+                  <motion.p
+                    layoutId={layoutId ? `category-${card.category}` : undefined}
+                    className="text-left text-[11px] font-semibold uppercase tracking-widest text-primary"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {card.category}
+                  </motion.p>
+                  <motion.p
+                    layoutId={layoutId ? `title-${card.title}` : undefined}
+                    className="mt-1 text-base font-semibold text-foreground md:text-xl [text-wrap:balance]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                  >
+                    {card.title}
+                  </motion.p>
+                  <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+                  <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+                </CutoutCardInsetLabel>
+              </div>
+
+              {/* Details Section */}
+              <div className="flex flex-col justify-start space-y-4 md:space-y-6">
+                {/* Content (Event Details) */}
+                <div className="flex-1 pr-4">
+                  {event ? <EventDetails event={event} /> : card.content}
                 </div>
               </div>
-            ) : (
-              <div className="grid h-full max-h-[90vh] grid-cols-1 gap-8 overflow-y-auto p-2 md:grid-cols-2 md:p-8 lg:p-10">
-                {/* Image Section — same cutout inset label as the card it opened from */}
-                <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted">
-                  <BlurImage src={card.src} alt={card.title} fill className="object-contain" />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
-
-                  <CutoutCardInsetLabel className="bottom-0 left-0 z-10 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-3 text-left">
-                    <motion.p
-                      layoutId={layoutId ? `category-${card.category}` : undefined}
-                      className="text-left text-[11px] font-semibold uppercase tracking-widest text-primary"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {card.category}
-                    </motion.p>
-                    <motion.p
-                      layoutId={layoutId ? `title-${card.title}` : undefined}
-                      className="mt-1 text-base font-semibold text-foreground md:text-xl [text-wrap:balance]"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 0.1 }}
-                    >
-                      {card.title}
-                    </motion.p>
-                    <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
-                    <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
-                  </CutoutCardInsetLabel>
-                </div>
-
-                {/* Details Section */}
-                <div className="flex flex-col justify-start space-y-4 md:space-y-6">
-                  {/* Content (Event Details) */}
-                  <div className="flex-1 pr-4">
-                    {event ? <EventDetails event={event} /> : card.content}
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
           </motion.div>
         </div>
       )}

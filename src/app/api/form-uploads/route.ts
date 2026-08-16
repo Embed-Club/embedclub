@@ -23,6 +23,36 @@ export const maxDuration = 60
 const MAX_BYTES = 10 * 1024 * 1024
 const ALLOWED_PREFIX = 'image/'
 
+/**
+ * Leading bytes of the raster formats we accept, checked against the file
+ * itself rather than the `Content-Type` the browser attached — that header is
+ * whatever the client says it is. An SVG labelled `image/png` passes a MIME
+ * check and is a script-execution vector once served back, so the bytes decide.
+ */
+const MAGIC_NUMBERS: { mime: string; bytes: number[] }[] = [
+  { mime: 'image/jpeg', bytes: [0xff, 0xd8, 0xff] },
+  { mime: 'image/png', bytes: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] },
+  { mime: 'image/gif', bytes: [0x47, 0x49, 0x46, 0x38] },
+  // RIFF....WEBP — the four bytes at offset 8 are checked separately below.
+  { mime: 'image/webp', bytes: [0x52, 0x49, 0x46, 0x46] },
+]
+
+/** The real image type of these bytes, or null if it is not one we accept. */
+function sniffImageType(bytes: ArrayBuffer): string | null {
+  const head = new Uint8Array(bytes.slice(0, 16))
+
+  for (const { mime, bytes: sig } of MAGIC_NUMBERS) {
+    if (sig.every((b, i) => head[i] === b)) {
+      if (mime !== 'image/webp') return mime
+      // RIFF also fronts .wav and .avi; only WEBP at offset 8 is an image.
+      const webp = [0x57, 0x45, 0x42, 0x50]
+      if (webp.every((b, i) => head[8 + i] === b)) return mime
+    }
+  }
+
+  return null
+}
+
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX = 10
 const recentUploads = new Map<string, number[]>()
@@ -71,10 +101,22 @@ export async function POST(req: NextRequest) {
     if (!file.type.startsWith(ALLOWED_PREFIX)) {
       return NextResponse.json({ error: 'Only image files can be attached.' }, { status: 400 })
     }
+    // Size before reading the body, so an oversized file is rejected without
+    // being pulled into memory first.
     if (file.size > MAX_BYTES) {
       return NextResponse.json(
         { error: `That image is too large — the limit is ${MAX_BYTES / (1024 * 1024)}MB.` },
         { status: 413 },
+      )
+    }
+
+    const bytes = await file.arrayBuffer()
+    const sniffedType = sniffImageType(bytes)
+
+    if (!sniffedType) {
+      return NextResponse.json(
+        { error: 'That file is not a JPEG, PNG, GIF or WebP image.' },
+        { status: 400 },
       )
     }
 
@@ -118,8 +160,10 @@ export async function POST(req: NextRequest) {
       folderId,
       // Prefix so a folder of 300 files is still navigable by eye.
       fileName: `${slug}-${Date.now()}-${file.name}`,
-      mimeType: file.type,
-      bytes: await file.arrayBuffer(),
+      // The sniffed type, not the client's — Drive should store what the bytes
+      // actually are.
+      mimeType: sniffedType,
+      bytes,
       formSlug: slug,
       fieldId,
     })

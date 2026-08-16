@@ -26,8 +26,7 @@ export const AboutPage: GlobalConfig = {
       name: 'sections',
       type: 'blocks',
       admin: {
-        description:
-          'Richer building blocks rendered below the intro: banner headings, positioned images, and text sections. Reorder freely.',
+        description: 'Extra sections shown below the intro. Drag to reorder.',
       },
       blocks: [
         {

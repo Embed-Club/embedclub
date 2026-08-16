@@ -31,8 +31,7 @@ export const Projects: CollectionConfig = {
   defaultSort: '-createdAt',
   admin: {
     useAsTitle: 'title',
-    description:
-      'Member projects. Add one and it appears on the site — the showcase arranges and sizes the cards itself.',
+    description: 'Member projects. The showcase arranges the cards itself.',
     defaultColumns: ['title', 'award', 'year', 'updatedAt'],
     group: 'Content',
   },

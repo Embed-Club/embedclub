@@ -60,21 +60,19 @@ export const MemberCategories: CollectionConfig = {
     { name: 'slug', type: 'text', required: true, unique: true },
     { name: 'description', type: 'textarea' },
     {
-      // Per category, not global: Alumni reads best with the most recent batch
-      // at the top, while a current-members category usually wants the founding
-      // batch first. One switch for the whole page would force one of the two.
+      // Stored values stay newestFirst/oldestFirst — only the labels read
+      // Ascending/Descending, so changing the wording needs no migration.
       name: 'batchOrder',
       label: 'Batch Order',
       type: 'select',
       required: true,
       defaultValue: 'oldestFirst',
       options: [
-        { label: 'Oldest batch first (2016 – 2020 … )', value: 'oldestFirst' },
-        { label: 'Latest batch first ( … 2016 – 2020)', value: 'newestFirst' },
+        { label: 'Ascending', value: 'newestFirst' },
+        { label: 'Descending', value: 'oldestFirst' },
       ],
       admin: {
-        description:
-          'Which batch heading appears at the top of this category on the members page. Members inside a batch are always ordered by role.',
+        description: 'Ascending shows the latest year first. Descending shows the oldest year.',
       },
     },
     {
@@ -82,8 +80,7 @@ export const MemberCategories: CollectionConfig = {
       type: 'number',
       required: true,
       admin: {
-        description:
-          'Order in which this category appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other category automatically.',
+        description: 'Position in the list. Lower numbers appear first.',
         components: {
           Field: '@/components/admin/sortOrderSelectCategory',
         },

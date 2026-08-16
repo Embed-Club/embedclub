@@ -5,8 +5,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     group: 'System',
-    description:
-      'Admin logins. New accounts cannot be created from here — run scripts/createBackupAdmin.ts to add one.',
+    description: 'Admin logins. Add new ones with scripts/createBackupAdmin.ts.',
   },
   auth: true,
   access: {

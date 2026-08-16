@@ -64,8 +64,7 @@ export const MemberRoles: CollectionConfig = {
       type: 'number',
       required: true,
       admin: {
-        description:
-          'Order in which this role appears. Lower numbers appear first. Picking an occupied position swaps with (or shifts) the other role automatically.',
+        description: 'Position in the list. Lower numbers appear first.',
         components: {
           Field: '@/components/admin/sortOrderSelectRole',
         },

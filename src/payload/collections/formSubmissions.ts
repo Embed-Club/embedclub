@@ -81,8 +81,7 @@ export const FormSubmissions: CollectionConfig = {
       access: { update: () => false },
       admin: {
         readOnly: true,
-        description:
-          'Photos this person attached. The files live in the form’s Google Drive folder, never in this site’s storage — the previews below stream through an admin-only proxy.',
+        description: 'Photos this person attached. Stored in the form’s Google Drive folder.',
         components: {
           RowLabel: '@/components/admin/formAttachmentRowLabel',
         },
@@ -124,7 +123,7 @@ export const FormSubmissions: CollectionConfig = {
       type: 'array',
       admin: {
         description:
-          'For markers the form marks as "Set per person" — e.g. Place = 1st. Anyone left unset gets the default from the form, which is usually nothing.',
+          'Values printed on this person’s certificate. Unset ones use the form default.',
         components: {
           RowLabel: '@/components/admin/certificateValueRowLabel',
         },
@@ -206,8 +205,7 @@ export const FormSubmissions: CollectionConfig = {
       admin: {
         readOnly: true,
         date: { pickerAppearance: 'dayAndTime' },
-        description:
-          'When this row reached the optional Google Sheet mirror. Empty means not synced (or Sheets is not configured).',
+        description: 'When this row was copied to the Google Sheet. Empty means not synced.',
       },
     },
   ],

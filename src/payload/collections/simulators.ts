@@ -95,8 +95,7 @@ export const Simulators: CollectionConfig = {
       label: 'Walkthrough Video URL',
       type: 'text',
       admin: {
-        description:
-          'Optional YouTube, Vimeo, or direct .mp4 link. Plays inside the modal so students can follow along.',
+        description: 'Optional walkthrough video. Plays inside the simulator popup.',
       },
     },
     {
