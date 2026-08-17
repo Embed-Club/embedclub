@@ -7,6 +7,8 @@ import { motion, useReducedMotion } from 'motion/react'
 interface SimulatorCardsProps {
   simulators: SimulatorCardData[]
   onOpen: (card: SimulatorCardData, rect?: DOMRect) => void
+  /** Id of the simulator whose modal is open — that card steps aside for it. */
+  activeId?: string | null
 }
 
 /**
@@ -15,7 +17,7 @@ interface SimulatorCardsProps {
  * shipped a second full animation library just for this one effect and
  * (unlike this version) ignored `prefers-reduced-motion`.
  */
-export function SimulatorCards({ simulators, onOpen }: SimulatorCardsProps) {
+export function SimulatorCards({ simulators, onOpen, activeId }: SimulatorCardsProps) {
   const reduceMotion = useReducedMotion()
 
   return (
@@ -31,7 +33,7 @@ export function SimulatorCards({ simulators, onOpen }: SimulatorCardsProps) {
             viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: (index % 8) * 0.05 }}
           >
-            <SimulatorCard card={simulator} onOpen={onOpen} />
+            <SimulatorCard card={simulator} onOpen={onOpen} isActive={simulator.id === activeId} />
           </motion.div>
         ))}
       </div>

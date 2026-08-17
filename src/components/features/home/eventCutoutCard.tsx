@@ -48,6 +48,9 @@ export function EventCutoutCard({ event }: { event: Event }) {
           className={cn(
             cutoutCardSurfaceClassName,
             'flex h-full w-full flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+            // Hidden while its panel is open: the modal grows out of this card's
+            // box, so a copy left underneath reads as duplication.
+            open && 'opacity-0',
           )}
         >
           <CutoutCardMedia className="aspect-[3/4] w-full shrink-0">

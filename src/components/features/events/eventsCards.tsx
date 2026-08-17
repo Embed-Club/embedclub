@@ -95,6 +95,9 @@ export const Card = ({
         className={cn(
           'group/cutout relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-2xl bg-card p-0 outline-none md:h-[40rem] md:w-96',
           cutoutCardSurfaceShadowClassName,
+          // Hidden while its panel is open, so the clicked card is not left
+          // sitting behind the modal as a second copy of itself.
+          open && 'opacity-0',
         )}
       >
         <BlurImage

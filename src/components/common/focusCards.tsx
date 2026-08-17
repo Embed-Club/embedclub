@@ -19,12 +19,15 @@ export const Card = React.memo(
     hovered,
     setHovered,
     onClick,
+    isActive,
   }: {
     card: Card
     index: number
     hovered: number | null
     setHovered: React.Dispatch<React.SetStateAction<number | null>>
     onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    /** True while this card's modal is open, so it steps aside for the panel. */
+    isActive?: boolean
   }) => {
     const showNew = isNewEvent(card.event?.eventDate)
     const isOnline = card.event?.eventMode === 'online'
@@ -41,6 +44,9 @@ export const Card = React.memo(
         className={cn(
           'group/cutout cursor-pointer rounded-2xl relative bg-card overflow-hidden h-60 md:h-96 w-full transition-all duration-300 ease-out p-0 outline-none',
           cutoutCardSurfaceShadowClassName,
+          // Hidden while its panel is open: the modal grows out of this card's
+          // box, so a copy left underneath reads as duplication.
+          isActive && 'opacity-0',
         )}
       >
         <img
@@ -121,6 +127,7 @@ export function FocusCards({ cards }: { cards: Card[] }) {
           index={index}
           hovered={hovered}
           setHovered={setHovered}
+          isActive={activeIndex === index}
           onClick={(e) => {
             setOriginRect(e.currentTarget.getBoundingClientRect())
             setActiveIndex(index)

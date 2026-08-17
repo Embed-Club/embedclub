@@ -158,7 +158,11 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
           </p>
         </div>
       ) : (
-        <SimulatorCards simulators={filteredSimulators} onOpen={openSimulator} />
+        <SimulatorCards
+          simulators={filteredSimulators}
+          onOpen={openSimulator}
+          activeId={activeSimulator?.id ?? null}
+        />
       )}
 
       <SimulatorModal

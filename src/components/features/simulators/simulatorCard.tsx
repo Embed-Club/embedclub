@@ -18,6 +18,8 @@ import React from 'react'
 interface SimulatorCardProps {
   card: SimulatorCardData
   onOpen: (card: SimulatorCardData, rect?: DOMRect) => void
+  /** True while this card's modal is open, so it steps aside for the panel. */
+  isActive?: boolean
 }
 
 /**
@@ -25,7 +27,7 @@ interface SimulatorCardProps {
  * language is one system, not per-page. Clicking opens the simulator modal
  * rather than navigating, so students see the walkthrough first.
  */
-export const SimulatorCard = React.memo(({ card, onOpen }: SimulatorCardProps) => {
+export const SimulatorCard = React.memo(({ card, onOpen, isActive }: SimulatorCardProps) => {
   return (
     <CutoutCard className="h-full">
       <button
@@ -35,6 +37,9 @@ export const SimulatorCard = React.memo(({ card, onOpen }: SimulatorCardProps) =
         className={cn(
           cutoutCardSurfaceClassName,
           'flex h-full w-full flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          // Hidden while its panel is open: the modal grows out of this card's
+          // box, so a copy left underneath reads as duplication.
+          isActive && 'opacity-0',
         )}
       >
         <CutoutCardMedia className="h-44 shrink-0 bg-muted">

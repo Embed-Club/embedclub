@@ -50,6 +50,9 @@ export const ProjectShowcaseTile = React.memo(
             'group/tile relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 text-left md:p-6',
             'transition-colors duration-200 hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
             hasImage && 'justify-end p-0',
+            // Hidden, not unmounted: the panel morphs out of this tile's box, so
+            // leaving a copy underneath reads as duplication. Keeps its grid space.
+            open && 'opacity-0',
           )}
         >
           {hasImage && card.image && (
