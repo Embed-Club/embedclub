@@ -1,11 +1,16 @@
 import { type Highlighter, createHighlighter } from 'shiki'
 
-let highlighter: Highlighter | null = null
+// Cache the promise, not the resolved highlighter. Caching the value leaves a
+// window between the first call and its resolution where every concurrent
+// caller still sees null and builds its own highlighter — each one carrying the
+// full set of TextMate grammars plus the oniguruma WASM. That is how a page
+// with several code blocks ends up with ten instances and an OOM'd worker.
+let highlighterPromise: Promise<Highlighter> | null = null
 
-export async function getHighlighterInstance() {
-  if (highlighter) return highlighter
+export function getHighlighterInstance() {
+  if (highlighterPromise) return highlighterPromise
 
-  highlighter = await createHighlighter({
+  highlighterPromise = createHighlighter({
     themes: ['github-dark'],
     langs: [
       'javascript',
@@ -22,9 +27,14 @@ export async function getHighlighterInstance() {
       'rust',
       'go',
     ],
+  }).catch((error) => {
+    // Don't cache a rejection — a transient failure would otherwise poison
+    // every later call for the lifetime of the process.
+    highlighterPromise = null
+    throw error
   })
 
-  return highlighter
+  return highlighterPromise
 }
 
 export async function highlightCode(code: string, lang: string) {
