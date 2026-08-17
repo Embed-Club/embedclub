@@ -49,6 +49,17 @@ export const Card = ({
   const [originRect, setOriginRect] = useState<DOMRect | null>(null)
   const { onCardClose } = useContext(CarouselContext)
 
+  /**
+   * The grid card this panel grew out of, hidden while the modal is open.
+   *
+   * Held as a node rather than as state because it belongs to a different
+   * component tree — the grid renders from the page, the carousel from here,
+   * and there is no shared owner between them short of lifting the open state
+   * out of this card entirely. The carousel copy stays visible: it is the one
+   * on screen, and the panel does not come out of it.
+   */
+  const hiddenGridCard = useRef<HTMLElement | null>(null)
+
   // Escape, outside clicks and the scroll lock live in the panel now: it owns
   // the closing animation, and routing them through here skipped it.
 
@@ -65,11 +76,36 @@ export const Card = ({
         ? document.querySelector<HTMLElement>(`[data-event-id="${event.id}"]`)
         : null
 
+    if (gridCard) {
+      gridCard.style.opacity = '0'
+      hiddenGridCard.current = gridCard
+    }
+
     setOriginRect((gridCard ?? e.currentTarget).getBoundingClientRect())
     setOpen(true)
   }
 
+  const restoreGridCard = () => {
+    if (!hiddenGridCard.current) return
+    hiddenGridCard.current.style.opacity = ''
+    hiddenGridCard.current = null
+  }
+
+  // Paging the grid or navigating away while a panel is open would otherwise
+  // strand a card at zero opacity. Reads the ref inside the cleanup rather
+  // than closing over the helper, which would have to be a dependency.
+  useEffect(() => {
+    const held = hiddenGridCard
+    return () => {
+      if (held.current) {
+        held.current.style.opacity = ''
+        held.current = null
+      }
+    }
+  }, [])
+
   const handleClose = () => {
+    restoreGridCard()
     setOpen(false)
     setOriginRect(null)
     onCardClose(index)
@@ -95,9 +131,6 @@ export const Card = ({
         className={cn(
           'group/cutout relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-2xl bg-card p-0 outline-none md:h-[40rem] md:w-96',
           cutoutCardSurfaceShadowClassName,
-          // Hidden while its panel is open, so the clicked card is not left
-          // sitting behind the modal as a second copy of itself.
-          open && 'opacity-0',
         )}
       >
         <BlurImage
