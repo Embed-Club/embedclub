@@ -44,8 +44,11 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({})
   const [activeSimulator, setActiveSimulator] = useState<SimulatorCardData | null>(null)
+  // The clicked card's box, so the panel can grow out of exactly that card.
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null)
 
-  const openSimulator = useCallback((card: SimulatorCardData) => {
+  const openSimulator = useCallback((card: SimulatorCardData, rect?: DOMRect) => {
+    setOriginRect(rect ?? null)
     setActiveSimulator(card)
   }, [])
 
@@ -161,8 +164,12 @@ export function SimulatorsPageContent({ simulators = [] }: SimulatorsPageContent
       <SimulatorModal
         simulator={activeSimulator}
         open={activeSimulator !== null}
+        originRect={originRect}
         onOpenChange={(next) => {
-          if (!next) setActiveSimulator(null)
+          if (!next) {
+            setActiveSimulator(null)
+            setOriginRect(null)
+          }
         }}
       />
     </>

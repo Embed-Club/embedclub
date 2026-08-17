@@ -17,7 +17,7 @@ import React from 'react'
 
 interface SimulatorCardProps {
   card: SimulatorCardData
-  onOpen: (card: SimulatorCardData) => void
+  onOpen: (card: SimulatorCardData, rect?: DOMRect) => void
 }
 
 /**
@@ -30,7 +30,7 @@ export const SimulatorCard = React.memo(({ card, onOpen }: SimulatorCardProps) =
     <CutoutCard className="h-full">
       <button
         type="button"
-        onClick={() => onOpen(card)}
+        onClick={(e) => onOpen(card, e.currentTarget.getBoundingClientRect())}
         aria-label={`Open simulator: ${card.title}`}
         className={cn(
           cutoutCardSurfaceClassName,

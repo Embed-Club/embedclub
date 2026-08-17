@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from 'motion/react'
 
 interface SimulatorCardsProps {
   simulators: SimulatorCardData[]
-  onOpen: (card: SimulatorCardData) => void
+  onOpen: (card: SimulatorCardData, rect?: DOMRect) => void
 }
 
 /**

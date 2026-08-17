@@ -32,6 +32,9 @@ export const Card = React.memo(
     return (
       <button
         type="button"
+        // Lets the carousel above find this card and grow the modal out of it
+        // instead of out of its own showcase copy.
+        data-event-id={card.event?.id}
         onMouseEnter={() => setHovered(index)}
         onMouseLeave={() => setHovered(null)}
         onClick={onClick}

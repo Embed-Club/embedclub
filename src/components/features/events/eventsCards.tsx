@@ -53,7 +53,19 @@ export const Card = ({
   // the closing animation, and routing them through here skipped it.
 
   const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
-    setOriginRect(e.currentTarget.getBoundingClientRect())
+    // The carousel is a showcase of events that are also listed in the grid
+    // below, so the modal grows out of the real card down there rather than
+    // out of this copy of it. That card is usually below the fold, which is
+    // what gives the panel its rise from underneath.
+    //
+    // Falls back to the carousel card when there is no counterpart — the grid
+    // is paginated, so the event may be on another page.
+    const gridCard =
+      event?.id != null
+        ? document.querySelector<HTMLElement>(`[data-event-id="${event.id}"]`)
+        : null
+
+    setOriginRect((gridCard ?? e.currentTarget).getBoundingClientRect())
     setOpen(true)
   }
 
