@@ -2,6 +2,7 @@ import {
   type SimulatorCardData,
   SimulatorsPageContent,
 } from '@/app/(frontend)/simulators/simulatorsPageContent'
+import { PageTitle } from '@/components/common/pageTitle'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
@@ -79,9 +80,7 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell>
-        <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-          SIMULATORS
-        </h1>
+        <PageTitle>SIMULATORS</PageTitle>
         <div className="h-full w-full px-2 pt-16 md:pt-32">
           <SimulatorsPageContent simulators={simulators} />
         </div>

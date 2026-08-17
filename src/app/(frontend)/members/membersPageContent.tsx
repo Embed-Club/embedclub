@@ -2,6 +2,7 @@
 
 import ChromaScene from '@/components/common/chromaScene'
 import { EmptyState } from '@/components/common/emptyState'
+import { PageTitle } from '@/components/common/pageTitle'
 import { MemberModal, type MemberModalData } from '@/components/features/members/memberModal'
 import type { Member as MemberDoc, MemberPhoto as MemberPhotoDoc } from '@/payload/payload-types'
 import React from 'react'
@@ -227,10 +228,10 @@ export function MembersPageContent({ members }: { members: MemberDoc[] }) {
 
   return (
     <ChromaScene radius={300} damping={0.45} fadeOut={0.6} ease="power3.out">
-      <div className="px-4 py-8 md:px-8 lg:px-12">
-        <h1 className="mb-30 left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl text-foreground">
-          MEMBERS
-        </h1>
+      {/* pt-16/md:pt-32 clears the pinned PageTitle, which is absolute and so
+          reserves no space of its own — same top padding every other page uses. */}
+      <div className="px-4 pt-16 pb-8 md:px-8 md:pt-32 lg:px-12">
+        <PageTitle>MEMBERS</PageTitle>
 
         {grouped.length === 0 && <EmptyState title="No Members Yet" />}
 

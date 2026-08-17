@@ -1,4 +1,5 @@
 import { EmptyState } from '@/components/common/emptyState'
+import { PageTitle } from '@/components/common/pageTitle'
 import RichTextRender from '@/components/common/richTextRender'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import { cn } from '@/lib/utils'
@@ -111,9 +112,7 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell>
-        <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-medium md:text-4xl uppercase">
-          {about?.title || 'About Embed Club'}
-        </h1>
+        <PageTitle>{about?.title || 'About Embed Club'}</PageTitle>
         <div className="max-w-5xl mx-auto px-4 md:px-8 pt-24 md:pt-40 pb-20">
           {!hasAnything ? (
             <EmptyState />

@@ -2,6 +2,7 @@
 
 import { EmptyState } from '@/components/common/emptyState'
 import { FocusCards } from '@/components/common/focusCards'
+import { PageTitle } from '@/components/common/pageTitle'
 import { EventCard } from '@/components/features/events/eventsCards'
 import { Carousel } from '@/components/features/events/eventsCarousel'
 import {
@@ -89,9 +90,7 @@ export function EventsPageContent({ events }: { events: Event[] }) {
     <>
       {/* z-30 keeps the heading above the cards, whose root is `relative z-10` —
           without it they paint over the title wherever the two overlap. */}
-      <h1 className="absolute left-5 top-5 z-30 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-        RECENT EVENTS
-      </h1>
+      <PageTitle className="z-30">RECENT EVENTS</PageTitle>
       {/* pt-16/md:pt-32 reserves room for the absolutely-positioned heading, the
           same clearance every other listing page uses. It used to come from the
           carousel's own py-10/md:py-20, which was removed to kill the black bar. */}

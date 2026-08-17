@@ -1,6 +1,7 @@
 'use client'
 
 import { EmptyState } from '@/components/common/emptyState'
+import { PageTitle } from '@/components/common/pageTitle'
 import { Timeline } from '@/components/features/timeline/unifiedTimeline'
 import React from 'react'
 
@@ -93,9 +94,7 @@ export function AchievementsPageContent({ achievements }: { achievements: Achiev
 
   return (
     <>
-      <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-        CHIEEENTS
-      </h1>
+      <PageTitle>ACHIEVEMENTS</PageTitle>
 
       {timelineAchievements.length === 0 ? (
         <div className="flex h-full w-full items-center justify-center px-4">

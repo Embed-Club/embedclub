@@ -1,3 +1,4 @@
+import { PageTitle } from '@/components/common/pageTitle'
 import { formToCard } from '@/components/features/forms/formCardData'
 import { FormsListing } from '@/components/features/forms/formsListing'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
@@ -53,9 +54,7 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell>
-        <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-          FEEDBACK
-        </h1>
+        <PageTitle>FEEDBACK</PageTitle>
         <div className="h-full w-full px-2 pt-16 md:pt-32">
           <FormsListing cards={cards} emptyTitle="No Feedback Forms Yet" />
         </div>

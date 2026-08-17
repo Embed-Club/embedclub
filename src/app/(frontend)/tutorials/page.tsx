@@ -1,5 +1,6 @@
 import { getResourceCards } from '@/app/(frontend)/resources/getResourceCards'
 import { ResourcesPageContent } from '@/app/(frontend)/resources/resourcesPageContent'
+import { PageTitle } from '@/components/common/pageTitle'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import type { Metadata } from 'next'
 
@@ -17,9 +18,7 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell>
-        <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-          TUTORIALS
-        </h1>
+        <PageTitle>TUTORIALS</PageTitle>
         <div className="h-full w-full px-2 pt-16 md:pt-32">
           <ResourcesPageContent
             resources={tutorials}

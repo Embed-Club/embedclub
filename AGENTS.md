@@ -104,8 +104,18 @@ them to update it first.
 
 ## 5. Things that look like bugs but aren't
 
-- The nav labels ("HOE", "CHIEEENTS", "TUTORILS") are intentional — the display
-  font renders them with special glyphs. Do not "fix" the strings.
+- Nav and page labels are **plain ASCII**. They used to carry private-use
+  codepoints (`U+E000` A, `U+E03C` M, `U+E04F` V, `U+E051` W) that selected ITC
+  Avant Garde's stylistic alternates, which is why the source read "HOE",
+  "CHIEEENTS", "TUTORILS". That was removed deliberately in favour of the
+  standard letterforms — do not reintroduce it, and write labels as ordinary
+  words.
+- Page titles come from `components/common/pageTitle.tsx`. Don't hand-roll the
+  `absolute left-5 top-5 …` heading on a new page; three variants had already
+  drifted apart before it was centralised.
+- The desktop sidebar (`layout/desktopMenu.tsx`) and the mobile menu
+  (`layout/mobileMenu.tsx`) list the same destinations in the same order. Adding
+  a page to one means adding it to the other.
 - `USE_S3_STORAGE` gates media storage, not NODE_ENV — local prod builds use
   local disk on purpose.
 - Migrations create-then-drop tables in their DOWN sections — normal.

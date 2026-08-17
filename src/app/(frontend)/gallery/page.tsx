@@ -1,4 +1,5 @@
 import { EmptyState } from '@/components/common/emptyState'
+import { PageTitle } from '@/components/common/pageTitle'
 import Masonry from '@/components/features/gallery/masonry'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import type { Gallery } from '@/payload/payload-types'
@@ -73,9 +74,7 @@ export default async function Page() {
     return (
       <SidebarShell>
         <MainbarShell>
-          <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-            GALLERY
-          </h1>
+          <PageTitle>GALLERY</PageTitle>
           <div className="h-full w-full px-2 pt-16 md:pt-32 flex items-center justify-center">
             <EmptyState title="No Photos Yet" />
           </div>
@@ -87,9 +86,7 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell>
-        <h1 className="absolute left-5 top-5 md:left-20 md:top-12 text-2xl font-bold md:text-4xl">
-          GALLERY
-        </h1>
+        <PageTitle>GALLERY</PageTitle>
         <div className="h-full w-full px-2 pt-16 md:pt-32 ">
           <Masonry items={items} />
         </div>

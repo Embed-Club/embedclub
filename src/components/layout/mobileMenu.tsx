@@ -12,19 +12,33 @@ const StaggeredMenu = dynamic(() => import('@/components/layout/staggeredMenu'),
   ssr: false,
 })
 
+/**
+ * The same destinations as the desktop sidebar, in the same order.
+ *
+ * Flattened rather than grouped: the desktop rail nests Events/Achievements
+ * under "Activities" and the three learning pages under "Learning", but those
+ * headers are labels, not links, and a staggered mobile panel has nowhere to
+ * put a non-tappable row. The order preserves the grouping's reading, so the
+ * two navs stay recognisably the same list.
+ *
+ * Keep in step with `desktopMenu.tsx` — a page reachable from one and not the
+ * other is the bug this list exists to prevent.
+ */
 const navItems = [
-  { label: 'HOE', ariaLabel: 'Home', link: '/' },
-  { label: 'BOUT', ariaLabel: 'About', link: '/about' },
-  { label: 'CHIEEENTS', ariaLabel: 'Achievements', link: '/achievements' },
-  { label: 'EENTS', ariaLabel: 'Events', link: '/events' },
+  { label: 'HOME', ariaLabel: 'Home', link: '/' },
+  { label: 'EVENTS', ariaLabel: 'Events', link: '/events' },
+  { label: 'ACHIEVEMENTS', ariaLabel: 'Achievements', link: '/achievements' },
   { label: 'RESOURCES', ariaLabel: 'Resources', link: '/resources' },
-  { label: 'TUTORILS', ariaLabel: 'Tutorials', link: '/tutorials' },
-  { label: 'SIULTORS', ariaLabel: 'Simulators', link: '/simulators' },
+  { label: 'TUTORIALS', ariaLabel: 'Tutorials', link: '/tutorials' },
+  { label: 'SIMULATORS', ariaLabel: 'Simulators', link: '/simulators' },
   { label: 'PROJECTS', ariaLabel: 'Projects', link: '/projects' },
-  { label: 'GLLERY', ariaLabel: 'Gallery', link: '/gallery' },
-  { label: 'EBERS', ariaLabel: 'Members', link: '/members' },
-  { label: 'FORS', ariaLabel: 'Forms', link: '/forms' },
-  { label: 'FEEDBCK', ariaLabel: 'Feedback', link: '/feedback' },
+  { label: 'GALLERY', ariaLabel: 'Gallery', link: '/gallery' },
+  { label: 'MEMBERS', ariaLabel: 'Members', link: '/members' },
+  { label: 'ABOUT', ariaLabel: 'About', link: '/about' },
+  { label: 'FORMS', ariaLabel: 'Forms', link: '/forms' },
+  { label: 'FEEDBACK', ariaLabel: 'Feedback', link: '/feedback' },
+  { label: 'SUPPORT', ariaLabel: 'Support', link: '/support' },
+  { label: 'CONTACT', ariaLabel: 'Contact', link: '/contact' },
 ]
 
 export default function MobileMenu() {
