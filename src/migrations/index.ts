@@ -28,6 +28,8 @@ import * as migration_20260815_120641_addProjectAwardFields from './20260815_120
 import * as migration_20260815_162712_dropProjectOrder from './20260815_162712_dropProjectOrder';
 import * as migration_20260815_183351_addMemberCategoryBatchOrder from './20260815_183351_addMemberCategoryBatchOrder';
 import * as migration_20260816_080041_addMemberGender from './20260816_080041_addMemberGender';
+import * as migration_20260817_063713_addLegalPagesAndFormConsent from './20260817_063713_addLegalPagesAndFormConsent';
+import * as migration_20260817_164758_addLegalPageSections from './20260817_164758_addLegalPageSections';
 
 export const migrations = [
   {
@@ -178,6 +180,16 @@ export const migrations = [
   {
     up: migration_20260816_080041_addMemberGender.up,
     down: migration_20260816_080041_addMemberGender.down,
-    name: '20260816_080041_addMemberGender'
+    name: '20260816_080041_addMemberGender',
+  },
+  {
+    up: migration_20260817_063713_addLegalPagesAndFormConsent.up,
+    down: migration_20260817_063713_addLegalPagesAndFormConsent.down,
+    name: '20260817_063713_addLegalPagesAndFormConsent',
+  },
+  {
+    up: migration_20260817_164758_addLegalPageSections.up,
+    down: migration_20260817_164758_addLegalPageSections.down,
+    name: '20260817_164758_addLegalPageSections'
   },
 ];

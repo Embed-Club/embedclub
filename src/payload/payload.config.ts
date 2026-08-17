@@ -27,6 +27,7 @@ import { Tutorials } from './collections/tutorials'
 import { Users } from './collections/users'
 import { AboutPage } from './globals/aboutPage'
 import { HomeFeaturedMembers } from './globals/homeFeaturedMembers'
+import { LegalPages } from './globals/legalPages'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -96,7 +97,7 @@ export default buildConfig({
     // System
     Users,
   ],
-  globals: [AboutPage, HomeFeaturedMembers],
+  globals: [AboutPage, LegalPages, HomeFeaturedMembers],
   // "Payload Settings" on the account view is a translation string, not config,
   // so the admin.meta rebrand can't reach it. Overrides merge over the defaults.
   i18n: {

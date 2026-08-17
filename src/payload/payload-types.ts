@@ -129,10 +129,12 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'about-page': AboutPage;
+    'legal-pages': LegalPage;
     'home-featured-members': HomeFeaturedMember;
   };
   globalsSelect: {
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
+    'legal-pages': LegalPagesSelect<false> | LegalPagesSelect<true>;
     'home-featured-members': HomeFeaturedMembersSelect<false> | HomeFeaturedMembersSelect<true>;
   };
   locale: null;
@@ -1290,6 +1292,10 @@ export interface FormSubmission {
       }[]
     | null;
   /**
+   * When this person agreed to the privacy notice. Empty for imported rows.
+   */
+  consentAcceptedAt?: string | null;
+  /**
    * Values printed on this person’s certificate. Unset ones use the form default.
    */
   certificateValues?:
@@ -2217,6 +2223,7 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
         mimeType?: T;
         id?: T;
       };
+  consentAcceptedAt?: T;
   certificateValues?:
     | T
     | {
@@ -2563,6 +2570,129 @@ export interface AboutPage {
   createdAt?: string | null;
 }
 /**
+ * Privacy policy, terms, and the consent line shown on forms.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal-pages".
+ */
+export interface LegalPage {
+  id: number;
+  privacyTitle: string;
+  /**
+   * Intro text at the top of /privacy, shown before the sections below.
+   */
+  privacy?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Sections shown below the intro on /privacy. Drag to reorder.
+   */
+  privacySections?:
+    | (
+        | {
+            heading: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'legalHeadingBlock';
+          }
+        | {
+            text: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'legalTextBlock';
+          }
+      )[]
+    | null;
+  termsTitle: string;
+  /**
+   * Intro text at the top of /terms, shown before the sections below.
+   */
+  terms?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Sections shown below the intro on /terms. Drag to reorder.
+   */
+  termsSections?:
+    | (
+        | {
+            heading: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'legalHeadingBlock';
+          }
+        | {
+            text: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'legalTextBlock';
+          }
+      )[]
+    | null;
+  /**
+   * The sentence beside the consent tick-box on every form. Say what the details are used for — this is the notice, and the policy is the detail behind it. A link to the Privacy Policy is added to the end, so finish with something that leads into it ("… See the").
+   */
+  consentNotice?: string | null;
+  /**
+   * Shown at the top of both pages.
+   */
+  lastUpdated?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home-featured-members".
  */
@@ -2624,6 +2754,57 @@ export interface AboutPageSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal-pages_select".
+ */
+export interface LegalPagesSelect<T extends boolean = true> {
+  privacyTitle?: T;
+  privacy?: T;
+  privacySections?:
+    | T
+    | {
+        legalHeadingBlock?:
+          | T
+          | {
+              heading?: T;
+              id?: T;
+              blockName?: T;
+            };
+        legalTextBlock?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  termsTitle?: T;
+  terms?: T;
+  termsSections?:
+    | T
+    | {
+        legalHeadingBlock?:
+          | T
+          | {
+              heading?: T;
+              id?: T;
+              blockName?: T;
+            };
+        legalTextBlock?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  consentNotice?: T;
+  lastUpdated?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

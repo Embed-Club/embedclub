@@ -29,6 +29,13 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
       { label: 'Contact', href: '/contact' },
     ],
   },
+  {
+    heading: 'Legal',
+    links: [
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms', href: '/terms' },
+    ],
+  },
 ]
 
 /**
@@ -71,7 +78,9 @@ export function SiteFooter() {
             </div>
 
             {/* Link columns */}
-            <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+            {/* Four columns only from lg — at sm the fourth wrapped into a
+                lone orphan under the other three. */}
+            <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
               {COLUMNS.map((col) => (
                 <div key={col.heading}>
                   <h3 className="text-xs font-bold uppercase tracking-widest text-primary">
