@@ -5,6 +5,7 @@ import { FormWizard } from '@/components/features/forms/formWizard'
 import { FormsListing } from '@/components/features/forms/formsListing'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import { getFormBySlug, getSections } from '@/lib/formQueries'
+import { getLegalPages } from '@/lib/legal'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: FormPageProps): Promise<Metad
 
 export default async function FormPage({ params }: FormPageProps) {
   const { slug } = await params
-  const form = await getForm(slug)
+  const [form, legal] = await Promise.all([getForm(slug), getLegalPages()])
 
   if (!form) notFound()
 
@@ -93,7 +94,7 @@ export default async function FormPage({ params }: FormPageProps) {
               message="Submissions are no longer accepted — contact the organizers if you think this is a mistake."
             />
           ) : (
-            <FormWizard form={form} />
+            <FormWizard form={form} consentNotice={legal?.consentNotice} />
           )}
         </div>
       </MainbarShell>

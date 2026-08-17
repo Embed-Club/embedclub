@@ -17,6 +17,8 @@ export interface SubmitFormResult {
   success: boolean
   message: string
   fieldErrors?: Record<string, string>
+  /** The consent box was not ticked — highlight it rather than a question. */
+  consentError?: boolean
   /** Present when the form issues a certificate the moment it is submitted. */
   certificate?: { name: string }
 }
@@ -68,6 +70,8 @@ export async function submitForm(
   answers: FormAnswers,
   /** Hidden field that only a bot fills in. */
   honeypot?: string,
+  /** Whether the respondent ticked the privacy consent box. */
+  consented?: boolean,
 ): Promise<SubmitFormResult> {
   try {
     // Silently accept and discard obvious bots — telling them why just helps
@@ -85,6 +89,17 @@ export async function submitForm(
     })
     if (overLimit) {
       return { success: false, message: 'Too many submissions just now — try again in a minute.' }
+    }
+
+    // Consent is checked here and not only in the browser: the box is what makes
+    // storing someone's name, email and payment proof lawful, so a submission
+    // that skipped the client-side check must not be storable either.
+    if (!consented) {
+      return {
+        success: false,
+        message: 'Please agree to the privacy notice before submitting.',
+        consentError: true,
+      }
     }
 
     const payload = await getPayload({ config })
@@ -219,6 +234,9 @@ export async function submitForm(
       answers: byId,
       answersByLabel: byLabel,
       attachments,
+      // Stamped from the server clock. A resubmission re-stamps, because the
+      // consent that counts is the one covering the answers now on file.
+      consentAcceptedAt: new Date().toISOString(),
       certificateStatus: issuesCertificate ? ('pending' as const) : ('notApplicable' as const),
     }
 

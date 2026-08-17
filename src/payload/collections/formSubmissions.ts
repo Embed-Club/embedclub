@@ -105,6 +105,27 @@ export const FormSubmissions: CollectionConfig = {
     },
     {
       /**
+       * When this person ticked the consent box. Stamped server-side at submit
+       * time, never taken from the client — the point of the record is that it
+       * cannot be back-dated, and `update: false` keeps an officer from moving
+       * it afterwards.
+       *
+       * Empty on the rows imported from the Google Forms archive in 2026-08:
+       * consent for those was given on Google's form, not this one, and writing
+       * a stamp here would claim otherwise.
+       */
+      name: 'consentAcceptedAt',
+      label: 'Consent Given At',
+      type: 'date',
+      access: { update: () => false },
+      admin: {
+        readOnly: true,
+        date: { pickerAppearance: 'dayAndTime' },
+        description: 'When this person agreed to the privacy notice. Empty for imported rows.',
+      },
+    },
+    {
+      /**
        * Values an officer sets for this one person, for certificate markers the
        * form itself cannot answer.
        *

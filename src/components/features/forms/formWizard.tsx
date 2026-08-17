@@ -34,11 +34,21 @@ function fieldKey(field: Field): string {
   return field.id ?? ''
 }
 
+/**
+ * Fallback for the consent line, used until an officer writes one in the CMS.
+ * The label appends a link to the policy, so the sentence is written to lead
+ * into it rather than to end.
+ */
+const DEFAULT_CONSENT_NOTICE =
+  'I agree that Embed Club may store the details I have entered here, and use them to contact me about this event and to issue my certificate. See the'
+
 interface FormWizardProps {
   form: Form
+  /** The consent sentence from the Legal Pages global. */
+  consentNotice?: string | null
 }
 
-export function FormWizard({ form }: FormWizardProps) {
+export function FormWizard({ form, consentNotice }: FormWizardProps) {
   const steps = form.steps ?? []
   const [stepIndex, setStepIndex] = useState(0)
   const [answers, setAnswers] = useState<FormAnswers>({})
@@ -50,6 +60,10 @@ export function FormWizard({ form }: FormWizardProps) {
   const [result, setResult] = useState<SubmitFormResult | null>(null)
   // Bots fill every field they find; people never see this one.
   const [honeypot, setHoneypot] = useState('')
+  // Consent is per-submission, not a question on the form: it is asked once, on
+  // the last step, right above the button that sends the answers.
+  const [consented, setConsented] = useState(false)
+  const [consentError, setConsentError] = useState(false)
 
   const step = steps[stepIndex]
   const isLast = stepIndex === steps.length - 1
@@ -96,11 +110,17 @@ export function FormWizard({ form }: FormWizardProps) {
 
   const handleSubmit = async () => {
     if (!validateStep()) return
+    if (!consented) {
+      setConsentError(true)
+      return
+    }
     setSubmitting(true)
-    const res = await submitForm(form.slug, answers, honeypot)
+    const res = await submitForm(form.slug, answers, honeypot, consented)
     setSubmitting(false)
     if (res.success) {
       setResult(res)
+    } else if (res.consentError) {
+      setConsentError(true)
     } else if (res.fieldErrors && Object.keys(res.fieldErrors).length > 0) {
       setErrors(res.fieldErrors)
       // jump back to the first step containing an error
@@ -251,6 +271,48 @@ export function FormWizard({ form }: FormWizardProps) {
             />
           ))}
         </div>
+
+        {/* ── Consent ────────────────────────────────────────────────────
+            Only on the last step, so it sits with the button that actually
+            sends the answers rather than being agreed to three steps early. */}
+        {isLast && (
+          <div
+            className={cn(
+              'mt-10 flex items-start gap-3 rounded-xl border p-4',
+              consentError ? 'border-destructive bg-destructive/5' : 'border-border bg-muted/40',
+            )}
+          >
+            <Checkbox
+              id="form-consent"
+              checked={consented}
+              onCheckedChange={(checked) => {
+                setConsented(checked === true)
+                if (checked === true) setConsentError(false)
+              }}
+              className="mt-0.5"
+              aria-describedby={consentError ? 'form-consent-error' : undefined}
+            />
+            <div className="space-y-1">
+              <Label htmlFor="form-consent" className="text-sm font-normal leading-relaxed">
+                {consentNotice?.trim() || DEFAULT_CONSENT_NOTICE}{' '}
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline underline-offset-2"
+                >
+                  Privacy Policy
+                </a>
+                .
+              </Label>
+              {consentError && (
+                <p id="form-consent-error" className="text-sm text-destructive">
+                  Tick this to submit your response.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ── Navigation ─────────────────────────────────────────────── */}
         <div className="mt-10 flex items-center justify-between gap-4">
