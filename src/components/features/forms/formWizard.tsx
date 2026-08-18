@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { USN_FORMAT_HINT, isValidUsn } from '@/lib/usn'
 import { cn } from '@/lib/utils'
 import type { Form } from '@/payload/payload-types'
 import { ArrowLeft, ArrowRight, Check, ChevronRight, ImagePlus, Loader2 } from 'lucide-react'
@@ -97,6 +98,15 @@ export function FormWizard({ form, consentNotice }: FormWizardProps) {
         !EMAIL_RE.test(value)
       ) {
         next[key] = 'Enter a valid email address'
+      } else if (
+        field.role === 'usn' &&
+        typeof value === 'string' &&
+        value !== '' &&
+        !isValidUsn(value)
+      ) {
+        // Checked here as well as on the server so a typo is caught on the step
+        // it was made on, rather than after the whole form is submitted.
+        next[key] = `Enter a valid USN — ${USN_FORMAT_HINT}`
       }
     }
     setErrors(next)

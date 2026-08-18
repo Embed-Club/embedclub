@@ -277,7 +277,7 @@ export interface Form {
   id: number;
   title: string;
   /**
-   * Generated from the title.
+   * Auto-generates from the title. Enter your own if it clashes with another form.
    */
   slug: string;
   type: 'registration' | 'feedback' | 'general';
@@ -326,63 +326,71 @@ export interface Form {
    */
   headerImage?: (number | null) | FormMedia;
   /**
-   * Each step is one screen of the wizard
+   * Each step is one screen the person fills in before moving to the next. Group related questions together — personal details on one step, event choices on another — and add a step for each group. One long step works too; several short ones are just easier to fill in on a phone.
    */
   steps?:
     | {
         stepTitle: string;
+        /**
+         * One line shown under the step title, telling the person what this screen is asking for.
+         */
         stepDescription?: string | null;
         /**
          * Optional image shown at the top of this step, under its description.
          */
         stepImage?: (number | null) | FormMedia;
-        fields: {
-          label: string;
-          fieldType:
-            | 'text'
-            | 'email'
-            | 'phone'
-            | 'number'
-            | 'textarea'
-            | 'select'
-            | 'radio'
-            | 'checkbox'
-            | 'date'
-            | 'imageUpload'
-            | 'image';
-          /**
-           * Which questions hold the name and email. Required for certificates.
-           */
-          role?: ('none' | 'name' | 'email') | null;
-          required?: boolean | null;
-          /**
-           * Half-width fields pair up side by side on desktop
-           */
-          width?: ('full' | 'half') | null;
-          placeholder?: string | null;
-          /**
-           * Optional hint shown under the field
-           */
-          helpText?: string | null;
-          /**
-           * Optional picture shown under this question’s label.
-           */
-          image?: (number | null) | FormMedia;
-          /**
-           * The picture to show. The label above is used as its caption.
-           */
-          displayImage?: (number | null) | FormMedia;
-          /**
-           * Choices offered for this question
-           */
-          options?:
-            | {
-                option: string;
-                id?: string | null;
-              }[]
-            | null;
-          id?: string | null;
-        }[];
+        /**
+         * The questions on this step. A step with no questions is allowed if it has an image — use one to show a poster or a QR code.
+         */
+        fields?:
+          | {
+              label: string;
+              fieldType:
+                | 'text'
+                | 'email'
+                | 'phone'
+                | 'number'
+                | 'textarea'
+                | 'select'
+                | 'radio'
+                | 'checkbox'
+                | 'date'
+                | 'imageUpload'
+                | 'image';
+              /**
+               * Tells the club what this answer is, so it can be used automatically. Name and email are what certificates are printed with and sent to, so a form that issues them needs one of each. A USN is upper-cased and format-checked on submission, which keeps the responses sheet sortable by batch and department. Leave as "Just an answer" for ordinary questions.
+               */
+              role?: ('none' | 'name' | 'email' | 'usn') | null;
+              required?: boolean | null;
+              /**
+               * Half-width fields pair up side by side on desktop
+               */
+              width?: ('full' | 'half') | null;
+              placeholder?: string | null;
+              /**
+               * Optional hint shown under the field
+               */
+              helpText?: string | null;
+              /**
+               * Optional picture shown under this question’s label.
+               */
+              image?: (number | null) | FormMedia;
+              /**
+               * The picture to show. The label above is used as its caption.
+               */
+              displayImage?: (number | null) | FormMedia;
+              /**
+               * Choices offered for this question
+               */
+              options?:
+                | {
+                    option: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;

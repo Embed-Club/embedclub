@@ -30,6 +30,7 @@ import * as migration_20260815_183351_addMemberCategoryBatchOrder from './202608
 import * as migration_20260816_080041_addMemberGender from './20260816_080041_addMemberGender';
 import * as migration_20260817_063713_addLegalPagesAndFormConsent from './20260817_063713_addLegalPagesAndFormConsent';
 import * as migration_20260817_164758_addLegalPageSections from './20260817_164758_addLegalPageSections';
+import * as migration_20260817_201946_addUsnFieldRole from './20260817_201946_addUsnFieldRole';
 
 export const migrations = [
   {
@@ -190,6 +191,11 @@ export const migrations = [
   {
     up: migration_20260817_164758_addLegalPageSections.up,
     down: migration_20260817_164758_addLegalPageSections.down,
-    name: '20260817_164758_addLegalPageSections'
+    name: '20260817_164758_addLegalPageSections',
+  },
+  {
+    up: migration_20260817_201946_addUsnFieldRole.up,
+    down: migration_20260817_201946_addUsnFieldRole.down,
+    name: '20260817_201946_addUsnFieldRole'
   },
 ];

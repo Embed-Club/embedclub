@@ -4,6 +4,7 @@ import { dispatchCertificatesForForm } from '@/lib/certificateDispatch'
 import { withResolvedSteps } from '@/lib/formQueries'
 import { driveConfigured, getDriveFileMeta } from '@/lib/googleDrive'
 import { isRateLimited } from '@/lib/rateLimit'
+import { USN_FORMAT_HINT, isValidUsn, normalizeUsn } from '@/lib/usn'
 import type { Form } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { headers } from 'next/headers'
@@ -140,7 +141,8 @@ export async function submitForm(
       // input beside it, so there is nothing to validate or store.
       if (field.fieldType === 'image') continue
 
-      const value = answers[key]
+      // `let`: a USN answer is normalized in place before it is stored.
+      let value = answers[key]
       const isEmpty =
         value === undefined || value === '' || (Array.isArray(value) && value.length === 0)
 
@@ -189,6 +191,18 @@ export async function submitForm(
           fileName: meta.name,
           mimeType: meta.mimeType,
         })
+      }
+
+      // Upper-cased before it is stored, not just before it is displayed: the
+      // stored answer is what the responses sheet sorts on, and a mix of cases
+      // splits one batch across two blocks.
+      if (field.role === 'usn' && typeof value === 'string' && value.trim()) {
+        const usn = normalizeUsn(value)
+        if (isValidUsn(usn)) {
+          value = usn
+        } else {
+          fieldErrors[key] = `Enter a valid USN — ${USN_FORMAT_HINT}`
+        }
       }
 
       byId[key] = value

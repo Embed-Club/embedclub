@@ -1,3 +1,4 @@
+import { USN_FORMAT_HINT } from '@/lib/usn'
 import type { CollectionConfig } from 'payload'
 import { APIError } from 'payload'
 
@@ -9,7 +10,7 @@ type FieldRow = {
   label?: string | null
   displayImage?: unknown
 }
-type StepRow = { fields?: FieldRow[] | null }
+type StepRow = { fields?: FieldRow[] | null; stepTitle?: string | null; stepImage?: unknown }
 
 /**
  * Field types that hold no typed answer, so they can never be the question
@@ -27,6 +28,17 @@ function countRole(steps: StepRow[] | null | undefined, role: string): number {
     }
   }
   return n
+}
+
+/** Steps that would render as a blank screen — no questions and no image. */
+function emptySteps(steps: StepRow[] | null | undefined): string[] {
+  const empty: string[] = []
+  for (const [i, step] of (steps ?? []).entries()) {
+    if ((step.fields?.length ?? 0) === 0 && !step.stepImage) {
+      empty.push(step.stepTitle || `Step ${i + 1}`)
+    }
+  }
+  return empty
 }
 
 /** Every standalone image row must actually carry an image. */
@@ -79,8 +91,15 @@ export const Forms: CollectionConfig = {
       unique: true,
       admin: {
         position: 'sidebar',
-        readOnly: true,
-        description: 'Generated from the title.',
+        // Deliberately not readOnly. It was, and combined with `required` that
+        // made a new form unsaveable: the officer cannot type into a read-only
+        // box, and the admin's own validation rejects the empty value before
+        // the request is ever sent — so the hook that fills it never runs.
+        // Editable matches the events collection, and also gives a way out when
+        // two forms would generate the same slug.
+        description:
+          'Auto-generates from the title. Enter your own if it clashes with another form.',
+        placeholder: 'Will auto-generate when you type the title',
       },
     },
     {
@@ -227,7 +246,8 @@ export const Forms: CollectionConfig = {
       // guarantee with the one exception carved out.
       admin: {
         condition: (data) => !data?.sectionOf,
-        description: 'Each step is one screen of the wizard',
+        description:
+          'Each step is one screen the person fills in before moving to the next. Group related questions together — personal details on one step, event choices on another — and add a step for each group. One long step works too; several short ones are just easier to fill in on a phone.',
       },
       fields: [
         {
@@ -239,7 +259,11 @@ export const Forms: CollectionConfig = {
         {
           name: 'stepDescription',
           type: 'text',
-          admin: { placeholder: 'e.g. Tell us who you are' },
+          admin: {
+            placeholder: 'e.g. Enter your personal details',
+            description:
+              'One line shown under the step title, telling the person what this screen is asking for.',
+          },
         },
         {
           name: 'stepImage',
@@ -250,10 +274,17 @@ export const Forms: CollectionConfig = {
           },
         },
         {
+          // Not required: a step may carry nothing but its image — a poster, a
+          // payment QR, a WhatsApp group code — and asking for a question to go
+          // with it would mean inventing one. The collection's beforeValidate
+          // still rejects a step that has neither questions nor an image, which
+          // would render as a blank screen.
           name: 'fields',
           type: 'array',
-          minRows: 1,
-          required: true,
+          admin: {
+            description:
+              'The questions on this step. A step with no questions is allowed if it has an image — use one to show a poster or a QR code.',
+          },
           fields: [
             {
               type: 'row',
@@ -290,12 +321,14 @@ export const Forms: CollectionConfig = {
               defaultValue: 'none',
               options: [
                 { label: 'Just an answer', value: 'none' },
-                { label: "The person's name", value: 'name' },
-                { label: "The person's email", value: 'email' },
+                { label: 'Name — printed on certificates', value: 'name' },
+                { label: 'Email — where certificates are sent', value: 'email' },
+                { label: `USN — sorted in the responses sheet (${USN_FORMAT_HINT})`, value: 'usn' },
               ],
               admin: {
                 condition: (_data, siblingData) => !ROLELESS_TYPES.includes(siblingData?.fieldType),
-                description: 'Which questions hold the name and email. Required for certificates.',
+                description:
+                  'Tells the club what this answer is, so it can be used automatically. Name and email are what certificates are printed with and sent to, so a form that issues them needs one of each. A USN is upper-cased and format-checked on submission, which keeps the responses sheet sortable by batch and department. Leave as "Just an answer" for ordinary questions.',
               },
             },
             {
@@ -695,6 +728,17 @@ export const Forms: CollectionConfig = {
           // on every save rather than only when empty: a renamed section whose
           // URL still said the old name would be worse than a changed link.
           data.sectionSlug = generateSlug(data.sectionLabel)
+        }
+
+        // A step with no questions is fine when it exists to show something —
+        // a poster, a QR code — but one with neither is a blank screen the
+        // person has to click past.
+        const empty = emptySteps(data?.steps)
+        if (empty.length > 0) {
+          throw new APIError(
+            `A step needs at least one question, or an image to show. Nothing on: ${empty.join(', ')}.`,
+            400,
+          )
         }
 
         // An image row renders nothing but its picture, so a missing one is a

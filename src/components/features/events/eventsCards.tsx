@@ -285,7 +285,14 @@ const EventModalPanel = ({
           // `svh`, not `vh`: mobile browsers size `vh` as though the URL bar
           // were hidden, so a 90vh panel is taller than what is actually on
           // screen and its top sits under the browser chrome.
-          'relative z-[60] my-auto max-h-[85svh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground md:max-h-[90svh]',
+          //
+          // A fixed height, not a max: the panel used to size to its content,
+          // so expanding the description grew the frame under the reader and a
+          // short event opened a different-sized modal than a long one. Now
+          // every event's modal is the same box and the content moves inside
+          // it. This also gives the grid a definite height to resolve `h-full`
+          // and its `fr` row against.
+          'relative z-[60] my-auto h-[85svh] w-full max-w-6xl overflow-hidden rounded-2xl bg-card font-sans text-card-foreground md:h-[90svh]',
           cutoutCardSurfaceShadowClassName,
         )}
       >
@@ -301,9 +308,16 @@ const EventModalPanel = ({
             <X className="h-4 w-4" />
           </button>
 
+          {/* Desktop: the grid itself doesn't scroll — the details column does,
+              so the poster stays put while its details move. Below md the two
+              are stacked, where a fixed image and a scrolling column beside it
+              means nothing, so the whole panel scrolls as one.
+              `minmax(0,1fr)` on the row: a default `auto` row sizes to its
+              tallest child and would push past the panel instead of letting the
+              column scroll inside it. */}
           <div
             ref={bodyRef}
-            className="grid h-full max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-2 md:gap-8 md:p-8 lg:p-10"
+            className="grid h-full grid-cols-1 gap-6 overflow-y-auto p-3 md:grid-cols-2 md:grid-rows-[minmax(0,1fr)] md:gap-8 md:overflow-hidden md:p-8 lg:p-10"
           >
             {/* Image Section — same cutout inset label as the card it opened from */}
             <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted">
@@ -334,8 +348,11 @@ const EventModalPanel = ({
               </CutoutCardInsetLabel>
             </div>
 
-            {/* Details Section */}
-            <div className="flex flex-col justify-start space-y-4 md:space-y-6">
+            {/* Details Section — the scrolling half on desktop. `min-h-0` is
+                what allows it: a grid item's default `min-height: auto` refuses
+                to shrink below its content, so without it the column grows to
+                fit and the overflow moves back up to the panel. */}
+            <div className="flex min-h-0 flex-col justify-start space-y-4 md:space-y-6 md:overflow-y-auto md:pr-2">
               {/* Content (Event Details) */}
               <div className="flex-1 pr-4">
                 {event ? <EventDetails event={event} /> : card.content}
