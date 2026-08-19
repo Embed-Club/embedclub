@@ -1,25 +1,41 @@
 import { EmptyState } from '@/components/common/emptyState'
-import { PageTitle } from '@/components/common/pageTitle'
-import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
+import { LegalDocument } from '@/components/common/legalDocument'
+import { ContactLinks } from '@/components/features/contact/contactLinks'
+import { SupportFaq } from '@/components/features/contact/supportFaq'
+import { getSupportPages } from '@/lib/support'
 import type { Metadata } from 'next'
+
+// ISR so a wording change goes live without a redeploy.
+export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Get in touch with Embed Club.',
+  description: 'Support answers and how to reach Embed Club by email or phone.',
+  alternates: { canonical: '/contact' },
 }
 
 export default async function Page() {
+  const support = await getSupportPages()
+  const email = support?.contactEmail
+  const phone = support?.contactPhone
+
   return (
-    <SidebarShell>
-      <MainbarShell>
-        <PageTitle>Contact</PageTitle>
-        <div className="max-w-5xl mx-auto px-4 md:px-8 pt-24 md:pt-40 pb-20">
-          <EmptyState
-            title="Nothing Here Yet"
-            message="Contact details haven't been added yet — check back soon!"
-          />
-        </div>
-      </MainbarShell>
-    </SidebarShell>
+    <LegalDocument
+      title={support?.contactTitle || 'Contact'}
+      content={support?.contact}
+      sections={support?.contactSections}
+      extra={
+        <>
+          {(email || phone) && <ContactLinks email={email} phone={phone} />}
+          <SupportFaq items={support?.supportFaq} />
+        </>
+      }
+      empty={
+        <EmptyState
+          title="Not Published Yet"
+          message="The contact page has not been written into the CMS yet."
+        />
+      }
+    />
   )
 }

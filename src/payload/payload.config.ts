@@ -28,6 +28,7 @@ import { Users } from './collections/users'
 import { AboutPage } from './globals/aboutPage'
 import { HomeFeaturedMembers } from './globals/homeFeaturedMembers'
 import { LegalPages } from './globals/legalPages'
+import { SupportPages } from './globals/supportPages'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -52,7 +53,7 @@ export default buildConfig({
           media: '(prefers-color-scheme: dark)',
         },
       ],
-      // openGraph does not inherit `description` above — left alone it keeps
+      // openGraph does not inherit `description` above - left alone it keeps
       // advertising Payload ("a headless CMS and application framework...")
       // in og:description, twitter:description and the generated og:image.
       openGraph: {
@@ -97,7 +98,7 @@ export default buildConfig({
     // System
     Users,
   ],
-  globals: [AboutPage, LegalPages, HomeFeaturedMembers],
+  globals: [AboutPage, LegalPages, SupportPages, HomeFeaturedMembers],
   // "Payload Settings" on the account view is a translation string, not config,
   // so the admin.meta rebrand can't reach it. Overrides merge over the defaults.
   i18n: {
@@ -119,7 +120,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
     // Schema is migration-managed (see docs/SETUP.md §4). Never let dev/test
-    // mode push schema diffs — it fights the migrations and corrupts state.
+    // mode push schema diffs - it fights the migrations and corrupts state.
     push: false,
   }),
   sharp,
@@ -134,12 +135,12 @@ export default buildConfig({
         { slug: 'tags' },
         { slug: 'member-roles' },
         { slug: 'member-categories' },
-        // Officers export responses to CSV/JSON straight from the list view —
+        // Officers export responses to CSV/JSON straight from the list view -
         // which is most of why a Google Sheet mirror was wanted.
         { slug: 'form-submissions' },
       ],
     }),
-    // S3 is opt-in via env, not tied to NODE_ENV — so a local production build
+    // S3 is opt-in via env, not tied to NODE_ENV - so a local production build
     // (`next build && next start`) still stores uploads on disk. Set
     // USE_S3_STORAGE=true in the real deployment environment.
     ...(process.env.USE_S3_STORAGE === 'true'
@@ -150,7 +151,7 @@ export default buildConfig({
               'member-photo': true,
               gallery: true,
               // Officer-authored form artwork only. Files respondents upload
-              // never touch this bucket — they go to Google Drive.
+              // never touch this bucket - they go to Google Drive.
               'form-media': true,
             },
             bucket: process.env.S3_BUCKET || '',

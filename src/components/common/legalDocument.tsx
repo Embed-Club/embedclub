@@ -18,6 +18,12 @@ interface LegalDocumentProps {
   sections?: LegalSection[] | null
   /** ISO date the policy was last revised. */
   lastUpdated?: string | null
+  /**
+   * Rendered below the content and sections - e.g. the email/phone row on
+   * /contact. Doesn't count toward `hasAnything`: a page with only this and no
+   * written content still shows as unwritten.
+   */
+  extra?: ReactNode
   /** Shown when the CMS has no wording for this page yet. */
   empty: ReactNode
 }
@@ -26,7 +32,7 @@ function LegalSectionBlock({ section }: { section: LegalSection }) {
   switch (section.blockType) {
     case 'legalHeadingBlock':
       // Same banner panel as the About page's heading block, so a section break
-      // reads identically on both. No background image or subheading here —
+      // reads identically on both. No background image or subheading here -
       // those are About's fields, and a policy page has no use for either.
       return (
         <div className="relative my-12 overflow-hidden rounded-2xl border border-border">
@@ -49,7 +55,7 @@ function LegalSectionBlock({ section }: { section: LegalSection }) {
 }
 
 /**
- * The shared frame for /privacy and /terms — the same page twice, differing
+ * The shared frame for /privacy and /terms - the same page twice, differing
  * only in which fields of the Legal Pages global it renders.
  *
  * Same column and the same intro-then-sections shape as the About page, so
@@ -61,10 +67,11 @@ export function LegalDocument({
   content,
   sections,
   lastUpdated,
+  extra,
   empty,
 }: LegalDocumentProps) {
   const blocks = sections ?? []
-  // The date alone isn't content — a page with only "last updated" on it should
+  // The date alone isn't content - a page with only "last updated" on it should
   // still read as unwritten.
   const hasAnything = Boolean(content) || blocks.length > 0
 
@@ -94,6 +101,9 @@ export function LegalDocument({
               ))}
             </>
           )}
+          {/* Outside the empty check: the email/phone row on /contact should
+              still show even on a day the intro prose hasn't been written. */}
+          {extra}
         </div>
       </MainbarShell>
     </SidebarShell>

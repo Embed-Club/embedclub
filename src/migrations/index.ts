@@ -31,6 +31,9 @@ import * as migration_20260816_080041_addMemberGender from './20260816_080041_ad
 import * as migration_20260817_063713_addLegalPagesAndFormConsent from './20260817_063713_addLegalPagesAndFormConsent';
 import * as migration_20260817_164758_addLegalPageSections from './20260817_164758_addLegalPageSections';
 import * as migration_20260817_201946_addUsnFieldRole from './20260817_201946_addUsnFieldRole';
+import * as migration_20260819_002946_addSupportPages from './20260819_002946_addSupportPages';
+import * as migration_20260819_050734_addSupportFaq from './20260819_050734_addSupportFaq';
+import * as migration_20260819_053658_dropSupportPageFields from './20260819_053658_dropSupportPageFields';
 
 export const migrations = [
   {
@@ -196,6 +199,21 @@ export const migrations = [
   {
     up: migration_20260817_201946_addUsnFieldRole.up,
     down: migration_20260817_201946_addUsnFieldRole.down,
-    name: '20260817_201946_addUsnFieldRole'
+    name: '20260817_201946_addUsnFieldRole',
+  },
+  {
+    up: migration_20260819_002946_addSupportPages.up,
+    down: migration_20260819_002946_addSupportPages.down,
+    name: '20260819_002946_addSupportPages',
+  },
+  {
+    up: migration_20260819_050734_addSupportFaq.up,
+    down: migration_20260819_050734_addSupportFaq.down,
+    name: '20260819_050734_addSupportFaq',
+  },
+  {
+    up: migration_20260819_053658_dropSupportPageFields.up,
+    down: migration_20260819_053658_dropSupportPageFields.down,
+    name: '20260819_053658_dropSupportPageFields'
   },
 ];

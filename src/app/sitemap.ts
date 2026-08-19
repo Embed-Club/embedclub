@@ -17,7 +17,6 @@ const STATIC_ROUTES = [
   '/tutorials',
   '/simulators',
   '/feedback',
-  '/support',
   '/contact',
 ]
 
@@ -44,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     // Both resources and tutorials render their detail pages under /resources/[slug].
-    // (Forms are intentionally excluded — they're noindex, single-use pages.)
+    // (Forms are intentionally excluded - they're noindex, single-use pages.)
     for (const r of resources.docs) {
       if (!r.slug) continue
       entries.push({

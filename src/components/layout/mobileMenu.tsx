@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 // StaggeredMenu pulls in gsap for its open/close choreography. It's mounted
 // unconditionally on every page (this component lives in the shared shell),
 // so a static import shipped a full animation engine to every visitor before
-// anyone had even tapped the hamburger icon. Loaded on demand instead —
+// anyone had even tapped the hamburger icon. Loaded on demand instead -
 // `ssr:false` because it's pure client interaction with no meaningful
 // server-rendered fallback.
 const StaggeredMenu = dynamic(() => import('@/components/layout/staggeredMenu'), {
@@ -21,7 +21,7 @@ const StaggeredMenu = dynamic(() => import('@/components/layout/staggeredMenu'),
  * put a non-tappable row. The order preserves the grouping's reading, so the
  * two navs stay recognisably the same list.
  *
- * Keep in step with `desktopMenu.tsx` — a page reachable from one and not the
+ * Keep in step with `desktopMenu.tsx` - a page reachable from one and not the
  * other is the bug this list exists to prevent.
  */
 const navItems = [
@@ -37,7 +37,6 @@ const navItems = [
   { label: 'ABOUT', ariaLabel: 'About', link: '/about' },
   { label: 'FORMS', ariaLabel: 'Forms', link: '/forms' },
   { label: 'FEEDBACK', ariaLabel: 'Feedback', link: '/feedback' },
-  { label: 'SUPPORT', ariaLabel: 'Support', link: '/support' },
   { label: 'CONTACT', ariaLabel: 'Contact', link: '/contact' },
 ]
 

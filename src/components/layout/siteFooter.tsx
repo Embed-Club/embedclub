@@ -25,7 +25,6 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
     links: [
       { label: 'About', href: '/about' },
       { label: 'Feedback', href: '/feedback' },
-      { label: 'Support', href: '/support' },
       { label: 'Contact', href: '/contact' },
     ],
   },
@@ -40,7 +39,7 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
 
 /**
  * Full-viewport footer at the bottom of every page's scroll container. Plain
- * full-page section — no scroll snapping (free to scroll into and back out of).
+ * full-page section - no scroll snapping (free to scroll into and back out of).
  */
 export function SiteFooter() {
   return (
@@ -66,7 +65,7 @@ export function SiteFooter() {
               />
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
                 Student-run embedded systems & IoT club at PA College of Engineering. We build,
-                break, and ship — turning circuits and code into things that work.
+                break, and ship - turning circuits and code into things that work.
               </p>
               <a
                 href="/contact"
@@ -78,7 +77,7 @@ export function SiteFooter() {
             </div>
 
             {/* Link columns */}
-            {/* Four columns only from lg — at sm the fourth wrapped into a
+            {/* Four columns only from lg - at sm the fourth wrapped into a
                 lone orphan under the other three. */}
             <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
               {COLUMNS.map((col) => (
@@ -117,7 +116,7 @@ export function SiteFooter() {
               <div className="flex h-16 items-center justify-center rounded-xl bg-white px-3 shadow-sm">
                 <img
                   src="/pacesilvioralogo.png"
-                  alt="PACE Silver Jubilee — 25 years"
+                  alt="PACE Silver Jubilee - 25 years"
                   className="h-12 w-auto object-contain"
                 />
               </div>

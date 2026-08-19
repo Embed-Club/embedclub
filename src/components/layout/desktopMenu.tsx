@@ -10,7 +10,6 @@ import {
   LucideHome,
   type LucideIcon,
   School,
-  Settings2,
   SquareChartGantt,
   SquareTerminal,
   Trophy,
@@ -122,11 +121,6 @@ const data = {
       icon: SquareTerminal,
     },
     {
-      title: 'SUPPORT',
-      url: '/support',
-      icon: Settings2,
-    },
-    {
       title: 'CONTACT',
       url: '/contact',
       icon: SquareTerminal,
@@ -141,7 +135,7 @@ type NavLeaf = { title: string; url: string; icon: LucideIcon }
  * that wipes outward on hover, so it reads as the sidebar itself extending over
  * the page content (not a detached pill). The tab starts at the rail's left
  * padding, sits under the icon, and its right end rounds off past the rail edge
- * — one continuous shape with no gap. The rail's SidebarContent is set to
+ * - one continuous shape with no gap. The rail's SidebarContent is set to
  * overflow-visible while collapsed so the tab can escape the rail.
  */
 function CollapsedNavItem({ title, url, icon: Icon }: NavLeaf) {
@@ -205,7 +199,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         }}
                         className="relative w-[180px] h-full overflow-hidden"
                       >
-                        {/* Full banner SVG — logo + text. InlineSVG so Gobold @font-face loads */}
+                        {/* Full banner SVG - logo + text. InlineSVG so Gobold @font-face loads */}
                         <InlineSVG
                           src="/EmbedClubBanner-Dark.svg"
                           className="w-full h-full hidden dark:block [&>svg]:w-full [&>svg]:h-full"
@@ -225,7 +219,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         transition={{ duration: 0.3 }}
                         className="relative w-8 h-8"
                       >
-                        {/* Logo-only SVG is simple paths, no font needed — Image is fine here */}
+                        {/* Logo-only SVG is simple paths, no font needed - Image is fine here */}
                         <img
                           src={isDark ? '/embedClubLogo-Dark.svg' : '/embedClubLogo-Light.svg'}
                           alt="EmbedClub"
