@@ -22,11 +22,12 @@ test.describe('Frontend', () => {
     await expect(page.getByRole('heading', { name: /feedback/i, level: 1 })).toBeVisible({
       timeout: 15_000,
     })
-    // Content must resolve to either the forms list (links point at /forms/…,
-    // which the footer never does) or the shared empty state.
-    const formLink = page.locator('a[href^="/forms/"]')
+    // Cards, not links: a closed form renders as a plain div rather than a
+    // Link, so asserting on an anchor fails whenever every form is past its
+    // deadline - which is the normal resting state for feedback forms.
+    const cards = page.locator('[data-slot="cutout-card"]')
     const emptyState = page.getByText('No Feedback Forms Yet')
-    await expect(formLink.first().or(emptyState)).toBeVisible({ timeout: 15_000 })
+    await expect(cards.first().or(emptyState)).toBeVisible({ timeout: 15_000 })
   })
 
   test('events page renders content or empty state', async ({ page }) => {
