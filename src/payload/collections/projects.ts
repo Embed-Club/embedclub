@@ -13,7 +13,7 @@ import {
 import { CARD_DESCRIPTION_MAX_LENGTH, generateSlug } from './learningFields'
 
 /**
- * Club projects — the builds worth showing off: competition entries, grant
+ * Club projects - the builds worth showing off: competition entries, grant
  * work, and anything the club is proud of. Distinct from Resources/Tutorials
  * (reference material) and Events (things that happen on a date): a project has
  * the people who built it and links out to the code or a demo.
@@ -171,7 +171,7 @@ export const Projects: CollectionConfig = {
   hooks: {
     beforeValidate: [
       ({ data }) => {
-        // Slug is read-only in the admin, so fill it here. Only when empty —
+        // Slug is read-only in the admin, so fill it here. Only when empty -
         // regenerating on every title edit would break any link already shared.
         if (data?.title && !data?.slug) {
           data.slug = generateSlug(data.title)

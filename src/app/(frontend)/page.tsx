@@ -19,7 +19,7 @@ function objectsOnly(value: (number | Member)[] | null | undefined): Member[] {
   return value.filter((m): m is Member => typeof m === 'object' && m !== null)
 }
 
-/** Each gallery doc is one uploaded photo — take its display URL. */
+/** Each gallery doc is one uploaded photo - take its display URL. */
 function galleryImageUrls(galleries: Gallery[]): string[] {
   const urls: string[] = []
   for (const photo of galleries) {

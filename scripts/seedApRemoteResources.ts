@@ -1,12 +1,12 @@
 /**
- * Seed the "Non-Server Controller" resources — one for the ESP32, one for the
+ * Seed the "Non-Server Controller" resources - one for the ESP32, one for the
  * ESP8266.
  *
  *   pnpm tsx scripts/seedApRemoteResources.ts
  *
  * Ports the club's older Wi-Fi remote post. The board is its own access point
  * and serves its own page, so this works with no router, no internet, and no
- * account anywhere — the opposite trade-off to the ThingSpeak guides.
+ * account anywhere - the opposite trade-off to the ThingSpeak guides.
  *
  * Matched on slug, so re-running updates in place. Live immediately.
  */
@@ -31,11 +31,11 @@ import {
   upsertLearningDoc,
 } from './lib/learningSeed'
 
-const ESP32_SKETCH = `// apRemote.ino — ESP32 as its own access point.
+const ESP32_SKETCH = `// apRemote.ino - ESP32 as its own access point.
 #include <WiFi.h>
 
 // The network the BOARD creates. Anyone who joins it can control the LED,
-// so pick a real password — 8 characters minimum, or the AP silently
+// so pick a real password - 8 characters minimum, or the AP silently
 // starts open.
 const char* apSsid     = "EmbedClub-Node";
 const char* apPassword = "changeThis123";
@@ -60,7 +60,7 @@ void loop() {
   WiFiClient client = server.available();
   if (!client) return;
 
-  // Read only the request line — that is all we need, and reading the whole
+  // Read only the request line - that is all we need, and reading the whole
   // request without a timeout is how these sketches hang.
   String request = client.readStringUntil('\\r');
   client.readStringUntil('\\n');
@@ -86,13 +86,13 @@ void loop() {
   client.stop();
 }`
 
-const ESP8266_SKETCH = `// apRemote.ino — ESP8266 / NodeMCU as its own access point.
+const ESP8266_SKETCH = `// apRemote.ino - ESP8266 / NodeMCU as its own access point.
 #include <ESP8266WiFi.h>
 
 const char* apSsid     = "EmbedClub-Node";
 const char* apPassword = "changeThis123";
 
-// GPIO2 is the D4 label, and it is the on-board LED — which is wired to 3.3V,
+// GPIO2 is the D4 label, and it is the on-board LED - which is wired to 3.3V,
 // so LOW turns it ON. The writes below look inverted because they are.
 const int LED_PIN = 2;
 
@@ -160,14 +160,14 @@ function buildContent({
       paragraph([
         bold('The trade-off against the ThingSpeak guide '),
         text(
-          'is exactly reversed. That one reaches the board from anywhere but depends on a cloud service and takes seconds to respond. This one responds instantly and depends on nothing — but you have to be standing within Wi-Fi range.',
+          'is exactly reversed. That one reaches the board from anywhere but depends on a cloud service and takes seconds to respond. This one responds instantly and depends on nothing - but you have to be standing within Wi-Fi range.',
         ),
       ]),
       heading('h2', [text('What You Will Need')]),
       list('bullet', [
         [bold(`A ${board} board`)],
         [bold('Arduino IDE'), text(' with the board package installed')],
-        [text('Nothing else — the on-board LED stands in for the load')],
+        [text('Nothing else - the on-board LED stands in for the load')],
       ]),
     ]),
 
@@ -186,7 +186,7 @@ function buildContent({
       paragraph([
         bold('Your phone will warn that the network has no internet '),
         text(
-          'and may try to switch back to mobile data. Tell it to stay connected — on Android this is usually a notification you have to tap, and on iOS it is the "Wi-Fi Assist" setting.',
+          'and may try to switch back to mobile data. Tell it to stay connected - on Android this is usually a notification you have to tap, and on iOS it is the "Wi-Fi Assist" setting.',
         ),
       ]),
     ]),
@@ -204,7 +204,7 @@ function buildContent({
         [
           bold('192.168.4.1 is the default. '),
           text(
-            'It is not magic — it is just what the ESP AP stack hands itself. The sketch prints it so you never have to remember.',
+            'It is not magic - it is just what the ESP AP stack hands itself. The sketch prints it so you never have to remember.',
           ),
         ],
         [
@@ -238,7 +238,7 @@ function buildContent({
         ],
         [
           bold('LED does the opposite of what you asked: '),
-          text('see the note above — on-board LEDs are often wired active-low.'),
+          text('see the note above - on-board LEDs are often wired active-low.'),
         ],
       ]),
       heading('h2', [text('Where to Go Next')]),
@@ -270,7 +270,7 @@ async function main() {
       title: 'Non-Server Controller: ESP32 Access Point',
       slug: 'esp32-access-point-remote',
       description:
-        'Make an ESP32 its own Wi-Fi network and serve a control page from it — no router, no internet, no account.',
+        'Make an ESP32 its own Wi-Fi network and serve a control page from it - no router, no internet, no account.',
       thumbnail: placeholderId,
       difficulty: 'beginner',
       tags: await ensureTagIds(payload, ['ESP32', 'IoT', 'Microcontroller']),
@@ -282,7 +282,7 @@ async function main() {
         ledNote: paragraph([
           bold('GPIO2 '),
           text(
-            'is the on-board LED on most ESP32 dev boards, and it is wired the normal way round — HIGH is on. Swap in any output pin to drive a relay instead.',
+            'is the on-board LED on most ESP32 dev boards, and it is wired the normal way round - HIGH is on. Swap in any output pin to drive a relay instead.',
           ),
         ]),
       }),
@@ -297,7 +297,7 @@ async function main() {
       title: 'Non-Server Controller: ESP8266 Access Point',
       slug: 'esp8266-access-point-remote',
       description:
-        'Make a NodeMCU its own Wi-Fi network and serve a control page from it — including the inverted on-board LED that makes the code look wrong.',
+        'Make a NodeMCU its own Wi-Fi network and serve a control page from it - including the inverted on-board LED that makes the code look wrong.',
       thumbnail: placeholderId,
       difficulty: 'beginner',
       tags: await ensureTagIds(payload, ['ESP8266', 'IoT', 'Microcontroller']),

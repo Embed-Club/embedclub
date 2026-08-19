@@ -10,7 +10,7 @@ import {
 } from './googleAuth'
 
 /**
- * Google Drive is where files that *respondents* attach to a form are kept —
+ * Google Drive is where files that *respondents* attach to a form are kept -
  * deliberately not the S3/Supabase bucket the site's own media lives in.
  *
  * The reasoning: officer-authored images are site content and belong in the
@@ -21,10 +21,10 @@ import {
  *
  * Each form carries its own `driveFolderId`; `GOOGLE_DRIVE_FOLDER_ID` is the
  * fallback for forms that set none. The folder has to be reachable by whoever
- * the site is authorised as — in practice, owned by that account.
+ * the site is authorised as - in practice, owned by that account.
  *
  * A service account has no storage quota of its own, and Drive refuses any
- * write where the new file would end up owned by one — every upload 403s with
+ * write where the new file would end up owned by one - every upload 403s with
  * "Service Accounts do not have storage quota". So the file needs a real
  * owner. Two ways, and the first is what this site uses:
  *
@@ -34,13 +34,13 @@ import {
  *      credential reaches exactly one Drive and nothing else.
  *
  *   2. **A Shared Drive folder**, where files are owned by the drive rather
- *      than any person, with the service account as a Content Manager — hence
+ *      than any person, with the service account as a Content Manager - hence
  *      `supportsAllDrives` on every call. Needs a Workspace edition that
  *      includes Shared Drives, which pace.edu.in's does not.
  *
  * Domain-wide delegation is the third way the internet will suggest. It works,
  * but it lets this service account act as *any* account in the domain for
- * Drive — a college-wide capability created to solve a club-website problem —
+ * Drive - a college-wide capability created to solve a club-website problem -
  * and it needs a Workspace admin. Deliberately not used.
  */
 const UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3/files'
@@ -52,7 +52,7 @@ export interface DriveFileMeta {
   name: string
   mimeType: string
   size?: number
-  /** Set by us at upload time — which form and question this file belongs to. */
+  /** Set by us at upload time - which form and question this file belongs to. */
   formSlug?: string
   fieldId?: string
 }
@@ -176,7 +176,7 @@ export async function getDriveFileStream(fileId: string): Promise<Response> {
  *
  * Used to read a Slides certificate template and find out which
  * `{{placeholders}}` it contains, without pulling in the Slides API (a
- * separate scope and another quota) — Drive can already flatten a deck to
+ * separate scope and another quota) - Drive can already flatten a deck to
  * plain text, and text is all we need.
  */
 export async function exportDriveFileText(fileId: string): Promise<string> {
@@ -191,7 +191,7 @@ export async function exportDriveFileText(fileId: string): Promise<string> {
   return res.text()
 }
 
-/** Human-facing Drive link — what gets written into the Sheets mirror. */
+/** Human-facing Drive link - what gets written into the Sheets mirror. */
 export function driveViewUrl(fileId: string): string {
   return `https://drive.google.com/file/d/${fileId}/view`
 }

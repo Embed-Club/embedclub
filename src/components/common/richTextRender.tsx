@@ -11,7 +11,7 @@ import React from 'react'
  * - Uploads (images placed inline in the editor), horizontal rules, line breaks
  *
  * Alignment and indent live on the *block* node as `format` (a string) and
- * `indent` (a number) — distinct from the `format` bitmask on text nodes. Both
+ * `indent` (a number) - distinct from the `format` bitmask on text nodes. Both
  * were previously dropped, which is why centred text came out left-aligned.
  */
 
@@ -35,7 +35,7 @@ const ALIGNMENT_CLASSES: Record<string, string> = {
 }
 
 /**
- * Indent steps, spelled out rather than built with a template string —
+ * Indent steps, spelled out rather than built with a template string -
  * Tailwind's JIT scans source text, so a computed `ps-${n}` never gets emitted.
  */
 const INDENT_CLASSES = ['', 'ps-4', 'ps-8', 'ps-12', 'ps-16', 'ps-20', 'ps-24', 'ps-28', 'ps-32']
@@ -81,7 +81,7 @@ function renderTextNode(node: Record<string, unknown>, key: number): React.React
 }
 
 /**
- * Render an `upload` node — an image dropped straight into the rich text, as
+ * Render an `upload` node - an image dropped straight into the rich text, as
  * opposed to a standalone Image Block.
  */
 function renderUploadNode(node: Record<string, unknown>, key: number): React.ReactNode {
@@ -111,7 +111,7 @@ function renderUploadNode(node: Record<string, unknown>, key: number): React.Rea
  * Render a block-level node (paragraph, heading, list, etc.)
  *
  * `nextHeadingId` hands out pre-computed anchor ids in document order so the
- * "On this page" nav can link to them — see `lib/richTextHeadings.ts`.
+ * "On this page" nav can link to them - see `lib/richTextHeadings.ts`.
  */
 function renderNode(
   node: Record<string, unknown>,

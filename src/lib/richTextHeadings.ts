@@ -13,7 +13,7 @@ export interface RichTextHeading {
   level: number
 }
 
-/** Mirrors `generateSlug` in the Payload collections — same rules, plain text. */
+/** Mirrors `generateSlug` in the Payload collections - same rules, plain text. */
 export function headingSlug(text: string): string {
   return text
     .toLowerCase()
@@ -48,7 +48,7 @@ function lexicalChildren(data: unknown): Array<Record<string, unknown>> {
  * document order. Recurses into rowBlock so headings inside columns still land
  * in the TOC.
  *
- * Duplicate headings get a `-2`, `-3`, … suffix so every anchor stays unique —
+ * Duplicate headings get a `-2`, `-3`, … suffix so every anchor stays unique -
  * repeated headings like "Wiring" under different sections are common.
  */
 export function collectHeadings(blocks: unknown): RichTextHeading[] {
@@ -100,7 +100,7 @@ function countHeadings(block: unknown): number {
  *
  * Ids are minted once for the whole document (`collectHeadings`), because
  * de-duplication needs to see every heading at once. Rendering, though, happens
- * per block — so the ids have to be handed down the tree rather than recomputed,
+ * per block - so the ids have to be handed down the tree rather than recomputed,
  * or a block would have no way to know it holds the *second* "Wiring" heading.
  * Both walks visit blocks in the same order, which is what keeps them aligned.
  */

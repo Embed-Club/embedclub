@@ -7,7 +7,7 @@ import { avantGarde, gobold, sportBreak } from './fonts'
 const SITE_URL = getServerSideURL()
 const SITE_NAME = 'Embed Club'
 const SITE_DESCRIPTION =
-  'Student-run embedded systems & IoT club at PA College of Engineering, Mangalore. We build, break, and ship — turning circuits and code into things that work.'
+  'Student-run embedded systems & IoT club at PA College of Engineering, Mangalore. We build, break, and ship - turning circuits and code into things that work.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -18,7 +18,7 @@ function resolvePhoto(member: Member): string {
     const p = photo as MemberPhoto
     const sizes = p.sizes as unknown as Record<string, { url?: string }> | undefined
     // Include thumbnail: small/old source photos only generate the thumbnail
-    // size (no 400px card), and the original can 404 — thumbnail beats blank.
+    // size (no 400px card), and the original can 404 - thumbnail beats blank.
     return (
       sizes?.card?.url ||
       sizes?.profile?.url ||
@@ -52,7 +52,7 @@ export function MemberCutoutCard({ member }: { member: Member }) {
         <CutoutCardOverlay />
       </CutoutCardMedia>
       {/* Tighter than the default p-6 so the text block gets more of the card's
-          width — full names were being truncated to "Habeeb Ur R...". */}
+          width - full names were being truncated to "Habeeb Ur R...". */}
       <CutoutCardContent className="px-2.5 py-3 text-center">
         <p
           title={member.fullName}

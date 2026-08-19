@@ -16,7 +16,7 @@ import {
 import { cn } from '@/lib/utils'
 
 // ============================================================================
-// Tokens — optional chrome for demos / quick styling
+// Tokens - optional chrome for demos / quick styling
 // ============================================================================
 
 /** Border + shadow stack using theme tokens so elevation reads in light and dark.
@@ -34,7 +34,7 @@ export const cutoutCardSurfaceClassName = cn(
   cutoutCardSurfaceShadowClassName,
 )
 
-/** Staggered text/footer entrance inside `CutoutCardContent` — use with `motion.div` children. */
+/** Staggered text/footer entrance inside `CutoutCardContent` - use with `motion.div` children. */
 export function useCutoutContentStaggerVariants() {
   const reduceMotion = useReducedMotion()
 
@@ -174,7 +174,7 @@ export function CutoutCard({
       {/* No mount fade: cards are painted at full opacity as soon as they
           render. Every card animating in from opacity 0 read as the whole page
           fading in, since this primitive backs the grids on nearly every page.
-          Hover still animates — that is driven through the context below. */}
+          Hover still animates - that is driven through the context below. */}
       <motion.div
         className={cn(className)}
         data-slot="cutout-card"

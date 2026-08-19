@@ -14,7 +14,7 @@ interface AccordionBlockProps {
  * Built on native `<details>` / `<summary>` rather than state and a click
  * handler. That gets keyboard support, the correct ARIA semantics, and
  * in-page search ("find on page" opens a closed section in current browsers)
- * for free — none of which a div-and-onClick version has unless it is written,
+ * for free - none of which a div-and-onClick version has unless it is written,
  * and it usually is not. It also means this stays a server component, so the
  * blocks inside it can be server components too.
  *

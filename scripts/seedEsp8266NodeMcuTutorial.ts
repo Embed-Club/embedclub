@@ -5,7 +5,7 @@
  *
  * Written as the shorter companion to the ESP32 tutorial rather than a repeat of
  * it: the setup differs (board URL, board entry, the D-label pin mapping) and the
- * gotchas are the board's own — inverted on-board LED, boot-mode pins.
+ * gotchas are the board's own - inverted on-board LED, boot-mode pins.
  *
  * Screenshot slots and the thumbnail use the shared placeholder graphic with a
  * caption naming the real image that belongs there. Matched on slug, so
@@ -40,10 +40,10 @@ const IDE_STEP_MARKER = 'Boards Manager URL'
 
 const BOARD_URL = 'https://arduino.esp8266.com/stable/package_esp8266com_index.json'
 
-const BLINK = `// blink.ino — the on-board LED, which is wired backwards.
+const BLINK = `// blink.ino - the on-board LED, which is wired backwards.
 //
 // LED_BUILTIN on the NodeMCU is GPIO2 (the D4 label), and it is wired to
-// 3.3V rather than to ground. So LOW turns it ON and HIGH turns it OFF —
+// 3.3V rather than to ground. So LOW turns it ON and HIGH turns it OFF -
 // the opposite of every Arduino example.
 
 void setup() {
@@ -57,7 +57,7 @@ void loop() {
   delay(500);
 }`
 
-const WIFI_CONNECT = `// wifi.ino — join the network and print the address.
+const WIFI_CONNECT = `// wifi.ino - join the network and print the address.
 #include <ESP8266WiFi.h>
 
 const char* ssid     = "YOUR_WIFI_NAME";
@@ -85,7 +85,7 @@ void setup() {
 
 void loop() {}`
 
-const WEB_SERVER = `// webled.ino — a page with two links that switch the LED.
+const WEB_SERVER = `// webled.ino - a page with two links that switch the LED.
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
@@ -138,15 +138,15 @@ const CONTENT = [
     heading('h1', [text('ESP8266 NodeMCU: Setup and Wi-Fi')], 'center'),
     paragraph([
       text(
-        'The ESP8266 was the board that made Wi-Fi cheap, and the NodeMCU is the version of it with a USB socket and a voltage regulator already attached. It has been superseded by the ESP32 on paper, but it is still the right answer when a project needs one sensor on the network and nothing else — it is smaller, cheaper, and draws less. This tutorial covers setup, the two ways the board surprises people, and a web page that switches its LED.',
+        'The ESP8266 was the board that made Wi-Fi cheap, and the NodeMCU is the version of it with a USB socket and a voltage regulator already attached. It has been superseded by the ESP32 on paper, but it is still the right answer when a project needs one sensor on the network and nothing else - it is smaller, cheaper, and draws less. This tutorial covers setup, the two ways the board surprises people, and a web page that switches its LED.',
       ),
     ]),
     heading('h2', [text('What You Will Need')]),
     list('bullet', [
-      [bold('A NodeMCU board'), text(' — v1.0 / ESP-12E is the common one')],
+      [bold('A NodeMCU board'), text(' - v1.0 / ESP-12E is the common one')],
       [bold('A micro-USB data cable')],
       [bold('Arduino IDE 2.x')],
-      [bold('A 2.4 GHz Wi-Fi network'), text(' — the ESP8266 has no 5 GHz radio')],
+      [bold('A 2.4 GHz Wi-Fi network'), text(' - the ESP8266 has no 5 GHz radio')],
     ]),
     paragraph([
       bold('3.3V logic. '),
@@ -181,7 +181,7 @@ const CONTENT = [
   textBlock([
     paragraph([
       text(
-        'This is a different URL and a different package from the ESP32. If you already have the ESP32 core installed, both can live side by side — the field takes a comma-separated list.',
+        'This is a different URL and a different package from the ESP32. If you already have the ESP32 core installed, both can live side by side - the field takes a comma-separated list.',
       ),
     ]),
   ]),
@@ -226,7 +226,7 @@ const CONTENT = [
       text(' through '),
       code('D8'),
       text(
-        '. The chip does not know about those names — its pins are GPIO numbers, and the two do not match:',
+        '. The chip does not know about those names - its pins are GPIO numbers, and the two do not match:',
       ),
     ]),
     list('bullet', [
@@ -269,7 +269,7 @@ const CONTENT = [
         ' works. Libraries and datasheets almost always mean GPIO numbers instead. When a wiring diagram says "GPIO4", that is the pin labelled ',
       ),
       code('D2'),
-      text(' — mixing the two up is the most common wiring mistake on this board.'),
+      text(' - mixing the two up is the most common wiring mistake on this board.'),
     ]),
     heading('h3', [text('Pins to leave alone')]),
     list('bullet', [
@@ -292,7 +292,7 @@ const CONTENT = [
   placeholderImage(0, 'A NodeMCU pinout diagram showing D labels alongside GPIO numbers'),
 
   textBlock([
-    heading('h2', [text('Step 4: Blink — and the Inverted LED')]),
+    heading('h2', [text('Step 4: Blink - and the Inverted LED')]),
     paragraph([text('Upload this. Note that the logic is upside down on purpose:')]),
   ]),
   codeBlock('cpp', BLINK, 'blink.ino'),
@@ -303,7 +303,7 @@ const CONTENT = [
       ),
       code('LOW'),
       text(
-        ' is on. Every Arduino tutorial you copy will have this backwards, and the symptom — an LED that is on except when the code says it should be — is easy to mistake for broken hardware.',
+        ' is on. Every Arduino tutorial you copy will have this backwards, and the symptom - an LED that is on except when the code says it should be - is easy to mistake for broken hardware.',
       ),
     ]),
   ]),
@@ -342,7 +342,7 @@ const CONTENT = [
     paragraph([
       text('The '),
       code('ESP8266WebServer'),
-      text(' library ships with the core — nothing to install:'),
+      text(' library ships with the core - nothing to install:'),
     ]),
   ]),
   codeBlock('cpp', WEB_SERVER, 'webled.ino'),
@@ -383,7 +383,7 @@ const CONTENT = [
         code('loop()'),
         text(' blocks for too long, or a boot-mode pin (GPIO0/2/15) has something attached to it.'),
       ],
-      [bold('LED behaves backwards: '), text('it is meant to. LOW is on — see Step 4.')],
+      [bold('LED behaves backwards: '), text('it is meant to. LOW is on - see Step 4.')],
       [
         bold('A wiring diagram’s GPIO number does not match the board: '),
         text('translate it with the table in Step 3. GPIO4 is the pin printed '),
@@ -408,7 +408,7 @@ const CONTENT = [
       ],
       [
         text(
-          'Put the board into deep sleep between readings — wired D0 to RST, it can run for months on batteries.',
+          'Put the board into deep sleep between readings - wired D0 to RST, it can run for months on batteries.',
         ),
       ],
       [text('Move to the ESP32 tutorial when you need Bluetooth, more pins, or more RAM.')],

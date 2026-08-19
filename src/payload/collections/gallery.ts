@@ -9,8 +9,8 @@ import type { CollectionConfig } from 'payload'
  * It used to be a single document holding an array of picks from the Media
  * library, which meant adding photos one row at a time (changed 2026-07-28).
  *
- * Upload settings mirror `media` exactly — same image sizes, same webp
- * conversion, same bucket root — so the 32 photos migrated across keep serving
+ * Upload settings mirror `media` exactly - same image sizes, same webp
+ * conversion, same bucket root - so the 32 photos migrated across keep serving
  * their already-generated derivative files.
  */
 export const Gallery: CollectionConfig = {

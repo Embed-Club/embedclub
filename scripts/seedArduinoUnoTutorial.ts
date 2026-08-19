@@ -3,7 +3,7 @@
  *
  *   pnpm tsx scripts/seedArduinoUnoTutorial.ts
  *
- * The Nano has its own tutorial rather than a section here — the boards share a
+ * The Nano has its own tutorial rather than a section here - the boards share a
  * chip but differ in every step a beginner actually gets stuck on (connector,
  * driver, processor menu entry), and interleaving both made each path harder to
  * follow than either alone.
@@ -38,14 +38,14 @@ import {
 /**
  * Caption of the image that closes the "install the IDE" step. The simulator
  * card is inserted straight after it, so the download link sits where the
- * reader is being told to go and get the IDE — matched on the caption rather
+ * reader is being told to go and get the IDE - matched on the caption rather
  * than a hardcoded index, which would silently move as the page is edited.
  */
 const IDE_STEP_MARKER = 'The Arduino IDE 2.x download page'
 
 const SLUG = 'arduino-uno-setup-and-first-sketch'
 
-const BLINK = `// Blink — the "hello world" of microcontrollers.
+const BLINK = `// Blink - the "hello world" of microcontrollers.
 // LED_BUILTIN is the LED soldered to the board, wired to digital pin 13.
 
 void setup() {
@@ -55,13 +55,13 @@ void setup() {
 
 void loop() {
   // Runs forever, immediately after setup() finishes.
-  digitalWrite(LED_BUILTIN, HIGH);  // 5V on the pin — LED on
+  digitalWrite(LED_BUILTIN, HIGH);  // 5V on the pin - LED on
   delay(1000);                      // wait 1000 ms
-  digitalWrite(LED_BUILTIN, LOW);   // 0V — LED off
+  digitalWrite(LED_BUILTIN, LOW);   // 0V - LED off
   delay(1000);
 }`
 
-const EXTERNAL_LED = `// externalLed.ino — the same blink, on your own LED.
+const EXTERNAL_LED = `// externalLed.ino - the same blink, on your own LED.
 // Wiring: pin 9 -> 330 ohm resistor -> LED long leg (anode);
 //         LED short leg (cathode) -> GND.
 
@@ -78,7 +78,7 @@ void loop() {
   delay(500);
 }`
 
-const BUTTON = `// button.ino — press to light the LED.
+const BUTTON = `// button.ino - press to light the LED.
 // Wiring: one leg of the button -> pin 2, the other leg -> GND.
 // No resistor: INPUT_PULLUP switches on the chip's internal one.
 
@@ -91,7 +91,7 @@ void setup() {
 }
 
 void loop() {
-  // Pulled up means the pin idles HIGH and reads LOW when pressed —
+  // Pulled up means the pin idles HIGH and reads LOW when pressed -
   // the logic looks backwards, and is correct.
   if (digitalRead(BUTTON_PIN) == LOW) {
     digitalWrite(LED_PIN, HIGH);
@@ -100,9 +100,9 @@ void loop() {
   }
 }`
 
-const POT_FADE = `// fade.ino — a potentiometer dims the LED, and the value prints to serial.
+const POT_FADE = `// fade.ino - a potentiometer dims the LED, and the value prints to serial.
 // Wiring: pot outer legs -> 5V and GND; pot middle leg -> A0.
-//         LED still on pin 9 (a PWM pin — this matters).
+//         LED still on pin 9 (a PWM pin - this matters).
 
 const int LED_PIN = 9;
 const int POT_PIN = A0;
@@ -131,15 +131,15 @@ const CONTENT = [
     heading('h1', [text('Arduino Uno: Setup and First Sketch')], 'center'),
     paragraph([
       text(
-        'The Uno is the board almost everyone starts on, and it stays useful long after: 5V logic that tolerates rough wiring, a socketed chip you can replace for a few rupees, and a decade of examples written against exactly this pinout. This tutorial takes it from an unopened box to four working sketches — blink, an external LED, a button, and an analogue input driving PWM.',
+        'The Uno is the board almost everyone starts on, and it stays useful long after: 5V logic that tolerates rough wiring, a socketed chip you can replace for a few rupees, and a decade of examples written against exactly this pinout. This tutorial takes it from an unopened box to four working sketches - blink, an external LED, a button, and an analogue input driving PWM.',
       ),
     ]),
     heading('h2', [text('What You Will Need')]),
     list('bullet', [
-      [bold('An Arduino Uno'), text(' — R3, or the newer R4, and clones work fine')],
+      [bold('An Arduino Uno'), text(' - R3, or the newer R4, and clones work fine')],
       [
         bold('A USB cable'),
-        text(' — the square '),
+        text(' - the square '),
         bold('USB-B'),
         text(' printer-style plug on R3, USB-C on R4'),
       ],
@@ -162,14 +162,14 @@ const CONTENT = [
       [
         text('Install '),
         bold('Arduino IDE 2.x'),
-        text(' — the current version, with autocomplete and a real debugger.'),
+        text(' - the current version, with autocomplete and a real debugger.'),
       ],
       [text('Open it. Uno support is built in; there is no board package to add.')],
     ]),
     paragraph([
       text('This is the one step the Uno makes easy. Unlike the ESP32 or the Pico, '),
       italic('nothing'),
-      text(' has to be installed from a Boards Manager URL — AVR support ships with the IDE.'),
+      text(' has to be installed from a Boards Manager URL - AVR support ships with the IDE.'),
     ]),
   ]),
   placeholderImage(0, 'The Arduino IDE 2.x download page'),
@@ -180,7 +180,7 @@ const CONTENT = [
       text('Connect the board. The green '),
       code('ON'),
       text(
-        ' LED lights, and a factory-loaded Blink sketch usually starts flashing straight away — that is the board working, not your code.',
+        ' LED lights, and a factory-loaded Blink sketch usually starts flashing straight away - that is the board working, not your code.',
       ),
     ]),
     list('bullet', [
@@ -201,7 +201,7 @@ const CONTENT = [
     ]),
     paragraph([
       bold('How to tell it worked: '),
-      text('a new port appears — '),
+      text('a new port appears - '),
       code('COM3'),
       text(' or higher on Windows, '),
       code('/dev/cu.usbserial-*'),
@@ -227,7 +227,7 @@ const CONTENT = [
     paragraph([
       bold('If the port list is greyed out, '),
       text(
-        'the computer is not seeing the board at all. That is a cable or driver problem, not an IDE one — try a different USB cable first. Charge-only cables are extremely common and carry no data.',
+        'the computer is not seeing the board at all. That is a cable or driver problem, not an IDE one - try a different USB cable first. Charge-only cables are extremely common and carry no data.',
       ),
     ]),
   ]),
@@ -237,7 +237,7 @@ const CONTENT = [
   ),
 
   textBlock([
-    heading('h2', [text('Step 4: Your First Sketch — Blink')]),
+    heading('h2', [text('Step 4: Your First Sketch - Blink')]),
     paragraph([
       text('Open '),
       bold('File → Examples → 01.Basics → Blink'),
@@ -249,7 +249,7 @@ const CONTENT = [
     paragraph([
       text('Every Arduino sketch is these two functions. '),
       code('setup()'),
-      text(' runs once — configure pins here. '),
+      text(' runs once - configure pins here. '),
       code('loop()'),
       text(
         ' runs over and over, forever, as fast as the chip can go. There is no operating system underneath and nothing else running; when loop() ends, it is called again immediately.',
@@ -289,7 +289,7 @@ const CONTENT = [
     ]),
     paragraph([
       text(
-        'The long leg is positive. If the LED never lights and nothing is hot, it is almost always in backwards — an LED wired the wrong way round simply does nothing.',
+        'The long leg is positive. If the LED never lights and nothing is hot, it is almost always in backwards - an LED wired the wrong way round simply does nothing.',
       ),
     ]),
   ]),
@@ -303,7 +303,7 @@ const CONTENT = [
     heading('h2', [text('Step 6: Read a Button')]),
     paragraph([
       text(
-        'An input needs a defined voltage at all times. A button only connects one side of the circuit, so the pin floats — and reads randomly — whenever the button is open. ',
+        'An input needs a defined voltage at all times. A button only connects one side of the circuit, so the pin floats - and reads randomly - whenever the button is open. ',
       ),
       code('INPUT_PULLUP'),
       text(
@@ -351,7 +351,7 @@ const CONTENT = [
       text(' to match '),
       code('Serial.begin(9600)'),
       text(
-        '. A mismatched baud rate prints garbage characters — that is the symptom to recognise, not a broken board.',
+        '. A mismatched baud rate prints garbage characters - that is the symptom to recognise, not a broken board.',
       ),
     ]),
     paragraph([
@@ -378,7 +378,7 @@ const CONTENT = [
         text(' and '),
         code('1'),
         text(
-          ' — those are the serial pins the upload itself uses. Unplug anything on them and retry.',
+          ' - those are the serial pins the upload itself uses. Unplug anything on them and retry.',
         ),
       ],
       [
@@ -397,7 +397,7 @@ const CONTENT = [
         bold('"Sketch too big": '),
         text('the Uno has 32 KB of flash and only 2 KB of RAM. Long '),
         code('Serial.print'),
-        text(' strings are the usual culprit — wrap them in '),
+        text(' strings are the usual culprit - wrap them in '),
         code('F("...")'),
         text(' to keep them out of RAM.'),
       ],
@@ -412,7 +412,7 @@ const CONTENT = [
     list('bullet', [
       [
         text(
-          'Drive a servo, an ultrasonic sensor, or a 16×2 LCD — all have a stock library in the Library Manager.',
+          'Drive a servo, an ultrasonic sensor, or a 16×2 LCD - all have a stock library in the Library Manager.',
         ),
       ],
       [
@@ -454,7 +454,7 @@ async function main() {
       title: 'Arduino Uno: Setup and First Sketch',
       slug: SLUG,
       description:
-        'Take an Arduino Uno from the box to four working sketches — blink, an external LED, a button, and a potentiometer driving PWM.',
+        'Take an Arduino Uno from the box to four working sketches - blink, an external LED, a button, and a potentiometer driving PWM.',
       // No Uno photo in the library yet; placeholder until one is added.
       thumbnail: placeholderId,
       difficulty: 'beginner',

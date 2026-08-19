@@ -1,5 +1,5 @@
 /**
- * Seed the "Server-Based Remote" resources — one for the ESP32, one for the
+ * Seed the "Server-Based Remote" resources - one for the ESP32, one for the
  * ESP8266.
  *
  *   pnpm tsx scripts/seedThingSpeakRemoteResources.ts
@@ -10,7 +10,7 @@
  * short pages.
  *
  * The original post had a live channel id and read API key in the listing.
- * Those are deliberately NOT reproduced here — see the note in the content.
+ * Those are deliberately NOT reproduced here - see the note in the content.
  *
  * Matched on slug, so re-running updates in place. Live immediately.
  */
@@ -35,7 +35,7 @@ import {
   upsertLearningDoc,
 } from './lib/learningSeed'
 
-const ESP32_SKETCH = `// thingSpeakRemote.ino — ESP32.
+const ESP32_SKETCH = `// thingSpeakRemote.ino - ESP32.
 // Polls a ThingSpeak field and drives a pin from it, so the board can be
 // switched from anywhere with an internet connection.
 #include <WiFi.h>
@@ -76,7 +76,7 @@ void loop() {
     Serial.print("field = ");
     Serial.println(value);
   } else {
-    // Do NOT drive the pin on a failed read — a network blip would otherwise
+    // Do NOT drive the pin on a failed read - a network blip would otherwise
     // switch the load off, because a failed read returns 0.
     Serial.print("read failed, status ");
     Serial.println(status);
@@ -87,7 +87,7 @@ void loop() {
   delay(20000);
 }`
 
-const ESP8266_SKETCH = `// thingSpeakRemote.ino — ESP8266 / NodeMCU.
+const ESP8266_SKETCH = `// thingSpeakRemote.ino - ESP8266 / NodeMCU.
 // Identical logic; only the Wi-Fi header and the pin name change.
 #include <ESP8266WiFi.h>
 #include <ThingSpeak.h>
@@ -135,7 +135,7 @@ void loop() {
   delay(20000);
 }`
 
-const WRITE_URL = `# Switch the board on and off with a plain URL — from a browser, a phone
+const WRITE_URL = `# Switch the board on and off with a plain URL - from a browser, a phone
 # shortcut, or any script. This is the "remote" half of the project.
 
 # ON
@@ -163,7 +163,7 @@ function buildContent({
       heading('h1', [text(`Server-Based Remote: ${board} and ThingSpeak`)], 'center'),
       paragraph([
         text(
-          'Control a device from anywhere in the world, with no port forwarding and no static IP. The trick is that the board never accepts an incoming connection — it polls a cloud channel and does whatever the latest value says. Anything that can write to that channel becomes the remote control.',
+          'Control a device from anywhere in the world, with no port forwarding and no static IP. The trick is that the board never accepts an incoming connection - it polls a cloud channel and does whatever the latest value says. Anything that can write to that channel becomes the remote control.',
         ),
       ]),
       paragraph([
@@ -208,7 +208,7 @@ function buildContent({
       paragraph([
         bold('Treat the write key like a password. '),
         text(
-          'Anyone who has it can switch your hardware. Keep it out of screenshots and out of anything you publish — and if it does leak, regenerate it from that same API Keys tab.',
+          'Anyone who has it can switch your hardware. Keep it out of screenshots and out of anything you publish - and if it does leak, regenerate it from that same API Keys tab.',
         ),
       ]),
     ]),
@@ -275,7 +275,7 @@ function buildContent({
         [bold('Never connects: '), text('a 5 GHz network. Both boards are 2.4 GHz only.')],
         [
           bold('Relay clicks but the load does not switch: '),
-          text('the relay is on the wrong terminal — most modules have both '),
+          text('the relay is on the wrong terminal - most modules have both '),
           italic('normally open'),
           text(' and '),
           italic('normally closed'),
@@ -286,7 +286,7 @@ function buildContent({
       list('bullet', [
         [
           text(
-            'Send data the other way — publish a sensor reading to a field and chart it on the ThingSpeak dashboard.',
+            'Send data the other way - publish a sensor reading to a field and chart it on the ThingSpeak dashboard.',
           ),
         ],
         [
@@ -316,7 +316,7 @@ async function main() {
       title: 'Server-Based Remote: ESP32 and ThingSpeak',
       slug: 'esp32-server-based-remote-thingspeak',
       description:
-        'Switch an ESP32 from anywhere by polling a ThingSpeak channel — no port forwarding, no static IP, and no incoming connections.',
+        'Switch an ESP32 from anywhere by polling a ThingSpeak channel - no port forwarding, no static IP, and no incoming connections.',
       thumbnail: placeholderId,
       difficulty: 'intermediate',
       tags: esp32Tags,
@@ -340,7 +340,7 @@ async function main() {
       title: 'Server-Based Remote: ESP8266 and ThingSpeak',
       slug: 'esp8266-server-based-remote-thingspeak',
       description:
-        'Switch a NodeMCU from anywhere by polling a ThingSpeak channel — the ESP8266 version, with the D-label to GPIO note.',
+        'Switch a NodeMCU from anywhere by polling a ThingSpeak channel - the ESP8266 version, with the D-label to GPIO note.',
       thumbnail: placeholderId,
       difficulty: 'intermediate',
       tags: esp8266Tags,

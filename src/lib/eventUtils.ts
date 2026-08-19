@@ -58,7 +58,7 @@ interface CalendarEvent {
  *
  * Google's all-day range treats the end as exclusive, hence the day after.
  *
- * Returns null when there is no usable date — the caller renders nothing rather
+ * Returns null when there is no usable date - the caller renders nothing rather
  * than a link to an empty calendar form.
  */
 export function googleCalendarUrl({

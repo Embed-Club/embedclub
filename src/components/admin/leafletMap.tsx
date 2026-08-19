@@ -21,7 +21,7 @@ function ClickHandler({ onSelect, setInternalMarker }: ClickHandlerProps) {
   return null
 }
 
-// Leaflet inside a tab/flex container often mounts at 0px and renders grey —
+// Leaflet inside a tab/flex container often mounts at 0px and renders grey -
 // force it to recompute size once it's laid out.
 function SizeFixer() {
   const map = useMap()
@@ -40,7 +40,7 @@ function ZoomButtons() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // The buttons live in a React-rendered .leaflet-control div, which Leaflet
-  // did NOT register — so their clicks bubble to the map and drop a pin behind
+  // did NOT register - so their clicks bubble to the map and drop a pin behind
   // the zoom. Disable click/scroll propagation on the container to stop that.
   useEffect(() => {
     const el = containerRef.current
@@ -138,10 +138,10 @@ export default function LeafletMap({
   useEffect(() => {
     // react-leaflet + bundlers break Leaflet's default icon path detection.
     // The override must be DELETED (not set to undefined) so Leaflet falls back
-    // to reading options.iconUrl — assigning undefined shadows the base method
+    // to reading options.iconUrl - assigning undefined shadows the base method
     // and crashes with "this._getIconUrl is not a function" in production.
     // biome-ignore lint/suspicious/noExplicitAny: Leaflet internals
-    // biome-ignore lint/performance/noDelete: MUST be delete — assigning undefined shadows the base method and crashes Leaflet
+    // biome-ignore lint/performance/noDelete: MUST be delete - assigning undefined shadows the base method and crashes Leaflet
     delete (L.Icon.Default.prototype as any)._getIconUrl
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',

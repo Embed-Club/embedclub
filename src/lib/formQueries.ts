@@ -61,7 +61,7 @@ export async function getSection(containerSlug: string, sectionSlug: string): Pr
 /**
  * A form with the questions it actually asks.
  *
- * A section stores none of its own — it asks its parent's — so everything that
+ * A section stores none of its own - it asks its parent's - so everything that
  * renders or validates a form has to resolve them first. Returning a merged doc
  * rather than the two halves means callers keep using `form.steps` and
  * `form.id` exactly as they did: the id is still the section's, so a response

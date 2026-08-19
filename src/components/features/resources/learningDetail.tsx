@@ -14,7 +14,7 @@ interface LearningDetailProps {
 }
 
 /**
- * Detail body shared by the Resources and Tutorials routes — the two
+ * Detail body shared by the Resources and Tutorials routes - the two
  * collections hold the same document shape.
  */
 export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps) {
@@ -31,7 +31,7 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
   return (
     // No background of its own: ContentPanel already paints `bg-background`
     // plus the `.texture-panel` grain, and an opaque colour here would cover
-    // both — which is what pinned this page to near-black in light mode and
+    // both - which is what pinned this page to near-black in light mode and
     // hid the site texture.
     <div className="w-full min-h-screen text-foreground pb-24">
       {/* Hero Section */}
@@ -106,7 +106,7 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
             <BlockRenderer blocks={doc.content || []} />
           </div>
 
-          {/* Table of contents — hidden entirely when the doc has no headings,
+          {/* Table of contents - hidden entirely when the doc has no headings,
               rather than showing an empty shell. */}
           {headings.length > 0 && (
             <aside className="hidden lg:block w-60 xl:w-64 shrink-0 h-fit sticky top-24">

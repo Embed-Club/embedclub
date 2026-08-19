@@ -83,7 +83,7 @@ export function FormWizard({ form, consentNotice }: FormWizardProps) {
   const validateStep = (): boolean => {
     const next: Record<string, string> = {}
     for (const field of step?.fields ?? []) {
-      // Image rows are decoration — nothing to fill in, nothing to check.
+      // Image rows are decoration - nothing to fill in, nothing to check.
       if (field.fieldType === 'image') continue
       const key = fieldKey(field)
       const value = answers[key]
@@ -106,7 +106,7 @@ export function FormWizard({ form, consentNotice }: FormWizardProps) {
       ) {
         // Checked here as well as on the server so a typo is caught on the step
         // it was made on, rather than after the whole form is submitted.
-        next[key] = `Enter a valid USN — ${USN_FORMAT_HINT}`
+        next[key] = `Enter a valid USN - ${USN_FORMAT_HINT}`
       }
     }
     setErrors(next)
@@ -242,7 +242,7 @@ export function FormWizard({ form, consentNotice }: FormWizardProps) {
 
             The name is deliberately meaningless. It used to be
             "company-website", which is exactly what a browser or password
-            manager matches when it autofills an organisation URL — and a filled
+            manager matches when it autofills an organisation URL - and a filled
             honeypot silently bins the submission. The data-* attributes opt out
             of the major password managers for the same reason. */}
         <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
@@ -381,7 +381,7 @@ function WizardField({
   const str = typeof value === 'string' ? value : ''
   const arr = Array.isArray(value) ? value : []
 
-  // A standalone image row is the whole cell — no label, no control, no
+  // A standalone image row is the whole cell - no label, no control, no
   // required marker. It exists to show a poster or a payment QR mid-form.
   if (field.fieldType === 'image') {
     return (
@@ -518,7 +518,7 @@ interface ImageUploadControlProps {
 
 /**
  * Sends the picked image straight to the form's Google Drive folder and keeps
- * only the returned file id as the answer — nothing is uploaded to this site.
+ * only the returned file id as the answer - nothing is uploaded to this site.
  *
  * The preview is a local object URL, so it costs no round trip: the file we
  * just read is already in the browser. Nobody but an officer can read it back
@@ -560,11 +560,11 @@ function ImageUploadControl({
       const json = (await res.json()) as { id?: string; error?: string }
 
       if (!res.ok || !json.id) {
-        throw new Error(json.error || 'Upload failed — please try again.')
+        throw new Error(json.error || 'Upload failed - please try again.')
       }
       onChange(json.id)
     } catch (err) {
-      setFailure(err instanceof Error ? err.message : 'Upload failed — please try again.')
+      setFailure(err instanceof Error ? err.message : 'Upload failed - please try again.')
       onChange('')
       setPreview((prev) => {
         if (prev) URL.revokeObjectURL(prev.url)

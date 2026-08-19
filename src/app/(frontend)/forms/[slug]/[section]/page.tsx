@@ -13,7 +13,7 @@ interface SectionPageProps {
 }
 
 /**
- * One section of a container form — the A section, or day two.
+ * One section of a container form - the A section, or day two.
  *
  * It renders exactly like a standalone form; the only difference is that it
  * says which section it is and links back to the others, because someone
@@ -26,10 +26,10 @@ export async function generateMetadata({ params }: SectionPageProps): Promise<Me
 
   const container = await getFormBySlug(slug)
   return {
-    title: doc.sectionLabel ? `${container?.title ?? doc.title} — ${doc.sectionLabel}` : doc.title,
+    title: doc.sectionLabel ? `${container?.title ?? doc.title} - ${doc.sectionLabel}` : doc.title,
     description: doc.description || container?.description || undefined,
     alternates: { canonical: `/forms/${slug}/${section}` },
-    // Forms are interactive, single-use pages — keep them out of the index.
+    // Forms are interactive, single-use pages - keep them out of the index.
     robots: { index: false, follow: true },
   }
 }
@@ -73,7 +73,7 @@ export default async function FormSectionPage({ params }: SectionPageProps) {
           {closed ? (
             <EmptyState
               title="This Form Is Closed"
-              message="Submissions are no longer accepted — contact the organizers if you think this is a mistake."
+              message="Submissions are no longer accepted - contact the organizers if you think this is a mistake."
             />
           ) : (
             <FormWizard form={form} consentNotice={legal?.consentNotice} />

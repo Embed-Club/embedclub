@@ -14,7 +14,7 @@ export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'About Embed Club — inspiring innovation at PACE since 2018.',
+  description: 'About Embed Club - inspiring innovation at PACE since 2018.',
 }
 
 async function getAboutPage() {

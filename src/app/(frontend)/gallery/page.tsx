@@ -9,7 +9,7 @@ import { getPayload } from 'payload'
 
 // ISR: rebuild at most every 60s so CMS edits appear without a redeploy.
 // Using Payload's local API (getPayload) means no self-HTTP hop and no
-// "Dynamic server usage" — the page is statically renderable.
+// "Dynamic server usage" - the page is statically renderable.
 export const revalidate = 60
 
 export const metadata: Metadata = {

@@ -88,7 +88,7 @@ function SimulatorModalPanel({
         paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
       }}
       // biome-ignore lint/a11y/useSemanticElements: a native <dialog> is only
-      // modal via showModal(), which puts it in the browser's top layer — that
+      // modal via showModal(), which puts it in the browser's top layer - that
       // layer establishes its own containing block and stacking context, which
       // breaks the measured transform the morph animates. This replaced a Radix
       // Dialog, so dropping the role would lose semantics the page already had.
@@ -174,7 +174,7 @@ function SimulatorModalPanel({
                 // `launchUrl` is required for new simulators, but rows created
                 // before it existed can still be missing one.
                 <p className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-                  This simulator has no link yet — an organizer needs to add one.
+                  This simulator has no link yet - an organizer needs to add one.
                 </p>
               )}
 

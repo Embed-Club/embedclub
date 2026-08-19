@@ -9,7 +9,7 @@ interface EmptyStateProps {
  */
 export function EmptyState({
   title = 'Nothing Here Yet',
-  message = "There's nothing here yet — check back soon!",
+  message = "There's nothing here yet - check back soon!",
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center gap-3 px-4">

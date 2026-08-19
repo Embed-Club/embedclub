@@ -108,7 +108,7 @@ export const codeBlock = (language: CodeBlock['language'], snippet: string, capt
 
 /**
  * A card linking out to a simulator. `simulatorId` is a `simulators` document id
- * — resolve it with `simulatorId(payload, 'arduino-ide')` rather than hardcoding
+ * - resolve it with `simulatorId(payload, 'arduino-ide')` rather than hardcoding
  * a number.
  */
 export const simulatorLinkBlock = (simulator: number, buttonText?: string) => ({
@@ -120,7 +120,7 @@ export const simulatorLinkBlock = (simulator: number, buttonText?: string) => ({
 /**
  * Insert blocks immediately after the block carrying `caption`.
  *
- * Used to drop a simulator card into the middle of an existing page — next to
+ * Used to drop a simulator card into the middle of an existing page - next to
  * the step that tells the reader to install the Arduino IDE, rather than at the
  * bottom where nobody looks for it. Anchored on the caption text so it survives
  * the page being reordered; throws rather than silently appending if the anchor
@@ -185,13 +185,13 @@ export const imageBlock = (mediaId: number, caption?: string, size: ImageSize = 
 
 /**
  * An image slot the editor is meant to fill in later. Every image is the same
- * placeholder graphic; the caption — prefixed so it is impossible to miss in
- * the list — says which real screenshot belongs there.
+ * placeholder graphic; the caption - prefixed so it is impossible to miss in
+ * the list - says which real screenshot belongs there.
  */
 export const placeholderImage = (mediaId: number, whatGoesHere: string) => ({
   blockType: 'imageBlock' as const,
   image: mediaId,
-  caption: `PLACEHOLDER — replace with: ${whatGoesHere}`,
+  caption: `PLACEHOLDER - replace with: ${whatGoesHere}`,
   size: 'large' as const,
 })
 
@@ -250,7 +250,7 @@ export async function ensurePlaceholderMedia(payload: Payload): Promise<number> 
   const data = readFileSync(path.resolve(process.cwd(), 'public/placeholder/placeholder.jpg'))
   const media = await payload.create({
     collection: 'media',
-    data: { alt: 'Placeholder — replace with the described screenshot' },
+    data: { alt: 'Placeholder - replace with the described screenshot' },
     // Explicit file object so the stored stem is `seedPlaceholder`, not the
     // source's generic `placeholder`.
     file: { data, name: 'seedPlaceholder.jpg', mimetype: 'image/jpeg', size: data.byteLength },
@@ -331,7 +331,7 @@ export async function upsertLearningDoc({
   console.log(`View at /${collection}/${slug}`)
 }
 
-/** Flush stdout before exiting — `process.exit` truncates a piped buffer. */
+/** Flush stdout before exiting - `process.exit` truncates a piped buffer. */
 export function flushExit(code: number) {
   process.stdout.write('', () => process.exit(code))
 }

@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 /**
  * Every response to a native form. This is the club's record of who signed up
- * or gave feedback — not a log of something stored elsewhere, so it is never
+ * or gave feedback - not a log of something stored elsewhere, so it is never
  * safe to clear out (see AGENTS.md §3).
  *
  * `answers` is keyed by each form field's Payload row `id`, which survives
@@ -21,7 +21,7 @@ export const FormSubmissions: CollectionConfig = {
   access: {
     read: ({ req: { user } }) => Boolean(user), // admins only
     create: () => false, // written server-side by the submit action
-    // Officers need to set the per-person certificate values — a placing is
+    // Officers need to set the per-person certificate values - a placing is
     // known only after the event, and only to them. The record of what the
     // respondent actually said stays locked: the fields below carrying it deny
     // update individually, so this opens the certificate columns and nothing
@@ -106,7 +106,7 @@ export const FormSubmissions: CollectionConfig = {
     {
       /**
        * When this person ticked the consent box. Stamped server-side at submit
-       * time, never taken from the client — the point of the record is that it
+       * time, never taken from the client - the point of the record is that it
        * cannot be back-dated, and `update: false` keeps an officer from moving
        * it afterwards.
        *
@@ -132,7 +132,7 @@ export const FormSubmissions: CollectionConfig = {
        * A placing is the case: the winner cannot be asked to declare themselves
        * on a feedback form, and a value fixed on the form would print "1st" on
        * every certificate. So it is recorded here, against the person, after
-       * the event — the only point at which anyone knows it.
+       * the event - the only point at which anyone knows it.
        *
        * Deliberately free-form rather than a list of the markers the form
        * declares: this is edited one submission at a time, and a marker renamed
@@ -160,7 +160,7 @@ export const FormSubmissions: CollectionConfig = {
               required: true,
               admin: {
                 width: '40%',
-                description: 'Without the braces — for {{Place}} write Place.',
+                description: 'Without the braces - for {{Place}} write Place.',
                 placeholder: 'Place',
               },
             },

@@ -1,7 +1,7 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    Custom brand fonts (Gobold Bold · Sport Break Free Version)
    These are declared here so inline SVGs rendered via <InlineSVG> can inherit
-   them from the document — unlike <img>, inline SVGs share the page's CSS.
+   them from the document - unlike <img>, inline SVGs share the page's CSS.
    ──────────────────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: "Gobold";
@@ -43,7 +43,7 @@
 
 @layer base {
   :root {
-    /* Solder & Copper light theme — warm off-white base, deep copper accents */
+    /* Solder & Copper light theme - warm off-white base, deep copper accents */
     --background: 36 30% 97%;
     --foreground: 20 14.3% 8%;
     --card: 0 0% 100%;
@@ -79,7 +79,7 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    /* Solder & Copper dark theme — graphite base, copper #d98e4a accents */
+    /* Solder & Copper dark theme - graphite base, copper #d98e4a accents */
     --background: 20 14.3% 4.1%;
     --foreground: 36 30% 96%;
     --card: 20 14% 5.5%;
@@ -128,7 +128,7 @@
    scrolls with content (attachment: local), tiles infinitely. The texture PNG
    is a ~11% light-grey pattern. Light mode multiplies it into the surface so
    the grain reads as faint darker specks. Dark mode composites it normally so
-   the same semi-transparent light pattern LIFTS the near-black surface —
+   the same semi-transparent light pattern LIFTS the near-black surface -
    `overlay`/`multiply` on a near-black base crush it to invisible. */
 .texture-panel {
   background-image: url("/textures/fabric-of-squares.png");

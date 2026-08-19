@@ -9,8 +9,8 @@ const FALLBACK_IMAGE =
  * Fetch cards for the Resources or Tutorials page. The two are separate
  * collections with an identical document shape, so one mapper serves both.
  *
- * Sorted by `_order` — the drag-arranged order from the admin list view, top
- * row first — not by date.
+ * Sorted by `_order` - the drag-arranged order from the admin list view, top
+ * row first - not by date.
  */
 export async function getResourceCards(
   collection: 'resources' | 'tutorials',

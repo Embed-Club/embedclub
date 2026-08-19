@@ -27,10 +27,10 @@ interface MasonryProps {
 
 /**
  * True column masonry: a CSS multi-column flow. Each photo keeps its natural
- * aspect ratio, so tall and wide images pack into whatever column has room —
+ * aspect ratio, so tall and wide images pack into whatever column has room -
  * they land wherever they fit, never forced into a uniform grid. Every photo
- * is a cutout card (notched corners + inset caption strip) and the image —
- * not the card — zooms on hover.
+ * is a cutout card (notched corners + inset caption strip) and the image -
+ * not the card - zooms on hover.
  */
 function MasonryCard({
   item,

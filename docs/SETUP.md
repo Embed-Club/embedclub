@@ -1,7 +1,7 @@
 # Setup Guide
 
 Everything you need to run, develop, and deploy the Embed Club website. Written
-for future maintainers — read this before touching anything.
+for future maintainers - read this before touching anything.
 
 ## 1. Prerequisites
 
@@ -27,7 +27,7 @@ Create `.env` in the repo root:
 DATABASE_URL=postgresql://...        # Neon connection string (pooled)
 PAYLOAD_SECRET=<64-hex random>       # node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
-# Only needed when testing S3 storage locally — leave unset for normal dev.
+# Only needed when testing S3 storage locally - leave unset for normal dev.
 # When unset, uploads go to local folders (media/, gallery/, audio-files/).
 # USE_S3_STORAGE=true
 # S3_ENDPOINT=https://<project-ref>.storage.supabase.co/storage/v1/s3
@@ -39,7 +39,7 @@ PAYLOAD_SECRET=<64-hex random>       # node -e "console.log(require('crypto').ra
 
 ## 4. Database
 
-The schema is **migration-managed** — never let dev mode "push" schema changes.
+The schema is **migration-managed** - never let dev mode "push" schema changes.
 
 ```bash
 pnpm payload migrate        # apply all migrations in src/migrations/
@@ -51,8 +51,8 @@ user at `http://localhost:3000/admin`.
 ### Changing the schema (collections/globals/fields)
 
 1. Edit the collection/global in `src/payload/`
-2. `pnpm generate:types` — regenerates `src/payload/payload-types.ts` (committed!)
-3. `pnpm payload migrate:create <short_name>` — writes a migration
+2. `pnpm generate:types` - regenerates `src/payload/payload-types.ts` (committed!)
+3. `pnpm payload migrate:create <short_name>` - writes a migration
 4. Review the generated SQL, then `pnpm payload migrate`
 5. Commit the collection change + types + migration files **together**
 
@@ -63,12 +63,12 @@ Never edit an already-committed migration; add a new one.
 | Command | What it does |
 |---|---|
 | `pnpm dev` | dev server at :3000 (frontend + `/admin`) |
-| `pnpm verify` | **run before every commit** — biome lint + typecheck + integration tests |
+| `pnpm verify` | **run before every commit** - biome lint + typecheck + integration tests |
 | `pnpm verify:full` | everything: verify + production build + Playwright e2e |
 | `pnpm check` | biome lint+format with auto-fix |
 | `pnpm typecheck` | TypeScript only |
 | `pnpm build:app` | production build without touching the DB |
-| `pnpm build` | full production build (**runs DB migrations first** — deployment only) |
+| `pnpm build` | full production build (**runs DB migrations first** - deployment only) |
 | `pnpm generate:types` | regenerate payload-types.ts after schema edits |
 
 E2E tests boot their own dev server; make sure port 3000 is free. First run:
@@ -89,22 +89,22 @@ E2E tests boot their own dev server; make sure port 3000 is free. First run:
 - Required env vars in Vercel (Production): `DATABASE_URL` (via Neon
   integration), `PAYLOAD_SECRET`, `USE_S3_STORAGE=true`, `S3_ENDPOINT`,
   `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`.
-- `USE_S3_STORAGE` is deliberately NOT tied to NODE_ENV — local production
+- `USE_S3_STORAGE` is deliberately NOT tied to NODE_ENV - local production
   builds (`pnpm build:app && pnpm start`) keep using local disk.
 
 ## 8. Troubleshooting
 
 | Symptom | Cause / fix |
 |---|---|
-| Admin panel renders blank in prod build | importMap missing a component — `pnpm generate:importmap`, rebuild |
-| `relation "..." does not exist` | migrations not applied — `pnpm payload migrate` |
+| Admin panel renders blank in prod build | importMap missing a component - `pnpm generate:importmap`, rebuild |
+| `relation "..." does not exist` | migrations not applied - `pnpm payload migrate` |
 | Payload asks "dev mode… data loss" on migrate | the DB was schema-pushed by dev mode once; answer yes once, stay migration-managed after |
-| Images broken in prod build locally | expected — prod bucket media isn't on your disk; upload fresh test media |
-| 400s on static chunks / client exception | stale server process serving an old build — kill node processes, rebuild, restart |
-| e2e fails to start | port 3000 occupied — kill the old dev/prod server |
+| Images broken in prod build locally | expected - prod bucket media isn't on your disk; upload fresh test media |
+| 400s on static chunks / client exception | stale server process serving an old build - kill node processes, rebuild, restart |
+| e2e fails to start | port 3000 occupied - kill the old dev/prod server |
 
 ## 9. Rules for contributors (humans AND AI)
 
 Read **AGENTS.md** before writing code. It defines the design language,
-naming conventions, and hard bans. docs/PRODUCT.md and docs/DESIGN.md define the brand —
+naming conventions, and hard bans. docs/PRODUCT.md and docs/DESIGN.md define the brand -
 they are not suggestions.

@@ -24,7 +24,7 @@ function getEventImageUrl(event: Event): string {
 
 /**
  * Client presentation for the events page. Data is fetched server-side (one DB
- * hop via getPayload) and passed in — this component only owns the interactive
+ * hop via getPayload) and passed in - this component only owns the interactive
  * bits: responsive page size, pagination, carousel. The carousel shows the 5
  * newest; the grid paginates the full list. No second request.
  */
@@ -88,7 +88,7 @@ export function EventsPageContent({ events }: { events: Event[] }) {
 
   return (
     <>
-      {/* z-30 keeps the heading above the cards, whose root is `relative z-10` —
+      {/* z-30 keeps the heading above the cards, whose root is `relative z-10` -
           without it they paint over the title wherever the two overlap. */}
       <PageTitle className="z-30">RECENT EVENTS</PageTitle>
       {/* pt-16/md:pt-32 reserves room for the absolutely-positioned heading, the

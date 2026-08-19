@@ -73,7 +73,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   return (
     <IntroContext.Provider value={{ isIntroFinished, setIntroFinished }}>
       {/* Bind the shell to exactly one viewport. Without this the shadcn wrapper
-          is `min-h-svh` (grows with content), so ContentPanel never bounds — the
+          is `min-h-svh` (grows with content), so ContentPanel never bounds - the
           body scrolls AND the panel scrolls (two scrollbars) and the footer's
           clientHeight measurement feeds a ResizeObserver growth loop. Fixing the
           height makes ContentPanel the single, bounded scroll container. */}
@@ -92,7 +92,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                   introScale is computed against that width, so the whole thing
                   sits inside the viewport with 16px to spare at every frame.
                   Animating the box's width instead (144 -> 440) centred it only
-                  once the animation finished — while it was still narrow, its
+                  once the animation finished - while it was still narrow, its
                   centred left edge pushed the left-anchored 460px banner off the
                   right of small screens, cutting the text mid-reveal.
                   shrink-0 matters too: the overlay is a flex container narrower
@@ -109,7 +109,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                 }}
               >
                 {/* Shield and banner slide as one group, so the shield stays
-                    flush with the banner's left edge and keeps masking it — it
+                    flush with the banner's left edge and keeps masking it - it
                     is the mask, being opaque and z-20 over the z-10 banner.
                     Moving the shield alone would uncover the box's left 158px
                     and expose the text sitting there before it slides out.
@@ -217,7 +217,7 @@ export function MainbarShell({ children, borderless, hideScrollbar }: MainbarShe
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
 
   // Page content is painted as it arrives. It used to be held at opacity 0
-  // behind a masking overlay and faded in over 0.8s — on the landing page that
+  // behind a masking overlay and faded in over 0.8s - on the landing page that
   // waited out the logo glide, but every other page paid the same delay for an
   // intro that was not running, so each load opened on a blank panel.
   return (

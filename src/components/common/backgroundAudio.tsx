@@ -15,10 +15,10 @@ type AudioSnapshot = { available: boolean; playing: boolean }
 
 let audio: HTMLAudioElement | null = null
 // True when playback was paused because the page went to the background, so we
-// know to resume on return — and to never resume a track the user paused by hand.
+// know to resume on return - and to never resume a track the user paused by hand.
 let pausedByVisibility = false
 // True once the user has pressed pause. Persisted, so the choice survives a
-// reload and a fresh mount — otherwise every refresh re-armed autoplay and the
+// reload and a fresh mount - otherwise every refresh re-armed autoplay and the
 // next tap anywhere on the page started the music again.
 let userMuted = false
 
@@ -28,7 +28,7 @@ function readMutedPreference() {
   try {
     return localStorage.getItem(MUTED_STORAGE_KEY) === '1'
   } catch {
-    // Private mode / storage disabled — fall back to the default (unmuted).
+    // Private mode / storage disabled - fall back to the default (unmuted).
     return false
   }
 }
@@ -58,7 +58,7 @@ function getSnapshot() {
   return snapshot
 }
 
-// Must be a stable reference — React compares snapshots by identity and
+// Must be a stable reference - React compares snapshots by identity and
 // treats a fresh object every call as an endlessly changing store.
 const SERVER_SNAPSHOT: AudioSnapshot = { available: false, playing: false }
 
@@ -68,14 +68,14 @@ function getServerSnapshot(): AudioSnapshot {
 
 async function play() {
   if (!audio) return
-  // Single chokepoint for the mute preference — every start path routes through
+  // Single chokepoint for the mute preference - every start path routes through
   // here, so no stray listener or resume can override a deliberate pause.
   if (userMuted) return
   try {
     await audio.play()
     setSnapshot({ available: true, playing: true })
   } catch {
-    // Autoplay blocked — stays paused until a user gesture (or the toggle button)
+    // Autoplay blocked - stays paused until a user gesture (or the toggle button)
     setSnapshot({ available: true, playing: false })
   }
 }
@@ -115,12 +115,12 @@ export function BackgroundAudio() {
     userMuted = readMutedPreference()
     setSnapshot({ available: true, playing: !audio.paused })
 
-    // MainbarShell fades the page content in 600ms after the intro finishes —
+    // MainbarShell fades the page content in 600ms after the intro finishes -
     // start the music together with that reveal, not with the logo animation.
     const startTimer = setTimeout(() => {
-      // Muted by choice on a previous visit — stay silent until they press play.
+      // Muted by choice on a previous visit - stay silent until they press play.
       if (userMuted) return
-      // Don't start music into a backgrounded tab — resume when they return.
+      // Don't start music into a backgrounded tab - resume when they return.
       if (document.visibilityState === 'visible') {
         void play()
       } else {
@@ -129,16 +129,16 @@ export function BackgroundAudio() {
     }, 600)
 
     // If the browser blocked autoplay, the first user gesture starts playback.
-    // Not `once` — keeps retrying until play() actually succeeds.
+    // Not `once` - keeps retrying until play() actually succeeds.
     const handleInteraction = (event: Event) => {
-      // Taps on an audio control are that control's business — let its own
+      // Taps on an audio control are that control's business - let its own
       // handler decide. Needed because `touchstart` on window fires *before*
       // React's click, so without this a tap on the toggle would start playback
       // here and then be immediately paused by the toggle itself.
       const target = event.target
       if (target instanceof Element && target.closest('[data-audio-control]')) return
       // The pause click itself bubbles up to window, so without this the toggle
-      // would restart the track it just stopped — as would any later tap.
+      // would restart the track it just stopped - as would any later tap.
       if (userMuted) {
         removeListeners()
         return
@@ -164,16 +164,16 @@ export function BackgroundAudio() {
 
     // Pause whenever the page isn't the user's active view, and resume on
     // return. The two signals cover different cases:
-    //   • visibilitychange / pagehide — tab hidden, window minimized, phone
+    //   • visibilitychange / pagehide - tab hidden, window minimized, phone
     //     locked, or the mobile browser sent to the background (the reliable
     //     mobile signal; iOS also fires pagehide/pageshow via the bfcache).
-    //   • window blur / focus — desktop switching to another app while the tab
+    //   • window blur / focus - desktop switching to another app while the tab
     //     stays visible.
     // Window focus is tracked with a flag rather than document.hasFocus(), which
     // is unreliable on mobile; browsers that never fire blur/focus stay purely
     // visibility-driven, which is exactly right for mobile. The resume is gated
-    // on snapshot.playing (our intent) — not audio.paused, since the mobile OS
-    // may have already paused the element — so a manual pause is never resumed.
+    // on snapshot.playing (our intent) - not audio.paused, since the mobile OS
+    // may have already paused the element - so a manual pause is never resumed.
     let windowActive = true
     const syncPlayback = () => {
       const active = document.visibilityState === 'visible' && windowActive

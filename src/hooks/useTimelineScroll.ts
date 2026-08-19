@@ -24,11 +24,11 @@ export function useDeviceType() {
 
 /** Tracks scroll progress of `targetRef` against the page's single scroll
  *  owner (the layout's `[data-scroll-container]` panel, shared via
- *  ScrollContainerContext) — 0 when the target's top edge reaches the
+ *  ScrollContainerContext) - 0 when the target's top edge reaches the
  *  container's top, 1 when the target's bottom edge does. Measured via
  *  getBoundingClientRect (viewport-relative) rather than the container's
  *  scrollTop/scrollHeight ratio, so trailing siblings after the target
- *  (e.g. the site footer) don't dilute the range — matches the old private
+ *  (e.g. the site footer) don't dilute the range - matches the old private
  *  scroll-box behaviour where the container's extent WAS the target's. */
 export function useTimelineScroll(targetRef: RefObject<HTMLElement | null>) {
   const isMobile = useDeviceType()

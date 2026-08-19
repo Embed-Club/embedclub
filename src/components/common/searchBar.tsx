@@ -21,7 +21,7 @@ import { useEffect, useRef, useState } from 'react'
  * label.
  *
  * The original paired a fixed narrow width with `overflow-visible`, so the
- * label rendered *outside* its button and overlapped its neighbours — worst on
+ * label rendered *outside* its button and overlapped its neighbours - worst on
  * pages with fewer controls (e.g. simulators, which has no category filter).
  *
  * Two things collapse together: the button's width, and the label's own
@@ -30,7 +30,7 @@ import { useEffect, useRef, useState } from 'react'
  * nothing and a sliver of text stayed visible.
  *
  * `[&>svg:last-child]:hidden` drops the ChevronDown that shadcn's
- * `SelectTrigger` always appends — no room for it beside an icon and a label,
+ * `SelectTrigger` always appends - no room for it beside an icon and a label,
  * and the icon already carries the meaning. It only matches the Select
  * triggers; on the Date buttons the last child is the label span.
  */
@@ -45,7 +45,7 @@ const searchControlClassName = cn(
 /**
  * The label collapses to zero width of its own accord, rather than relying on
  * the button being narrow enough to clip it. `overflow-hidden` clips at the
- * border box, so right padding hides nothing — a label positioned past the
+ * border box, so right padding hides nothing - a label positioned past the
  * icon still peeked out of the collapsed button. Its left gap lives in `pl`
  * here (not `gap` on the button) so that it too disappears at zero width,
  * leaving the collapsed button exactly icon-sized.
@@ -275,7 +275,7 @@ export function SearchBar({
               {!inputValue && (
                 <div className="absolute inset-0 flex items-center pointer-events-none overflow-hidden">
                   {/* `key` remounts on each rotation, so the mount-triggered
-                      animation always plays for the incoming text only — no
+                      animation always plays for the incoming text only - no
                       separate slide-out stage to get stuck mid-transition. */}
                   <span
                     key={currentIndex}

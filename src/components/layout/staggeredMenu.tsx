@@ -439,7 +439,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   return (
     <div
       className={`sm-scope z-40 ${
-        // `100dvh`, not `100vh` — on a real phone the address bar can still be
+        // `100dvh`, not `100vh` - on a real phone the address bar can still be
         // showing when the menu opens, and `vh` is sized against the viewport
         // with the bar hidden. Anything pinned near the bottom of a `100vh` box
         // (the theme toggle here) then renders behind the bar. `dvh` tracks the
@@ -660,7 +660,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1.2 !important; height: auto; }
 /* height/line-height are 1.2em, not 1em: a tight 1em box clips the ascenders of
    this display font's rounded glyphs on some devices' font rasterizers (seen on
-   real Android Chrome, never in desktop devtools device emulation — the two
+   real Android Chrome, never in desktop devtools device emulation - the two
    don't hint/rasterize custom webfonts identically). yPercent-based transforms
    elsewhere in this file are relative to each element's own box, so this stays
    in proportion automatically. */

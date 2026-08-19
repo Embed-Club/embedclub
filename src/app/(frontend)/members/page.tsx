@@ -10,7 +10,7 @@ export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'Members',
-  description: 'The people behind Embed Club — organizers, mentors, and members.',
+  description: 'The people behind Embed Club - organizers, mentors, and members.',
 }
 
 /** All members, fetched once via the Payload local API (depth 2 expands
@@ -26,7 +26,7 @@ async function getMembers(): Promise<Member[]> {
       sort: '-startYear',
     })
 
-    // `gender` is admin-only — it exists to pick a generated avatar, nothing
+    // `gender` is admin-only - it exists to pick a generated avatar, nothing
     // more. The page is a client component, so anything left on the doc ships
     // in the RSC payload and is readable in page source: "not rendered" is not
     // the same as "not published". Dropped here, at the boundary.

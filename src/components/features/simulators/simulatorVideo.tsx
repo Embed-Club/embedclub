@@ -2,8 +2,8 @@
 
 /**
  * Resolve a pasted video URL to something embeddable. Organizers paste whatever
- * their browser address bar shows — a YouTube watch link, a youtu.be short
- * link, a Vimeo page — none of which render in an iframe as-is.
+ * their browser address bar shows - a YouTube watch link, a youtu.be short
+ * link, a Vimeo page - none of which render in an iframe as-is.
  *
  * Returns `null` when the URL is a direct video file, which plays in a
  * `<video>` element instead.
@@ -82,7 +82,7 @@ export function SimulatorVideo({ url, title }: SimulatorVideoProps) {
     )
   }
 
-  // Unrecognized host — don't render a broken frame, just offer the link.
+  // Unrecognized host - don't render a broken frame, just offer the link.
   return (
     <a
       href={url}

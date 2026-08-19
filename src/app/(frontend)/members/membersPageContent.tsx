@@ -108,7 +108,7 @@ function initialsOf(name: string): string {
  *
  * An inline SVG data URI rather than a request: it needs no network, no
  * external placeholder service, and cannot 404. This is the seam where a real
- * generated avatar goes once the package is chosen — `gender` is deliberately
+ * generated avatar goes once the package is chosen - `gender` is deliberately
  * kept server-side, so that generation belongs on the server too, with only
  * the finished image URL handed to this component.
  */
@@ -157,7 +157,7 @@ function toChromaItems(items: MemberDoc[]) {
   })
 }
 
-/** Role names in the order they are listed — first is the one held now. */
+/** Role names in the order they are listed - first is the one held now. */
 function roleNames(member: MemberDoc): string[] {
   const roles = member.roles as unknown
   if (Array.isArray(roles)) {
@@ -229,7 +229,7 @@ export function MembersPageContent({ members }: { members: MemberDoc[] }) {
   return (
     <ChromaScene radius={300} damping={0.45} fadeOut={0.6} ease="power3.out">
       {/* pt-16/md:pt-32 clears the pinned PageTitle, which is absolute and so
-          reserves no space of its own — same top padding every other page uses. */}
+          reserves no space of its own - same top padding every other page uses. */}
       <div className="px-4 pt-16 pb-8 md:px-8 md:pt-32 lg:px-12">
         <PageTitle>MEMBERS</PageTitle>
 

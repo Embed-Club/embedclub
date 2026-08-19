@@ -108,7 +108,7 @@ const LeafletLocationField: FieldClientComponent = (props) => {
             value={localLat}
             onChange={handleLatChange}
             onPaste={handlePaste}
-            placeholder='e.g., 12.806922 — or paste "lat, lng" together'
+            placeholder='e.g., 12.806922 - or paste "lat, lng" together'
             style={{
               width: '100%',
               padding: '8px',
@@ -135,7 +135,7 @@ const LeafletLocationField: FieldClientComponent = (props) => {
             value={localLng}
             onChange={handleLngChange}
             onPaste={handlePaste}
-            placeholder='e.g., 74.932009 — or paste "lat, lng" together'
+            placeholder='e.g., 74.932009 - or paste "lat, lng" together'
             style={{
               width: '100%',
               padding: '8px',
@@ -153,7 +153,7 @@ const LeafletLocationField: FieldClientComponent = (props) => {
       {/* Map */}
       <div style={{ marginBottom: '10px' }}>
         <strong>
-          Click the map to drop a pin — or drag the pin to fine-tune. Both boxes update.
+          Click the map to drop a pin - or drag the pin to fine-tune. Both boxes update.
         </strong>
       </div>
       <Suspense

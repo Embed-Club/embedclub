@@ -2,7 +2,7 @@
  * Seed the "NVIDIA Jetson Nano: Flash, Boot, and First Task" tutorial.
  *
  * Authored here rather than clicked into the admin, so it is reviewable in a
- * diff and re-runnable — re-running updates the existing document (matched on
+ * diff and re-runnable - re-running updates the existing document (matched on
  * slug). Targets the same Neon instance production uses, so it is live at once.
  *
  *   pnpm tsx scripts/seedJetsonNanoTutorial.ts
@@ -50,7 +50,7 @@ sudo swapon /mnt/4GB.swap
 # Make it permanent across reboots:
 echo '/mnt/4GB.swap swap swap defaults 0 0' | sudo tee -a /etc/fstab`
 
-const BLINK_LED = `# blink.py — blink an LED wired to pin 12 (BOARD numbering).
+const BLINK_LED = `# blink.py - blink an LED wired to pin 12 (BOARD numbering).
 # Wiring: pin 12 -> 220 ohm resistor -> LED anode (long leg);
 #         LED cathode (short leg) -> pin 6 (GND).
 import Jetson.GPIO as GPIO
@@ -87,7 +87,7 @@ const CONTENT = [
     heading('h1', [text('NVIDIA Jetson Nano: Flash, Boot, and First Task')], 'center'),
     paragraph([
       text(
-        'The Jetson Nano is a small single-board computer with a real GPU, built for running AI at the edge. This tutorial takes it from a blank SD card to a working board: downloading NVIDIA’s image, flashing it, booting either with a monitor or fully headless, and then running a first task — blinking an LED, and running an object-detection model on the GPU.',
+        'The Jetson Nano is a small single-board computer with a real GPU, built for running AI at the edge. This tutorial takes it from a blank SD card to a working board: downloading NVIDIA’s image, flashing it, booting either with a monitor or fully headless, and then running a first task - blinking an LED, and running an object-detection model on the GPU.',
       ),
     ]),
     heading('h2', [text('What You Will Need')]),
@@ -96,7 +96,7 @@ const CONTENT = [
       [bold('microSD card'), text(', 32GB or larger, UHS-1 speed or better')],
       [
         bold('Power supply'),
-        text(' — 5V/4A barrel jack recommended, or 5V/2A micro-USB for light use'),
+        text(' - 5V/4A barrel jack recommended, or 5V/2A micro-USB for light use'),
       ],
       [text('A host computer to download and flash the image')],
       [
@@ -109,7 +109,7 @@ const CONTENT = [
     paragraph([
       bold('On power: '),
       text(
-        'AI workloads spike the current draw, and a micro-USB supply browns out under load — the board simply reboots mid-task. For anything beyond first light, use a 5V/4A barrel jack and fit the ',
+        'AI workloads spike the current draw, and a micro-USB supply browns out under load - the board simply reboots mid-task. For anything beyond first light, use a 5V/4A barrel jack and fit the ',
       ),
       code('J48'),
       text(' jumper, which tells the Nano to take power from the barrel instead of USB.'),
@@ -125,7 +125,7 @@ const CONTENT = [
         bold('Jetson Nano Developer Kit SD Card Image'),
         text(' (match the 2GB or 4GB version to your board).'),
       ],
-      [text('Download the '), code('.zip'), text(' — it is around 6–14 GB, so give it time.')],
+      [text('Download the '), code('.zip'), text(' - it is around 6–14 GB, so give it time.')],
     ]),
     paragraph([
       text('Do not unzip it. The flashing tool in the next step reads the '),
@@ -144,7 +144,7 @@ const CONTENT = [
       text('Use '),
       bold('balenaEtcher'),
       text(
-        ' — free, and it works the same on Windows, macOS, and Linux. Install it from balena.io/etcher.',
+        ' - free, and it works the same on Windows, macOS, and Linux. Install it from balena.io/etcher.',
       ),
     ]),
     list('number', [
@@ -161,26 +161,26 @@ const CONTENT = [
         bold('Select target'),
         text(' and choose the SD card. '),
         bold('Check this carefully'),
-        text(' — it erases the target.'),
+        text(' - it erases the target.'),
       ],
-      [text('Click '), bold('Flash'), text('. It writes, then verifies — roughly 10–20 minutes.')],
+      [text('Click '), bold('Flash'), text('. It writes, then verifies - roughly 10–20 minutes.')],
     ]),
     paragraph([
       bold('On selecting the target: '),
       text(
-        'Etcher hides system drives, but always confirm the size matches your SD card before flashing. Picking the wrong disk wipes it. If Windows pops up "you need to format the disk" afterwards, ignore and eject — that is Windows not understanding the Linux partitions, not a failed flash.',
+        'Etcher hides system drives, but always confirm the size matches your SD card before flashing. Picking the wrong disk wipes it. If Windows pops up "you need to format the disk" afterwards, ignore and eject - that is Windows not understanding the Linux partitions, not a failed flash.',
       ),
     ]),
   ]),
   placeholderImage(
     0,
-    'balenaEtcher mid-flash — showing the selected image, target SD card, and progress bar',
+    'balenaEtcher mid-flash - showing the selected image, target SD card, and progress bar',
   ),
 
   textBlock([
     heading('h2', [text('Step 3: First Boot')]),
     paragraph([text('Two ways to do the initial Ubuntu setup. Pick one.')]),
-    heading('h3', [text('Option A — With a Monitor')]),
+    heading('h3', [text('Option A - With a Monitor')]),
     list('number', [
       [text('Insert the flashed SD card into the slot on the underside of the module.')],
       [text('Connect the monitor (HDMI), keyboard, and mouse.')],
@@ -194,7 +194,7 @@ const CONTENT = [
   ),
 
   textBlock([
-    heading('h3', [text('Option B — Headless')]),
+    heading('h3', [text('Option B - Headless')]),
     paragraph([
       text(
         'No monitor needed. Do the same first-boot setup over a direct USB connection, then switch to SSH.',
@@ -210,7 +210,7 @@ const CONTENT = [
       [
         text('Open a serial console to the Nano at '),
         bold('115200 baud'),
-        text(' — '),
+        text(' - '),
         code('screen /dev/ttyACM0 115200'),
         text(' on macOS/Linux, or PuTTY to the new COM port on Windows.'),
       ],
@@ -221,7 +221,7 @@ const CONTENT = [
   codeBlock('bash', SSH_CONNECT, 'Connecting to a headless Nano'),
 
   textBlock([
-    heading('h2', [text('Step 4: First Task — Blink an LED')]),
+    heading('h2', [text('Step 4: First Task - Blink an LED')]),
     paragraph([
       text('The 40-pin header is Raspberry-Pi-compatible. NVIDIA ships '),
       code('Jetson.GPIO'),
@@ -232,7 +232,7 @@ const CONTENT = [
       [text('LED short leg (cathode) → '), code('Pin 6'), text(' (GND)')],
     ]),
   ]),
-  codeBlock('python', BLINK_LED, 'blink.py — run with: python3 blink.py'),
+  codeBlock('python', BLINK_LED, 'blink.py - run with: python3 blink.py'),
   textBlock([
     paragraph([
       text('Run it with '),
@@ -283,7 +283,7 @@ const CONTENT = [
       [
         bold('Green light but no display: '),
         text(
-          'use HDMI, not a DisplayPort/VGA adapter — the Nano is picky. Try a different monitor before re-flashing.',
+          'use HDMI, not a DisplayPort/VGA adapter - the Nano is picky. Try a different monitor before re-flashing.',
         ),
       ],
       [

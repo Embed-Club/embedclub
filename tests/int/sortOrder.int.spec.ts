@@ -59,7 +59,7 @@ describe('member-categories sortOrder conflicts', () => {
 
   it('handles auto-assign, insert-shift on create, and swap on edit', async () => {
     // 1. Auto-assign: two creates land on distinct free slots
-    // sortOrder is intentionally omitted on both creates — the beforeChange
+    // sortOrder is intentionally omitted on both creates - the beforeChange
     // hook auto-assigns it, but the generated type marks it required.
     // @ts-expect-error see above
     const a = (await payload.create({
@@ -84,7 +84,7 @@ describe('member-categories sortOrder conflicts', () => {
     const c = (await payload.create({
       collection: SLUG,
       // batchOrder has a defaultValue, but the generated type marks it required
-      // on create — passed explicitly rather than suppressed, since this create
+      // on create - passed explicitly rather than suppressed, since this create
       // already passes sortOrder and so cannot use the @ts-expect-error above.
       data: {
         name: `SortTest C ${run}`,

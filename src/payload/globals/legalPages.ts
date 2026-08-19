@@ -3,15 +3,17 @@ import type { Block, GlobalConfig } from 'payload'
 /**
  * The section blocks offered under both the privacy policy and the terms.
  *
- * Same editing shape as the About page — an intro rich-text field, then an
- * ordered list of sections below it — but only the two blocks a policy
+ * Same editing shape as the About page - an intro rich-text field, then an
+ * ordered list of sections below it - but only the two blocks a policy
  * document has any use for. No banner panel and no images: a legal page is
  * headings and prose, and offering a hero box here would only invite one.
  *
  * A factory rather than a shared constant because Payload keys block tables off
  * the field they hang from, and privacy and terms each need their own.
+ * Exported: the Support & Contact global (`supportPages.ts`) uses the same two
+ * block types for its sections.
  */
-function legalSectionBlocks(): Block[] {
+export function legalSectionBlocks(): Block[] {
   return [
     {
       slug: 'legalHeadingBlock',
@@ -31,7 +33,7 @@ function legalSectionBlocks(): Block[] {
  * tick-box on every form.
  *
  * These are one global rather than two because they are written, reviewed and
- * dated together — a policy whose "last updated" disagrees with the terms it
+ * dated together - a policy whose "last updated" disagrees with the terms it
  * ships alongside is worse than no date at all.
  *
  * The wording is content, not code (AGENTS.md §3): officers change the retention
@@ -100,7 +102,7 @@ export const LegalPages: GlobalConfig = {
       type: 'textarea',
       admin: {
         description:
-          'The sentence beside the consent tick-box on every form. Say what the details are used for — this is the notice, and the policy is the detail behind it. A link to the Privacy Policy is added to the end, so finish with something that leads into it ("… See the").',
+          'The sentence beside the consent tick-box on every form. Say what the details are used for - this is the notice, and the policy is the detail behind it. A link to the Privacy Policy is added to the end, so finish with something that leads into it ("… See the").',
       },
     },
     {

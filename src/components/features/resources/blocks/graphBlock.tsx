@@ -9,7 +9,7 @@ interface GraphBlockProps {
 /**
  * A draw.io link can be either an image export (SVG/PNG) or a published viewer
  * link. Images render as plain <img>; viewer links need an iframe, which the
- * host must be trusted for — so only diagrams.net domains are embedded.
+ * host must be trusted for - so only diagrams.net domains are embedded.
  */
 function drawioEmbed(rawUrl: string): { kind: 'image' | 'iframe'; src: string } | null {
   let url: URL

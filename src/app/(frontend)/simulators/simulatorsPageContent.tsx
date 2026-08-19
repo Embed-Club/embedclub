@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 // The modal (Dialog primitive + BlockRenderer's rich-content renderer + the
 // video-embed resolver) is real weight that only matters after a card is
-// clicked — most visitors browse without opening one. Loading it on demand
+// clicked - most visitors browse without opening one. Loading it on demand
 // keeps that weight out of every /simulators page load.
 const SimulatorModal = dynamic(() =>
   import('@/components/features/simulators/simulatorModal').then((m) => m.SimulatorModal),
@@ -25,7 +25,7 @@ export interface SimulatorCardData {
   difficulty?: string
   estimatedTime?: number
   createdAt?: string
-  /** Where the simulator itself lives — opened from the modal. */
+  /** Where the simulator itself lives - opened from the modal. */
   launchUrl?: string
   /** Optional walkthrough video played inside the modal. */
   videoUrl?: string

@@ -4,7 +4,7 @@
  *   pnpm tsx scripts/seedComingSoonBoards.ts
  *
  * Both carry the `comingSoon` badge, which makes their cards render but not
- * link (see resourceCutoutCard.tsx) — the page exists so the announcement has
+ * link (see resourceCutoutCard.tsx) - the page exists so the announcement has
  * somewhere to live, and so the guide can be written into it later without a new
  * URL. Neither board is in the club's hands yet; the specs below are from the
  * manufacturers' announcements, and each page says so.
@@ -36,25 +36,25 @@ const UNO_Q = [
     paragraph([
       bold('Coming soon. '),
       text(
-        'This guide has not been written yet — the board is not in the club’s hands. What follows is what the Uno Q is, why it is interesting, and what the tutorial will cover once we have one to write it against.',
+        'This guide has not been written yet - the board is not in the club’s hands. What follows is what the Uno Q is, why it is interesting, and what the tutorial will cover once we have one to write it against.',
       ),
     ]),
     heading('h2', [text('What It Is')]),
     paragraph([
       text(
-        'The Uno Q keeps the Uno’s outline and shield header and puts two completely different processors behind it. One is a microcontroller of the kind every other board on this page uses. The other is a quad-core application processor running Linux — a Raspberry Pi-class computer, on the same board, sharing the same pins.',
+        'The Uno Q keeps the Uno’s outline and shield header and puts two completely different processors behind it. One is a microcontroller of the kind every other board on this page uses. The other is a quad-core application processor running Linux - a Raspberry Pi-class computer, on the same board, sharing the same pins.',
       ),
     ]),
     list('bullet', [
       [
         bold('Microcontroller: '),
         text(
-          'an STM32U585 — Arm Cortex-M33, the part that does real-time GPIO, timing, and analogue work.',
+          'an STM32U585 - Arm Cortex-M33, the part that does real-time GPIO, timing, and analogue work.',
         ),
       ],
       [
         bold('Application processor: '),
-        text('a Qualcomm Dragonwing QRB2210 — four Cortex-A53 cores running a Debian-based Linux.'),
+        text('a Qualcomm Dragonwing QRB2210 - four Cortex-A53 cores running a Debian-based Linux.'),
       ],
       [
         bold('Memory: '),
@@ -79,7 +79,7 @@ const UNO_Q = [
     ]),
     paragraph([
       text(
-        'The usual answer is two boards and a serial link between them — which is exactly what our ',
+        'The usual answer is two boards and a serial link between them - which is exactly what our ',
       ),
       bold('ESP32-CAM'),
       text(' and '),
@@ -102,7 +102,7 @@ const UNO_Q = [
       [text('Flashing a sketch to the microcontroller from the board itself.')],
       [
         text(
-          'Passing data between the Linux side and the sketch — the part that makes it one board rather than two.',
+          'Passing data between the Linux side and the sketch - the part that makes it one board rather than two.',
         ),
       ],
       [
@@ -145,13 +145,13 @@ const CORE_S3_SE = [
     paragraph([
       bold('Coming soon. '),
       text(
-        'This guide has not been written yet — the board is not in the club’s hands. What follows is what the CoreS3 SE is and what the tutorial will cover once we have one.',
+        'This guide has not been written yet - the board is not in the club’s hands. What follows is what the CoreS3 SE is and what the tutorial will cover once we have one.',
       ),
     ]),
     heading('h2', [text('What It Is')]),
     paragraph([
       text(
-        'An ESP32-S3 in a finished enclosure. Rather than a bare board you wire onto a breadboard, the CoreS3 SE is a small plastic brick with a touchscreen on the front, a battery inside, and a stacking connector underneath for modules — the same chip as a development board, packaged as something you can hand to someone.',
+        'An ESP32-S3 in a finished enclosure. Rather than a bare board you wire onto a breadboard, the CoreS3 SE is a small plastic brick with a touchscreen on the front, a battery inside, and a stacking connector underneath for modules - the same chip as a development board, packaged as something you can hand to someone.',
       ),
     ]),
     list('bullet', [
@@ -167,7 +167,7 @@ const CORE_S3_SE = [
       [
         bold('What "SE" means: '),
         text(
-          'the stripped-down CoreS3. The camera, microphone and motion sensors of the full CoreS3 are not fitted — which is also why it is cheaper.',
+          'the stripped-down CoreS3. The camera, microphone and motion sensors of the full CoreS3 are not fitted - which is also why it is cheaper.',
         ),
       ],
     ]),
@@ -189,7 +189,7 @@ const CORE_S3_SE = [
       text('It also runs '),
       bold('UIFlow'),
       text(
-        ', a block-based environment, alongside the normal Arduino and MicroPython routes — so it is a plausible first board for someone who has not written code before, which is not true of most ESP32 hardware.',
+        ', a block-based environment, alongside the normal Arduino and MicroPython routes - so it is a plausible first board for someone who has not written code before, which is not true of most ESP32 hardware.',
       ),
     ]),
   ]),
@@ -209,7 +209,7 @@ const CORE_S3_SE = [
       ],
       [
         text(
-          'Drawing on the screen and handling touch — the part that is genuinely different from a bare ESP32.',
+          'Drawing on the screen and handling touch - the part that is genuinely different from a bare ESP32.',
         ),
       ],
       [
@@ -228,7 +228,7 @@ const CORE_S3_SE = [
     heading('h2', [text('When')]),
     paragraph([
       text(
-        'When we get hardware — it is the alternative choice in the same DigiKey selection as the Arduino Uno Q. Until then, the ',
+        'When we get hardware - it is the alternative choice in the same DigiKey selection as the Arduino Uno Q. Until then, the ',
       ),
       bold('ESP32'),
       text(
@@ -269,7 +269,7 @@ async function main() {
       title: 'M5Stack CoreS3 SE',
       slug: 'm5stack-cores3-se',
       description:
-        'An ESP32-S3 with a touchscreen, a battery and an enclosure — a project that is finished when the code works. Guide coming once we have the hardware.',
+        'An ESP32-S3 with a touchscreen, a battery and an enclosure - a project that is finished when the code works. Guide coming once we have the hardware.',
       thumbnail: placeholderId,
       difficulty: 'intermediate',
       tags: coreTags,

@@ -6,7 +6,7 @@
  * accounts. This script is the one deliberate way in: it uses the Local API
  * with `overrideAccess: true`.
  *
- * Usage — set the two vars in your environment, never in a file that is
+ * Usage - set the two vars in your environment, never in a file that is
  * committed, then run `pnpm create:admin`.
  *
  * On Windows PowerShell:
@@ -14,7 +14,7 @@
  *   $env:BACKUP_ADMIN_EMAIL="..."; $env:BACKUP_ADMIN_PASSWORD="..."
  *   pnpm create:admin
  *
- * It targets whatever DATABASE_URL points at — check that first, because the
+ * It targets whatever DATABASE_URL points at - check that first, because the
  * repo's local .env points at production.
  */
 import 'dotenv/config'

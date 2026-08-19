@@ -25,7 +25,7 @@ const ACTIVE_LINE_RATIO = 0.5
 
 /**
  * How far above the advancing bar a node starts filling, in pixels. Mirrors the
- * achievements timeline's `fillDistance`, scaled down for a rail this size —
+ * achievements timeline's `fillDistance`, scaled down for a rail this size -
  * large enough that the fill reads as a sweep rather than a snap, small enough
  * that two adjacent nodes are not both mid-fill.
  */
@@ -34,8 +34,8 @@ const NODE_FILL_DISTANCE = 20
 /**
  * "On this page" nav with a scroll-linked progress rail.
  *
- * Active tracking is position-based — the last heading scrolled past the
- * ACTIVE_LINE_RATIO line wins — rather than IntersectionObserver. Observers report each
+ * Active tracking is position-based - the last heading scrolled past the
+ * ACTIVE_LINE_RATIO line wins - rather than IntersectionObserver. Observers report each
  * heading independently, so two headings close together (a short section, or a
  * heading sitting right above a table's own header row) are both "intersecting"
  * and the active item flickers between them. Asking "which heading did I most
@@ -45,7 +45,7 @@ const NODE_FILL_DISTANCE = 20
  * Anchor ids come from `lib/richTextHeadings`, which also feeds the renderer,
  * so the links and the headings can't drift apart.
  *
- * The moving parts — bar width, percentage, rail height, node fills — are
+ * The moving parts - bar width, percentage, rail height, node fills - are
  * written straight to the DOM from the scroll handler rather than held in
  * state. Routing them through `setState` re-rendered the whole nav on every
  * frame, and React schedules those renders on a task the browser happily
@@ -54,7 +54,7 @@ const NODE_FILL_DISTANCE = 20
  * state, because it changes a handful of times per page rather than per frame.
  *
  * The rail height and node fills track `currentIndex`, interpolated against
- * the next heading's position — not the raw scroll `progress` the bar above
+ * the next heading's position - not the raw scroll `progress` the bar above
  * the nav uses. Sections vary wildly in length (a step with three screenshots
  * vs. one line of text), so raw scroll percentage and "which item is active"
  * disagree constantly; the interpolation is what makes the fill move smoothly
@@ -75,7 +75,7 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
   const railRef = useRef<HTMLDivElement>(null)
 
   const measure = useCallback(() => {
-    // The page scrolls inside ContentPanel, not the window — reading
+    // The page scrolls inside ContentPanel, not the window - reading
     // window.scrollY here would return 0 forever.
     const scroller = document.querySelector('[data-scroll-container]')
     if (!scroller) return
@@ -84,7 +84,7 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
 
     // Progress is measured across the article only. The scroll container also
     // holds the full-viewport SiteFooter, so dividing by the container's own
-    // scrollHeight caps the bar around 80% at the end of the actual reading —
+    // scrollHeight caps the bar around 80% at the end of the actual reading -
     // the remainder is footer.
     const scope = document.querySelector('[data-toc-scope]')
     let progress: number
@@ -143,11 +143,11 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
           : Math.min(1, Math.max(0, (activeLine - currentTop) / (nextTop - currentTop)))
 
     // The rail's pixel target is the *actual* position of the current nav
-    // item, interpolated toward the next item's actual position — not a
+    // item, interpolated toward the next item's actual position - not a
     // uniform fraction of the nav's total height. Nav rows are not uniform
     // height (a three-line entry like "Step 7: Accessing the Desktop Remotely
     // (RealVNC)" next to one-line ones), so assuming even spacing put the bar
-    // short of — or past — where a given item actually sits, leaving its dot
+    // short of - or past - where a given item actually sits, leaving its dot
     // unfilled even once it was the active item. Reading each item's own
     // `getBoundingClientRect()` keeps the bar and the dots in the same
     // coordinate space they're rendered in.
@@ -163,10 +163,10 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
     const currentCentre = centres[currentIndex] ?? 0
     const nextCentre = centres[currentIndex + 1]
     // Before the first heading is reached, currentIndex defaults to 0 with
-    // nothing actually passed yet — the bar has to stay at 0 rather than
+    // nothing actually passed yet - the bar has to stay at 0 rather than
     // jump straight to item 0's position. Once something has been passed,
     // it's clamped to the current item's own position when that item is the
-    // last one (or its neighbour hasn't rendered) — nothing beyond it to
+    // last one (or its neighbour hasn't rendered) - nothing beyond it to
     // interpolate toward, so the bar stops there instead of overshooting.
     const barBottom = !anyPassed
       ? 0
@@ -236,7 +236,7 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
           same way in both colour modes instead of inverting. */}
       {/* No padding on the nav. An absolute `left` resolves against the padding
           box's outer edge, but the links below are in normal flow and start
-          inside the padding — so padding here offsets the track from the nodes
+          inside the padding - so padding here offsets the track from the nodes
           by exactly that amount. With none, `left-1.5` means the same x for the
           track, the fill and every node. */}
       <nav ref={navRef} className="relative flex flex-col gap-0.5" aria-label="On this page">

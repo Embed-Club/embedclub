@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 /**
  * The USN check runs on every submission to a form that asks for one, so a
- * pattern that is too strict turns away a real student at registration — the
+ * pattern that is too strict turns away a real student at registration - the
  * failure nobody reports, they just give up. These cases pin the shapes the
  * club actually sees.
  */

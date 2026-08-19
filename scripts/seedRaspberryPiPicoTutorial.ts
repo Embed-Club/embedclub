@@ -3,7 +3,7 @@
  *
  *   pnpm tsx scripts/seedRaspberryPiPicoTutorial.ts
  *
- * The Pico W has its own tutorial covering Wi-Fi; this one is the board itself —
+ * The Pico W has its own tutorial covering Wi-Fi; this one is the board itself -
  * firmware, the REPL, main.py, and the on-chip sensors.
  *
  * Screenshot slots and the thumbnail use the shared placeholder graphic with a
@@ -39,7 +39,7 @@ hello from the Pico
 >>> led.on()
 >>> led.off()`
 
-const BLINK = `# blink.py — the on-board LED, on GPIO 25.
+const BLINK = `# blink.py - the on-board LED, on GPIO 25.
 from machine import Pin
 from time import sleep
 
@@ -49,7 +49,7 @@ while True:
     led.toggle()
     sleep(0.5)`
 
-const BUTTON = `# button.py — press to light an external LED.
+const BUTTON = `# button.py - press to light an external LED.
 #
 # Wiring: GP15 -> 330 ohm resistor -> LED anode; LED cathode -> GND (pin 38).
 #         Button between GP14 and GND (pin 33).
@@ -69,7 +69,7 @@ while True:
         led.off()
     sleep(0.01)                  # crude debounce, and it keeps the loop calm`
 
-const TEMPERATURE = `# temperature.py — the RP2040 has a temperature sensor wired to ADC channel 4.
+const TEMPERATURE = `# temperature.py - the RP2040 has a temperature sensor wired to ADC channel 4.
 # No external parts at all.
 import machine
 import time
@@ -89,14 +89,14 @@ const CONTENT = [
     heading('h1', [text('Raspberry Pi Pico: MicroPython Setup')], 'center'),
     paragraph([
       text(
-        'The Pico is a microcontroller board built around Raspberry Pi’s own RP2040 chip: two cores at 133 MHz, 264 KB of RAM, and a price low enough to leave one soldered into a finished project. It also has the friendliest first hour of any board here — no drivers, no board packages, and a Python prompt running on the chip within about five minutes.',
+        'The Pico is a microcontroller board built around Raspberry Pi’s own RP2040 chip: two cores at 133 MHz, 264 KB of RAM, and a price low enough to leave one soldered into a finished project. It also has the friendliest first hour of any board here - no drivers, no board packages, and a Python prompt running on the chip within about five minutes.',
       ),
     ]),
     heading('h2', [text('What You Will Need')]),
     list('bullet', [
       [
         bold('A Raspberry Pi Pico'),
-        text(' — the plain one, or the '),
+        text(' - the plain one, or the '),
         bold('Pico H'),
         text(' with headers already soldered'),
       ],
@@ -114,7 +114,7 @@ const CONTENT = [
     paragraph([
       bold('3.3V logic, not 5V. '),
       text(
-        'Unlike the Uno and Nano, the Pico’s GPIO pins are 3.3V and are not 5V tolerant. Feeding 5V from a sensor straight into a GPIO pin damages the chip — use a level shifter or a divider for anything that outputs 5V.',
+        'Unlike the Uno and Nano, the Pico’s GPIO pins are 3.3V and are not 5V tolerant. Feeding 5V from a sensor straight into a GPIO pin damages the chip - use a level shifter or a divider for anything that outputs 5V.',
       ),
     ]),
   ]),
@@ -150,7 +150,7 @@ const CONTENT = [
       text('That drive '),
       italic('is'),
       text(
-        ' the bootloader. Anything you copy onto it is written to flash, and the board reboots into it. There is no driver to install and no upload tool — the file manager is the flashing tool.',
+        ' the bootloader. Anything you copy onto it is written to flash, and the board reboots into it. There is no driver to install and no upload tool - the file manager is the flashing tool.',
       ),
     ]),
   ]),
@@ -176,7 +176,7 @@ const CONTENT = [
       [
         text('When it finishes, the '),
         code('RPI-RP2'),
-        text(' drive disappears — the board has rebooted into MicroPython.'),
+        text(' drive disappears - the board has rebooted into MicroPython.'),
       ],
     ]),
     paragraph([
@@ -199,7 +199,7 @@ const CONTENT = [
       code('>>>'),
       text(' prompt. That prompt is running '),
       italic('on the Pico'),
-      text(' — type into it and the chip responds:'),
+      text(' - type into it and the chip responds:'),
     ]),
   ]),
   codeBlock('python', REPL_FIRST, 'The MicroPython REPL, over USB'),
@@ -208,7 +208,7 @@ const CONTENT = [
       text('The on-board LED is on '),
       code('GPIO 25'),
       text(
-        '. Being able to poke hardware one line at a time, with no compile and no upload, is the real advantage of MicroPython on this board — it is a far faster way to find out what a new sensor actually returns.',
+        '. Being able to poke hardware one line at a time, with no compile and no upload, is the real advantage of MicroPython on this board - it is a far faster way to find out what a new sensor actually returns.',
       ),
     ]),
   ]),
@@ -261,7 +261,7 @@ const CONTENT = [
     paragraph([
       bold('GP numbers are not pin numbers. '),
       text(
-        'The Pico has 40 physical pins and the GPIO labels do not line up with them — GP15 is physical pin 20. Keep a pinout diagram open; guessing costs more time than looking.',
+        'The Pico has 40 physical pins and the GPIO labels do not line up with them - GP15 is physical pin 20. Keep a pinout diagram open; guessing costs more time than looking.',
       ),
     ]),
   ]),
@@ -279,7 +279,7 @@ const CONTENT = [
   codeBlock('python', TEMPERATURE, 'temperature.py'),
   textBlock([
     paragraph([
-      text('Expect it to read a few degrees above room temperature — it measures the '),
+      text('Expect it to read a few degrees above room temperature - it measures the '),
       italic('die'),
       text(
         ', which is warmed by the chip itself. It is useful for spotting the board getting hot, not for reporting the weather.',
@@ -299,7 +299,7 @@ const CONTENT = [
       [
         bold('Thonny cannot connect / "port is busy": '),
         text(
-          'another program has the serial port open — a second Thonny window, or a serial monitor. Close it, then click ',
+          'another program has the serial port open - a second Thonny window, or a serial monitor. Close it, then click ',
         ),
         bold('Stop'),
         text(' in Thonny to reconnect.'),
@@ -309,7 +309,7 @@ const CONTENT = [
         text('press '),
         bold('Stop'),
         text(
-          ' in Thonny to interrupt it. If even that fails, hold BOOTSEL while plugging in and re-flash MicroPython — that wipes the filesystem and gives you a clean board back.',
+          ' in Thonny to interrupt it. If even that fails, hold BOOTSEL while plugging in and re-flash MicroPython - that wipes the filesystem and gives you a clean board back.',
         ),
       ],
       [
@@ -328,7 +328,7 @@ const CONTENT = [
     heading('h2', [text('Where to Go Next')]),
     list('bullet', [
       [text('Move to the Pico W tutorial to put the same board on Wi-Fi.')],
-      [text('Drive a servo or a NeoPixel strip — MicroPython has a module for both built in.')],
+      [text('Drive a servo or a NeoPixel strip - MicroPython has a module for both built in.')],
       [
         text(
           'Try the PIO state machines, which are unique to the RP2040 and can bit-bang protocols without using a core.',

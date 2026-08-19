@@ -30,13 +30,13 @@ export interface DispatchResult {
  * When a submission's certificate is due, or null if it isn't yet (or ever,
  * if nothing is configured to cover it).
  *
- * Immediate-delivery forms are always due — dispatch there is really just the
+ * Immediate-delivery forms are always due - dispatch there is really just the
  * retry path for a send that failed right after submit.
  *
  * Scheduled forms support named batches so different groups can go out at
  * different times (e.g. "Section A at 5pm, Section B at 9pm"). A batch is
  * matched by checking one of the form's own questions against an expected
- * answer — `matchField` is the question's exact label, `matchValue` the
+ * answer - `matchField` is the question's exact label, `matchValue` the
  * answer that puts someone in that group. The first matching batch wins.
  * Anyone matched by no batch falls back to the form's plain `certificateSendAt`.
  */
@@ -83,7 +83,7 @@ export async function dispatchCertificatesForForm(
   }
 
   // Missing config used to return here silently, which left every affected
-  // submission sitting at `pending` with an empty error — indistinguishable in
+  // submission sitting at `pending` with an empty error - indistinguishable in
   // the admin from one that is simply not due yet. The reason is recorded on
   // the rows it actually blocks instead, so an officer can see why.
   const notConfigured = !appsScriptConfigured()
@@ -105,9 +105,9 @@ export async function dispatchCertificatesForForm(
 
   for (const submission of pending.docs) {
     const due = dueAt(form, submission)
-    if (!due || due.getTime() > now) continue // not due yet — stays pending
+    if (!due || due.getTime() > now) continue // not due yet - stays pending
 
-    // Due, but there is nothing to send it with. Stay `pending` — this is a
+    // Due, but there is nothing to send it with. Stay `pending` - this is a
     // deployment problem that will fix itself the moment the env vars land,
     // and flipping to `failed` would imply the recipient needs attention.
     // Written once; later runs see the same message and leave it alone.
@@ -151,7 +151,7 @@ export async function dispatchCertificatesForForm(
         emailName,
         email,
         formTitle: form.title,
-        // Whatever else this form's template prints — USN, section, anything
+        // Whatever else this form's template prints - USN, section, anything
         // the officer mapped. `name` and `event` are included for templates
         // that predate the mapping and expect the script to fill them.
         placeholders: resolvePlaceholders(form, submission, certificateName),
@@ -195,7 +195,7 @@ export async function dispatchCertificatesForForm(
  * Every form that issues certificates. Due-checking happens per submission
  * inside `dispatchCertificatesForForm` (batches mean different recipients of
  * the same form can become due at different times), so this just fans out to
- * every candidate form rather than pre-filtering — the per-form pending query
+ * every candidate form rather than pre-filtering - the per-form pending query
  * is cheap and indexed.
  */
 export async function dispatchDueCertificates(): Promise<Record<string, DispatchResult>> {

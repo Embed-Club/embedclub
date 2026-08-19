@@ -21,7 +21,7 @@ export const Members: CollectionConfig = {
       admin: { description: 'Optional. Without one, an avatar is generated instead.' },
     },
     {
-      // Admin-only. The site never prints this — it exists to pick the avatar
+      // Admin-only. The site never prints this - it exists to pick the avatar
       // used when there is no photo.
       name: 'gender',
       label: 'Gender',

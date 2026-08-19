@@ -8,7 +8,7 @@ interface FormsListingProps {
 }
 
 /**
- * Shared grid for the Forms and Feedback pages — the two list the same thing,
+ * Shared grid for the Forms and Feedback pages - the two list the same thing,
  * filtered by `type`, so they render through one component rather than
  * drifting apart.
  */

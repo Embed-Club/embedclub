@@ -28,7 +28,7 @@ async function getProjects(): Promise<ProjectCardData[]> {
       depth: 1,
       limit: 100,
       pagination: false,
-      // Newest first, but only to make the query deterministic — the showcase
+      // Newest first, but only to make the query deterministic - the showcase
       // shuffles this list before laying it out.
       sort: '-createdAt',
     })

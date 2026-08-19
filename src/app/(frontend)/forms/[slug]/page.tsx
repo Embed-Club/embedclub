@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: FormPageProps): Promise<Metad
     title: form.title,
     description: form.description || undefined,
     alternates: { canonical: `/forms/${slug}` },
-    // Forms are interactive, single-use pages — keep them out of the index.
+    // Forms are interactive, single-use pages - keep them out of the index.
     robots: { index: false, follow: true },
   }
 }
@@ -36,14 +36,14 @@ export default async function FormPage({ params }: FormPageProps) {
 
   // A section is only reachable through its container, so its bare slug is not
   // an address. Redirecting would be friendlier, but this URL was never handed
-  // out — the links have always been the nested ones.
+  // out - the links have always been the nested ones.
   if (form.sectionOf) notFound()
 
   const closed =
     !form.active || (form.deadline ? new Date(form.deadline).getTime() < Date.now() : false)
 
   // A container asks nothing itself: it exists so that two ways of answering
-  // the same thing — A and B sections, day one and day two — read as one form
+  // the same thing - A and B sections, day one and day two - read as one form
   // with a choice in it.
   if (form.sectionGroup) {
     const sections = await getSections(form.id)
@@ -91,7 +91,7 @@ export default async function FormPage({ params }: FormPageProps) {
           {closed ? (
             <EmptyState
               title="This Form Is Closed"
-              message="Submissions are no longer accepted — contact the organizers if you think this is a mistake."
+              message="Submissions are no longer accepted - contact the organizers if you think this is a mistake."
             />
           ) : (
             <FormWizard form={form} consentNotice={legal?.consentNotice} />

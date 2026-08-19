@@ -7,7 +7,7 @@ import { useEffect } from 'react'
  *
  * The pages fetch through the Payload local API, so a database outage surfaces
  * as a thrown error rather than an empty result. Without this, Next falls back
- * to its own bare error screen; with it, an outage reads as an outage — and
+ * to its own bare error screen; with it, an outage reads as an outage - and
  * `reset()` re-runs the failed render, which is usually all a transient Neon
  * blip needs.
  *
@@ -24,7 +24,7 @@ export default function RouteError({
 }) {
   useEffect(() => {
     // The digest is the only handle on the server-side stack once this is
-    // deployed — Next strips the message in production.
+    // deployed - Next strips the message in production.
     console.error('[Frontend] Route error:', error.digest ?? '', error)
   }, [error])
 
@@ -33,7 +33,7 @@ export default function RouteError({
       <div className="max-w-md">
         <p className="text-2xl font-bold text-foreground">Something went wrong</p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          This page could not be loaded. It is usually a temporary problem — try again in a moment,
+          This page could not be loaded. It is usually a temporary problem - try again in a moment,
           and get in touch if it keeps happening.
         </p>
         {error.digest && (

@@ -2,7 +2,7 @@ import { rewriteUploadUrls } from '@/lib/mediaUrl'
 import type { CollectionConfig } from 'payload'
 
 /**
- * Images an officer attaches while authoring a form — a payment QR, a poster,
+ * Images an officer attaches while authoring a form - a payment QR, a poster,
  * a wiring diagram next to the question that asks about it.
  *
  * Kept out of `media` on purpose. `media` is the site's own art direction and
@@ -10,7 +10,7 @@ import type { CollectionConfig } from 'payload'
  * and would otherwise bury the real library under a pile of QR codes. Sizes
  * are smaller here too, since nothing in a form renders full-bleed.
  *
- * Files respondents *upload* do not live here at all — those go to Google
+ * Files respondents *upload* do not live here at all - those go to Google
  * Drive (see `lib/googleDrive.ts`).
  */
 export const FormMedia: CollectionConfig = {

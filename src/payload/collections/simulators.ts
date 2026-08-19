@@ -106,7 +106,7 @@ export const Simulators: CollectionConfig = {
       minRows: 0,
       admin: {
         description:
-          'Optional — setup steps, login notes, download instructions. Shown under the video in the modal.',
+          'Optional - setup steps, login notes, download instructions. Shown under the video in the modal.',
       },
       blocks: [
         TextBlock,
@@ -123,7 +123,7 @@ export const Simulators: CollectionConfig = {
   hooks: {
     beforeValidate: [
       ({ data }) => {
-        // Slug is read-only in the admin, so fill it here. Only when empty —
+        // Slug is read-only in the admin, so fill it here. Only when empty -
         // regenerating on every title edit would break any link already shared.
         if (data?.title && !data?.slug) {
           data.slug = generateSlug(data.title)

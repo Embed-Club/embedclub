@@ -6,7 +6,7 @@
  * Separate from the Pi 3/4/5 tutorial because the Zero's whole story is
  * different: no Ethernet, no full-size HDMI or USB, half a gigabyte of RAM, and
  * a USB port that can act as a network device. The Imager steps are shared, so
- * the same screenshots are reused — `ensureMediaFromFile` matches on filename,
+ * the same screenshots are reused - `ensureMediaFromFile` matches on filename,
  * so this run reuses the media docs that seed already uploaded.
  *
  * Screenshots come from a folder outside this repo (see IMAGE_DIR). Matched on
@@ -36,7 +36,7 @@ import {
 const SLUG = 'raspberry-pi-zero-2-w-headless-setup'
 const IMAGE_DIR = 'C:/Projects/EMBEDCLUB/embed-club/events-img/2025'
 
-/** Shared with the Pi 3/4/5 tutorial — the Imager and SSH steps are the same. */
+/** Shared with the Pi 3/4/5 tutorial - the Imager and SSH steps are the same. */
 const IMAGES: Record<string, { file: string; alt: string }> = {
   download: { file: 'RaspDownloadPage.png', alt: 'Raspberry Pi Imager download page' },
   imager: { file: 'RaspApplication.png', alt: 'Raspberry Pi Imager main window' },
@@ -70,7 +70,7 @@ const USB_GADGET = `# Optional: make the Zero appear as a network device over th
 dtoverlay=dwc2
 
 # 2. In cmdline.txt, insert this immediately after 'rootwait'
-#    (all on ONE line — that file must never contain a line break):
+#    (all on ONE line - that file must never contain a line break):
 modules-load=dwc2,g_ether`
 
 const UPDATE_SYSTEM = `sudo apt update
@@ -83,7 +83,7 @@ free -h
 # Watch memory live while something builds:
 htop`
 
-const BLINK_LED = `# blink.py — GPIO17 (physical pin 11), same header as every other Pi.
+const BLINK_LED = `# blink.py - GPIO17 (physical pin 11), same header as every other Pi.
 # Wiring: pin 11 -> 330 ohm resistor -> LED anode; LED cathode -> pin 9 (GND).
 from gpiozero import LED
 from time import sleep
@@ -102,21 +102,21 @@ function buildContent(id: (key: string) => number) {
       heading('h1', [text('Raspberry Pi Zero 2 W: Headless Setup')], 'center'),
       paragraph([
         text(
-          'The Zero 2 W is a full quad-core Linux computer the size of a stick of gum. It has the same processor family as the Pi 3 in a board that costs a fraction as much and draws about a watt — which makes it the one to reach for when a project has to be small, battery-powered, or left running somewhere. The catch is that it has no Ethernet, no full-size ports, and 512 MB of RAM, so it is a board you set up headless and then mostly leave alone.',
+          'The Zero 2 W is a full quad-core Linux computer the size of a stick of gum. It has the same processor family as the Pi 3 in a board that costs a fraction as much and draws about a watt - which makes it the one to reach for when a project has to be small, battery-powered, or left running somewhere. The catch is that it has no Ethernet, no full-size ports, and 512 MB of RAM, so it is a board you set up headless and then mostly leave alone.',
         ),
       ]),
       heading('h2', [text('What You Will Need')]),
       list('bullet', [
         [
           bold('A Raspberry Pi Zero 2 W'),
-          text(' — the '),
+          text(' - the '),
           bold('W'),
           text(' matters; it is the one with Wi-Fi'),
         ],
         [bold('A microSD card'), text(', 16 GB or larger, Class 10 / A1 or better')],
         [
           bold('A 5V micro-USB power supply'),
-          text(' — 2.5A, and a real supply rather than a laptop port'),
+          text(' - 2.5A, and a real supply rather than a laptop port'),
         ],
         [text('A card reader')],
         [
@@ -134,13 +134,13 @@ function buildContent(id: (key: string) => number) {
         text(' is power only. The one marked '),
         code('USB'),
         text(
-          ' is the data port — that is where an OTG adapter or a USB gadget connection goes. Plugging power into the data port powers the board but leaves it unreliable under load.',
+          ' is the data port - that is where an OTG adapter or a USB gadget connection goes. Plugging power into the data port powers the board but leaves it unreliable under load.',
         ),
       ]),
       paragraph([
         bold('Why headless. '),
         text(
-          'Reaching the desktop on a Zero needs a mini-HDMI cable and an OTG hub for keyboard and mouse — more adapters than most people have. Setting it up over the network needs none of them, and it is how the board is normally used anyway.',
+          'Reaching the desktop on a Zero needs a mini-HDMI cable and an OTG hub for keyboard and mouse - more adapters than most people have. Setting it up over the network needs none of them, and it is how the board is normally used anyway.',
         ),
       ]),
     ]),
@@ -169,25 +169,25 @@ function buildContent(id: (key: string) => number) {
         [text('Click '), bold('Choose Storage'), text(' and select the card.')],
       ]),
     ]),
-    imageBlock(id('imager'), 'Raspberry Pi Imager — Choose Device, OS, and Storage'),
+    imageBlock(id('imager'), 'Raspberry Pi Imager - Choose Device, OS, and Storage'),
     textBlock([
       paragraph([bold('Which OS to pick, on this board specifically:')]),
       list('bullet', [
         [
           bold('Raspberry Pi OS Lite (64-bit)'),
           text(
-            ' — the right default. No desktop, so almost all of the 512 MB stays available for your project.',
+            ' - the right default. No desktop, so almost all of the 512 MB stays available for your project.',
           ),
         ],
         [
           bold('Raspberry Pi OS (64-bit) with desktop'),
           text(
-            ' — it runs, and it is slow. Worth it only if you genuinely need a GUI on the board itself.',
+            ' - it runs, and it is slow. Worth it only if you genuinely need a GUI on the board itself.',
           ),
         ],
         [
           bold('32-bit'),
-          text(' — only for old software that needs it. The Zero 2 W’s processor is 64-bit.'),
+          text(' - only for old software that needs it. The Zero 2 W’s processor is 64-bit.'),
         ],
       ]),
       paragraph([
@@ -205,20 +205,20 @@ function buildContent(id: (key: string) => number) {
         text(' → '),
         bold('Edit Settings'),
         text(
-          '. On a headless board this is not a convenience, it is the only chance to configure anything — there is no keyboard attached later to fix a typo.',
+          '. On a headless board this is not a convenience, it is the only chance to configure anything - there is no keyboard attached later to fix a typo.',
         ),
       ]),
     ]),
-    imageBlock(id('editSettings'), 'The OS customisation dialog — General tab'),
+    imageBlock(id('editSettings'), 'The OS customisation dialog - General tab'),
     textBlock([
       paragraph([text('On '), bold('General'), text(', set:')]),
       list('bullet', [
-        [text('Hostname — something you will recognise, e.g. '), code('zero2')],
+        [text('Hostname - something you will recognise, e.g. '), code('zero2')],
         [text('Username and password')],
         [
           bold('Wi-Fi SSID, password, and Wi-Fi country'),
           text(
-            ' — mandatory on this board. With no Ethernet port, a Zero that does not join Wi-Fi is unreachable.',
+            ' - mandatory on this board. With no Ethernet port, a Zero that does not join Wi-Fi is unreachable.',
           ),
         ],
         [text('Locale and keyboard layout')],
@@ -246,16 +246,16 @@ function buildContent(id: (key: string) => number) {
       heading('h2', [text('Step 4: Write, Then Boot')]),
       list('number', [
         [
-          text('Save the settings, confirm the right card is selected — '),
+          text('Save the settings, confirm the right card is selected - '),
           bold('writing erases it'),
-          text(' — and click Write.'),
+          text(' - and click Write.'),
         ],
         [text('Eject the card and put it in the Zero.')],
         [text('Connect power to the socket marked '), code('PWR IN'), text('.')],
         [
           text('Wait. First boot resizes the filesystem and takes '),
           bold('2–4 minutes'),
-          text(' on this board — noticeably longer than a Pi 4.'),
+          text(' on this board - noticeably longer than a Pi 4.'),
         ],
       ]),
       paragraph([
@@ -273,11 +273,11 @@ function buildContent(id: (key: string) => number) {
     textBlock([
       paragraph([
         text(
-          'Accept the fingerprint, enter the password you set, and you have a shell. There is no desktop to miss — on Lite there was never one to begin with.',
+          'Accept the fingerprint, enter the password you set, and you have a shell. There is no desktop to miss - on Lite there was never one to begin with.',
         ),
       ]),
     ]),
-    imageBlock(id('sshAfter'), 'Connected — a shell on the Zero 2 W'),
+    imageBlock(id('sshAfter'), 'Connected - a shell on the Zero 2 W'),
     textBlock([paragraph([text('Update it before anything else:')])]),
     codeBlock('bash', UPDATE_SYSTEM, 'Update and reboot'),
     textBlock([
@@ -299,7 +299,7 @@ function buildContent(id: (key: string) => number) {
       paragraph([
         text('Put the freshly written card back in your computer and edit two files on the '),
         bold('boot'),
-        text(' partition — the small one Windows can see:'),
+        text(' partition - the small one Windows can see:'),
       ]),
     ]),
     codeBlock('bash', USB_GADGET, 'On the boot partition, before first boot'),
@@ -336,7 +336,7 @@ function buildContent(id: (key: string) => number) {
           text('Prefer '),
           code('apt install'),
           text(
-            ' over building from source — compiling large projects on this board will swap itself to a standstill.',
+            ' over building from source - compiling large projects on this board will swap itself to a standstill.',
           ),
         ],
         [
@@ -363,7 +363,7 @@ function buildContent(id: (key: string) => number) {
       heading('h2', [text('First Task: Blink an LED')]),
       paragraph([
         text(
-          'The Zero 2 W has the same 40-pin header as every other modern Pi — on the plain board it is unpopulated, so it needs headers soldered, or a solderless press-fit header.',
+          'The Zero 2 W has the same 40-pin header as every other modern Pi - on the plain board it is unpopulated, so it needs headers soldered, or a solderless press-fit header.',
         ),
       ]),
     ]),
@@ -404,7 +404,7 @@ function buildContent(id: (key: string) => number) {
         [
           bold('Boots, then dies under load: '),
           text(
-            'underpowered. A laptop USB port cannot reliably run this board — use a 2.5A supply, into ',
+            'underpowered. A laptop USB port cannot reliably run this board - use a 2.5A supply, into ',
           ),
           code('PWR IN'),
           text('.'),
@@ -437,7 +437,7 @@ function buildContent(id: (key: string) => number) {
             'Attach a Pi Camera with the Zero’s narrower CSI cable and build a battery-powered camera.',
           ),
         ],
-        [text('Run it as an always-on sensor node posting to MQTT — it idles at about a watt.')],
+        [text('Run it as an always-on sensor node posting to MQTT - it idles at about a watt.')],
         [
           text(
             'Read the Raspberry Pi 3/4/5 tutorial for the desktop and RealVNC path on a board with the headroom for it.',
@@ -445,7 +445,7 @@ function buildContent(id: (key: string) => number) {
         ],
         [
           text(
-            'Compare with the Pico W when the job needs no Linux at all — it will run for far longer on a battery.',
+            'Compare with the Pico W when the job needs no Linux at all - it will run for far longer on a battery.',
           ),
         ],
       ]),
@@ -476,7 +476,7 @@ async function main() {
       title: 'Raspberry Pi Zero 2 W: Headless Setup',
       slug: SLUG,
       description:
-        'Set up a Pi Zero 2 W with no monitor — Imager configuration, SSH over Wi-Fi, USB gadget mode as a fallback, and living within 512 MB of RAM.',
+        'Set up a Pi Zero 2 W with no monitor - Imager configuration, SSH over Wi-Fi, USB gadget mode as a fallback, and living within 512 MB of RAM.',
       thumbnail: id('imager'),
       difficulty: 'intermediate',
       tags,

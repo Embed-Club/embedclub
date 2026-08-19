@@ -24,7 +24,7 @@ async function getForms() {
           // Feedback has its own page; this lists everything else.
           { type: { not_equals: 'feedback' } },
           // Sections are reached through their container, which is listed in
-          // their place — showing both would put "Day 1" and "Day 2" on the
+          // their place - showing both would put "Day 1" and "Day 2" on the
           // index as if they were unrelated forms.
           { sectionOf: { exists: false } },
           // Inactive means retired, not merely shut: the archive imported from

@@ -53,7 +53,7 @@ export const Card = ({
    * The grid card this panel grew out of, hidden while the modal is open.
    *
    * Held as a node rather than as state because it belongs to a different
-   * component tree — the grid renders from the page, the carousel from here,
+   * component tree - the grid renders from the page, the carousel from here,
    * and there is no shared owner between them short of lifting the open state
    * out of this card entirely. The carousel copy stays visible: it is the one
    * on screen, and the panel does not come out of it.
@@ -69,7 +69,7 @@ export const Card = ({
     // out of this copy of it. That card is usually below the fold, which is
     // what gives the panel its rise from underneath.
     //
-    // Falls back to the carousel card when there is no counterpart — the grid
+    // Falls back to the carousel card when there is no counterpart - the grid
     // is paginated, so the event may be on another page.
     const gridCard =
       event?.id != null
@@ -122,7 +122,7 @@ export const Card = ({
         layoutId={layout ? `card-${card.title}` : undefined}
       />
 
-      {/* Carousel card — same cutout shell as the grid below it: notched
+      {/* Carousel card - same cutout shell as the grid below it: notched
           inset title strip, notched New pin, 16px radius. */}
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
@@ -196,7 +196,7 @@ export const EventModal = ({
   originRect?: DOMRect | null
 }) => {
   // Rendered into <body> rather than in place. `position: fixed` is only
-  // relative to the viewport while no ancestor is transformed — and Embla
+  // relative to the viewport while no ancestor is transformed - and Embla
   // moves the carousel by writing `transform: translate3d(...)` on the slide
   // track, which makes that track the containing block for anything fixed
   // inside it. Opening a card from the carousel therefore drew the whole modal
@@ -211,7 +211,7 @@ export const EventModal = ({
 
   // `items-start` + `my-auto` on the panel, not `items-center`: a centred flex
   // child taller than its container overflows equally both ways and the top
-  // half becomes unreachable — no amount of scrolling gets back to it. This
+  // half becomes unreachable - no amount of scrolling gets back to it. This
   // still centres a short modal and scrolls a tall one from its actual top.
   // The env() padding keeps it clear of the notch and the gesture bar.
   return createPortal(
@@ -308,7 +308,7 @@ const EventModalPanel = ({
             <X className="h-4 w-4" />
           </button>
 
-          {/* Desktop: the grid itself doesn't scroll — the details column does,
+          {/* Desktop: the grid itself doesn't scroll - the details column does,
               so the poster stays put while its details move. Below md the two
               are stacked, where a fixed image and a scrolling column beside it
               means nothing, so the whole panel scrolls as one.
@@ -319,7 +319,7 @@ const EventModalPanel = ({
             ref={bodyRef}
             className="grid h-full grid-cols-1 gap-6 overflow-y-auto p-3 md:grid-cols-2 md:grid-rows-[minmax(0,1fr)] md:gap-8 md:overflow-hidden md:p-8 lg:p-10"
           >
-            {/* Image Section — same cutout inset label as the card it opened from */}
+            {/* Image Section - same cutout inset label as the card it opened from */}
             <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted">
               <BlurImage src={card.src} alt={card.title} fill className="object-contain" />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
@@ -348,7 +348,7 @@ const EventModalPanel = ({
               </CutoutCardInsetLabel>
             </div>
 
-            {/* Details Section — the scrolling half on desktop. `min-h-0` is
+            {/* Details Section - the scrolling half on desktop. `min-h-0` is
                 what allows it: a grid item's default `min-height: auto` refuses
                 to shrink below its content, so without it the column grows to
                 fit and the overflow moves back up to the panel. */}
@@ -372,7 +372,7 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
   // The blur must never outlive the image, and `onLoad` alone can't guarantee
   // that: a cached image is already `complete` before React attaches the
   // handler, and our CDN images can stay `complete === false` indefinitely even
-  // once they have decoded and painted. So drive the state off the element —
+  // once they have decoded and painted. So drive the state off the element -
   // `decode()` settles as soon as the bitmap is usable, and resolves
   // immediately for an already-decoded one. Rejection (decode error, or the
   // src being swapped mid-flight) also clears, since a stuck blur is worse
@@ -387,7 +387,7 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
     }
     // `naturalWidth`, not `complete`: a lazy image restored from cache inside
     // the carousel's overflow-hidden track can sit at `complete === false`
-    // forever, with neither `load` nor `decode()` ever settling — but it has
+    // forever, with neither `load` nor `decode()` ever settling - but it has
     // real dimensions and paints fine. Dimensions mean there is a bitmap.
     if (img.naturalWidth > 0) {
       clear()
@@ -408,7 +408,7 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
         // `none`: it still promotes the image to its own composited layer and
         // routes it through the filter pipeline, and stacked with the card's
         // transition-transform and Embla's translate3d on the track, Chrome
-        // rasterises that layer at the wrong scale — leaving the image
+        // rasterises that layer at the wrong scale - leaving the image
         // permanently soft long after it has finished loading. The grid cards
         // never set a filter, which is why only the carousel looked blurry.
         isLoading && 'blur-sm',

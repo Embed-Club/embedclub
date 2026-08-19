@@ -4,7 +4,7 @@
  * The hero title, set as plain text.
  *
  * It used to scramble in through `DecryptedText` on view, but the landing
- * intro's logo fill and glide covers the whole viewport while that plays — the
+ * intro's logo fill and glide covers the whole viewport while that plays - the
  * effect had always finished by the time anything was visible.
  */
 export default function DashboardTitle() {

@@ -25,7 +25,7 @@ function formatDeadline(deadline: string): string {
 
 /**
  * Forms and Feedback list the same kind of thing, so they share one card. It
- * has no image — a form has nothing to show — so the cutout notch carries the
+ * has no image - a form has nothing to show - so the cutout notch carries the
  * open/closed state instead of a media strip.
  */
 export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
@@ -71,14 +71,16 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
   const statusStrip = (
     <CutoutCardInsetLabel
       className={cn(
-        'top-0 left-0 rounded-br-[16px] px-4 py-2',
+        'top-0 right-0 rounded-bl-[16px] px-4 py-2',
         card.closed ? 'bg-muted' : 'bg-card',
       )}
     >
       <span
         className={cn(
           'flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest',
-          card.closed ? 'text-muted-foreground' : 'text-primary',
+          // `text-foreground` for closed: `text-muted-foreground` on `bg-muted`
+          // is muted-on-muted, too low-contrast to read at a glance.
+          card.closed ? 'text-foreground/80' : 'text-primary',
         )}
       >
         {card.closed && <Lock className="h-3 w-3" />}
@@ -86,13 +88,13 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
       </span>
       <CutoutCorner
         className={cn(
-          'absolute -right-[27px] -top-px -rotate-90',
+          'absolute -left-[27px] -top-px -rotate-90',
           card.closed ? 'text-muted' : 'text-card',
         )}
       />
       <CutoutCorner
         className={cn(
-          'absolute -bottom-[27px] -left-px -rotate-90',
+          'absolute -bottom-[27px] -right-px -rotate-90',
           card.closed ? 'text-muted' : 'text-card',
         )}
       />
@@ -105,7 +107,10 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
         <div
           className={cn(
             cutoutCardSurfaceClassName,
-            'flex h-full cursor-default flex-col opacity-70',
+            // Not opacity-70: that washed out the body text along with the
+            // strip, on top of it already being muted-on-muted. Closed reads
+            // fine from the lock icon and strip alone.
+            'flex h-full cursor-default flex-col',
           )}
         >
           {statusStrip}

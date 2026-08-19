@@ -4,7 +4,7 @@
  *   pnpm tsx scripts/seedArduinoNanoTutorial.ts
  *
  * Deliberately not folded into the Uno tutorial. The two boards run the same
- * chip, but every step a beginner actually loses an evening to is different —
+ * chip, but every step a beginner actually loses an evening to is different -
  * the CH340 driver, the Old Bootloader processor entry, and the two analogue-only
  * pins the Uno does not have. This page covers those and links across for the
  * parts that genuinely are identical.
@@ -41,7 +41,7 @@ const SLUG = 'arduino-nano-setup-and-first-sketch'
 /** Caption of the image closing the IDE/driver step; the IDE card follows it. */
 const IDE_STEP_MARKER = 'An Arduino Nano seated across the centre channel'
 
-const BLINK = `// Blink — pin 13 again, but on the Nano the LED sits right next to the
+const BLINK = `// Blink - pin 13 again, but on the Nano the LED sits right next to the
 // "L" silkscreen on the board.
 
 void setup() {
@@ -55,7 +55,7 @@ void loop() {
   delay(1000);
 }`
 
-const LDR_NIGHTLIGHT = `// nightlight.ino — an LDR on A6 turns the LED on when the room goes dark.
+const LDR_NIGHTLIGHT = `// nightlight.ino - an LDR on A6 turns the LED on when the room goes dark.
 //
 // A6 and A7 exist on the Nano and not on the Uno. They are analogue INPUT
 // ONLY: digitalRead, digitalWrite and pinMode do nothing on them. Reading
@@ -92,12 +92,12 @@ const CONTENT = [
     heading('h1', [text('Arduino Nano: Setup and First Sketch')], 'center'),
     paragraph([
       text(
-        'The Nano is an Uno that fits on a breadboard. Same ATmega328P, same 5V logic, same code — but the pins are headers you can push straight into a board, which makes it the one to reach for once a project stops being jumper wires and starts being a circuit. It also has two analogue pins the Uno does not, and one settings trap that stops most first uploads.',
+        'The Nano is an Uno that fits on a breadboard. Same ATmega328P, same 5V logic, same code - but the pins are headers you can push straight into a board, which makes it the one to reach for once a project stops being jumper wires and starts being a circuit. It also has two analogue pins the Uno does not, and one settings trap that stops most first uploads.',
       ),
     ]),
     heading('h2', [text('What You Will Need')]),
     list('bullet', [
-      [bold('An Arduino Nano'), text(' — official, or one of the very common clones')],
+      [bold('An Arduino Nano'), text(' - official, or one of the very common clones')],
       [
         bold('The right USB cable: '),
         text('official Nanos and older clones use '),
@@ -113,7 +113,7 @@ const CONTENT = [
     paragraph([
       bold('On clones: '),
       text(
-        'the Nano is the most cloned Arduino there is, and the clones are fine. What differs is the USB chip — a CH340 instead of an FTDI — and the bootloader, which is what Step 3 is about.',
+        'the Nano is the most cloned Arduino there is, and the clones are fine. What differs is the USB chip - a CH340 instead of an FTDI - and the bootloader, which is what Step 3 is about.',
       ),
     ]),
   ]),
@@ -124,7 +124,7 @@ const CONTENT = [
       [
         text('Install '),
         bold('Arduino IDE 2.x'),
-        text(' from arduino.cc. Nano support is built in — no board package to add.'),
+        text(' from arduino.cc. Nano support is built in - no board package to add.'),
       ],
       [text('Plug the Nano in. The red power LED comes on immediately.')],
       [
@@ -163,24 +163,24 @@ const CONTENT = [
   ]),
 
   textBlock([
-    heading('h2', [text('Step 3: The Processor Setting — Read This One')]),
+    heading('h2', [text('Step 3: The Processor Setting - Read This One')]),
     paragraph([
       text('Open '),
       bold('Tools → Processor'),
       text('. There are two entries that look almost the same:'),
     ]),
     list('bullet', [
-      [code('ATmega328P'), text(' — official Nanos and recent clones')],
+      [code('ATmega328P'), text(' - official Nanos and recent clones')],
       [
         code('ATmega328P (Old Bootloader)'),
-        text(' — most cheap clones, and anything bought as a multi-pack'),
+        text(' - most cheap clones, and anything bought as a multi-pack'),
       ],
     ]),
     paragraph([
       bold('Pick the wrong one and the upload fails with '),
       code('avrdude: stk500_recv(): programmer is not responding'),
       text(
-        ' — the same message you get from a wrong port, which is why this costs people so much time. The board is fine, the port is fine; the IDE is simply talking at the wrong speed for the bootloader burned into that chip.',
+        ' - the same message you get from a wrong port, which is why this costs people so much time. The board is fine, the port is fine; the IDE is simply talking at the wrong speed for the bootloader burned into that chip.',
       ),
     ]),
     paragraph([
@@ -208,7 +208,7 @@ const CONTENT = [
   textBlock([
     paragraph([
       text(
-        'Everything from here is identical to the Uno — same functions, same pin numbers, same libraries. If you have not written an Arduino sketch before, the ',
+        'Everything from here is identical to the Uno - same functions, same pin numbers, same libraries. If you have not written an Arduino sketch before, the ',
       ),
       bold('Arduino Uno tutorial'),
       text(' walks through '),
@@ -231,14 +231,14 @@ const CONTENT = [
       ),
     ]),
     list('bullet', [
-      [code('analogRead(A6)'), text(' — works')],
+      [code('analogRead(A6)'), text(' - works')],
       [
         code('digitalRead(A6)'),
         text(', '),
         code('digitalWrite(A6)'),
         text(', '),
         code('pinMode(A6, ...)'),
-        text(' — silently do nothing'),
+        text(' - silently do nothing'),
       ],
     ]),
     paragraph([
@@ -275,13 +275,13 @@ const CONTENT = [
       [
         code('VIN'),
         text(
-          ' — 7V to 12V from a battery or adapter, through the on-board regulator. Use this one.',
+          ' - 7V to 12V from a battery or adapter, through the on-board regulator. Use this one.',
         ),
       ],
       [
         code('5V'),
         text(
-          ' — bypasses the regulator entirely. Only for a supply that is already a clean regulated 5V; anything higher destroys the chip instantly.',
+          ' - bypasses the regulator entirely. Only for a supply that is already a clean regulated 5V; anything higher destroys the chip instantly.',
         ),
       ],
     ]),
@@ -308,7 +308,7 @@ const CONTENT = [
       [
         bold('No port at all: '),
         text(
-          'charge-only cable, or the missing CH340 driver. Try another cable first — it is the cheaper test.',
+          'charge-only cable, or the missing CH340 driver. Try another cable first - it is the cheaper test.',
         ),
       ],
       [
@@ -336,7 +336,7 @@ const CONTENT = [
     list('bullet', [
       [
         text(
-          'Read the Arduino Uno tutorial for buttons, PWM and the serial monitor in more depth — all of it runs unchanged on the Nano.',
+          'Read the Arduino Uno tutorial for buttons, PWM and the serial monitor in more depth - all of it runs unchanged on the Nano.',
         ),
       ],
       [
@@ -372,7 +372,7 @@ async function main() {
       title: 'Arduino Nano: Setup and First Sketch',
       slug: SLUG,
       description:
-        'Set up an Arduino Nano — CH340 driver, the Old Bootloader trap that breaks most first uploads, and a light sensor on the analogue-only A6 pin.',
+        'Set up an Arduino Nano - CH340 driver, the Old Bootloader trap that breaks most first uploads, and a light sensor on the analogue-only A6 pin.',
       // No Nano photo in the library yet; placeholder until one is added.
       thumbnail: placeholderId,
       difficulty: 'beginner',

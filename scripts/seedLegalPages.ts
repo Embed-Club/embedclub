@@ -4,14 +4,14 @@
  *   pnpm tsx scripts/seedLegalPages.ts
  *
  * Writes the Legal Pages global. Re-running overwrites it, so once an officer
- * has edited the wording in the admin, do not run this again — edit there.
+ * has edited the wording in the admin, do not run this again - edit there.
  *
  * The text below describes what the site actually does today. If any of it stops
  * being true, the fix is to change the site or the wording, not to leave both:
  *
  *   - Members are added by officers, never self-registered (members collection)
  *   - Form answers, names and emails are stored in Postgres (formSubmissions)
- *   - Respondent uploads — including payment screenshots — go to Google Drive
+ *   - Respondent uploads - including payment screenshots - go to Google Drive
  *     (lib/googleDrive, the `imageUpload` field type)
  *   - Responses are mirrored to a Google Sheet (sheetSyncedAt)
  *   - The submitter's IP is used for rate limiting only (forms/actions.ts)
@@ -44,19 +44,19 @@ const PRIVACY = richText([
   list('bullet', [
     [
       bold('Your name and email address'),
-      text(' — used to contact you, and printed on your certificate.'),
+      text(' - used to contact you, and printed on your certificate.'),
     ],
     [
       bold('Your USN'),
       text(
-        ' — your University Seat Number. It is how the college identifies you, and it is what the participation report is compiled against, so we do not need to ask you for your course, semester or branch separately. It is never published on this site, and it goes no further than the club and the college.',
+        ' - your University Seat Number. It is how the college identifies you, and it is what the participation report is compiled against, so we do not need to ask you for your course, semester or branch separately. It is never published on this site, and it goes no further than the club and the college.',
       ),
     ],
-    [bold('Your phone number'), text(' — used to reach you about the event you registered for.')],
+    [bold('Your phone number'), text(' - used to reach you about the event you registered for.')],
     [
       bold('Arrangements, for longer events'),
       text(
-        ' — a hackathon may ask whether you need accommodation, and what you eat. Meal preferences are used to order the right food and nothing else; we do not ask why, and we do not record a reason.',
+        ' - a hackathon may ask whether you need accommodation, and what you eat. Meal preferences are used to order the right food and nothing else; we do not ask why, and we do not record a reason.',
       ),
     ],
     [
@@ -68,7 +68,7 @@ const PRIVACY = richText([
   ]),
   paragraph([
     text(
-      'A particular event may ask one or two things beyond these where it genuinely needs them — the size of a t-shirt, or which track you want to attend. No form asks for more than the event requires.',
+      'A particular event may ask one or two things beyond these where it genuinely needs them - the size of a t-shirt, or which track you want to attend. No form asks for more than the event requires.',
     ),
   ]),
 
@@ -97,26 +97,26 @@ const PRIVACY = richText([
 
   heading('h2', [text('Why We Collect It')]),
   list('bullet', [
-    [bold('To run the event'), text(' — registering you, and knowing who is coming.')],
+    [bold('To run the event'), text(' - registering you, and knowing who is coming.')],
     [
       bold('To contact you about it'),
       text(
-        ' — reminders, venue or timing changes, and other messages about the event you signed up for.',
+        ' - reminders, venue or timing changes, and other messages about the event you signed up for.',
       ),
     ],
     [
       bold('To issue your certificate'),
-      text(' — sent to the email address you gave, either on registering or after the event.'),
+      text(' - sent to the email address you gave, either on registering or after the event.'),
     ],
     [
       bold('To report to the college'),
       text(
-        ' — the club submits participation reports to P.A. College of Engineering, listing the students who took part.',
+        ' - the club submits participation reports to P.A. College of Engineering, listing the students who took part.',
       ),
     ],
     [
       bold('To confirm payment'),
-      text(' — checking the payment screenshot against the registration, for paid events.'),
+      text(' - checking the payment screenshot against the registration, for paid events.'),
     ],
   ]),
   paragraph([
@@ -128,19 +128,19 @@ const PRIVACY = richText([
   heading('h2', [text('Where It Is Stored')]),
   paragraph([text('The site is built on services run by other companies:')]),
   list('bullet', [
-    [bold('Vercel'), text(' — hosts the website.')],
-    [bold('Neon'), text(' — hosts the database holding your responses.')],
+    [bold('Vercel'), text(' - hosts the website.')],
+    [bold('Neon'), text(' - hosts the database holding your responses.')],
     [
       bold('Google Drive'),
       text(
-        ' — holds the files you attach, including payment screenshots, in a folder owned by the club account.',
+        ' - holds the files you attach, including payment screenshots, in a folder owned by the club account.',
       ),
     ],
     [
       bold('Google Sheets'),
-      text(' — a mirror of the responses, so officers can work through them.'),
+      text(' - a mirror of the responses, so officers can work through them.'),
     ],
-    [bold('Our email provider'), text(' — used to send certificates.')],
+    [bold('Our email provider'), text(' - used to send certificates.')],
   ]),
   paragraph([
     text(
@@ -171,7 +171,7 @@ const PRIVACY = richText([
     ],
     [
       text(
-        'Access stays with whoever holds the club account — the current officers — and passes to the officers who follow them.',
+        'Access stays with whoever holds the club account - the current officers - and passes to the officers who follow them.',
       ),
     ],
   ]),
@@ -179,7 +179,7 @@ const PRIVACY = richText([
     text('You can still ask us to remove your details, and we will. See '),
     bold('Your Choices'),
     text(
-      ' below. Where your participation has already gone into a report submitted to the college, that report is the college’s and we cannot take it back — but we will remove your contact details and any files you attached from our own records.',
+      ' below. Where your participation has already gone into a report submitted to the college, that report is the college’s and we cannot take it back - but we will remove your contact details and any files you attached from our own records.',
     ),
   ]),
   paragraph([
@@ -260,7 +260,7 @@ const TERMS = richText([
   list('bullet', [
     [
       text(
-        'Registering does not by itself guarantee you a place — some events are capped, and places go in the order they are taken.',
+        'Registering does not by itself guarantee you a place - some events are capped, and places go in the order they are taken.',
       ),
     ],
     [
@@ -290,12 +290,12 @@ const TERMS = richText([
   list('bullet', [
     [
       bold('Refunded'),
-      text(' — the event is cancelled by the club, or does not take place as announced.'),
+      text(' - the event is cancelled by the club, or does not take place as announced.'),
     ],
     [
       bold('Not refunded'),
       text(
-        ' — you register and then do not attend, withdraw, arrive too late to take part, or are unable to attend for any reason of your own.',
+        ' - you register and then do not attend, withdraw, arrive too late to take part, or are unable to attend for any reason of your own.',
       ),
     ],
   ]),
@@ -308,7 +308,7 @@ const TERMS = richText([
   heading('h2', [text('Certificates')]),
   paragraph([
     text(
-      'Certificates are issued for participation, and are emailed to the address given on the form — either on registering or after the event has ended, depending on the event. They record that you took part. They are not a qualification, and are not awarded by the college. If yours has not arrived, or a detail on it is wrong, write to us and we will reissue it — we keep participation records, so we can do that years later. See the ',
+      'Certificates are issued for participation, and are emailed to the address given on the form - either on registering or after the event has ended, depending on the event. They record that you took part. They are not a qualification, and are not awarded by the college. If yours has not arrived, or a detail on it is wrong, write to us and we will reissue it - we keep participation records, so we can do that years later. See the ',
     ),
     link([text('Privacy Policy')], '/privacy'),
     text('.'),
@@ -351,7 +351,7 @@ const TERMS = richText([
 
   heading('h2', [text('Contact')]),
   paragraph([
-    text('Embed Club, P.A. College of Engineering, Mangalore — '),
+    text('Embed Club, P.A. College of Engineering, Mangalore - '),
     bold(CONTACT),
     text('.'),
   ]),
@@ -375,7 +375,7 @@ async function run() {
     },
   })
 
-  console.log('Seeded the Legal Pages global — /privacy and /terms are live.')
+  console.log('Seeded the Legal Pages global - /privacy and /terms are live.')
   flushExit(0)
 }
 

@@ -4,7 +4,7 @@ import 'server-only'
  * Client for the Apps Script certificate sender (`scripts/appsScript/
  * certificateSender.gs`).
  *
- * The script does the actual work — building the PDF from a Google Slides
+ * The script does the actual work - building the PDF from a Google Slides
  * template and mailing it. It sends as the account that deployed it, so the
  * club's address is used with no SMTP host and no app password, which is what
  * makes this workable on a Workspace tenant we don't administer.
@@ -18,7 +18,7 @@ import 'server-only'
 export interface CertificateRequest {
   /** Printed wherever {{name}} appears on the certificate itself. */
   certificateName: string
-  /** Used in the email greeting/body — independently case-formed, per form. */
+  /** Used in the email greeting/body - independently case-formed, per form. */
   emailName: string
   email: string
   formTitle: string
@@ -30,7 +30,7 @@ export interface CertificateRequest {
   emailBody?: string
   /**
    * Every `{{marker}}` the certificate should print, already resolved for this
-   * recipient — `{ USN: '4PA23CS102', Place: '1st' }`. The script substitutes
+   * recipient - `{ USN: '4PA23CS102', Place: '1st' }`. The script substitutes
    * them blindly, so a form can add a field to its template without any change
    * here or in the script.
    */
@@ -67,7 +67,7 @@ export async function sendCertificate(request: CertificateRequest): Promise<void
   }
 
   // A misconfigured script still answers 200 with an error payload, so the
-  // body is the real success signal — not the status code.
+  // body is the real success signal - not the status code.
   const text = await res.text()
   let payload: { ok?: boolean; error?: string }
   try {

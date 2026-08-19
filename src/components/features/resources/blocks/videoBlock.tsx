@@ -8,7 +8,7 @@ interface VideoBlockProps {
  * Pull the 11-character video id out of any YouTube URL an editor might paste.
  *
  * Covers watch links, share links (youtu.be), already-embedded urls, Shorts,
- * and live streams — asking editors to hand-extract an id is a support burden,
+ * and live streams - asking editors to hand-extract an id is a support burden,
  * and the wrong form silently rendering nothing is worse.
  */
 export function youTubeId(rawUrl: string): string | null {
@@ -18,7 +18,7 @@ export function youTubeId(rawUrl: string): string | null {
   try {
     url = new URL(rawUrl.trim())
   } catch {
-    // Not a URL — accept a bare id, which is what a careful editor might paste.
+    // Not a URL - accept a bare id, which is what a careful editor might paste.
     return /^[\w-]{11}$/.test(rawUrl.trim()) ? rawUrl.trim() : null
   }
 
@@ -48,7 +48,7 @@ export function VideoBlock({ block }: VideoBlockProps) {
     return (
       <div className="my-12 rounded-xl border border-border bg-muted/40 p-6 text-center">
         <p className="text-sm italic text-muted-foreground">
-          That doesn&apos;t look like a YouTube link — check the URL in the CMS.
+          That doesn&apos;t look like a YouTube link - check the URL in the CMS.
         </p>
       </div>
     )

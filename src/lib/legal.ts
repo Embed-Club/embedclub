@@ -9,7 +9,7 @@ import { getPayload } from 'payload'
  * Unlike the content globals, a failure here returns null rather than throwing.
  * The form pages read this only for the consent wording, and taking a
  * registration form down because the policy row could not be read would cost
- * the club sign-ups to fix nothing — the wizard falls back to its built-in
+ * the club sign-ups to fix nothing - the wizard falls back to its built-in
  * sentence, which says the same thing. `/privacy` and `/terms` render their own
  * empty state when it comes back null.
  */

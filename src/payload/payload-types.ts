@@ -130,11 +130,13 @@ export interface Config {
   globals: {
     'about-page': AboutPage;
     'legal-pages': LegalPage;
+    'support-pages': SupportPage;
     'home-featured-members': HomeFeaturedMember;
   };
   globalsSelect: {
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
     'legal-pages': LegalPagesSelect<false> | LegalPagesSelect<true>;
+    'support-pages': SupportPagesSelect<false> | SupportPagesSelect<true>;
     'home-featured-members': HomeFeaturedMembersSelect<false> | HomeFeaturedMembersSelect<true>;
   };
   locale: null;
@@ -298,7 +300,7 @@ export interface Form {
    */
   sectionOf?: (number | null) | Form;
   /**
-   * What this section is called — e.g. A Section, or Day 1.
+   * What this section is called - e.g. A Section, or Day 1.
    */
   sectionLabel?: string | null;
   /**
@@ -314,7 +316,7 @@ export interface Form {
    */
   sectionOrder?: number | null;
   /**
-   * Optional — the form closes automatically after this time
+   * Optional - the form closes automatically after this time
    */
   deadline?: string | null;
   /**
@@ -326,7 +328,7 @@ export interface Form {
    */
   headerImage?: (number | null) | FormMedia;
   /**
-   * Each step is one screen the person fills in before moving to the next. Group related questions together — personal details on one step, event choices on another — and add a step for each group. One long step works too; several short ones are just easier to fill in on a phone.
+   * Each step is one screen the person fills in before moving to the next. Group related questions together - personal details on one step, event choices on another - and add a step for each group. One long step works too; several short ones are just easier to fill in on a phone.
    */
   steps?:
     | {
@@ -340,7 +342,7 @@ export interface Form {
          */
         stepImage?: (number | null) | FormMedia;
         /**
-         * The questions on this step. A step with no questions is allowed if it has an image — use one to show a poster or a QR code.
+         * The questions on this step. A step with no questions is allowed if it has an image - use one to show a poster or a QR code.
          */
         fields?:
           | {
@@ -459,7 +461,7 @@ export interface Form {
   certificatePlaceholders?:
     | {
         /**
-         * Without the braces — for {{USN}} write USN.
+         * Without the braces - for {{USN}} write USN.
          */
         key: string;
         source: 'question' | 'fixed' | 'perPerson';
@@ -965,7 +967,7 @@ export interface Simulator {
    */
   videoUrl?: string | null;
   /**
-   * Optional — setup steps, login notes, download instructions. Shown under the video in the modal.
+   * Optional - setup steps, login notes, download instructions. Shown under the video in the modal.
    */
   content?:
     | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
@@ -1309,7 +1311,7 @@ export interface FormSubmission {
   certificateValues?:
     | {
         /**
-         * Without the braces — for {{Place}} write Place.
+         * Without the braces - for {{Place}} write Place.
          */
         key: string;
         value: string;
@@ -2690,13 +2692,108 @@ export interface LegalPage {
       )[]
     | null;
   /**
-   * The sentence beside the consent tick-box on every form. Say what the details are used for — this is the notice, and the policy is the detail behind it. A link to the Privacy Policy is added to the end, so finish with something that leads into it ("… See the").
+   * The sentence beside the consent tick-box on every form. Say what the details are used for - this is the notice, and the policy is the detail behind it. A link to the Privacy Policy is added to the end, so finish with something that leads into it ("… See the").
    */
   consentNotice?: string | null;
   /**
    * Shown at the top of both pages.
    */
   lastUpdated?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The /contact page. /support redirects here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "support-pages".
+ */
+export interface SupportPage {
+  id: number;
+  contactTitle: string;
+  /**
+   * Shown as a mailto card under the /contact intro.
+   */
+  contactEmail?: string | null;
+  /**
+   * Shown as a tel card under the /contact intro. Leave blank to omit.
+   */
+  contactPhone?: string | null;
+  /**
+   * Intro text at the top of /contact, shown above the email/phone cards.
+   */
+  contact?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Collapsible answers under the Support heading on /contact, below the email/phone cards. Drag to reorder.
+   */
+  supportFaq?:
+    | {
+        question: string;
+        answer: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Sections shown below the intro on /contact. Drag to reorder.
+   */
+  contactSections?:
+    | (
+        | {
+            heading: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'legalHeadingBlock';
+          }
+        | {
+            text: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'legalTextBlock';
+          }
+      )[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2813,6 +2910,44 @@ export interface LegalPagesSelect<T extends boolean = true> {
       };
   consentNotice?: T;
   lastUpdated?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "support-pages_select".
+ */
+export interface SupportPagesSelect<T extends boolean = true> {
+  contactTitle?: T;
+  contactEmail?: T;
+  contactPhone?: T;
+  contact?: T;
+  supportFaq?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  contactSections?:
+    | T
+    | {
+        legalHeadingBlock?:
+          | T
+          | {
+              heading?: T;
+              id?: T;
+              blockName?: T;
+            };
+        legalTextBlock?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

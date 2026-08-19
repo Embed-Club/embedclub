@@ -30,7 +30,7 @@ function countRole(steps: StepRow[] | null | undefined, role: string): number {
   return n
 }
 
-/** Steps that would render as a blank screen — no questions and no image. */
+/** Steps that would render as a blank screen - no questions and no image. */
 function emptySteps(steps: StepRow[] | null | undefined): string[] {
   const empty: string[] = []
   for (const [i, step] of (steps ?? []).entries()) {
@@ -57,7 +57,7 @@ function imageRowsWithoutPicture(steps: StepRow[] | null | undefined): string[] 
 /**
  * Native form builder. Officers author the form here and it is rendered as a
  * multi-step wizard on the site; answers are stored in `form-submissions`,
- * which is the club's record — there is no Google Form behind it.
+ * which is the club's record - there is no Google Form behind it.
  *
  * Until 2026-07-28 each field carried a hand-copied `entry.<id>` from a Google
  * Form and submissions were forwarded there. That was dropped: it was the most
@@ -94,7 +94,7 @@ export const Forms: CollectionConfig = {
         // Deliberately not readOnly. It was, and combined with `required` that
         // made a new form unsaveable: the officer cannot type into a read-only
         // box, and the admin's own validation rejects the empty value before
-        // the request is ever sent — so the hook that fills it never runs.
+        // the request is ever sent - so the hook that fills it never runs.
         // Editable matches the events collection, and also gives a way out when
         // two forms would generate the same slug.
         description:
@@ -140,7 +140,7 @@ export const Forms: CollectionConfig = {
       //
       // So the questions live here once, on the form itself, and each section
       // reuses them. Sections exist to keep their responses apart, not to hold
-      // a second copy of the same form — a copy would drift the moment somebody
+      // a second copy of the same form - a copy would drift the moment somebody
       // edited one of them, and answers to "the same" question would end up
       // under different field ids, which is what makes combining them later
       // impossible.
@@ -177,7 +177,7 @@ export const Forms: CollectionConfig = {
       admin: {
         position: 'sidebar',
         condition: (data) => Boolean(data?.sectionOf),
-        description: 'What this section is called — e.g. A Section, or Day 1.',
+        description: 'What this section is called - e.g. A Section, or Day 1.',
       },
     },
     {
@@ -219,7 +219,7 @@ export const Forms: CollectionConfig = {
       admin: {
         position: 'sidebar',
         date: { pickerAppearance: 'dayAndTime' },
-        description: 'Optional — the form closes automatically after this time',
+        description: 'Optional - the form closes automatically after this time',
       },
     },
     {
@@ -241,13 +241,13 @@ export const Forms: CollectionConfig = {
       name: 'steps',
       type: 'array',
       // Not `required` at the field level, because a section legitimately has
-      // none — it asks the questions its parent form defines. The
+      // none - it asks the questions its parent form defines. The
       // beforeValidate hook enforces it for every other form, which is the same
       // guarantee with the one exception carved out.
       admin: {
         condition: (data) => !data?.sectionOf,
         description:
-          'Each step is one screen the person fills in before moving to the next. Group related questions together — personal details on one step, event choices on another — and add a step for each group. One long step works too; several short ones are just easier to fill in on a phone.',
+          'Each step is one screen the person fills in before moving to the next. Group related questions together - personal details on one step, event choices on another - and add a step for each group. One long step works too; several short ones are just easier to fill in on a phone.',
       },
       fields: [
         {
@@ -274,8 +274,8 @@ export const Forms: CollectionConfig = {
           },
         },
         {
-          // Not required: a step may carry nothing but its image — a poster, a
-          // payment QR, a WhatsApp group code — and asking for a question to go
+          // Not required: a step may carry nothing but its image - a poster, a
+          // payment QR, a WhatsApp group code - and asking for a question to go
           // with it would mean inventing one. The collection's beforeValidate
           // still rejects a step that has neither questions nor an image, which
           // would render as a blank screen.
@@ -283,7 +283,7 @@ export const Forms: CollectionConfig = {
           type: 'array',
           admin: {
             description:
-              'The questions on this step. A step with no questions is allowed if it has an image — use one to show a poster or a QR code.',
+              'The questions on this step. A step with no questions is allowed if it has an image - use one to show a poster or a QR code.',
           },
           fields: [
             {
@@ -310,7 +310,7 @@ export const Forms: CollectionConfig = {
                     { label: 'Checkboxes (many answers)', value: 'checkbox' },
                     { label: 'Date', value: 'date' },
                     { label: 'Image Upload (respondent attaches a photo)', value: 'imageUpload' },
-                    { label: 'Image (no answer — just shows a picture)', value: 'image' },
+                    { label: 'Image (no answer - just shows a picture)', value: 'image' },
                   ],
                 },
               ],
@@ -321,9 +321,9 @@ export const Forms: CollectionConfig = {
               defaultValue: 'none',
               options: [
                 { label: 'Just an answer', value: 'none' },
-                { label: 'Name — printed on certificates', value: 'name' },
-                { label: 'Email — where certificates are sent', value: 'email' },
-                { label: `USN — sorted in the responses sheet (${USN_FORMAT_HINT})`, value: 'usn' },
+                { label: 'Name - printed on certificates', value: 'name' },
+                { label: 'Email - where certificates are sent', value: 'email' },
+                { label: `USN - sorted in the responses sheet (${USN_FORMAT_HINT})`, value: 'usn' },
               ],
               admin: {
                 condition: (_data, siblingData) => !ROLELESS_TYPES.includes(siblingData?.fieldType),
@@ -372,7 +372,7 @@ export const Forms: CollectionConfig = {
               },
             },
             {
-              // Decoration attached to a question — the diagram the question is
+              // Decoration attached to a question - the diagram the question is
               // about, sitting between the label and the input.
               name: 'image',
               type: 'upload',
@@ -383,7 +383,7 @@ export const Forms: CollectionConfig = {
               },
             },
             {
-              // The standalone "Image" item. Same upload, but it *is* the row —
+              // The standalone "Image" item. Same upload, but it *is* the row -
               // there is no input beside it. Not `required`, because that would
               // apply to every other field type too (admin conditions hide a
               // field, they do not relax its validation); the collection's
@@ -579,7 +579,7 @@ export const Forms: CollectionConfig = {
       type: 'text',
       admin: {
         condition: (data) => data.showCertificate,
-        placeholder: 'Your certificate — {{event}}',
+        placeholder: 'Your certificate - {{event}}',
         description:
           'Optional. {{event}} is replaced with this form’s title. Leave empty for the default subject.',
       },
@@ -615,7 +615,7 @@ export const Forms: CollectionConfig = {
     },
     {
       // Reads the Slides deck and reports which {{markers}} it contains, and
-      // which of them nothing fills in yet. Purely advisory — it writes no
+      // which of them nothing fills in yet. Purely advisory - it writes no
       // data, it just saves the officer from guessing.
       name: 'certificatePlaceholderScan',
       type: 'ui',
@@ -649,7 +649,7 @@ export const Forms: CollectionConfig = {
               required: true,
               admin: {
                 width: '40%',
-                description: 'Without the braces — for {{USN}} write USN.',
+                description: 'Without the braces - for {{USN}} write USN.',
                 placeholder: 'USN',
               },
             },
@@ -718,7 +718,7 @@ export const Forms: CollectionConfig = {
 
         if (data?.sectionOf) {
           if (!data?.sectionLabel?.trim()) {
-            throw new APIError('A section needs a label — e.g. A Section, or Day 1.', 400)
+            throw new APIError('A section needs a label - e.g. A Section, or Day 1.', 400)
           }
           // Questions on a section are dropped rather than rejected: the parent
           // is the single definition of them, and a second copy here would
@@ -730,8 +730,8 @@ export const Forms: CollectionConfig = {
           data.sectionSlug = generateSlug(data.sectionLabel)
         }
 
-        // A step with no questions is fine when it exists to show something —
-        // a poster, a QR code — but one with neither is a blank screen the
+        // A step with no questions is fine when it exists to show something -
+        // a poster, a QR code - but one with neither is a blank screen the
         // person has to click past.
         const empty = emptySteps(data?.steps)
         if (empty.length > 0) {

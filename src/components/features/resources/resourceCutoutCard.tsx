@@ -33,15 +33,15 @@ const BADGE_LABELS: Record<string, string> = {
 }
 
 /**
- * Badge that means "announced, not written yet". The card still renders — that
- * is the point of announcing it — but it does not link anywhere, because the
+ * Badge that means "announced, not written yet". The card still renders - that
+ * is the point of announcing it - but it does not link anywhere, because the
  * page behind it has nothing on it.
  */
 const COMING_SOON = 'comingSoon'
 
 interface ResourceCutoutCardProps {
   card: ResourceCardData
-  /** Route prefix — `/resources` or `/tutorials`. */
+  /** Route prefix - `/resources` or `/tutorials`. */
   basePath?: string
 }
 

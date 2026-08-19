@@ -1,4 +1,4 @@
-# AGENTS.md — rules for AI assistants (and humans) working on this repo
+# AGENTS.md - rules for AI assistants (and humans) working on this repo
 
 You are working on the Embed Club website. The club depends on this site
 looking and behaving consistently. These rules are **hard constraints**, not
@@ -24,9 +24,9 @@ them to update it first.
   background + brand title) → latest events → featured members (curated via the
   `home-featured-members` global) → gallery marquee → footer. (The old
   star-field landing was intentionally retired 2026-07 by the owner.)
-- Empty states use the shared `EmptyState` component — never write bespoke
+- Empty states use the shared `EmptyState` component - never write bespoke
   "nothing here" markup.
-- **Border radius — allowed.** The whole Tailwind scale is available, with
+- **Border radius - allowed.** The whole Tailwind scale is available, with
   `sm`/`md`/`lg` driven by the `--radius` token (`0.5rem`) in `globals.css`.
   There is no cap. This table is what the codebase currently reaches for, not
   a restriction:
@@ -40,7 +40,7 @@ them to update it first.
   | `rounded-full` | pill | avatars, icon buttons, tag chips |
 
   One mechanical caveat, not a rule: **cutout** cards are locked to 16px
-  because the notch geometry is cut to that radius — `CutoutCorner`'s path and
+  because the notch geometry is cut to that radius - `CutoutCorner`'s path and
   the `rounded-tr-[16px]` / `rounded-bl-[16px]` inset strips. Give a cutout
   card a different radius and a gap opens where the notch meets the corner. To
   change it, move `cutoutCard.tsx` and the inset-strip classes together.
@@ -51,7 +51,7 @@ them to update it first.
 
 ## 2. Naming & structure
 
-- **Every** file and folder is **camelCase** — `resourceCutoutCard.tsx`,
+- **Every** file and folder is **camelCase** - `resourceCutoutCard.tsx`,
   `formWizard.tsx`, `useMediaQuery.ts`, `codeTabs.tsx`, `radioGroup.tsx`.
   Exported React components stay PascalCase; the *file name* is camelCase.
 - Only two exceptions, both forced by tooling: `src/payload/payload-types.ts`
@@ -59,33 +59,39 @@ them to update it first.
   `route.ts`, `loading.tsx`, `not-found.tsx`) + route-segment folders.
 - **shadcn/registry caveat**: the `shadcn add` CLI generates kebab-case files
   into `src/components/ui/`. After adding a component, **rename it to camelCase**
-  and update the import — do not leave kebab files in the tree.
+  and update the import - do not leave kebab files in the tree.
 - Component homes:
-  - `ui/` — shadcn primitives only (button, input, dialog, select, …)
-  - `common/` — shared custom components (cutoutCard, borderGlow,
+  - `ui/` - shadcn primitives only (button, input, dialog, select, …)
+  - `common/` - shared custom components (cutoutCard, borderGlow,
     focusCards, emptyState, searchBar, …)
-  - `layout/` — app shell (frontendShell, sidebar menus, contentPanel)
-  - `theme/` — theme provider / toggles
-  - `admin/` — Payload admin field components
-  - `features/<domain>/` — page-specific (events, resources, simulators, forms, …)
-  - `animate-ui/` — the animate-ui registry tree
+  - `layout/` - app shell (frontendShell, sidebar menus, contentPanel)
+  - `theme/` - theme provider / toggles
+  - `admin/` - Payload admin field components
+  - `features/<domain>/` - page-specific (events, resources, simulators, forms, …)
+  - `animate-ui/` - the animate-ui registry tree
 - Docs live in `docs/` (SETUP, PRODUCT, DESIGN). Only README, AGENTS, CLAUDE
   stay at the repo root (they must be auto-discovered).
 
 ## 3. Data & CMS rules
 
-- Content lives in Payload, not in JSX. Adding hardcoded page copy is a bug —
+- Content lives in Payload, not in JSX. Adding hardcoded page copy is a bug -
   extend a collection or global instead.
+- **Never type an em dash (U+2014) anywhere - use a plain hyphen `-`.** Applies
+  to page copy, CMS content, form labels, seed scripts, comments, commit
+  messages, and docs. It is the clearest tell that text was machine-written,
+  and it is not on the keyboard anyone here types on. The same goes for the en
+  dash (U+2013). `scripts/replaceEmDashes.ts` sweeps the database if one gets
+  in.
 - Schema changes follow the migration workflow in docs/SETUP.md §4: edit collection
   → `generate:types` → `migrate:create` → review SQL → `migrate` → commit all
   together. **Never** rely on dev-mode schema push; never edit an existing
   migration.
-- `src/payload/payload-types.ts` is generated — regenerate it, never hand-edit.
+- `src/payload/payload-types.ts` is generated - regenerate it, never hand-edit.
 - Forms: the native form builder forwards to Google Forms via per-field
-  `entry.<id>`s. Do not remove the local `form-submissions` logging — it is
+  `entry.<id>`s. Do not remove the local `form-submissions` logging - it is
   the audit trail and future automation hook.
 
-## 4. Quality gates — non-negotiable
+## 4. Quality gates - non-negotiable
 
 - `pnpm verify` must pass before every commit (biome + typecheck + int tests).
 - `pnpm verify:full` must pass before merging to `main` (adds prod build + e2e).
@@ -93,7 +99,7 @@ them to update it first.
   to `main` without the branch being explicitly approved by a maintainer.
 - Never add `ignoreBuildErrors`, `ignoreDuringBuilds`, `as any`, `@ts-ignore`,
   or biome suppressions without a written reason in the comment.
-- **Never hardcode `.env` variable values into source** — not as a "default",
+- **Never hardcode `.env` variable values into source** - not as a "default",
   "fallback", or convenience, and not even for non-secret values (project URLs,
   bucket names, region, hosts). Read them from `process.env.*` only. If a var is
   missing in an environment, the fix is to set it there (e.g. Vercel project
@@ -108,7 +114,7 @@ them to update it first.
   codepoints (`U+E000` A, `U+E03C` M, `U+E04F` V, `U+E051` W) that selected ITC
   Avant Garde's stylistic alternates, which is why the source read "HOE",
   "CHIEEENTS", "TUTORILS". That was removed deliberately in favour of the
-  standard letterforms — do not reintroduce it, and write labels as ordinary
+  standard letterforms - do not reintroduce it, and write labels as ordinary
   words.
 - Page titles come from `components/common/pageTitle.tsx`. Don't hand-roll the
   `absolute left-5 top-5 …` heading on a new page; three variants had already
@@ -116,12 +122,12 @@ them to update it first.
 - The desktop sidebar (`layout/desktopMenu.tsx`) and the mobile menu
   (`layout/mobileMenu.tsx`) list the same destinations in the same order. Adding
   a page to one means adding it to the other.
-- `USE_S3_STORAGE` gates media storage, not NODE_ENV — local prod builds use
+- `USE_S3_STORAGE` gates media storage, not NODE_ENV - local prod builds use
   local disk on purpose.
-- Migrations create-then-drop tables in their DOWN sections — normal.
+- Migrations create-then-drop tables in their DOWN sections - normal.
 
 ## 6. When unsure
 
 Prefer the smallest change that fits the existing system. If a change would
-touch the design tokens, fonts, shell layout, or delete a signature element —
+touch the design tokens, fonts, shell layout, or delete a signature element -
 stop and ask a maintainer.

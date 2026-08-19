@@ -5,7 +5,7 @@
  *
  * Ports the club's four-part Raspberry Pi course into one page built from the
  * AccordionBlock, so each session is a collapsible part rather than one very long
- * scroll. A Resource, not a Tutorial — it assumes a Pi you can already SSH into,
+ * scroll. A Resource, not a Tutorial - it assumes a Pi you can already SSH into,
  * rather than teaching setup itself. Session 1 links out to the Raspberry Pi
  * 3/4/5 Setup tutorial for that instead of repeating its Imager and VNC steps.
  *
@@ -48,7 +48,7 @@ const IMAGES: Record<string, { file: string; alt: string }> = {
   auto: { file: 'RaspberryPiAuto.jpeg', alt: 'The completed automation build on the bench' },
 }
 
-const BLINK = `# blink.py — session 2.
+const BLINK = `# blink.py - session 2.
 # Wiring: pin 11 (GPIO17) -> 330 ohm resistor -> LED anode;
 #         LED cathode -> pin 9 (GND).
 import RPi.GPIO as GPIO
@@ -72,11 +72,11 @@ finally:
     # run warns "This channel is already in use".
     GPIO.cleanup()`
 
-const LDR = `# ldr.py — session 3. LED on in the dark, off in the light.
+const LDR = `# ldr.py - session 3. LED on in the dark, off in the light.
 #
 # Uses an LDR *module* (the small board with a potentiometer on it), which
 # outputs a clean digital HIGH/LOW. A bare LDR is analogue, and the Pi has no
-# ADC — that is why the module is worth the few rupees.
+# ADC - that is why the module is worth the few rupees.
 #
 # Wiring: module VCC -> 3.3V, GND -> GND, DO -> pin 13 (GPIO27).
 #         LED still on GPIO17.
@@ -102,7 +102,7 @@ except KeyboardInterrupt:
 finally:
     GPIO.cleanup()`
 
-const DJANGO_SETUP = `# Session 4 — set up the project. Run this on the Pi, over SSH.
+const DJANGO_SETUP = `# Session 4 - set up the project. Run this on the Pi, over SSH.
 sudo apt update
 sudo apt install -y python3-venv
 
@@ -115,7 +115,7 @@ pip install django RPi.GPIO
 django-admin startproject controller .
 python manage.py startapp hardware`
 
-const GPIO_HW = `# hardware/gpioHw.py — everything that touches a pin, in one place.
+const GPIO_HW = `# hardware/gpioHw.py - everything that touches a pin, in one place.
 #
 # A web app is many short-lived requests, and GPIO.setup() is not something to
 # run on each one. So the pins are configured once at import, and a background
@@ -239,13 +239,13 @@ setInterval(() => fetch('/api/state/').then(r => r.json()).then(paint), 500);
 </body>
 </html>`
 
-const DJANGO_RUN = `# Let other machines on the network reach it — the default only binds
+const DJANGO_RUN = `# Let other machines on the network reach it - the default only binds
 # localhost, which on a headless Pi means nothing can connect.
 python manage.py runserver 0.0.0.0:8000
 
 # Then open http://<your-pi-ip>:8000/ from any device on the same network.`
 
-const DJANGO_HOSTS = `# controller/settings.py — the dev server refuses unknown Host headers.
+const DJANGO_HOSTS = `# controller/settings.py - the dev server refuses unknown Host headers.
 # For a workshop on a trusted network this is enough:
 ALLOWED_HOSTS = ["*"]
 
@@ -260,7 +260,7 @@ function buildContent(id: (key: string) => number) {
       heading('h1', [text('Raspberry Pi Workshop: Four Sessions')], 'center'),
       paragraph([
         text(
-          'The club’s four-part Raspberry Pi course, in one page. Each session builds on the one above it — a configured Pi, then a single LED, then a sensor deciding when that LED comes on, then a web app doing the same thing from a browser. Open the session you need; they are collapsed so the page stays navigable.',
+          'The club’s four-part Raspberry Pi course, in one page. Each session builds on the one above it - a configured Pi, then a single LED, then a sensor deciding when that LED comes on, then a web app doing the same thing from a browser. Open the session you need; they are collapsed so the page stays navigable.',
         ),
       ]),
       paragraph([
@@ -272,7 +272,7 @@ function buildContent(id: (key: string) => number) {
     accordionBlock(
       [
         accordionItem(
-          'Session 1 — Setup & VNC',
+          'Session 1 - Setup & VNC',
           [
             textBlock([
               paragraph([
@@ -288,7 +288,7 @@ function buildContent(id: (key: string) => number) {
                 ),
                 bold('. '),
                 text(
-                  'Rather than repeat it here, work through that page and come back — the rest of these sessions assume a Pi you can ',
+                  'Rather than repeat it here, work through that page and come back - the rest of these sessions assume a Pi you can ',
                 ),
                 code('ssh'),
                 text(' into.'),
@@ -319,13 +319,13 @@ function buildContent(id: (key: string) => number) {
           ],
           {
             summary:
-              'Imager, headless SSH, and RealVNC — covered by the Raspberry Pi 3/4/5 tutorial',
+              'Imager, headless SSH, and RealVNC - covered by the Raspberry Pi 3/4/5 tutorial',
             defaultOpen: true,
           },
         ),
 
         accordionItem(
-          'Session 2 — Blink an LED',
+          'Session 2 - Blink an LED',
           [
             textBlock([
               paragraph([
@@ -343,7 +343,7 @@ function buildContent(id: (key: string) => number) {
                 ),
               ]),
             ]),
-            imageBlock(id('pins'), 'The 40-pin header — GPIO numbers against physical positions'),
+            imageBlock(id('pins'), 'The 40-pin header - GPIO numbers against physical positions'),
             textBlock([
               list('bullet', [
                 [code('Pin 11'), text(' (GPIO17) → 330Ω resistor → LED long leg (anode)')],
@@ -370,7 +370,7 @@ function buildContent(id: (key: string) => number) {
         ),
 
         accordionItem(
-          'Session 3 — LDR Sensor',
+          'Session 3 - LDR Sensor',
           [
             textBlock([
               paragraph([
@@ -381,7 +381,7 @@ function buildContent(id: (key: string) => number) {
               paragraph([
                 bold('Use the module, not a bare LDR. '),
                 text(
-                  'A bare LDR is a variable resistor — an analogue part — and unlike an Arduino the Pi has no analogue-to-digital converter at all. The small module has a comparator and a threshold pot on it, so it hands the Pi a clean HIGH or LOW, which is something a GPIO pin can read.',
+                  'A bare LDR is a variable resistor - an analogue part - and unlike an Arduino the Pi has no analogue-to-digital converter at all. The small module has a comparator and a threshold pot on it, so it hands the Pi a clean HIGH or LOW, which is something a GPIO pin can read.',
                 ),
               ]),
               list('bullet', [
@@ -396,7 +396,7 @@ function buildContent(id: (key: string) => number) {
               paragraph([
                 bold('Turn the potentiometer on the module '),
                 text(
-                  'until its second LED just flips as you cover the sensor with your hand. That is the threshold, and it is set in hardware — no code change needed. If your module reads the opposite way round, swap the two branches in the script.',
+                  'until its second LED just flips as you cover the sensor with your hand. That is the threshold, and it is set in hardware - no code change needed. If your module reads the opposite way round, swap the two branches in the script.',
                 ),
               ]),
             ]),
@@ -408,12 +408,12 @@ function buildContent(id: (key: string) => number) {
         ),
 
         accordionItem(
-          'Session 4 — Automation with Django',
+          'Session 4 - Automation with Django',
           [
             textBlock([
               paragraph([
                 text(
-                  'The capstone: a small Django app that puts sessions 2 and 3 behind a web page. Manual buttons for the LED, plus an automatic mode where the LDR drives it — visible from any device on the network.',
+                  'The capstone: a small Django app that puts sessions 2 and 3 behind a web page. Manual buttons for the LED, plus an automatic mode where the LDR drives it - visible from any device on the network.',
                 ),
               ]),
               heading('h3', [text('Set up the project')]),
@@ -433,7 +433,7 @@ function buildContent(id: (key: string) => number) {
               heading('h3', [text('The hardware layer')]),
               paragraph([
                 text(
-                  'Keep every GPIO call in one module. A web app handles many short requests, and configuring a pin on each one is both slow and wrong — so the pins are set up once at import, and a background thread owns automatic mode.',
+                  'Keep every GPIO call in one module. A web app handles many short requests, and configuring a pin on each one is both slow and wrong - so the pins are set up once at import, and a background thread owns automatic mode.',
                 ),
               ]),
             ]),
@@ -469,7 +469,7 @@ function buildContent(id: (key: string) => number) {
               paragraph([
                 bold('This is the development server. '),
                 text(
-                  'It is fine for a workshop on your own network and is not meant to be exposed to the internet — that needs gunicorn behind nginx, and a real ALLOWED_HOSTS.',
+                  'It is fine for a workshop on your own network and is not meant to be exposed to the internet - that needs gunicorn behind nginx, and a real ALLOWED_HOSTS.',
                 ),
               ]),
               heading('h3', [text('If it does not work')]),
@@ -478,7 +478,7 @@ function buildContent(id: (key: string) => number) {
                   bold('RuntimeError: No access to /dev/mem: '),
                   text('run as a user in the '),
                   code('gpio'),
-                  text(' group — the default '),
+                  text(' group - the default '),
                   code('pi'),
                   text('-style account already is.'),
                 ],
@@ -491,7 +491,7 @@ function buildContent(id: (key: string) => number) {
                 [bold('DisallowedHost: '), text('set '), code('ALLOWED_HOSTS'), text(' as above.')],
                 [
                   bold('The LED ignores automatic mode: '),
-                  text('a manual button was pressed — '),
+                  text('a manual button was pressed - '),
                   code('setLed'),
                   text(' deliberately turns auto off. Press '),
                   italic('Auto on'),
@@ -543,7 +543,7 @@ async function main() {
       title: 'Raspberry Pi Workshop: Four Sessions',
       slug: SLUG,
       description:
-        'The club’s four-part Pi course as collapsible sessions — setup and VNC, blink an LED, an LDR sensor, and a Django app controlling both.',
+        'The club’s four-part Pi course as collapsible sessions - setup and VNC, blink an LED, an LDR sensor, and a Django app controlling both.',
       thumbnail: id('auto'),
       difficulty: 'intermediate',
       tags,

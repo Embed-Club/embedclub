@@ -22,9 +22,9 @@ export interface ResourceCardData {
 
 interface ResourcesPageContentProps {
   resources?: ResourceCardData[]
-  /** Title of the shared empty state — the Tutorials page passes its own. */
+  /** Title of the shared empty state - the Tutorials page passes its own. */
   emptyTitle?: string
-  /** Route prefix each card links to — `/resources` or `/tutorials`. */
+  /** Route prefix each card links to - `/resources` or `/tutorials`. */
   basePath?: string
 }
 
@@ -135,7 +135,7 @@ export function ResourcesPageContent({
     debouncedQuery.trim().length > 0 || selectedTags.length > 0 || selectedCategory !== 'all'
 
   /**
-   * Purely a joke shown above the results — React escapes the query, so none of
+   * Purely a joke shown above the results - React escapes the query, so none of
    * these were ever dangerous to type.
    *
    * Matched narrowly, and only on markup that no one searches for by accident.
@@ -177,7 +177,7 @@ export function ResourcesPageContent({
 
       <XSSHoneypot isDetected={isXSSAttempt} />
 
-      {/* Results still render underneath the joke — hiding them meant a search
+      {/* Results still render underneath the joke - hiding them meant a search
           that happened to contain markup returned nothing at all. */}
       {filteredResources.length === 0 && hasSearched ? (
         <div className="flex flex-col items-center justify-center py-20 text-center gap-3">

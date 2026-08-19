@@ -105,7 +105,7 @@ export const Events: CollectionConfig = {
             {
               // Read-only view of the forms that point *here*. The link is set
               // on the form (Forms → Related Event), because an event exists
-              // long before its registration or feedback form does — pointing
+              // long before its registration or feedback form does - pointing
               // the other way meant coming back to edit the event afterwards.
               name: 'forms',
               type: 'join',

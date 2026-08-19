@@ -15,7 +15,7 @@ interface MarqueeProps extends ComponentPropsWithoutRef<'div'> {
 }
 
 /**
- * magicui Marquee — infinite CSS-driven scrolling track. Each Marquee is its
+ * magicui Marquee - infinite CSS-driven scrolling track. Each Marquee is its
  * own `group`, so `pauseOnHover` pauses only the row you're hovering; sibling
  * rows keep moving. Drive speed with `[--duration:40s]` and gap with `[--gap]`.
  */

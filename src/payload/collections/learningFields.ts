@@ -27,7 +27,7 @@ export function generateSlug(text: string): string {
     .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
 }
 
-/** Card descriptions are clamped to two lines in the UI — stop copy that overflows. */
+/** Card descriptions are clamped to two lines in the UI - stop copy that overflows. */
 export const CARD_DESCRIPTION_MAX_LENGTH = 200
 
 /**

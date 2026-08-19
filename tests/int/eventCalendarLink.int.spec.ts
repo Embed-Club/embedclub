@@ -5,8 +5,8 @@ import { describe, expect, it } from 'vitest'
  * The "Save the date" link on an event.
  *
  * Worth testing directly: nobody on the site can see this button until an
- * upcoming event exists in the CMS, and the failure mode — a reminder landing
- * on the wrong day — is invisible until it is sitting in someone's calendar on
+ * upcoming event exists in the CMS, and the failure mode - a reminder landing
+ * on the wrong day - is invisible until it is sitting in someone's calendar on
  * the wrong date.
  */
 

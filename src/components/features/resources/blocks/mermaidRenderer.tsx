@@ -63,7 +63,7 @@ export function MermaidRenderer({ definition }: MermaidRendererProps) {
     return () => {
       cancelled = true
     }
-    // `isLight` is a dependency so toggling the theme re-renders the SVG —
+    // `isLight` is a dependency so toggling the theme re-renders the SVG -
     // mermaid bakes colours into the markup at render time.
   }, [definition, diagramId, isLight])
 
@@ -71,7 +71,7 @@ export function MermaidRenderer({ definition }: MermaidRendererProps) {
     return (
       <div className="bg-muted/40 p-6 rounded-xl border border-border text-center">
         <p className="text-muted-foreground italic text-sm">
-          Unable to render diagram — check the Mermaid syntax in the CMS.
+          Unable to render diagram - check the Mermaid syntax in the CMS.
         </p>
       </div>
     )

@@ -4,8 +4,8 @@
  *   pnpm tsx scripts/seedGoogleHomeEsp32Resource.ts
  *
  * Ports the club's older Sinric Pro post, which was written for a NodeMCU, to
- * the ESP32 as requested. Every credential in the original listing — the Sinric
- * app key and secret, the device ids, and the Wi-Fi password — is replaced with
+ * the ESP32 as requested. Every credential in the original listing - the Sinric
+ * app key and secret, the device ids, and the Wi-Fi password - is replaced with
  * a placeholder here; see the note in the content.
  *
  * Matched on slug, so re-running updates in place. Live immediately.
@@ -33,7 +33,7 @@ import {
 
 const SLUG = 'esp32-home-automation-google-home-sinric-pro'
 
-const SKETCH = `// googleHome.ino — ESP32 + Sinric Pro, with physical switches that still work.
+const SKETCH = `// googleHome.ino - ESP32 + Sinric Pro, with physical switches that still work.
 #include <WiFi.h>
 #include <SinricPro.h>
 #include <SinricProSwitch.h>
@@ -43,7 +43,7 @@ const SKETCH = `// googleHome.ino — ESP32 + Sinric Pro, with physical switches
 #define WIFI_PASS   "YOUR_WIFI_PASSWORD"
 
 // From the Sinric Pro portal: Credentials, then each device's own page.
-// These are secrets. Anyone holding them can control your house — never
+// These are secrets. Anyone holding them can control your house - never
 // commit them, screenshot them, or paste them into a blog post.
 #define APP_KEY     "YOUR_APP_KEY"
 #define APP_SECRET  "YOUR_APP_SECRET"
@@ -59,7 +59,7 @@ typedef struct {
   unsigned long lastFlipChange;
 } DeviceConfig;
 
-// GPIO numbers, not D labels — the ESP32 has none. These four relay pins and
+// GPIO numbers, not D labels - the ESP32 has none. These four relay pins and
 // four switch pins are all safe outputs/inputs on a standard dev board.
 std::map<String, DeviceConfig> devices = {
   { "YOUR_DEVICE_ID_1", { 23, 13, true, 0 } },
@@ -138,7 +138,7 @@ void setup() {
 }
 
 void loop() {
-  SinricPro.handle();      // keeps the websocket alive — must run often
+  SinricPro.handle();      // keeps the websocket alive - must run often
   handleFlipSwitches();
 }`
 
@@ -155,7 +155,7 @@ async function main() {
       heading('h1', [text(CONTENT_HEADING)], 'center'),
       paragraph([
         text(
-          '"Hey Google, turn on the fan." This is the full path: an ESP32 driving relays, Sinric Pro as the bridge, and Google Home as the voice front-end. The part most guides skip is the one that makes it usable — the physical wall switches keep working, and the app stays in sync when someone uses them.',
+          '"Hey Google, turn on the fan." This is the full path: an ESP32 driving relays, Sinric Pro as the bridge, and Google Home as the voice front-end. The part most guides skip is the one that makes it usable - the physical wall switches keep working, and the app stays in sync when someone uses them.',
         ),
       ]),
       paragraph([
@@ -167,7 +167,7 @@ async function main() {
       heading('h2', [text('What You Will Need')]),
       list('bullet', [
         [bold('An ESP32 dev board')],
-        [bold('A relay module'), text(' — a 4-channel board is the usual choice')],
+        [bold('A relay module'), text(' - a 4-channel board is the usual choice')],
         [text('Toggle or rocker switches, one per channel, if you want manual control')],
         [text('A free account at '), bold('sinric.pro')],
         [text('The Google Home app, signed in to the same Google account')],
@@ -176,7 +176,7 @@ async function main() {
       paragraph([
         bold('Mains wiring is the dangerous part of this project. '),
         text(
-          'Relays switching 230V should be in an enclosure, wired by someone who knows what they are doing, and never worked on live. Everything below can be built and tested with the relay module’s LEDs alone — do that first, and add the load last.',
+          'Relays switching 230V should be in an enclosure, wired by someone who knows what they are doing, and never worked on live. Everything below can be built and tested with the relay module’s LEDs alone - do that first, and add the load last.',
         ),
       ]),
     ]),
@@ -189,7 +189,7 @@ async function main() {
         [
           text('Device type '),
           bold('Switch'),
-          text('. Name it what you want to say out loud — "Fan", "Study Light".'),
+          text('. Name it what you want to say out loud - "Fan", "Study Light".'),
         ],
         [
           text('Save, and copy the '),
@@ -209,7 +209,7 @@ async function main() {
       paragraph([
         bold('Those two strings are credentials, not configuration. '),
         text(
-          'They authenticate your hardware to the service, so anyone who has them can switch your devices. Keep them out of screenshots, out of shared code, and out of anything published — and if they do get out, rotate them from the same Credentials page.',
+          'They authenticate your hardware to the service, so anyone who has them can switch your devices. Keep them out of screenshots, out of shared code, and out of anything published - and if they do get out, rotate them from the same Credentials page.',
         ),
       ]),
     ]),
@@ -222,9 +222,9 @@ async function main() {
         text(':'),
       ]),
       list('bullet', [
-        [bold('SinricPro'), text(' — the official library')],
-        [bold('ArduinoJson'), text(' — a dependency; version 6 or later')],
-        [bold('WebSockets'), text(' by Markus Sattler — the other dependency')],
+        [bold('SinricPro'), text(' - the official library')],
+        [bold('ArduinoJson'), text(' - a dependency; version 6 or later')],
+        [bold('WebSockets'), text(' by Markus Sattler - the other dependency')],
       ]),
       paragraph([
         text(
@@ -254,7 +254,7 @@ async function main() {
         [
           bold('sendPowerStateEvent is what keeps things honest. '),
           text(
-            'Without it, flipping the wall switch changes the relay but not the cloud, so the app shows "off" while the light is on — and the next voice command does nothing, because Google thinks it is already in that state.',
+            'Without it, flipping the wall switch changes the relay but not the cloud, so the app shows "off" while the light is on - and the next voice command does nothing, because Google thinks it is already in that state.',
           ),
         ],
       ]),
@@ -328,7 +328,7 @@ async function main() {
       title: 'Home Automation with Google Home (ESP32)',
       slug: SLUG,
       description:
-        'Voice-control relays from an ESP32 using Sinric Pro and Google Home — with physical wall switches that keep working and stay in sync.',
+        'Voice-control relays from an ESP32 using Sinric Pro and Google Home - with physical wall switches that keep working and stay in sync.',
       thumbnail: placeholderId,
       difficulty: 'advanced',
       tags,

@@ -60,7 +60,7 @@ export const MemberCategories: CollectionConfig = {
     { name: 'slug', type: 'text', required: true, unique: true },
     { name: 'description', type: 'textarea' },
     {
-      // Stored values stay newestFirst/oldestFirst — only the labels read
+      // Stored values stay newestFirst/oldestFirst - only the labels read
       // Ascending/Descending, so changing the wording needs no migration.
       name: 'batchOrder',
       label: 'Batch Order',

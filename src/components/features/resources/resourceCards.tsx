@@ -6,13 +6,13 @@ import { motion, useReducedMotion } from 'motion/react'
 
 interface ResourceCardsProps {
   resources: ResourceCardData[]
-  /** Route prefix each card links to — `/resources` or `/tutorials`. */
+  /** Route prefix each card links to - `/resources` or `/tutorials`. */
   basePath?: string
 }
 
 /**
  * Reveal-on-scroll via `motion`'s `whileInView`, the same mechanism
- * `masonry.tsx` uses — not gsap + a hand-rolled IntersectionObserver, which
+ * `masonry.tsx` uses - not gsap + a hand-rolled IntersectionObserver, which
  * shipped a second full animation library just for this one effect and
  * (unlike this version) ignored `prefers-reduced-motion`.
  */

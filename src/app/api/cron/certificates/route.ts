@@ -2,7 +2,7 @@ import { dispatchDueCertificates } from '@/lib/certificateDispatch'
 import { syncPendingSubmissions } from '@/lib/googleSheets'
 import { type NextRequest, NextResponse } from 'next/server'
 
-// Sending is real work against SMTP and the DB — never prerender or cache it.
+// Sending is real work against SMTP and the DB - never prerender or cache it.
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
@@ -13,7 +13,7 @@ export const maxDuration = 60
  * Guarded by `CRON_SECRET`. Vercel Cron sends it as `Authorization: Bearer
  * <secret>`; the same secret in a `?secret=` query works for manual runs.
  * Without the env var set the route refuses outright rather than defaulting
- * open — this endpoint sends mail to real people.
+ * open - this endpoint sends mail to real people.
  */
 function authorised(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET

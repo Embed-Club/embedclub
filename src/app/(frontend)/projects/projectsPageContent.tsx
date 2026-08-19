@@ -6,7 +6,7 @@ export interface ProjectCardData {
   id: string
   title: string
   description: string
-  /** Null when there is no photo of the build — the tile is typeset instead. */
+  /** Null when there is no photo of the build - the tile is typeset instead. */
   image: string | null
   tags: string[]
   slug: string
@@ -34,7 +34,7 @@ export type TileSize = 1 | 2
  * How much room a project has earned, before the pairing gets a say.
  *
  * Size follows the content rather than the position in the list: a photo needs
- * room to read as a photo, and a long award — "KSCST Grant · ₹5,000" — needs
+ * room to read as a photo, and a long award - "KSCST Grant · ₹5,000" - needs
  * room to stay on one line at the size the type-led tile sets it. Cycling spans
  * by index gave big tiles to one-word awards and squeezed the long ones, which
  * is what made the old grid feel arbitrary.
@@ -71,8 +71,8 @@ function shuffle(projects: ProjectCardData[]): ProjectCardData[] {
  *
  * Both the order and the wide side are redrawn on every request, so the grid a
  * reader meets is never the one before it. The one thing left to the content is
- * a tile that would be cramped at a single column — a photo, or an award as long
- * as "KSCST Grant · ₹5,000" — which keeps the wide slot when it is paired
+ * a tile that would be cramped at a single column - a photo, or an award as long
+ * as "KSCST Grant · ₹5,000" - which keeps the wide slot when it is paired
  * against something plainer. A project left over at the end takes two columns on
  * its own rather than stretching across the track.
  */
@@ -112,7 +112,7 @@ interface ProjectsPageContentProps {
 /**
  * The projects showcase: the club's wins, dealt afresh on every page load.
  *
- * Officers only add projects — there is no order to curate and no size to pick,
+ * Officers only add projects - there is no order to curate and no size to pick,
  * because the grid works both out for itself. No search, filters or sorting
  * either: this is a short list of things the club is proud of, not a searchable
  * archive. Keeping it a server component also means the arrangement is settled

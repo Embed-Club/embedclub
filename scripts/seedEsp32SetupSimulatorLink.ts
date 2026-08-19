@@ -3,7 +3,7 @@
  *
  *   pnpm tsx scripts/seedEsp32SetupSimulatorLink.ts
  *
- * Unlike the other seed scripts, this tutorial predates them — its content was
+ * Unlike the other seed scripts, this tutorial predates them - its content was
  * authored by hand in the admin, not by a script, so there is no CONTENT
  * constant here to own and re-run. This script only patches the one thing it
  * needs to: it fetches the live document, splices a simulator card in after
@@ -47,7 +47,7 @@ async function main() {
   const content = (doc.content ?? []) as Block[]
 
   if (content.some((block) => block.blockType === 'simulatorLinkBlock')) {
-    console.log(`Simulator card already present on ${SLUG} — nothing to do.`)
+    console.log(`Simulator card already present on ${SLUG} - nothing to do.`)
     return
   }
 

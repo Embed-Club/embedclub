@@ -4,15 +4,15 @@ import config from '@/payload/payload.config'
 import { type NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 
-// Streams a real file to Google Drive on every call — never prerender or cache.
+// Streams a real file to Google Drive on every call - never prerender or cache.
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 /**
  * Where a respondent's photo goes when they attach it to a form.
  *
- * Open to the public by necessity — the person filling the form is not logged
- * in — so everything that limits the blast radius is here: the form has to
+ * Open to the public by necessity - the person filling the form is not logged
+ * in - so everything that limits the blast radius is here: the form has to
  * exist, be open, and actually contain an `imageUpload` question with this id;
  * the file has to be an image under the size cap; and one IP gets a handful of
  * uploads a minute.
@@ -26,7 +26,7 @@ const ALLOWED_PREFIX = 'image/'
 
 /**
  * Leading bytes of the raster formats we accept, checked against the file
- * itself rather than the `Content-Type` the browser attached — that header is
+ * itself rather than the `Content-Type` the browser attached - that header is
  * whatever the client says it is. An SVG labelled `image/png` passes a MIME
  * check and is a script-execution vector once served back, so the bytes decide.
  */
@@ -34,7 +34,7 @@ const MAGIC_NUMBERS: { mime: string; bytes: number[] }[] = [
   { mime: 'image/jpeg', bytes: [0xff, 0xd8, 0xff] },
   { mime: 'image/png', bytes: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] },
   { mime: 'image/gif', bytes: [0x47, 0x49, 0x46, 0x38] },
-  // RIFF....WEBP — the four bytes at offset 8 are checked separately below.
+  // RIFF....WEBP - the four bytes at offset 8 are checked separately below.
   { mime: 'image/webp', bytes: [0x52, 0x49, 0x46, 0x46] },
 ]
 
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       max: RATE_LIMIT_MAX,
     })
     if (overLimit) {
-      return NextResponse.json({ error: 'Too many uploads — wait a minute.' }, { status: 429 })
+      return NextResponse.json({ error: 'Too many uploads - wait a minute.' }, { status: 429 })
     }
 
     const form = await req.formData()
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     // being pulled into memory first.
     if (file.size > MAX_BYTES) {
       return NextResponse.json(
-        { error: `That image is too large — the limit is ${MAX_BYTES / (1024 * 1024)}MB.` },
+        { error: `That image is too large - the limit is ${MAX_BYTES / (1024 * 1024)}MB.` },
         { status: 413 },
       )
     }
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
       folderId,
       // Prefix so a folder of 300 files is still navigable by eye.
       fileName: `${slug}-${Date.now()}-${file.name}`,
-      // The sniffed type, not the client's — Drive should store what the bytes
+      // The sniffed type, not the client's - Drive should store what the bytes
       // actually are.
       mimeType: sniffedType,
       bytes,
@@ -162,6 +162,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ id: meta.id, name: meta.name, mimeType: meta.mimeType })
   } catch (error) {
     console.error('[Forms] Upload failed:', error)
-    return NextResponse.json({ error: 'Upload failed — please try again.' }, { status: 500 })
+    return NextResponse.json({ error: 'Upload failed - please try again.' }, { status: 500 })
   }
 }

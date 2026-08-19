@@ -7,7 +7,7 @@ import { SHEETS_SCOPE, accessToken, googleCredentialsPresent } from './googleAut
 import { driveViewUrl } from './googleDrive'
 
 /**
- * Optional mirror of form submissions into Google Sheets — one spreadsheet per
+ * Optional mirror of form submissions into Google Sheets - one spreadsheet per
  * form, so a sheet's columns can be that form's actual questions rather than an
  * opaque JSON blob.
  *
@@ -20,7 +20,7 @@ import { driveViewUrl } from './googleDrive'
  *   GOOGLE_SHEETS_ID               optional fallback sheet for forms with none
  *
  * Each form carries its own `sheetId`. Whichever spreadsheet is used must be
- * shared with the service account address as an Editor — that sharing *is* the
+ * shared with the service account address as an Editor - that sharing *is* the
  * authorisation model (see `googleAuth.ts`). No OAuth consent flow and no
  * refresh tokens, which is why this was chosen over creating real Google Forms
  * (a service account cannot usefully own one).
@@ -92,8 +92,8 @@ function columnLetter(index: number): string {
  *
  * This is what makes the sync idempotent against the sheet itself rather than
  * against `sheetSyncedAt` alone. The flag is written in a second call after the
- * row lands, so an append that succeeds while the flag write fails — or two
- * cron runs overlapping — would otherwise re-append the same submission.
+ * row lands, so an append that succeeds while the flag write fails - or two
+ * cron runs overlapping - would otherwise re-append the same submission.
  */
 async function readRowIndex(sheetId: string, headers: string[]): Promise<Map<string, number>> {
   const idColumn = headers.indexOf('Submission ID')
@@ -130,7 +130,7 @@ async function writeRow(sheetId: string, row: number, values: string[]): Promise
 
 /**
  * The form's answerable questions, in order. `image` rows are decoration the
- * officer placed between questions — they hold no answer, so they get no
+ * officer placed between questions - they hold no answer, so they get no
  * column.
  */
 function questionLabels(form: Form): string[] {
@@ -171,7 +171,7 @@ function cellValue(answer: unknown, isUpload = false): string {
  *
  * Columns are matched by header text, never by position, and new questions are
  * appended to the right. So editing a form mid-run cannot change what an older
- * row's columns mean — the failure mode that makes spreadsheet mirrors
+ * row's columns mean - the failure mode that makes spreadsheet mirrors
  * untrustworthy.
  */
 async function reconcileHeaders(sheetId: string, wanted: string[]): Promise<string[]> {
@@ -205,7 +205,7 @@ function resolveSheetId(form: Form): string | null {
  *
  * Idempotent: a submission is only marked synced once its row is written, and
  * the submission id leads every row, so a re-run can never double-append.
- * Deliberately not done during submit — a slow or rate-limited Sheets call
+ * Deliberately not done during submit - a slow or rate-limited Sheets call
  * should never make a student wait, nor risk their response if Google is down.
  */
 export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResult> {

@@ -3,13 +3,13 @@ import type { Form, FormSubmission } from '@/payload/payload-types'
 /**
  * Certificates are designed in Google Slides, and whatever the officer wants
  * printed is written there as `{{something}}`. The site reads the deck, finds
- * those markers, and asks the officer where each one's value comes from — so
+ * those markers, and asks the officer where each one's value comes from - so
  * adding a new field to a certificate is a Slides edit plus a dropdown, never
  * a code change.
  *
  * Mapping is explicit rather than matching a placeholder against a question's
  * label. Label matching is what `certificateBatches` does, and it means
- * renaming a question silently breaks the certificate — every recipient gets a
+ * renaming a question silently breaks the certificate - every recipient gets a
  * literal `{{USN}}` printed on theirs, with nothing to warn the officer.
  */
 
@@ -17,7 +17,7 @@ import type { Form, FormSubmission } from '@/payload/payload-types'
 const PLACEHOLDER_RE = /\{\{\s*([^{}]+?)\s*\}\}/g
 
 /**
- * Every distinct placeholder in a template, in the order it first appears —
+ * Every distinct placeholder in a template, in the order it first appears -
  * which is roughly reading order, so the admin lists them the way the officer
  * sees them on the slide.
  */
@@ -73,8 +73,8 @@ export function resolvePlaceholders(
     }
 
     if (mapping.source === 'perPerson') {
-      // The default is what most people get — nobody placed in a competition
-      // except the two or three who did — so an unset value is normal, not a
+      // The default is what most people get - nobody placed in a competition
+      // except the two or three who did - so an unset value is normal, not a
       // gap. Empty stays empty, and the script blanks the marker.
       const value = perPerson.get(key.toLowerCase()) ?? mapping.defaultValue
       if (value) values[key] = value
@@ -93,7 +93,7 @@ export function resolvePlaceholders(
 }
 
 /**
- * Placeholders present in the deck that no mapping covers — what the admin
+ * Placeholders present in the deck that no mapping covers - what the admin
  * warns about, so a missing value is caught while editing the form rather than
  * discovered on fifty printed certificates.
  */

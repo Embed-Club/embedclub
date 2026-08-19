@@ -6,7 +6,7 @@
  * Why this exists: the site needs to write respondent uploads into a Drive
  * folder, and a service account cannot own files. The usual workaround is
  * domain-wide delegation, which lets the service account act as *any* account
- * in the Workspace — far more authority than a club website should hold, and
+ * in the Workspace - far more authority than a club website should hold, and
  * it needs a Workspace admin to grant. A refresh token is granted by the club
  * account to itself: it reaches that one Drive and nothing else, and anybody
  * with the account can do it unaided.
@@ -105,13 +105,13 @@ async function main() {
         return
       }
       if (url.searchParams.get('state') !== state) {
-        res.end('<p>State mismatch — ignoring this response. You can close this tab.</p>')
+        res.end('<p>State mismatch - ignoring this response. You can close this tab.</p>')
         server.close()
         reject(new Error('State mismatch'))
         return
       }
 
-      res.end('<p>Done. Return to the terminal — you can close this tab.</p>')
+      res.end('<p>Done. Return to the terminal - you can close this tab.</p>')
       server.close()
       resolve(returnedCode)
     })
@@ -160,7 +160,7 @@ async function main() {
 
   console.log(`\nAuthorised${who ? ` as ${who}` : ''}. Add this line to .env:\n`)
   console.log(`GOOGLE_DRIVE_REFRESH_TOKEN=${json.refresh_token}\n`)
-  console.log('Then restart the dev server. Treat it like a password — it is one.')
+  console.log('Then restart the dev server. Treat it like a password - it is one.')
 }
 
 main().catch((error) => {

@@ -81,7 +81,7 @@ function GalleryPhotoModalPanel({
 
   // The panel wants the original, but a row whose original is missing from
   // storage would otherwise open to a broken image while the card beside it
-  // shows fine — the card renders a resized variant, which is a different file.
+  // shows fine - the card renders a resized variant, which is a different file.
   // Fall back to that variant rather than showing nothing.
   const [src, setSrc] = useState(photo.url)
 
@@ -93,7 +93,7 @@ function GalleryPhotoModalPanel({
         paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
       }}
       // biome-ignore lint/a11y/useSemanticElements: a native <dialog> is only
-      // modal via showModal(), which puts it in the browser's top layer — that
+      // modal via showModal(), which puts it in the browser's top layer - that
       // layer establishes its own containing block and stacking context, which
       // breaks the measured transform the morph animates. Same reason as every
       // other modal on the site.

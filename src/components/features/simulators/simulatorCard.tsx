@@ -23,7 +23,7 @@ interface SimulatorCardProps {
 }
 
 /**
- * Same cutout shell as the events, members, and resources cards — the design
+ * Same cutout shell as the events, members, and resources cards - the design
  * language is one system, not per-page. Clicking opens the simulator modal
  * rather than navigating, so students see the walkthrough first.
  */
@@ -52,7 +52,7 @@ export const SimulatorCard = React.memo(({ card, onOpen, isActive }: SimulatorCa
           <CutoutCardOverlay />
 
           {/* Name lives on the media, same cutout inset used for the modal's
-              header — one label, not a repeated title in the content below. */}
+              header - one label, not a repeated title in the content below. */}
           <CutoutCardInsetLabel className="bottom-0 left-0 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-2">
             <span className="font-semibold leading-snug line-clamp-1 text-card-foreground">
               {card.title}

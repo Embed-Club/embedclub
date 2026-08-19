@@ -30,7 +30,7 @@ export function FeaturedMembersSection({ rows }: { rows: FeaturedRow[] }) {
                 </span>
               )}
               {/* Two cards per row on a phone, so the card width is set by the
-                  section padding and this gap rather than the w-* below — those
+                  section padding and this gap rather than the w-* below - those
                   are an upper bound the cards shrink under. Tighter gap here is
                   what actually makes them bigger on mobile. */}
               <div className="flex flex-wrap items-stretch justify-center gap-4 sm:gap-6">

@@ -13,8 +13,8 @@ import React from 'react'
  * Two shapes from the same component, because half the club's wins have no
  * photo of the build:
  *
- * - **With an image** — the photo fills the tile and the text sits over it.
- * - **Without one** — the award becomes the artwork: set large, in copper, on
+ * - **With an image** - the photo fills the tile and the text sits over it.
+ * - **Without one** - the award becomes the artwork: set large, in copper, on
  *   the flat card surface. A missing photo should read as a deliberate choice,
  *   not a hole in the grid.
  *
@@ -77,7 +77,7 @@ export const ProjectShowcaseTile = React.memo(
                 className={cn(
                   'font-bold uppercase leading-[1.05] tracking-tight text-primary',
                   // Without a photo the award carries the tile, so it is set
-                  // much larger — that is the whole idea of the type-led tile.
+                  // much larger - that is the whole idea of the type-led tile.
                   hasImage
                     ? 'text-sm tracking-widest'
                     : wide

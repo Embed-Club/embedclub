@@ -26,7 +26,7 @@ export interface ChromaGridProps {
   ease?: string
   /** Receives the card's on-screen box so a modal can expand out of it. */
   onItemClick?: (item: ChromaItem, originRect?: DOMRect) => void
-  /** Id of the item whose modal is open — that card steps aside for it. */
+  /** Id of the item whose modal is open - that card steps aside for it. */
   activeId?: string | null
 }
 
@@ -203,7 +203,7 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
                   className="absolute inset-0 h-full w-full object-cover transition-all duration-300"
                 />
 
-                {/* Cutout inset label — name + role(s) */}
+                {/* Cutout inset label - name + role(s) */}
                 <div className="absolute bottom-0 left-0 z-30 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-2.5">
                   <h3 className="m-0 truncate text-[1rem] font-semibold text-foreground">
                     {c.title}

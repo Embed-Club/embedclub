@@ -4,7 +4,7 @@
  *   pnpm tsx scripts/seedBeagleBoneTutorial.ts
  *
  * Screenshot slots and the thumbnail use the shared placeholder graphic with a
- * caption naming the real image that belongs there — there is no BeagleBone
+ * caption naming the real image that belongs there - there is no BeagleBone
  * photo in the media library yet. Matched on slug, so re-running updates in
  * place. Live immediately.
  */
@@ -37,7 +37,7 @@ ssh debian@192.168.7.2
 passwd`
 
 const LED_SYSFS = `# The four on-board USER LEDs live under /sys/class/leds. usr0 normally shows
-# a heartbeat — take it over, then toggle it by hand.
+# a heartbeat - take it over, then toggle it by hand.
 LED=/sys/class/leds/beaglebone:green:usr0
 
 echo none | sudo tee $LED/trigger      # stop the default heartbeat pattern
@@ -45,7 +45,7 @@ echo 1    | sudo tee $LED/brightness   # LED on
 echo 0    | sudo tee $LED/brightness   # LED off`
 
 const LED_BLINK = `#!/bin/bash
-# blink.sh — blink on-board USER LED 0 once a second. Ctrl+C to stop.
+# blink.sh - blink on-board USER LED 0 once a second. Ctrl+C to stop.
 LED=/sys/class/leds/beaglebone:green:usr0
 echo none | sudo tee $LED/trigger
 
@@ -59,7 +59,7 @@ done`
 const EXTERNAL_LED = `# An external LED on header pin P9_14. First set the pin to GPIO mode:
 config-pin P9_14 gpio
 
-# blink_ext.py — wiring: P9_14 -> 330 ohm resistor -> LED anode;
+# blink_ext.py - wiring: P9_14 -> 330 ohm resistor -> LED anode;
 #                        LED cathode -> P9_1 (GND).
 python3 - <<'PY'
 import Adafruit_BBIO.GPIO as GPIO
@@ -79,12 +79,12 @@ const CONTENT = [
     heading('h1', [text('BeagleBone: Setup and First Task')], 'center'),
     paragraph([
       text(
-        'The BeagleBone Black is a small Linux computer aimed at hardware projects — it boots from on-board storage, has a huge number of GPIO pins, and reaches the internet the moment you plug it into your laptop over USB. This tutorial gets it running: the OS image, flashing, connecting over USB, and a first task blinking both an on-board and an external LED.',
+        'The BeagleBone Black is a small Linux computer aimed at hardware projects - it boots from on-board storage, has a huge number of GPIO pins, and reaches the internet the moment you plug it into your laptop over USB. This tutorial gets it running: the OS image, flashing, connecting over USB, and a first task blinking both an on-board and an external LED.',
       ),
     ]),
     heading('h2', [text('What You Will Need')]),
     list('bullet', [
-      [bold('A BeagleBone'), text(' — Black or Green')],
+      [bold('A BeagleBone'), text(' - Black or Green')],
       [bold('A micro-USB cable'), text(' that carries data')],
       [bold('A microSD card'), text(', 8 GB or larger, for flashing the image')],
       [text('A host computer (Windows, macOS, or Linux)')],
@@ -105,7 +105,7 @@ const CONTENT = [
       [
         text('Download the latest '),
         bold('Debian IoT'),
-        text(' image for your board — a '),
+        text(' image for your board - a '),
         code('.img.xz'),
         text(' file.'),
       ],
@@ -125,7 +125,7 @@ const CONTENT = [
     paragraph([
       text('Use '),
       bold('balenaEtcher'),
-      text(' (balena.io/etcher) — it reads the '),
+      text(' (balena.io/etcher) - it reads the '),
       code('.img.xz'),
       text(' directly, no unzipping.'),
     ]),
@@ -133,7 +133,7 @@ const CONTENT = [
       [text('Insert the microSD card.')],
       [text('Etcher → '), bold('Flash from file'), text(' → the downloaded image.')],
       [
-        text('Select the SD card as the target — '),
+        text('Select the SD card as the target - '),
         bold('confirm the size'),
         text(', it erases it.'),
       ],
@@ -149,7 +149,7 @@ const CONTENT = [
       [
         bold('Flasher image: '),
         text(
-          'insert the card, power the board. The four USER LEDs sweep back and forth while it writes to eMMC, then all turn off. Remove the card — it now boots from on-board storage.',
+          'insert the card, power the board. The four USER LEDs sweep back and forth while it writes to eMMC, then all turn off. Remove the card - it now boots from on-board storage.',
         ),
       ],
       [
@@ -166,7 +166,7 @@ const CONTENT = [
     heading('h2', [text('Step 4: Connect Over USB')]),
     paragraph([
       text(
-        'Plug the board into your computer with the micro-USB cable. It powers up and appears as three things at once: a USB drive (with drivers), a serial port, and — the useful one — a small ',
+        'Plug the board into your computer with the micro-USB cable. It powers up and appears as three things at once: a USB drive (with drivers), a serial port, and - the useful one - a small ',
       ),
       bold('network device'),
       text('. The board is reachable at a fixed address:'),
@@ -200,11 +200,11 @@ const CONTENT = [
   ]),
 
   textBlock([
-    heading('h2', [text('Step 6: First Task — Blink an On-board LED')]),
+    heading('h2', [text('Step 6: First Task - Blink an On-board LED')]),
     paragraph([
       text('No wiring needed. The four green USER LEDs are controlled through the Linux '),
       code('/sys'),
-      text(' filesystem — just write to files:'),
+      text(' filesystem - just write to files:'),
     ]),
   ]),
   codeBlock('bash', LED_SYSFS, 'Control USER LED 0 by hand'),
@@ -217,7 +217,7 @@ const CONTENT = [
       text(':'),
     ]),
   ]),
-  codeBlock('bash', LED_BLINK, 'blink.sh — blink an on-board LED'),
+  codeBlock('bash', LED_BLINK, 'blink.sh - blink an on-board LED'),
   textBlock([
     paragraph([
       bold('Why write to files: '),
@@ -270,7 +270,7 @@ const CONTENT = [
       ],
       [
         bold('Permission denied writing to /sys: '),
-        text('those files need root — keep the '),
+        text('those files need root - keep the '),
         code('sudo tee'),
         text(' pattern shown above.'),
       ],
@@ -279,7 +279,7 @@ const CONTENT = [
     list('bullet', [
       [
         text(
-          'Read analogue sensors on the AIN pins — the BeagleBone has a built-in ADC the Pi lacks.',
+          'Read analogue sensors on the AIN pins - the BeagleBone has a built-in ADC the Pi lacks.',
         ),
       ],
       [text('Use the PRU real-time cores for precise timing a normal Linux process cannot hit.')],
@@ -309,7 +309,7 @@ async function main() {
       title: 'BeagleBone: Setup and First Task',
       slug: SLUG,
       description:
-        'Set up a BeagleBone Black/Green — flash the Debian image, connect over USB, and blink an on-board and external LED through Linux GPIO.',
+        'Set up a BeagleBone Black/Green - flash the Debian image, connect over USB, and blink an on-board and external LED through Linux GPIO.',
       // No BeagleBone photo in the library yet; placeholder until one is added.
       thumbnail: placeholderId,
       difficulty: 'intermediate',

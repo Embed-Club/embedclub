@@ -23,7 +23,7 @@ export const USN_FORMAT_HINT = 'e.g. 4PA23CS102'
  * Upper-cases and strips spaces.
  *
  * Students type these however their keyboard was set, and a sheet sorted on a
- * mix of `4pa23cs102` and `4PA23CS102` splits one batch into two blocks — the
+ * mix of `4pa23cs102` and `4PA23CS102` splits one batch into two blocks - the
  * whole reason the USN is captured separately.
  */
 export function normalizeUsn(value: string): string {

@@ -71,7 +71,7 @@ Embed Club connects over **100+ members** who share a passion for embedded syste
 - **Automated Media Engine**: Integrated **Sharp-powered WebP compression** and responsive image generation hosted on Supabase S3.
 - **Relational Directory**: Sophisticated member profiles with hierarchical roles, categories, and achievement tracking.
 - **Resource Hub**: A curated repository of tools, tutorials, and simulators with advanced tagging, search, and cutout-card UI.
-- **Event Orchestration**: Full lifecycle management for workshops, meetings, and club activities — with optional registration forms.
+- **Event Orchestration**: Full lifecycle management for workshops, meetings, and club activities - with optional registration forms.
 
 ---
 
@@ -104,7 +104,7 @@ Ensure the following are set in production:
 
 ## Getting Started
 
-Full instructions live in **[docs/SETUP.md](docs/SETUP.md)** — environment, database
+Full instructions live in **[docs/SETUP.md](docs/SETUP.md)** - environment, database
 migrations, content model, deployment, and troubleshooting. TLDR:
 
 ```bash
@@ -118,18 +118,18 @@ pnpm dev            # http://localhost:3000  (+ /admin)
 
 | Command | Purpose |
 |---|---|
-| `pnpm verify` | biome + typecheck + integration tests — run before every commit |
-| `pnpm verify:full` | verify + production build + Playwright e2e — run before merging |
+| `pnpm verify` | biome + typecheck + integration tests - run before every commit |
+| `pnpm verify:full` | verify + production build + Playwright e2e - run before merging |
 | `pnpm generate:types` | regenerate Payload types after schema changes |
 
 ## Contributing
 
-1. Read **[AGENTS.md](AGENTS.md)** first — it defines the design language,
+1. Read **[AGENTS.md](AGENTS.md)** first - it defines the design language,
    naming conventions, and hard rules. It applies to humans and to any AI
    coding assistant you use.
 2. Branch from `main`: `git checkout -b feature/your-feature-name`
 3. `pnpm verify` before every commit; `pnpm verify:full` before the PR.
-4. Never push directly to `main` — it auto-deploys and migrates the production
+4. Never push directly to `main` - it auto-deploys and migrates the production
    database.
 
 ---

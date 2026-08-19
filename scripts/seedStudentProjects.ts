@@ -7,7 +7,7 @@
  * the member who led the team, the year, and the result (ADC / Kaushal placing,
  * or the KSCST grant). Nothing else about these builds is written down anywhere,
  * so each detail page carries those facts and an explicit note that the write-up
- * is still to come — inventing circuit descriptions would be worse than an
+ * is still to come - inventing circuit descriptions would be worse than an
  * honest gap.
  *
  * The result lives in `award` / `event` / `year` rather than inside the
@@ -20,7 +20,7 @@
  * documents would attach the wrong people. Matched on slug, so re-running
  * updates in place.
  *
- * NOTE: local and production share one database — this is live the moment it runs.
+ * NOTE: local and production share one database - this is live the moment it runs.
  */
 import 'dotenv/config'
 import config from '@payload-config'
@@ -40,7 +40,7 @@ import {
 interface SeedProject {
   slug: string
   title: string
-  /** Card summary — what the build is, without the award (that is a field). */
+  /** Card summary - what the build is, without the award (that is a field). */
   description: string
   /** Who led it, as recorded. */
   team: string
@@ -123,12 +123,12 @@ function content(project: SeedProject) {
       list('bullet', [
         [bold('Team: '), text(project.team)],
         [bold('Year: '), text(String(project.year))],
-        [bold('Result: '), text(`${project.award} — ${project.event}`)],
+        [bold('Result: '), text(`${project.award} - ${project.event}`)],
       ]),
       heading('h2', [text('Write-Up')]),
       paragraph([
         italic(
-          'The full write-up for this project has not been added yet — how it works, what it took, and what broke. The record above is what the department has on file. Photos, the build details, and links will go here.',
+          'The full write-up for this project has not been added yet - how it works, what it took, and what broke. The record above is what the department has on file. Photos, the build details, and links will go here.',
         ),
       ]),
     ]),

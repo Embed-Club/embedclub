@@ -33,7 +33,7 @@ import {
 
 const SLUG = 'raspberry-pi-pico-w-wifi-web-led'
 
-const LED_DIFFERENCE = `# On the Pico W the on-board LED is NOT GPIO 25 — it hangs off the CYW43
+const LED_DIFFERENCE = `# On the Pico W the on-board LED is NOT GPIO 25 - it hangs off the CYW43
 # wireless chip, so it is addressed by name. Pin(25) is a real GPIO here and
 # does nothing visible.
 from machine import Pin
@@ -41,7 +41,7 @@ from machine import Pin
 led = Pin("LED", Pin.OUT)   # correct on Pico W
 led.on()`
 
-const WIFI_CONNECT = `# wifi.py — connect, with a timeout so a bad password does not hang forever.
+const WIFI_CONNECT = `# wifi.py - connect, with a timeout so a bad password does not hang forever.
 import network
 import time
 
@@ -69,7 +69,7 @@ def connect():
 
 connect()`
 
-const WEB_SERVER = `# main.py — serve a page with two buttons that switch the LED.
+const WEB_SERVER = `# main.py - serve a page with two buttons that switch the LED.
 import network
 import socket
 import time
@@ -129,7 +129,7 @@ while True:
 
         client.send(page("ON" if led.value() else "OFF"))
     finally:
-        # Always close, even on a malformed request — the Pico has a small
+        # Always close, even on a malformed request - the Pico has a small
         # number of sockets and leaking them wedges the server.
         client.close()`
 
@@ -138,7 +138,7 @@ const CONTENT = [
     heading('h1', [text('Raspberry Pi Pico W: Wi-Fi and a Web-Controlled LED')], 'center'),
     paragraph([
       text(
-        'The Pico W is a Pico with a wireless chip on it, and that one addition turns a microcontroller into something you can reach from your phone. This tutorial gets it on your network and finishes with a page you open in a browser to switch the board’s LED — the smallest complete version of the thing most IoT projects actually are.',
+        'The Pico W is a Pico with a wireless chip on it, and that one addition turns a microcontroller into something you can reach from your phone. This tutorial gets it on your network and finishes with a page you open in a browser to switch the board’s LED - the smallest complete version of the thing most IoT projects actually are.',
       ),
     ]),
     heading('h2', [text('What You Will Need')]),
@@ -151,12 +151,12 @@ const CONTENT = [
       ],
       [bold('A micro-USB data cable')],
       [bold('Thonny'), text(' installed, and a working MicroPython setup')],
-      [bold('A 2.4 GHz Wi-Fi network'), text(' — the CYW43 chip does not do 5 GHz')],
+      [bold('A 2.4 GHz Wi-Fi network'), text(' - the CYW43 chip does not do 5 GHz')],
     ]),
     paragraph([
       text('If you have not flashed MicroPython to a Pico before, do the '),
       bold('Raspberry Pi Pico'),
-      text(' tutorial first — BOOTSEL, Thonny, and '),
+      text(' tutorial first - BOOTSEL, Thonny, and '),
       code('main.py'),
       text(' all work exactly the same here, and this page assumes them.'),
     ]),
@@ -214,7 +214,7 @@ const CONTENT = [
       text(' that chip and is addressed as '),
       code('Pin("LED")'),
       text(
-        '. Code copied from a Pico tutorial will run without any error and do nothing at all — which reads like a broken board.',
+        '. Code copied from a Pico tutorial will run without any error and do nothing at all - which reads like a broken board.',
       ),
     ]),
   ]),
@@ -227,10 +227,10 @@ const CONTENT = [
   textBlock([
     paragraph([
       bold('The loop bound matters. '),
-      text('The obvious version — '),
+      text('The obvious version - '),
       code('while not wlan.isconnected(): pass'),
       text(
-        ' — never exits when the password is wrong, so a typo presents as a board that hangs on boot rather than as an error. Twenty seconds and a raised exception tells you what actually happened.',
+        ' - never exits when the password is wrong, so a typo presents as a board that hangs on boot rather than as an error. Twenty seconds and a raised exception tells you what actually happened.',
       ),
     ]),
     paragraph([
@@ -240,7 +240,7 @@ const CONTENT = [
       ),
     ]),
     paragraph([
-      text('Note the IP address it prints — that is where the board lives on your network.'),
+      text('Note the IP address it prints - that is where the board lives on your network.'),
     ]),
   ]),
   placeholderImage(0, 'The Thonny shell showing the Pico W connecting and printing its IP address'),
@@ -253,7 +253,7 @@ const CONTENT = [
       text(' on the Pico W, so it runs whenever the board is powered:'),
     ]),
   ]),
-  codeBlock('python', WEB_SERVER, 'main.py — a web-controlled LED'),
+  codeBlock('python', WEB_SERVER, 'main.py - a web-controlled LED'),
 
   textBlock([
     heading('h2', [text('Step 5: Open It')]),
@@ -273,7 +273,7 @@ const CONTENT = [
       ],
     ]),
     paragraph([
-      text('The request handling here is deliberately crude — it looks for '),
+      text('The request handling here is deliberately crude - it looks for '),
       code('/on'),
       text(' or '),
       code('/off'),
@@ -304,7 +304,7 @@ const CONTENT = [
       [
         bold('Never connects: '),
         text(
-          'a 5 GHz-only network, a wrong password, or a hidden SSID. The status code in the raised error narrows it — ',
+          'a 5 GHz-only network, a wrong password, or a hidden SSID. The status code in the raised error narrows it - ',
         ),
         code('-3'),
         text(' is a bad password, '),
@@ -323,7 +323,7 @@ const CONTENT = [
         bold('Page loads once, then the board stops responding: '),
         text('a client socket was not closed. Keep the '),
         code('finally: client.close()'),
-        text(' — MicroPython has very few sockets and leaking them wedges the server.'),
+        text(' - MicroPython has very few sockets and leaking them wedges the server.'),
       ],
       [
         bold('Works over USB, dead on a power bank: '),
@@ -349,7 +349,7 @@ const CONTENT = [
       [text('Run the board as an access point so it works with no router at all.')],
       [
         text(
-          'Compare with the ESP32 tutorial — same idea, more memory and a second core to spend on it.',
+          'Compare with the ESP32 tutorial - same idea, more memory and a second core to spend on it.',
         ),
       ],
     ]),
@@ -373,7 +373,7 @@ async function main() {
       title: 'Raspberry Pi Pico W: Wi-Fi and a Web-Controlled LED',
       slug: SLUG,
       description:
-        'Put a Pico W on Wi-Fi with MicroPython and serve a web page that switches its LED — including the LED pin change that breaks copied Pico code.',
+        'Put a Pico W on Wi-Fi with MicroPython and serve a web page that switches its LED - including the LED pin change that breaks copied Pico code.',
       // No Pico W photo in the library yet; placeholder until one is added.
       thumbnail: placeholderId,
       difficulty: 'intermediate',

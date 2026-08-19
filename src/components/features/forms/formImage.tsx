@@ -3,21 +3,21 @@ import type { FormMedia } from '@/payload/payload-types'
 import Image from 'next/image'
 
 /**
- * An officer-attached picture inside a form — header banner, step banner, the
+ * An officer-attached picture inside a form - header banner, step banner, the
  * diagram under a question, or a standalone image row.
  *
  * Always lazy: a form with a QR code on step three should not pay for it on
  * step one.
  *
  * Every slot caps its height. Officers upload whatever their phone took, and
- * an unbounded portrait shot renders taller than the viewport — the question
+ * an unbounded portrait shot renders taller than the viewport - the question
  * it belongs to ends up pushed off screen entirely. Google Forms solves this
  * by making the author resize; capping per slot means they never have to.
  */
 const MAX_HEIGHTS = {
   /** Under the form title. Wide banner, not a hero. */
   header: 'max-h-[240px]',
-  /** Top of a step. Smaller again — the questions are the point. */
+  /** Top of a step. Smaller again - the questions are the point. */
   step: 'max-h-[200px]',
   /** Between a question's label and its input. */
   question: 'max-h-[280px]',

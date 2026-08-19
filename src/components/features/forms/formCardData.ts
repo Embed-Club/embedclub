@@ -7,7 +7,7 @@ import type { Event, Form } from '@/payload/payload-types'
  * Deliberately not inside `formCutoutCard.tsx`: that file is `'use client'`,
  * and the two listing pages are server components that call the mapper during
  * render. Next allows a server component to *render* a client component, but
- * not to *call* a function exported from a client module — doing so fails the
+ * not to *call* a function exported from a client module - doing so fails the
  * production build with "Attempted to call formToCard() from the server".
  *
  * That went unnoticed for a while because `forms.map(formToCard)` never

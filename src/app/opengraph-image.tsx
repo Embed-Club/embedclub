@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Embed Club — embedded systems & IoT club at PA College of Engineering'
+export const alt = 'Embed Club - embedded systems & IoT club at PA College of Engineering'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 

@@ -79,7 +79,7 @@ const UPDATE_SYSTEM = `sudo apt update
 sudo apt full-upgrade -y
 sudo reboot`
 
-const BLINK_LED = `# blink.py — blink an LED on GPIO17 (physical pin 11).
+const BLINK_LED = `# blink.py - blink an LED on GPIO17 (physical pin 11).
 # Wiring: pin 11 -> 330 ohm resistor -> LED long leg (anode);
 #         LED short leg (cathode) -> pin 9 (GND).
 from gpiozero import LED
@@ -93,7 +93,7 @@ while True:
     led.off()
     sleep(1)`
 
-const LDR_LIGHT = `# nightlight.py — turn the LED on when it gets dark.
+const LDR_LIGHT = `# nightlight.py - turn the LED on when it gets dark.
 # LDR + capacitor on GPIO4; LED on GPIO17 as wired above.
 from gpiozero import LightSensor, LED
 
@@ -112,17 +112,17 @@ function buildContent(id: (key: string) => number) {
       heading('h1', [text('Raspberry Pi 3/4/5 Setup')], 'center'),
       paragraph([
         text(
-          'The Raspberry Pi is a full Linux computer the size of a credit card. This guide takes it from a blank microSD card to a working machine you can reach from your laptop — flashing Raspberry Pi OS, setting it up headless (no monitor) over SSH and remote desktop, and finishing with a first GPIO task.',
+          'The Raspberry Pi is a full Linux computer the size of a credit card. This guide takes it from a blank microSD card to a working machine you can reach from your laptop - flashing Raspberry Pi OS, setting it up headless (no monitor) over SSH and remote desktop, and finishing with a first GPIO task.',
         ),
       ]),
       heading('h2', [text('What You Will Need')]),
       list('bullet', [
-        [bold('A Raspberry Pi'), text(' — 3, 4, or 5')],
+        [bold('A Raspberry Pi'), text(' - 3, 4, or 5')],
         [bold('A microSD card'), text(', 16 GB or larger (Class 10 / A1 or better)')],
         [bold('A card reader'), text(' for your computer')],
         [bold('A USB-C (Pi 5/4) or micro-USB (Pi 3) power supply')],
         [text('For the desktop path: a monitor, HDMI cable, keyboard, and mouse')],
-        [text('For the headless path: just your network — Ethernet or configured Wi-Fi')],
+        [text('For the headless path: just your network - Ethernet or configured Wi-Fi')],
       ]),
     ]),
 
@@ -149,7 +149,7 @@ function buildContent(id: (key: string) => number) {
         [text('Click '), bold('Choose Storage'), text(' and select the microSD card.')],
       ]),
     ]),
-    imageBlock(id('imager'), 'Raspberry Pi Imager — Choose Device, OS, and Storage'),
+    imageBlock(id('imager'), 'Raspberry Pi Imager - Choose Device, OS, and Storage'),
     textBlock([
       paragraph([bold('Recommended OS choices:')]),
       list('bullet', [
@@ -157,7 +157,7 @@ function buildContent(id: (key: string) => number) {
         [bold('Raspberry Pi OS (32-bit)'), text(' for the Pi 3')],
         [
           bold('Raspberry Pi OS Lite'),
-          text(' if you will run the Pi headless with no desktop — smaller and lighter'),
+          text(' if you will run the Pi headless with no desktop - smaller and lighter'),
         ],
         [text('Or any distro you like (Ubuntu, Kali Linux, and others are offered)')],
       ]),
@@ -172,18 +172,18 @@ function buildContent(id: (key: string) => number) {
         text(' → '),
         bold('Edit Settings'),
         text(
-          '. This bakes your configuration into the card so the Pi is ready on first boot — essential for a headless setup, where you cannot type anything in later.',
+          '. This bakes your configuration into the card so the Pi is ready on first boot - essential for a headless setup, where you cannot type anything in later.',
         ),
       ]),
     ]),
-    imageBlock(id('editSettings'), 'The OS customisation dialog — General tab'),
+    imageBlock(id('editSettings'), 'The OS customisation dialog - General tab'),
     textBlock([
       paragraph([text('On the '), bold('General'), text(' tab, set:')]),
       list('bullet', [
         [text('Hostname (e.g. '), code('raspberrypi.local'), text(')')],
         [text('Username and password')],
         [text('Wi-Fi SSID, password, and your Wi-Fi country')],
-        [text('Locale — timezone and keyboard layout')],
+        [text('Locale - timezone and keyboard layout')],
       ]),
     ]),
     imageBlock(id('filledSettings'), 'The settings filled in'),
@@ -211,7 +211,7 @@ function buildContent(id: (key: string) => number) {
           text(' to apply the settings.'),
         ],
         [
-          text('Confirm the correct storage device is selected — '),
+          text('Confirm the correct storage device is selected - '),
           bold('this erases it'),
           text('.'),
         ],
@@ -227,7 +227,7 @@ function buildContent(id: (key: string) => number) {
       list('number', [
         [text('Insert the microSD card into the Pi.')],
         [text('Connect the HDMI cable, monitor, keyboard, and mouse.')],
-        [text('Connect power — the Pi boots automatically.')],
+        [text('Connect power - the Pi boots automatically.')],
         [text('Finish any first-boot prompts, and you arrive at the desktop.')],
       ]),
       paragraph([
@@ -241,7 +241,7 @@ function buildContent(id: (key: string) => number) {
 
     textBlock([
       heading('h2', [text('Method 2: Headless Setup (over SSH)')]),
-      paragraph([text('No monitor needed — reach the Pi from your computer over the network.')]),
+      paragraph([text('No monitor needed - reach the Pi from your computer over the network.')]),
       heading('h3', [text('Step 5: Boot on the Network')]),
       list('number', [
         [text('Insert the flashed card and connect power.')],
@@ -266,7 +266,7 @@ function buildContent(id: (key: string) => number) {
         text(' prompt with your hostname means you are in.'),
       ]),
     ]),
-    imageBlock(id('sshAfter'), 'Connected — a shell on the Raspberry Pi'),
+    imageBlock(id('sshAfter'), 'Connected - a shell on the Raspberry Pi'),
 
     textBlock([
       heading('h2', [text('Accessing the Desktop Remotely (RealVNC)')]),
@@ -302,7 +302,7 @@ function buildContent(id: (key: string) => number) {
     textBlock([
       paragraph([
         text(
-          'The full Pi desktop now opens in a window on your computer — no monitor ever plugged in.',
+          'The full Pi desktop now opens in a window on your computer - no monitor ever plugged in.',
         ),
       ]),
     ]),
@@ -317,7 +317,7 @@ function buildContent(id: (key: string) => number) {
       heading('h2', [text('First Task: Blink an LED')]),
       paragraph([
         text(
-          'The 40-pin header is how the Pi talks to the physical world. Here is the pinout — mind the ',
+          'The 40-pin header is how the Pi talks to the physical world. Here is the pinout - mind the ',
         ),
         bold('BCM'),
         text(' (GPIO) numbers versus the physical pin positions.'),
@@ -358,7 +358,7 @@ function buildContent(id: (key: string) => number) {
     textBlock([
       paragraph([
         italic('gpiozero'),
-        text(' does the analogue timing for you — '),
+        text(' does the analogue timing for you - '),
         code('wait_for_dark()'),
         text(' blocks until the LDR reads below its threshold, so the loop stays simple.'),
       ]),
@@ -386,7 +386,7 @@ function buildContent(id: (key: string) => number) {
         [
           bold('Rainbow square / under-voltage warning: '),
           text(
-            'the power supply is too weak. Use an official one — the Pi 4/5 in particular are fussy.',
+            'the power supply is too weak. Use an official one - the Pi 4/5 in particular are fussy.',
           ),
         ],
       ]),
@@ -394,7 +394,7 @@ function buildContent(id: (key: string) => number) {
       list('bullet', [
         [text('Attach a Pi Camera and stream video over the network.')],
         [text('Drive sensors and motors from the GPIO header for a full project.')],
-        [text('Run the Pi as a always-on home server — Pi-hole, a file share, or a web app.')],
+        [text('Run the Pi as a always-on home server - Pi-hole, a file share, or a web app.')],
         [text('Try the ESP32-CAM or Jetson Nano tutorials for other on-device tasks.')],
       ]),
     ]),
@@ -422,7 +422,7 @@ async function main() {
       title: 'Raspberry Pi 3/4/5 Setup',
       slug: SLUG,
       description:
-        'Set up a Raspberry Pi 3/4/5 from a blank card — flash Raspberry Pi OS, go headless over SSH and RealVNC, update it, and blink your first LED.',
+        'Set up a Raspberry Pi 3/4/5 from a blank card - flash Raspberry Pi OS, go headless over SSH and RealVNC, update it, and blink your first LED.',
       thumbnail: THUMBNAIL_MEDIA_ID,
       difficulty: 'beginner',
       // IoT, Microcontroller, Raspberry

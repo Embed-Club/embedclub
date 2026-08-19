@@ -17,7 +17,7 @@ export interface CarouselProps {
 
 /**
  * Embla owns the actual scroll/loop mechanics (with `loop: true` it clones
- * slides as needed and always moves forward, never a visible snap back) —
+ * slides as needed and always moves forward, never a visible snap back) -
  * a hand-rolled duplicate-list-plus-rewind version of this kept producing
  * visible glitches at the wrap point. Embla + its autoplay plugin is the
  * same combination shadcn/ui's own Carousel uses for this exact case.
@@ -48,7 +48,7 @@ export const Carousel = ({
   const [canScrollNext, setCanScrollNext] = useState(false)
   // Snaps rather than items: with `align: 'start'` Embla drops the snaps it
   // cannot scroll to, so a wide viewport showing the last three cards at once
-  // has fewer snaps than cards — one dot per card would leave dead dots.
+  // has fewer snaps than cards - one dot per card would leave dead dots.
   const [snapCount, setSnapCount] = useState(0)
 
   const onSelect = useCallback(() => {
@@ -77,8 +77,8 @@ export const Carousel = ({
   // The nav draws a countdown to the next card, so it needs to know when the
   // autoplay timer is actually running. Taken from the plugin's own events
   // rather than inferred from hover: the plugin also stops on drag, on focus
-  // entering a slide, and whenever the document is hidden — a backgrounded tab
-  // stops it outright — and a countdown reproducing only the hover rule fills
+  // entering a slide, and whenever the document is hidden - a backgrounded tab
+  // stops it outright - and a countdown reproducing only the hover rule fills
   // steadily through all of those while nothing is going to advance.
   const [autoRunning, setAutoRunning] = useState(false)
   // Bumped every time a fresh timer is set, which is what restarts the
@@ -116,12 +116,12 @@ export const Carousel = ({
         {/* No edge fade. It was meant to suggest more cards off-screen, but
             `inset-y-20` kept it clear of the card's top and bottom, so instead
             of fading the track edge it painted a hard-edged column down the
-            middle of whichever card sat under it — invisible on the light
+            middle of whichever card sat under it - invisible on the light
             theme, an obvious grey stripe on the dark one. */}
         <div className="overflow-hidden py-4 md:py-8" ref={emblaRef}>
           {/* Slide elements are plain divs on purpose. Embla's loop works by
               writing `transform: translateX(...)` onto individual slides to
-              reposition them around the wrap point — if the slide is a
+              reposition them around the wrap point - if the slide is a
               `motion.div`, Framer Motion writes `transform` on the same
               element and clobbers that, which stalls the carousel at the end
               and then snaps it back. Motion goes *inside* the slide instead. */}

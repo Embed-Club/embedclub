@@ -14,7 +14,7 @@ export interface MemberModalData {
   id: string
   fullName: string
   image: string
-  /** Most recent role first — the rest read as roles previously held. */
+  /** Most recent role first - the rest read as roles previously held. */
   roles: string[]
   years?: string
   bio?: string
@@ -134,7 +134,7 @@ export function MemberModal({
     >
       {/* Blur only from md up. `backdrop-filter` is re-evaluated every frame
           while the panel moves over it, and on a low-end phone that alone can
-          halve the frame rate — the flat wash reads the same at this opacity. */}
+          halve the frame rate - the flat wash reads the same at this opacity. */}
       <motion.div
         ref={overlayRef}
         initial={{ opacity: 0 }}
@@ -153,7 +153,7 @@ export function MemberModal({
       >
         {/* Counter-scaled against the container above, so the content keeps its
             true proportions while the frame morphs. Sized to the container's
-            unscaled box — layout runs before transforms, so 100% here is the
+            unscaled box - layout runs before transforms, so 100% here is the
             panel's real size, not its scaled-down one. The container clips the
             overflow, which is what makes the frame read as opening. */}
         <div ref={innerRef} className="h-full w-full">

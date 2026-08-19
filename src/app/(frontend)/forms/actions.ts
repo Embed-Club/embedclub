@@ -18,7 +18,7 @@ export interface SubmitFormResult {
   success: boolean
   message: string
   fieldErrors?: Record<string, string>
-  /** The consent box was not ticked — highlight it rather than a question. */
+  /** The consent box was not ticked - highlight it rather than a question. */
   consentError?: boolean
   /** Present when the form issues a certificate the moment it is submitted. */
   certificate?: { name: string }
@@ -30,7 +30,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
  * The submit path writes to the database on every call and is reachable by
  * anyone, so it is rate limited per visitor and form. Keying on the form alone
  * gave every visitor a shared budget, so five sign-ups in a minute locked the
- * form for everyone — precisely what a registration form does when a session
+ * form for everyone - precisely what a registration form does when a session
  * opens.
  */
 const RATE_LIMIT_WINDOW_MS = 60_000
@@ -75,7 +75,7 @@ export async function submitForm(
   consented?: boolean,
 ): Promise<SubmitFormResult> {
   try {
-    // Silently accept and discard obvious bots — telling them why just helps
+    // Silently accept and discard obvious bots - telling them why just helps
     // them adapt. Trimmed: a browser or password manager that autofills the
     // hidden field with a space would otherwise bin a real person's answers
     // behind a success message.
@@ -89,7 +89,7 @@ export async function submitForm(
       max: RATE_LIMIT_MAX,
     })
     if (overLimit) {
-      return { success: false, message: 'Too many submissions just now — try again in a minute.' }
+      return { success: false, message: 'Too many submissions just now - try again in a minute.' }
     }
 
     // Consent is checked here and not only in the browser: the box is what makes
@@ -114,7 +114,7 @@ export async function submitForm(
     const found = result.docs[0]
     if (!found) return { success: false, message: 'This form no longer exists.' }
 
-    // A section stores no questions of its own — it asks its parent's. Validate
+    // A section stores no questions of its own - it asks its parent's. Validate
     // against those, and keep the section's id so the response is filed under
     // the group that gave it.
     const form = await withResolvedSteps(found)
@@ -124,7 +124,7 @@ export async function submitForm(
       return { success: false, message: 'The deadline for this form has passed.' }
     }
 
-    // Validate against the form definition — never trust the client's idea of
+    // Validate against the form definition - never trust the client's idea of
     // what the form contains.
     const fieldErrors: Record<string, string> = {}
     const byId: Record<string, string | string[]> = {}
@@ -181,7 +181,7 @@ export async function submitForm(
           console.error('[Forms] Attachment lookup failed:', err)
         }
         if (!meta || meta.formSlug !== form.slug || meta.fieldId !== key) {
-          fieldErrors[key] = `That photo could not be verified — re-attach it for ${field.label}`
+          fieldErrors[key] = `That photo could not be verified - re-attach it for ${field.label}`
           continue
         }
         attachments.push({
@@ -201,7 +201,7 @@ export async function submitForm(
         if (isValidUsn(usn)) {
           value = usn
         } else {
-          fieldErrors[key] = `Enter a valid USN — ${USN_FORMAT_HINT}`
+          fieldErrors[key] = `Enter a valid USN - ${USN_FORMAT_HINT}`
         }
       }
 
@@ -292,6 +292,6 @@ export async function submitForm(
     }
   } catch (error) {
     console.error('[Forms] Submission error:', error)
-    return { success: false, message: 'Something went wrong — please try again.' }
+    return { success: false, message: 'Something went wrong - please try again.' }
   }
 }

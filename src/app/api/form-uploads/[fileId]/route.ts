@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
  * Admin-only proxy for a respondent's attachment.
  *
  * The Drive files are deliberately left unshared, so there is no public link to
- * leak — someone's payment screenshot should not be readable by anyone who
+ * leak - someone's payment screenshot should not be readable by anyone who
  * guesses a URL. Officers view them through here instead, authenticated by the
  * same Payload session that got them into the admin panel.
  *

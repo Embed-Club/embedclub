@@ -6,7 +6,7 @@ import type { UIFieldClientComponent } from 'payload'
 /**
  * Thumbnail for one respondent attachment, inside a form submission.
  *
- * The bytes never touch this site's storage — they are streamed from the
+ * The bytes never touch this site's storage - they are streamed from the
  * form's Google Drive folder through `/api/form-uploads/<id>`, which requires
  * an admin session. `loading="lazy"` matters here: a submission list can carry
  * hundreds of these, and each one is a round trip to Google.

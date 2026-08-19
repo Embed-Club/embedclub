@@ -142,7 +142,7 @@ export function Timeline({
 
   return (
     <TimelineContext.Provider value={contextValue}>
-      {/* Flows in the page's own scroll container (ScrollContainerContext) —
+      {/* Flows in the page's own scroll container (ScrollContainerContext) -
           no private scroll box, so this scrolls together with the footer
           instead of fighting it for the wheel. */}
       <div
@@ -429,7 +429,7 @@ function TimelineContentMobile({
           return
         }
 
-        // Out of view — but only rewind the reveal for a card that has dropped
+        // Out of view - but only rewind the reveal for a card that has dropped
         // back *below* the fold, which is what scrolling up does. A card that
         // leaves past the top on the way down stays as it is: fading it out
         // there would undo an animation the reader has already scrolled past,

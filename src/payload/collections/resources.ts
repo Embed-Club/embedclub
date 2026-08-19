@@ -8,7 +8,7 @@ export const Resources: CollectionConfig = {
     read: () => true, // Public can read resources
   },
   // Drag rows in the list view to arrange them. The frontend renders in this
-  // order, top-first — no date sorting, the arrangement in the admin is the
+  // order, top-first - no date sorting, the arrangement in the admin is the
   // published order.
   orderable: true,
   admin: {

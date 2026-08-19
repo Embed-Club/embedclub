@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 /**
  * Which `{{markers}}` a certificate template contains.
  *
- * Admin-only, and it reads an arbitrary Drive file id supplied by the caller —
+ * Admin-only, and it reads an arbitrary Drive file id supplied by the caller -
  * so it is deliberately narrow about what it returns: the marker names it
  * found, never the document's text. Otherwise this would be a way for any
  * logged-in officer to read the contents of any file the site can reach.

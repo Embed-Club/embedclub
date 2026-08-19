@@ -271,7 +271,7 @@ export const ImageBlock: Block = {
 /**
  * VideoBlock: An embedded YouTube video.
  *
- * Stores the URL an editor pastes from the browser rather than a bare video id —
+ * Stores the URL an editor pastes from the browser rather than a bare video id -
  * asking for an id means explaining where to find one. The id is parsed at
  * render time, which also accepts youtu.be, /embed/, /shorts/, and /live/ forms.
  */
@@ -337,7 +337,7 @@ export const SimulatorLinkBlock: Block = {
 
 /**
  * AccordionBlock: collapsible sections, for a page that is several self-contained
- * parts rather than one continuous read — a multi-session workshop, say.
+ * parts rather than one continuous read - a multi-session workshop, say.
  *
  * Each section holds its own blocks, so a section can be text, code, images and a
  * simulator link, not just a paragraph. Nested AccordionBlocks and RowBlocks are
@@ -378,7 +378,7 @@ export const AccordionBlock: Block = {
           required: true,
           admin: {
             description: 'The clickable title of this section',
-            placeholder: 'e.g., Session 1 — Setup & VNC',
+            placeholder: 'e.g., Session 1 - Setup & VNC',
           },
         },
         {

@@ -20,7 +20,7 @@ interface EventDetailsProps {
   event: Event
 }
 
-/** Roughly three lines of body text — enough to judge whether to read on. */
+/** Roughly three lines of body text - enough to judge whether to read on. */
 const COLLAPSED_MAX_HEIGHT = '4.5rem'
 
 /**
@@ -32,7 +32,7 @@ const COLLAPSED_MAX_HEIGHT = '4.5rem'
  *
  * The toggle only appears when there is something hidden. That is measured
  * rather than guessed from character count, because what overflows depends on
- * the column width and the reader's font size — a description that needs a
+ * the column width and the reader's font size - a description that needs a
  * toggle on a phone often doesn't on a desktop.
  */
 function EventDescription({
@@ -78,7 +78,7 @@ function EventDescription({
     const el = clipRef.current
     if (!el) return
 
-    // A couple of pixels of slack — sub-pixel line heights round scrollHeight
+    // A couple of pixels of slack - sub-pixel line heights round scrollHeight
     // up past clientHeight on text that visually fits.
     const check = () => setOverflows(el.scrollHeight > el.clientHeight + 4)
     check()
@@ -105,7 +105,7 @@ function EventDescription({
           className="overflow-hidden text-sm text-foreground/90 transition-[max-height] duration-300 ease-out"
           style={{ maxHeight }}
           // Release the cap once the opening animation lands. Text that reflows
-          // afterwards — a late font swap, a resize — then grows freely instead
+          // afterwards - a late font swap, a resize - then grows freely instead
           // of being clipped by a height measured a moment ago. Guarded against
           // transitions bubbling up from the rendered rich text.
           onTransitionEnd={(event) => {
@@ -215,7 +215,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
         </a>
       )}
 
-      {/* Save the date — a Google Calendar template link, so it opens a
+      {/* Save the date - a Google Calendar template link, so it opens a
           pre-filled entry the visitor confirms themselves. Secondary styling:
           registering is the action that matters when both are present. */}
       {calendarUrl && (
@@ -271,7 +271,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
         )}
       </div>
 
-      {/* Description Section — the whole thing, collapsed to its opening lines.
+      {/* Description Section - the whole thing, collapsed to its opening lines.
           This used to test `Array.isArray(description)`, but Payload's rich text
           is a `{ root: … }` object, so that branch never ran and every event
           showed its one-line shortDescription in place of the description. */}

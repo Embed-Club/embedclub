@@ -1,7 +1,7 @@
 import Redis from 'ioredis'
 
 /**
- * Shared rate limiter for the public write paths — form submissions and form
+ * Shared rate limiter for the public write paths - form submissions and form
  * uploads.
  *
  * Backed by Redis so the count is shared. The in-process `Map` this replaces
@@ -98,7 +98,7 @@ export async function isRateLimited({ key, windowMs, max }: RateLimitOptions): P
 
     // A pipeline reports per-command failures in the tuple rather than
     // rejecting, so `exec()` resolving is not success. Treating it as success
-    // returned "allowed" without counting anywhere — no Redis tally and no
+    // returned "allowed" without counting anywhere - no Redis tally and no
     // local one either, which is an unlimited path rather than a degraded one.
     const failed = !results || results.some(([error]) => error)
     const count = results?.[2]?.[1]
@@ -116,7 +116,7 @@ export async function isRateLimited({ key, windowMs, max }: RateLimitOptions): P
   }
 }
 
-/** Whether a shared store is actually in play — surfaced for logging/tests. */
+/** Whether a shared store is actually in play - surfaced for logging/tests. */
 export function rateLimitBackend(): 'redis' | 'memory' {
   return getClient() ? 'redis' : 'memory'
 }

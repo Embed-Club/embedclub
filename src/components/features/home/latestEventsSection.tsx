@@ -4,7 +4,7 @@ import type { Event } from '@/payload/payload-types'
 import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 
-/** The events header + card grid, without a section wrapper — so it can render
+/** The events header + card grid, without a section wrapper - so it can render
  *  either as its own section or inside another (e.g. the mobile hero). */
 export function LatestEventsContent({
   events,
@@ -43,7 +43,7 @@ export function LatestEventsContent({
 export function LatestEventsSection({ events }: { events: Event[] }) {
   return (
     // `pt-24` clears the fixed 64px nav header on mobile, plus a little air.
-    // Desktop doesn't need it — the content centres itself in the full-height
+    // Desktop doesn't need it - the content centres itself in the full-height
     // section, well clear of the header.
     <section
       id="events"

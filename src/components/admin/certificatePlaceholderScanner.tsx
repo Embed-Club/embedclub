@@ -9,7 +9,7 @@ import { useState } from 'react'
  *
  * Read out of form state by path rather than with `useField`, because the
  * value Payload stores at an array field's own path is the number of rows,
- * not the rows — iterating it threw and took the whole edit view down.
+ * not the rows - iterating it threw and took the whole edit view down.
  */
 const ROW_KEY = /^certificatePlaceholders\.\d+\.key$/
 
@@ -28,7 +28,7 @@ function mappedKeys(fields: Record<string, { value?: unknown }>): string[] {
  * have gone out with a literal `{{USN}}` on them. Scanning turns that into a
  * checklist.
  *
- * It only reports — filling the mapping rows in is left to the officer,
+ * It only reports - filling the mapping rows in is left to the officer,
  * because the interesting half of the decision (where does this value come
  * from?) is one only they can answer.
  */
@@ -61,7 +61,7 @@ const CertificatePlaceholderScanner: UIFieldClientComponent = () => {
   }
 
   // `name` and `event` are filled in without a mapping, so they never count as
-  // missing. Compared case-insensitively, matching how Slides substitutes —
+  // missing. Compared case-insensitively, matching how Slides substitutes -
   // a deck written {{NAME}} is filled by a mapping keyed `name`.
   const covered = new Set(['name', 'event'])
   for (const key of mappedKeys(fields ?? {})) {
@@ -120,7 +120,7 @@ const CertificatePlaceholderScanner: UIFieldClientComponent = () => {
           </div>
           {missing.length > 0 ? (
             <div style={{ color: 'var(--theme-warning-600, var(--theme-elevation-700))' }}>
-              {missing.length === 1 ? 'This one has' : 'These have'} no value set — add{' '}
+              {missing.length === 1 ? 'This one has' : 'These have'} no value set - add{' '}
               {missing.length === 1 ? 'a row' : 'rows'} below for{' '}
               {missing.map((key) => `{{${key}}}`).join(', ')}, or {'they'} will print literally on
               every certificate.

@@ -14,7 +14,7 @@ import crypto from 'node:crypto'
  *   GOOGLE_PRIVATE_KEY             its PEM key (literal \n are unescaped)
  *
  * Whichever spreadsheet or folder is used must be shared with the service
- * account address as an Editor — that sharing *is* the authorisation model.
+ * account address as an Editor - that sharing *is* the authorisation model.
  * No OAuth consent flow and no refresh tokens.
  */
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
@@ -30,7 +30,7 @@ export function googleCredentialsPresent(): boolean {
  * Whether a user-consented OAuth refresh token is configured.
  *
  * This is the preferred way to reach Drive. A service account cannot own files,
- * and the usual fix — domain-wide delegation — hands it the ability to act as
+ * and the usual fix - domain-wide delegation - hands it the ability to act as
  * *any* account in the domain, which is a college-wide risk taken to solve a
  * club-website problem. A refresh token is granted by one account, to one
  * account: even if it leaks, it reaches nothing but that Drive.
@@ -50,7 +50,7 @@ let cachedOauthToken: { value: string; expiresAt: number } | null = null
  * Trade the stored refresh token for an access token.
  *
  * The refresh token itself does not expire for an Internal app, so there is no
- * re-consent step to babysit — `scripts/getDriveRefreshToken.ts` is run once
+ * re-consent step to babysit - `scripts/getDriveRefreshToken.ts` is run once
  * and never again unless the token is revoked.
  */
 export async function oauthAccessToken(): Promise<string> {

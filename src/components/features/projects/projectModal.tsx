@@ -22,12 +22,12 @@ interface ProjectModalProps {
 }
 
 /**
- * Project detail modal — image on the left, details on the right, the same
+ * Project detail modal - image on the left, details on the right, the same
  * split the events modal uses so both pages read as one system.
  *
  * Mounted only while open (the tile renders it behind `open &&`), so a grid of
  * tiles does not keep one portal, one body-overflow write and two document
- * listeners alive per project — that combination made the page scroll badly.
+ * listeners alive per project - that combination made the page scroll badly.
  * The trade is no exit animation, which nobody sees anyway.
  *
  * The write-up (`card.details`) is rendered on the server and handed down as a
@@ -110,7 +110,7 @@ export function ProjectModal({ card, onClose, layoutId, originRect }: ProjectMod
             className="grid h-full max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-2 md:gap-8 md:p-8 lg:p-10"
           >
             {/* Image, with the title in the same notched inset label as the
-                  card. With no photo the panel is typeset instead — same move
+                  card. With no photo the panel is typeset instead - same move
                   the showcase tile makes. */}
             <div className="relative flex h-full min-h-[16rem] items-stretch justify-center overflow-hidden rounded-2xl bg-muted md:sticky md:top-0">
               {card.image ? (

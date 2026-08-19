@@ -9,13 +9,13 @@ import { useCallback, useLayoutEffect, useRef } from 'react'
  * The panel is scaled per axis from the card's box to its own while an inner
  * wrapper is scaled by the inverse, so the two cancel and the content keeps its
  * true proportions while only the frame changes shape. Everything runs on
- * `transform` and `opacity`, which are composited — no layout or paint per
+ * `transform` and `opacity`, which are composited - no layout or paint per
  * frame. Animating width/height instead is the obvious way to write this and is
  * the reason such modals stutter on cheap phones.
  *
  * Uses the Web Animations API rather than an animation library: motion's
  * imperative `animate()` drives values from JavaScript on rAF and, on these
- * elements, jumped straight to the end state — the modal simply appeared.
+ * elements, jumped straight to the end state - the modal simply appeared.
  *
  * Attach the refs like this, and give the panel `opacity: 0` inline so nothing
  * flashes at full size before the first frame:
@@ -181,7 +181,7 @@ export function useCardMorph({ originRect, onClose, reduceMotion }: UseCardMorph
       onClose()
     }
 
-    // These keep `fill: both` — they do need to hold the shrunken state until
+    // These keep `fill: both` - they do need to hold the shrunken state until
     // the component actually goes away.
     const options: KeyframeAnimationOptions = {
       duration: DURATION,
@@ -196,7 +196,7 @@ export function useCardMorph({ originRect, onClose, reduceMotion }: UseCardMorph
     })
 
     // The content goes first and faster, so the frame is empty before it
-    // shrinks — collapsing a full panel of text reads as a squash otherwise.
+    // shrinks - collapsing a full panel of text reads as a squash otherwise.
     bodyRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
       duration: DURATION * 0.35,
       easing: EASE_IN,

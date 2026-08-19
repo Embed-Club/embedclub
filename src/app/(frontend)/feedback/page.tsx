@@ -23,7 +23,7 @@ async function getFeedbackForms() {
         and: [
           { type: { equals: 'feedback' } },
           // Sections are reached through their container, which stands in for
-          // them here — the A and B sections of one workshop's feedback are not
+          // them here - the A and B sections of one workshop's feedback are not
           // two things to choose between on this page.
           { sectionOf: { exists: false } },
           // Retired forms stay out of the list. Fifteen of the imported archive

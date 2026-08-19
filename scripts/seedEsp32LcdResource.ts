@@ -3,7 +3,7 @@
  *
  *   pnpm tsx scripts/seedEsp32LcdResource.ts
  *
- * A short reference note rather than a full tutorial — it ports the club's older
+ * A short reference note rather than a full tutorial - it ports the club's older
  * 16×2 LCD post (written against ESP8266 `D` pin labels) to the ESP32, where
  * those labels do not exist and the 3.3V logic level is a real constraint.
  *
@@ -34,15 +34,15 @@ import {
 
 const SLUG = 'esp32-print-string-on-16x2-lcd'
 
-/** Caption of the parallel-wiring code block — the simulator card anchors here. */
+/** Caption of the parallel-wiring code block - the simulator card anchors here. */
 const WIRING_CODE_CAPTION = 'esp32Lcd.ino'
 
-const PARALLEL = `// esp32Lcd.ino — "Hello" on a 16x2 character LCD, wired in 4-bit mode.
+const PARALLEL = `// esp32Lcd.ino - "Hello" on a 16x2 character LCD, wired in 4-bit mode.
 #include <LiquidCrystal.h>
 
 // LiquidCrystal(rs, enable, d4, d5, d6, d7)
 //
-// Plain GPIO numbers. The ESP32 has no D1/D2/D4... labels — those are
+// Plain GPIO numbers. The ESP32 has no D1/D2/D4... labels - those are
 // NodeMCU/ESP8266 silkscreen names, and pasting them here will not compile.
 const int RS = 13, EN = 14, D4 = 27, D5 = 26, D6 = 25, D7 = 33;
 
@@ -55,7 +55,7 @@ void setup() {
   lcd.setCursor(0, 0);       // column 0, row 0
   lcd.print("Hello!");
 
-  lcd.setCursor(0, 1);       // row 1 is the SECOND row — rows count from 0
+  lcd.setCursor(0, 1);       // row 1 is the SECOND row - rows count from 0
   lcd.print("Embed Club");
 }
 
@@ -64,7 +64,7 @@ void loop() {
   // without being refreshed.
 }`
 
-const I2C = `// esp32LcdI2c.ino — same output, two wires instead of six.
+const I2C = `// esp32LcdI2c.ino - same output, two wires instead of six.
 // Needs a PCF8574 "backpack" soldered to the LCD, and the
 // LiquidCrystal_I2C library from the Library Manager.
 #include <Wire.h>
@@ -98,13 +98,13 @@ const CONTENT = [
       text(' and '),
       code('D4'),
       text(
-        ', which do not exist on an ESP32 — the labels are ESP8266 board silkscreen, not chip pins. Here is the same thing with real GPIO numbers, plus the one hardware detail that catches people out.',
+        ', which do not exist on an ESP32 - the labels are ESP8266 board silkscreen, not chip pins. Here is the same thing with real GPIO numbers, plus the one hardware detail that catches people out.',
       ),
     ]),
     heading('h2', [text('What You Need')]),
     list('bullet', [
       [bold('An ESP32 dev board'), text(' (DevKit v1 or similar)')],
-      [bold('A 16×2 character LCD'), text(' — the HD44780 type, with 16 pins along the top')],
+      [bold('A 16×2 character LCD'), text(' - the HD44780 type, with 16 pins along the top')],
       [bold('A 10 kΩ potentiometer'), text(' for contrast')],
       [text('A breadboard and jumper wires')],
     ]),
@@ -120,7 +120,7 @@ const CONTENT = [
       [code('D5'), text(' → '), bold('GPIO 26')],
       [code('D6'), text(' → '), bold('GPIO 25')],
       [code('D7'), text(' → '), bold('GPIO 33')],
-      [code('RW'), text(' → '), bold('GND'), text(' (write only — never leave it floating)')],
+      [code('RW'), text(' → '), bold('GND'), text(' (write only - never leave it floating)')],
       [code('VSS'), text(' → GND,  '), code('VDD'), text(' → '), bold('5V (VIN)')],
       [code('V0'), text(' → the potentiometer’s middle leg; its outer legs to 5V and GND')],
       [code('A'), text(' → 5V through a 220Ω resistor,  '), code('K'), text(' → GND (backlight)')],
@@ -130,10 +130,10 @@ const CONTENT = [
       text('Avoid GPIO '),
       code('0, 2, 12, 15'),
       text(
-        ' — they are strapping pins and something attached to them can stop the board booting. Avoid ',
+        ' - they are strapping pins and something attached to them can stop the board booting. Avoid ',
       ),
       code('34–39'),
-      text(' — those are input only. And leaving '),
+      text(' - those are input only. And leaving '),
       code('21'),
       text(' and '),
       code('22'),
@@ -146,12 +146,12 @@ const CONTENT = [
     paragraph([
       bold('The LCD wants 5V. The ESP32 speaks 3.3V. '),
       text(
-        'An HD44780 running at 5V wants at least about 3.5V to register a logic high, and the ESP32 outputs 3.3V — under the threshold, on paper. In practice most modules read it fine and the display just works, which is why so many guides never mention it.',
+        'An HD44780 running at 5V wants at least about 3.5V to register a logic high, and the ESP32 outputs 3.3V - under the threshold, on paper. In practice most modules read it fine and the display just works, which is why so many guides never mention it.',
       ),
     ]),
     paragraph([
       text(
-        'If yours is unreliable — flickering, garbled characters, or working only when you touch a wire — the fix is one of:',
+        'If yours is unreliable - flickering, garbled characters, or working only when you touch a wire - the fix is one of:',
       ),
     ]),
     list('bullet', [
@@ -163,7 +163,7 @@ const CONTENT = [
         ),
       ],
       [text('Put a '), bold('level shifter'), text(' on the six data lines.')],
-      [text('Use an '), bold('I²C backpack'), text(' instead, below — fewer lines to get wrong.')],
+      [text('Use an '), bold('I²C backpack'), text(' instead, below - fewer lines to get wrong.')],
     ]),
     paragraph([
       italic('The reverse direction is the dangerous one. '),
@@ -188,7 +188,7 @@ const CONTENT = [
       ),
       code('setup()'),
       text(
-        ' gives the same display and leaves the processor free. Only put a print in loop() when the value on screen actually changes — and then clear or overwrite the old text, or leftover characters from a longer previous value stay behind.',
+        ' gives the same display and leaves the processor free. Only put a print in loop() when the value on screen actually changes - and then clear or overwrite the old text, or leftover characters from a longer previous value stay behind.',
       ),
     ]),
     paragraph([
@@ -204,9 +204,9 @@ const CONTENT = [
   textBlock([
     heading('h2', [text('Two Wires Instead of Six')]),
     paragraph([
-      text('If your LCD has an I²C backpack on the back — a small board with four pins marked '),
+      text('If your LCD has an I²C backpack on the back - a small board with four pins marked '),
       code('GND VCC SDA SCL'),
-      text(' — the wiring collapses to those four and the code changes slightly:'),
+      text(' - the wiring collapses to those four and the code changes slightly:'),
     ]),
   ]),
   codeBlock('cpp', I2C, 'esp32LcdI2c.ino'),
@@ -237,7 +237,7 @@ const CONTENT = [
       ],
       [
         bold('Completely blank, backlight on: '),
-        text('contrast. Turn the potentiometer through its full range — with '),
+        text('contrast. Turn the potentiometer through its full range - with '),
         code('V0'),
         text(' unset the text is invisible even when everything else is right.'),
       ],
@@ -251,7 +251,7 @@ const CONTENT = [
       ],
       [
         bold('I²C version shows nothing: '),
-        text('wrong address. Run an I²C scanner sketch — '),
+        text('wrong address. Run an I²C scanner sketch - '),
         code('0x3F'),
         text(' is as common as '),
         code('0x27'),
@@ -281,7 +281,7 @@ async function main() {
       title: 'ESP32: Print a String on a 16×2 LCD',
       slug: SLUG,
       description:
-        'The club’s 16×2 LCD note ported to the ESP32 — real GPIO numbers instead of NodeMCU D labels, the 3.3V logic caveat, and an I²C alternative.',
+        'The club’s 16×2 LCD note ported to the ESP32 - real GPIO numbers instead of NodeMCU D labels, the 3.3V logic caveat, and an I²C alternative.',
       // No LCD photo in the library yet; placeholder until one is added.
       thumbnail: placeholderId,
       difficulty: 'beginner',

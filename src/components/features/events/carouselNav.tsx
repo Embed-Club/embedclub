@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, useAnimationFrame, useMotionValue, useReducedMotion } from 'motion/react'
 
 export interface CarouselNavProps {
-  /** Number of scroll snaps — one dot each. */
+  /** Number of scroll snaps - one dot each. */
   snapCount: number
   selectedIndex: number
   canScrollPrev: boolean
@@ -20,7 +20,7 @@ export interface CarouselNavProps {
    */
   autoDelaySeconds?: number
   /**
-   * Whether the carousel's autoplay timer is running *right now* — it stops on
+   * Whether the carousel's autoplay timer is running *right now* - it stops on
    * hover, on drag, and while the tab is hidden. False holds the bar where it
    * is: a bar that keeps filling while the carousel is parked says a card is
    * about to change when nothing is going to happen.
@@ -39,13 +39,13 @@ export interface CarouselNavProps {
  *
  * Replaces two bare arrows. They moved the track but said nothing about how
  * many cards there were or which one you were on, and with `loop: true` there
- * is no start or end to feel your way to — so on a long row of events the
+ * is no start or end to feel your way to - so on a long row of events the
  * arrows gave no sense of position at all.
  *
  * All colour is tokens (`secondary`/`primary`/`muted`), not the per-slide
  * palettes the original sketch shipped with: the theme is locked to Solder &
  * Copper and new accent hues are out (AGENTS.md §1). The sketch's palette
- * switching was also inert — it fed Tailwind class strings like `bg-zinc-100`
+ * switching was also inert - it fed Tailwind class strings like `bg-zinc-100`
  * to `animate={{ backgroundColor }}`, which is not a colour.
  */
 export const CarouselNav = ({
