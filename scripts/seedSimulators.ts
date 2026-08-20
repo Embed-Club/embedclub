@@ -121,6 +121,7 @@ async function run() {
       title: sim.title,
       slug: sim.slug,
       description: sim.description,
+      launchType: 'website' as const,
       launchUrl: sim.launchUrl,
       difficulty: sim.difficulty,
       thumbnail,
@@ -142,7 +143,7 @@ async function run() {
       })
       updated++
     } else {
-      await payload.create({ collection: 'simulators', data, overrideAccess: true })
+      await payload.create({ collection: 'simulators', data, draft: false, overrideAccess: true })
       created++
     }
   }

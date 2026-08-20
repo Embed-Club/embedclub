@@ -273,6 +273,7 @@ async function run() {
       title: tool.title,
       slug: tool.slug,
       description: tool.description,
+      launchType: 'website' as const,
       launchUrl: tool.launchUrl,
       difficulty: tool.difficulty,
       thumbnail,
@@ -294,7 +295,7 @@ async function run() {
       })
       updated++
     } else {
-      await payload.create({ collection: 'simulators', data, overrideAccess: true })
+      await payload.create({ collection: 'simulators', data, draft: false, overrideAccess: true })
       created++
     }
     console.log(`${hadLogo ? 'ok      ' : 'no logo '} ${tool.title}`)
