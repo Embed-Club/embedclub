@@ -1,8 +1,8 @@
-import 'server-only'
+import "server-only";
 
-import type { Form } from '@/payload/payload-types'
-import config from '@/payload/payload.config'
-import { getPayload } from 'payload'
+import type { Form } from "@/payload/payload-types";
+import config from "@/payload/payload.config";
+import { getPayload } from "payload";
 
 /**
  * Lookups shared by the form page and its section pages.
@@ -15,47 +15,54 @@ import { getPayload } from 'payload'
  */
 export async function getFormBySlug(slug: string): Promise<Form | null> {
   try {
-    const payload = await getPayload({ config })
+    const payload = await getPayload({ config });
     const result = await payload.find({
-      collection: 'forms',
+      collection: "forms",
       where: { slug: { equals: slug } },
       limit: 1,
       depth: 1,
-    })
-    return result.docs[0] || null
+    });
+    return result.docs[0] || null;
   } catch (error) {
-    console.error('[Forms] Error fetching form:', error)
-    return null
+    console.error("[Forms] Error fetching form:", error);
+    return null;
   }
 }
 
-/** The sections under a container, in the order officers set. */
-export async function getSections(containerId: number | string): Promise<Form[]> {
+/** The sections under a container, in the order members set. */
+export async function getSections(
+  containerId: number | string,
+): Promise<Form[]> {
   try {
-    const payload = await getPayload({ config })
+    const payload = await getPayload({ config });
     const result = await payload.find({
-      collection: 'forms',
+      collection: "forms",
       where: { sectionOf: { equals: containerId } },
       // Explicit order first; ties and unset values fall back to the title, so
       // the list is at least stable rather than in insertion order.
-      sort: ['sectionOrder', 'title'],
+      sort: ["sectionOrder", "title"],
       limit: 50,
       depth: 1,
-    })
-    return result.docs
+    });
+    return result.docs;
   } catch (error) {
-    console.error('[Forms] Error fetching sections:', error)
-    return []
+    console.error("[Forms] Error fetching sections:", error);
+    return [];
   }
 }
 
 /** One section of a parent form, addressed the way the URL addresses it. */
-export async function getSection(containerSlug: string, sectionSlug: string): Promise<Form | null> {
-  const container = await getFormBySlug(containerSlug)
-  if (!container?.sectionGroup) return null
+export async function getSection(
+  containerSlug: string,
+  sectionSlug: string,
+): Promise<Form | null> {
+  const container = await getFormBySlug(containerSlug);
+  if (!container?.sectionGroup) return null;
 
-  const sections = await getSections(container.id)
-  return sections.find((section) => section.sectionSlug === sectionSlug) ?? null
+  const sections = await getSections(container.id);
+  return (
+    sections.find((section) => section.sectionSlug === sectionSlug) ?? null
+  );
 }
 
 /**
@@ -68,21 +75,23 @@ export async function getSection(containerSlug: string, sectionSlug: string): Pr
  * is recorded against the section that collected it.
  */
 export async function withResolvedSteps(form: Form): Promise<Form> {
-  if (!form.sectionOf) return form
+  if (!form.sectionOf) return form;
 
   const parent =
-    typeof form.sectionOf === 'object' ? form.sectionOf : await getFormById(form.sectionOf)
+    typeof form.sectionOf === "object"
+      ? form.sectionOf
+      : await getFormById(form.sectionOf);
 
-  return { ...form, steps: parent?.steps ?? [] }
+  return { ...form, steps: parent?.steps ?? [] };
 }
 
 /** Used when a relationship came back as a bare id rather than a document. */
 export async function getFormById(id: number): Promise<Form | null> {
   try {
-    const payload = await getPayload({ config })
-    return await payload.findByID({ collection: 'forms', id, depth: 0 })
+    const payload = await getPayload({ config });
+    return await payload.findByID({ collection: "forms", id, depth: 0 });
   } catch (error) {
-    console.error('[Forms] Error fetching form by id:', error)
-    return null
+    console.error("[Forms] Error fetching form by id:", error);
+    return null;
   }
 }

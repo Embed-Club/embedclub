@@ -14,21 +14,21 @@ exists so members can show what the club does and so students can find things:
 upcoming events, past achievements, learning material, tools, member projects,
 and photos.
 
-Every page is content-managed. Nothing that a club officer might reasonably
-want to change lives in JSX - it lives in Payload. Officers are students, they
+Every page is content-managed. Nothing that a club members might reasonably
+want to change lives in JSX - it lives in Payload. Members are students, they
 rotate yearly, and none of them should need a developer to add an event.
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 15 (App Router) |
-| CMS | Payload 3 |
-| Database | Postgres (Neon), migration-managed, `push: false` |
-| Media | Supabase Storage, served via CDN rewrite |
-| Styling | Tailwind 3 + shadcn primitives |
-| Animation | `motion` (never framer-motion), gsap |
-| Tooling | pnpm, Biome (not ESLint/Prettier), Vitest, Playwright |
+| Layer     | Choice                                                |
+| --------- | ----------------------------------------------------- |
+| Framework | Next.js 15 (App Router)                               |
+| CMS       | Payload 3                                             |
+| Database  | Postgres (Neon), migration-managed, `push: false`     |
+| Media     | Supabase Storage, served via CDN rewrite              |
+| Styling   | Tailwind 3 + shadcn primitives                        |
+| Animation | `motion` (never framer-motion), gsap                  |
+| Tooling   | pnpm, Biome (not ESLint/Prettier), Vitest, Playwright |
 
 ## Design language, in one paragraph
 
@@ -53,16 +53,16 @@ existing pattern.
 
 ## Content model
 
-Admin nav is grouped so a new officer can find things:
+Admin nav is grouped so a new member can find things:
 
-| Group | Collections |
-|---|---|
-| **Content** | Events, Achievements, Gallery, Resources, Tutorials, Simulators, Projects |
-| **Members** | Members, Member Roles, Member Categories, Member Photos |
-| **Forms** | Forms, Form Submissions |
-| **Library** | Media, Tags |
-| **System** | Users |
-| **Pages** (globals) | About Page, Home · Featured Members |
+| Group               | Collections                                                               |
+| ------------------- | ------------------------------------------------------------------------- |
+| **Content**         | Events, Achievements, Gallery, Resources, Tutorials, Simulators, Projects |
+| **Members**         | Members, Member Roles, Member Categories, Member Photos                   |
+| **Forms**           | Forms, Form Submissions                                                   |
+| **Library**         | Media, Tags                                                               |
+| **System**          | Users                                                                     |
+| **Pages** (globals) | About Page, Home · Featured Members                                       |
 
 Notes on specific collections:
 
@@ -117,7 +117,7 @@ Migrations `20260728_140000` and `20260728_150000`.
 **Google Forms dependency removed**
 
 - `googleFormUrl` and every field's hand-copied `googleEntryId` are gone. That
-  was the most error-prone step an officer had, and Google answers `200` even
+  was the most error-prone step a member had, and Google answers `200` even
   when the entry IDs are wrong - so a typo silently sent responses nowhere and
   the old `googleForwardStatus` reported success regardless.
 - Answers are keyed by each field row's Payload `id`, which survives label
@@ -126,8 +126,8 @@ Migrations `20260728_140000` and `20260728_150000`.
 
 **Certificates**
 
-Two delivery modes on the form: *straight after they submit*, or *email
-everyone at a set time*. Both are **rolling** - dispatch picks up whoever is
+Two delivery modes on the form: _straight after they submit_, or _email
+everyone at a set time_. Both are **rolling** - dispatch picks up whoever is
 `pending` right now, so someone who submits the morning after the send time
 still gets theirs on the next pass. Status is per recipient
 (`pending`/`sent`/`failed` + `certificateError`), so a failure retries without
@@ -162,7 +162,7 @@ Each form can point at its own Slides template
 once. `certificateBatches` is an array: each row names a batch, a question
 (`matchField`), an expected answer (`matchValue`), and its own `sendAt`. A
 submission is matched against these in order; if none match, it falls back to
-the form's plain `certificateSendAt`. This is fully officer-configurable -
+the form's plain `certificateSendAt`. This is fully member-configurable -
 any number of batches, matched on any question - not a fixed "Section A/B"
 split.
 
@@ -213,11 +213,9 @@ Before reaching for this: `form-submissions` is now wired into the
 import/export plugin, so CSV/JSON export works from the admin list view with no
 Google setup at all.
 
-
-
 ### 2026-07-28 - Admin cleanup and content-model overhaul
 
-A five-part pass to make the admin panel navigable for non-technical officers.
+A five-part pass to make the admin panel navigable for non-technical member.
 Migrations `20260728_100000` through `20260728_130000`.
 
 **Removed**
@@ -273,7 +271,7 @@ Migrations `20260728_100000` through `20260728_130000`.
 - The one existing Wokwi simulator has no `launchUrl` (its old `iframeUrl` was
   null). The modal shows a "no link yet" message until an organizer adds one.
 - Every card surface is now on the cutout system. `FocusCards` (events grid)
-  and `ChromaGrid` (members) already were - they compose `CutoutCorner` and the
+  and `ChromaGrid` (Members) already were - they compose `CutoutCorner` and the
   notched inset label directly rather than importing the full `CutoutCard`
   root, which makes it easy to misread the imports and think otherwise.
 - Forms and Feedback were deliberately deferred: the plan is to build forms in

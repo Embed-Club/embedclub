@@ -959,6 +959,10 @@ export interface Simulator {
    */
   estimatedTime?: number | null;
   /**
+   * What the main button says. A browser tool opens a website; a desktop tool sends them to a download page.
+   */
+  launchType: 'website' | 'download';
+  /**
    * Where the simulator actually lives, e.g. https://wokwi.com. Students open this from the modal.
    */
   launchUrl: string;
@@ -1983,6 +1987,7 @@ export interface SimulatorsSelect<T extends boolean = true> {
   tags?: T;
   difficulty?: T;
   estimatedTime?: T;
+  launchType?: T;
   launchUrl?: T;
   videoUrl?: T;
   content?:

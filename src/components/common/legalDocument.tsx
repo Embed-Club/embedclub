@@ -1,36 +1,36 @@
-import { PageTitle } from '@/components/common/pageTitle'
-import RichTextRender from '@/components/common/richTextRender'
-import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
-import type { LegalPage } from '@/payload/payload-types'
-import type { ReactNode } from 'react'
+import { PageTitle } from "@/components/common/pageTitle";
+import RichTextRender from "@/components/common/richTextRender";
+import { MainbarShell, SidebarShell } from "@/components/layout/frontendShell";
+import type { LegalPage } from "@/payload/payload-types";
+import type { ReactNode } from "react";
 
 /**
  * Privacy and terms carry their own sections field, but the two are the same
  * shape, so the renderer takes either.
  */
-type LegalSection = NonNullable<LegalPage['privacySections']>[number]
+type LegalSection = NonNullable<LegalPage["privacySections"]>[number];
 
 interface LegalDocumentProps {
-  title: string
+  title: string;
   /** Lexical content from the Legal Pages global, shown above the sections. */
-  content?: Record<string, unknown> | null
+  content?: Record<string, unknown> | null;
   /** Ordered sections shown below the intro. */
-  sections?: LegalSection[] | null
+  sections?: LegalSection[] | null;
   /** ISO date the policy was last revised. */
-  lastUpdated?: string | null
+  lastUpdated?: string | null;
   /**
    * Rendered below the content and sections - e.g. the email/phone row on
    * /contact. Doesn't count toward `hasAnything`: a page with only this and no
    * written content still shows as unwritten.
    */
-  extra?: ReactNode
+  extra?: ReactNode;
   /** Shown when the CMS has no wording for this page yet. */
-  empty: ReactNode
+  empty: ReactNode;
 }
 
 function LegalSectionBlock({ section }: { section: LegalSection }) {
   switch (section.blockType) {
-    case 'legalHeadingBlock':
+    case "legalHeadingBlock":
       // Same banner panel as the About page's heading block, so a section break
       // reads identically on both. No background image or subheading here -
       // those are About's fields, and a policy page has no use for either.
@@ -42,15 +42,15 @@ function LegalSectionBlock({ section }: { section: LegalSection }) {
             </h2>
           </div>
         </div>
-      )
-    case 'legalTextBlock':
+      );
+    case "legalTextBlock":
       return (
         <div className="my-6">
           <RichTextRender content={section.text} />
         </div>
-      )
+      );
     default:
-      return null
+      return null;
   }
 }
 
@@ -59,7 +59,7 @@ function LegalSectionBlock({ section }: { section: LegalSection }) {
  * only in which fields of the Legal Pages global it renders.
  *
  * Same column and the same intro-then-sections shape as the About page, so
- * prose lines up at one width across every text page and officers edit both
+ * prose lines up at one width across every text page and members edit both
  * pages the same way.
  */
 export function LegalDocument({
@@ -70,18 +70,18 @@ export function LegalDocument({
   extra,
   empty,
 }: LegalDocumentProps) {
-  const blocks = sections ?? []
+  const blocks = sections ?? [];
   // The date alone isn't content - a page with only "last updated" on it should
   // still read as unwritten.
-  const hasAnything = Boolean(content) || blocks.length > 0
+  const hasAnything = Boolean(content) || blocks.length > 0;
 
   const revised = lastUpdated
-    ? new Date(lastUpdated).toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
+    ? new Date(lastUpdated).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
       })
-    : null
+    : null;
 
   return (
     <SidebarShell>
@@ -93,7 +93,9 @@ export function LegalDocument({
           ) : (
             <>
               {revised && (
-                <p className="mb-8 text-sm text-muted-foreground">Last updated {revised}</p>
+                <p className="mb-8 text-sm text-muted-foreground">
+                  Last updated {revised}
+                </p>
               )}
               {content && <RichTextRender content={content} />}
               {blocks.map((section, i) => (
@@ -107,5 +109,5 @@ export function LegalDocument({
         </div>
       </MainbarShell>
     </SidebarShell>
-  )
+  );
 }

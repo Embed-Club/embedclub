@@ -61,6 +61,7 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
         estimatedTime: simulator.estimatedTime ?? undefined,
         createdAt: simulator.createdAt,
         launchUrl: simulator.launchUrl || undefined,
+        launchType: simulator.launchType || undefined,
         videoUrl: simulator.videoUrl || undefined,
         content: simulator.content,
       }

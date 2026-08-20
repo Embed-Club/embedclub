@@ -11,7 +11,7 @@ import { SimulatorVideo } from '@/components/features/simulators/simulatorVideo'
 import { useCardMorph } from '@/hooks/useCardMorph'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { cn } from '@/lib/utils'
-import { ExternalLink, SquareArrowOutUpRight, X } from 'lucide-react'
+import { Download, ExternalLink, SquareArrowOutUpRight, X } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import { useEffect } from 'react'
@@ -77,7 +77,10 @@ function SimulatorModalPanel({
     }
   }, [requestClose])
 
-  const { title, description, image, launchUrl, videoUrl, content } = simulator
+  const { title, description, image, launchUrl, launchType, videoUrl, content } = simulator
+  // A desktop tool sends them to a download page, so "Open simulator" would
+  // be a lie. The label is set per simulator in the admin.
+  const isDownload = launchType === 'download'
   const hasInstructions = Array.isArray(content) && content.length > 0
 
   return (
@@ -157,8 +160,12 @@ function SimulatorModalPanel({
                     href={launchUrl}
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
-                    <ExternalLink className="h-4 w-4" />
-                    Open simulator
+                    {isDownload ? (
+                      <Download className="h-4 w-4" />
+                    ) : (
+                      <ExternalLink className="h-4 w-4" />
+                    )}
+                    {isDownload ? 'Download App' : 'Open Website'}
                   </a>
                   <a
                     href={launchUrl}

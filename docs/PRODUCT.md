@@ -6,7 +6,7 @@ brand
 
 ## Users
 
-Engineering students at PACE (Mangalore) - current Embed Club members, prospective members, and alumni. Mostly **mobile users** browsing between classes: checking upcoming events, reading tutorials/resources, trying embedded-systems simulators, submitting workshop feedback. A secondary audience is faculty and industry guests evaluating the club.
+Engineering students at PACE (Mangalore) - current Embed Club Members, prospective members, and alumni. Mostly **mobile users** browsing between classes: checking upcoming events, reading tutorials/resources, trying embedded-systems simulators, submitting workshop feedback. A secondary audience is faculty and industry guests evaluating the club.
 
 ## Product Purpose
 
@@ -26,7 +26,7 @@ Hands-on, technical, workshop-bench. The club solders real boards - the site sho
 
 1. **The lab is the brand** - materials and colors come from real electronics: copper traces, solder, graphite PCBs. Not from tech-startup convention.
 2. **Mobile is the primary device** - every layout decision is judged on a ~390px screen first; desktop is the enhancement.
-3. **Content outlives code** - page content (About, Feedback, Resources) lives in Payload CMS so club officers can edit without a developer.
+3. **Content outlives code** - page content (About, Feedback, Resources) lives in Payload CMS so club members can edit without a developer.
 4. **Motion earns its place** - the intro logo choreography is the signature moment; everything else stays quick and functional.
 5. **Student-built pride** - quirks (background music, custom cursor, star-field) are features of identity, kept polished rather than sanded off.
 

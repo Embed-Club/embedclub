@@ -27,6 +27,8 @@ export interface SimulatorCardData {
   createdAt?: string
   /** Where the simulator itself lives - opened from the modal. */
   launchUrl?: string
+  /** Whether the main button reads "Open Website" or "Download App". */
+  launchType?: 'website' | 'download'
   /** Optional walkthrough video played inside the modal. */
   videoUrl?: string
   /** Optional "how to use" blocks rendered under the video. */

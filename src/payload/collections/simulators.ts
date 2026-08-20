@@ -81,6 +81,21 @@ export const Simulators: CollectionConfig = {
       },
     },
     {
+      name: 'launchType',
+      label: 'Button label',
+      type: 'radio',
+      defaultValue: 'website',
+      required: true,
+      admin: {
+        description:
+          'What the main button says. A browser tool opens a website; a desktop tool sends them to a download page.',
+      },
+      options: [
+        { label: 'Open Website', value: 'website' },
+        { label: 'Download App', value: 'download' },
+      ],
+    },
+    {
       name: 'launchUrl',
       label: 'Simulator URL',
       type: 'text',

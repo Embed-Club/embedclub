@@ -1,10 +1,14 @@
-import { type MigrateDownArgs, type MigrateUpArgs, sql } from '@payloadcms/db-postgres'
+import {
+  type MigrateDownArgs,
+  type MigrateUpArgs,
+  sql,
+} from "@payloadcms/db-postgres";
 
 /**
  * Forms stop mirroring a Google Form and become the real thing.
  *
  * - `google_form_url` and the per-field `google_entry_id` go. Copying entry IDs
- *   by hand was the most error-prone step an officer had, and Google answers
+ *   by hand was the most error-prone step a member had, and Google answers
  *   200 even when they are wrong, so a typo silently sent responses nowhere.
  * - Fields gain a `role` (none / name / email) so certificates know what to
  *   print and where to send it, plus optional `help_text`.
@@ -60,7 +64,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "form_submissions_certificate_status_idx" ON "form_submissions" USING btree ("certificate_status");
 
   -- Feedback is now the Forms listing filtered by type
-  DROP TABLE IF EXISTS "feedback_page" CASCADE;`)
+  DROP TABLE IF EXISTS "feedback_page" CASCADE;`);
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
@@ -104,5 +108,5 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
 
   DROP TYPE IF EXISTS "public"."enum_form_submissions_certificate_status";
   DROP TYPE IF EXISTS "public"."enum_forms_certificate_delivery";
-  DROP TYPE IF EXISTS "public"."enum_forms_steps_fields_role";`)
+  DROP TYPE IF EXISTS "public"."enum_forms_steps_fields_role";`);
 }

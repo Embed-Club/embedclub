@@ -1,34 +1,34 @@
-import { EmptyState } from '@/components/common/emptyState'
-import { ProjectShowcaseTile } from '@/components/features/projects/projectShowcaseTile'
-import type { ReactNode } from 'react'
+import { EmptyState } from "@/components/common/emptyState";
+import { ProjectShowcaseTile } from "@/components/features/projects/projectShowcaseTile";
+import type { ReactNode } from "react";
 
 export interface ProjectCardData {
-  id: string
-  title: string
-  description: string
+  id: string;
+  title: string;
+  description: string;
   /** Null when there is no photo of the build - the tile is typeset instead. */
-  image: string | null
-  tags: string[]
-  slug: string
-  teamCount: number
-  teamNames: string[]
+  image: string | null;
+  tags: string[];
+  slug: string;
+  teamCount: number;
+  teamNames: string[];
   /** Placing or grant, e.g. "Winner" or "KSCST Grant · ₹5,000". */
-  award?: string
+  award?: string;
   /** Where it was won, e.g. "ADC 2023". */
-  event?: string
-  year?: number
-  repoUrl?: string
-  demoUrl?: string
+  event?: string;
+  year?: number;
+  repoUrl?: string;
+  demoUrl?: string;
   /**
    * The write-up, pre-rendered on the server. The block renderer is a server
    * component, so the modal (a client component) is handed the finished node
    * rather than the raw blocks.
    */
-  details?: ReactNode
-  createdAt?: string
+  details?: ReactNode;
+  createdAt?: string;
 }
 
-export type TileSize = 1 | 2
+export type TileSize = 1 | 2;
 
 /**
  * How much room a project has earned, before the pairing gets a say.
@@ -40,30 +40,30 @@ export type TileSize = 1 | 2
  * is what made the old grid feel arbitrary.
  */
 function contentWeight(project: ProjectCardData): number {
-  let weight = 0
+  let weight = 0;
 
-  if (project.image) weight += 2
+  if (project.image) weight += 2;
 
-  const awardLength = project.award?.length ?? 0
-  if (awardLength >= 18) weight += 2
-  else if (awardLength >= 10) weight += 1
+  const awardLength = project.award?.length ?? 0;
+  if (awardLength >= 18) weight += 2;
+  else if (awardLength >= 10) weight += 1;
 
-  if (project.description.length > 100) weight += 1
-  if (project.teamNames.length >= 5) weight += 1
+  if (project.description.length > 100) weight += 1;
+  if (project.teamNames.length >= 5) weight += 1;
 
-  return weight
+  return weight;
 }
 
 /** Fisher-Yates, so every ordering of the showcase is equally likely. */
 function shuffle(projects: ProjectCardData[]): ProjectCardData[] {
-  const shuffled = [...projects]
+  const shuffled = [...projects];
 
   for (let index = shuffled.length - 1; index > 0; index--) {
-    const swap = Math.floor(Math.random() * (index + 1))
-    ;[shuffled[index], shuffled[swap]] = [shuffled[swap], shuffled[index]]
+    const swap = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swap]] = [shuffled[swap], shuffled[index]];
   }
 
-  return shuffled
+  return shuffled;
 }
 
 /**
@@ -76,51 +76,56 @@ function shuffle(projects: ProjectCardData[]): ProjectCardData[] {
  * against something plainer. A project left over at the end takes two columns on
  * its own rather than stretching across the track.
  */
-function sizeProjects(projects: ProjectCardData[]): { project: ProjectCardData; size: TileSize }[] {
-  const sized: { project: ProjectCardData; size: TileSize }[] = []
-  const dealt = shuffle(projects)
+function sizeProjects(
+  projects: ProjectCardData[],
+): { project: ProjectCardData; size: TileSize }[] {
+  const sized: { project: ProjectCardData; size: TileSize }[] = [];
+  const dealt = shuffle(projects);
 
   for (let index = 0; index < dealt.length; index += 2) {
-    const [first, second] = [dealt[index], dealt[index + 1]]
+    const [first, second] = [dealt[index], dealt[index + 1]];
 
     if (!second) {
-      sized.push({ project: first, size: 2 })
-      break
+      sized.push({ project: first, size: 2 });
+      break;
     }
 
-    const difference = contentWeight(first) - contentWeight(second)
-    const firstIsWide = Math.abs(difference) >= 2 ? difference > 0 : Math.random() < 0.5
+    const difference = contentWeight(first) - contentWeight(second);
+    const firstIsWide =
+      Math.abs(difference) >= 2 ? difference > 0 : Math.random() < 0.5;
 
     sized.push(
       { project: first, size: firstIsWide ? 2 : 1 },
       { project: second, size: firstIsWide ? 1 : 2 },
-    )
+    );
   }
 
-  return sized
+  return sized;
 }
 
 const COLUMN_SPAN: Record<TileSize, string> = {
-  1: 'lg:col-span-1',
-  2: 'sm:col-span-2 lg:col-span-2',
-}
+  1: "lg:col-span-1",
+  2: "sm:col-span-2 lg:col-span-2",
+};
 
 interface ProjectsPageContentProps {
-  projects?: ProjectCardData[]
+  projects?: ProjectCardData[];
 }
 
 /**
  * The projects showcase: the club's wins, dealt afresh on every page load.
  *
- * Officers only add projects - there is no order to curate and no size to pick,
+ * members only add projects - there is no order to curate and no size to pick,
  * because the grid works both out for itself. No search, filters or sorting
  * either: this is a short list of things the club is proud of, not a searchable
  * archive. Keeping it a server component also means the arrangement is settled
  * before the page is sent, so nothing re-shuffles under the reader.
  */
-export function ProjectsPageContent({ projects = [] }: ProjectsPageContentProps) {
+export function ProjectsPageContent({
+  projects = [],
+}: ProjectsPageContentProps) {
   if (projects.length === 0) {
-    return <EmptyState title="No Projects Yet" />
+    return <EmptyState title="No Projects Yet" />;
   }
 
   return (
@@ -134,5 +139,5 @@ export function ProjectsPageContent({ projects = [] }: ProjectsPageContentProps)
         </div>
       ))}
     </div>
-  )
+  );
 }

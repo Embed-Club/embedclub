@@ -1,6 +1,7 @@
 'use client'
 
 import RichTextRender from '@/components/common/richTextRender'
+import { ContactLinks } from '@/components/features/contact/contactLinks'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEventDate, googleCalendarUrl, isUpcomingEvent } from '@/lib/eventUtils'
 import { cn } from '@/lib/utils'
@@ -316,21 +317,10 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Contact
           </p>
-          <div className="space-y-2 text-sm">
-            {event.contact?.email && (
-              <a
-                href={`mailto:${event.contact.email}`}
-                className="block text-primary hover:underline"
-              >
-                {event.contact.email}
-              </a>
-            )}
-            {event.contact?.phone && (
-              <a href={`tel:${event.contact.phone}`} className="block text-primary hover:underline">
-                {event.contact.phone}
-              </a>
-            )}
-          </div>
+          {/* Same cards as /contact, at modal scale: the email opens a mail
+              client picker and the phone dials on a touch device instead of
+              being a bare mailto or tel link that does nothing on desktop. */}
+          <ContactLinks email={event.contact?.email} phone={event.contact?.phone} size="compact" />
         </div>
       )}
 
