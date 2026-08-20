@@ -52,11 +52,11 @@ Tokens are shadcn-style HSL triplets in `src/app/(frontend)/globals.css`.
 ## Components
 
 - **Shells**: `SidebarShell` (desktop sidebar nav + mobile menu + intro overlay) → `MainbarShell` (rounded content panel with its own scroll container). All frontend pages nest inside both.
-- **Cards**: `CutoutCard` (cult-ui) is the standard content card for Resources/Tutorials - masked-corner cutout with inset label; `featured` and auto-`NEW` badges come from Payload. Gallery uses `Masonry`; events use carousel + focus cards.
-- **Intro**: logo fill + banner slide choreography on first home load (`FrontendShell`), scales to viewport on mobile, gates page reveal and background audio.
+- **Cards**: `CutoutCard` is the standard content card for Resources/Tutorials - masked-corner cutout with inset label; `featured` and auto-`NEW` badges come from Payload. Gallery uses masonry; events use a carousel and focus cards; projects use a showcase layout.
+- **Intro**: logo fill + banner slide choreography on the home page (`SidebarShell`), scales to the viewport on mobile, and controls when the landing page is revealed. Background audio has its own visible toggle.
 - **Buttons**: shadcn `Button` + animate-ui `FlipButton` for icon toggles (theme, audio) - flip-on-hover from bottom.
 - **Texture**: `.texture-panel` class in `globals.css` (`/textures/fabric-of-squares.png`) on the content panel, sidebar, and menu flyout - a real background layer, blend-mode tuned per theme (`multiply` light, `overlay` dark).
-- Block-based CMS content rendered via `BlockRenderer` → text/code(shiki)/table/graph(mermaid)/image/row/simulator-link blocks.
+- **Block-based CMS content** is rendered via `BlockRenderer` and supports text, code (Shiki), tables, graphs (Mermaid), images, videos, accordions, rows, and simulator links.
 
 ## Layout
 
@@ -67,7 +67,7 @@ Tokens are shadcn-style HSL triplets in `src/app/(frontend)/globals.css`.
 
 ## Motion
 
-- Signature: intro logo fill → banner slide → content fade (motion/react). Runs once per home visit; `prefers-reduced-motion` gets instant reveal.
+- Signature: intro logo fill → banner slide → landing-page reveal (motion/react). Runs on the home page; `prefers-reduced-motion` gets an instant reveal.
 - Micro: FlipButton hover flips, card hover scale (1.05) + copper glow, tab underline spring.
 - Ease-out expo/quart everywhere; no bounce.
 - Mermaid diagrams and heavy libs load lazily - motion never blocks content.

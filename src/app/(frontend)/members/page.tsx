@@ -1,5 +1,6 @@
 import { MembersPageContent } from '@/app/(frontend)/members/membersPageContent'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
+import { generateMemberAvatar } from '@/lib/memberAvatar'
 import type { Member } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import type { Metadata } from 'next'
@@ -15,7 +16,9 @@ export const metadata: Metadata = {
 
 /** All members, fetched once via the Payload local API (depth 2 expands
  *  category / roles / photo relationships). */
-async function getMembers(): Promise<Member[]> {
+type MemberWithGeneratedAvatar = Member & { generatedAvatar?: string }
+
+async function getMembers(): Promise<MemberWithGeneratedAvatar[]> {
   try {
     const payload = await getPayload({ config })
     const res = await payload.find({
@@ -26,11 +29,15 @@ async function getMembers(): Promise<Member[]> {
       sort: '-startYear',
     })
 
-    // `gender` is admin-only - it exists to pick a generated avatar, nothing
-    // more. The page is a client component, so anything left on the doc ships
-    // in the RSC payload and is readable in page source: "not rendered" is not
-    // the same as "not published". Dropped here, at the boundary.
-    return res.docs.map(({ gender: _gender, ...member }) => member as Member)
+    // `gender` is admin-only. Use it to generate the fallback before the data
+    // crosses into the client component, then drop it from the RSC payload.
+    return res.docs.map(({ gender, photo, ...member }) => ({
+      ...member,
+      ...(typeof photo === 'object' && photo !== null
+        ? {}
+        : { generatedAvatar: generateMemberAvatar(member.fullName ?? '', gender) }),
+      photo,
+    })) as MemberWithGeneratedAvatar[]
   } catch (error) {
     console.error('[Members] Error fetching from Payload:', error)
     // Rethrow: an empty list here would render as "nothing published yet",

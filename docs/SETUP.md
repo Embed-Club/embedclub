@@ -28,7 +28,7 @@ DATABASE_URL=postgresql://...        # Neon connection string (pooled)
 PAYLOAD_SECRET=<64-hex random>       # node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 # Only needed when testing S3 storage locally - leave unset for normal dev.
-# When unset, uploads go to local folders (media/, gallery/, audio-files/).
+# When unset, uploads use local storage for development.
 # USE_S3_STORAGE=true
 # S3_ENDPOINT=https://<project-ref>.storage.supabase.co/storage/v1/s3
 # S3_REGION=<supabase region>
@@ -78,10 +78,10 @@ E2E tests boot their own dev server; make sure port 3000 is free. First run:
 
 | Where | What |
 |---|---|
-| Collections | events, resources (type: resource/tutorial), simulators, forms, form-submissions, members (+roles/categories/photos), gallery, achievements, media, audio, tags, users |
-| Globals | About Page, Feedback Page |
-| Native forms | Admin → Forms: build steps → fields, each field carries the Google Form `entry.<id>` (from the Form's "Get pre-filled link"). Submissions are stored in form-submissions AND forwarded to the Google Form, so the linked Sheet stays the organizers' source of truth. |
-| Certificates | feedback-type forms with "show certificate" render a name → PDF download on the success screen |
+| Collections | events, resources, tutorials, simulators, projects, forms, form-submissions, form-media, members (+roles/categories/photos), gallery, achievements, media, tags, users |
+| Globals | About Page, Legal Pages, Support Pages, Home Featured Members |
+| Native forms | Admin → Forms: author multi-step fields directly in Payload. Answers are stored in `form-submissions`, with optional idempotent mirroring to a configured Google Sheet. Forms can also accept image uploads stored in Google Drive. |
+| Certificates | Forms can issue certificates immediately or on a schedule. The site tracks recipients and status; Google Apps Script creates the PDF from a Google Slides template and emails it. |
 
 ## 7. Deployment (Vercel)
 

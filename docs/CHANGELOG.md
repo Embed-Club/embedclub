@@ -12,7 +12,7 @@ system), [SETUP.md](SETUP.md) (environment and migrations), and
 The public website for **Embed Club**, an embedded-systems student club. It
 exists so members can show what the club does and so students can find things:
 upcoming events, past achievements, learning material, tools, member projects,
-and photos.
+forms, certificates, and photos.
 
 Every page is content-managed. Nothing that a club members might reasonably
 want to change lives in JSX - it lives in Payload. Members are students, they
@@ -25,7 +25,7 @@ rotate yearly, and none of them should need a developer to add an event.
 | Framework | Next.js 15 (App Router)                               |
 | CMS       | Payload 3                                             |
 | Database  | Postgres (Neon), migration-managed, `push: false`     |
-| Media     | Supabase Storage, served via CDN rewrite              |
+| Media     | Local disk in development; optional Supabase S3 in production |
 | Styling   | Tailwind 3 + shadcn primitives                        |
 | Animation | `motion` (never framer-motion), gsap                  |
 | Tooling   | pnpm, Biome (not ESLint/Prettier), Vitest, Playwright |
@@ -41,13 +41,10 @@ of banned patterns, are in [DESIGN.md](DESIGN.md) and AGENTS.md §1.
 
 ### A thing that looks like a bug and is not
 
-Sidebar and mobile nav labels read `HOE`, `EENTS`, `CHIEEENTS`, `SIULTORS`.
-These are **not** typos and not missing letters. The display font maps
-private-use Unicode codepoints (U+E000 and friends) to its `A`, `M`, and `V`
-glyphs, so the source strings contain those codepoints rather than ASCII
-letters. A label with no A/M/V - `PROJECTS`, `RESOURCES` - is plain ASCII.
-Never "fix" these strings, and never retype one by hand without copying the
-existing pattern.
+Sidebar and mobile nav labels are plain ASCII and intentionally use the normal
+words shown in the interface. Older versions used private-use Unicode
+codepoints to select alternate font glyphs; that convention was removed and
+must not be reintroduced.
 
 ---
 
@@ -59,18 +56,24 @@ Admin nav is grouped so a new member can find things:
 | ------------------- | ------------------------------------------------------------------------- |
 | **Content**         | Events, Achievements, Gallery, Resources, Tutorials, Simulators, Projects |
 | **Members**         | Members, Member Roles, Member Categories, Member Photos                   |
-| **Forms**           | Forms, Form Submissions                                                   |
+| **Forms**           | Forms, Form Submissions, Form Media                                       |
 | **Library**         | Media, Tags                                                               |
 | **System**          | Users                                                                     |
-| **Pages** (globals) | About Page, Home · Featured Members                                       |
+| **Pages** (globals) | About Page, Legal Pages, Support Pages, Home · Featured Members            |
 
 Notes on specific collections:
 
-- **Resources / Tutorials / Simulators / Projects** are `orderable: true`.
+- **Resources / Tutorials / Simulators** are `orderable: true`.
   Drag rows in the admin list view; the site renders that order, top row first.
-  No date sorting. This writes a fractional-index `_order` column.
-- **Gallery** is an upload collection - one document per photo, holding the
-  file itself plus a caption. Drag many files onto the list view to bulk upload.
+-  Projects use their own showcase arrangement and are not orderable.
+- **Gallery** is an orderable upload collection - one document per photo,
+  holding the file itself plus a caption. Drag many files onto the list view to
+  bulk upload.
+- **Forms** are authored directly in Payload as multi-step wizards. Payload is
+  the source of truth; submissions can optionally be mirrored to Google Sheets.
+- **Certificates** can be immediate or scheduled. Google Apps Script creates
+  and emails PDFs from Google Slides templates, while Payload tracks status and
+  retries.
 - **Simulators** link out to someone else's site. Clicking a card opens a modal
   with an optional walkthrough video and a launch button, rather than
   navigating away immediately.

@@ -1,8 +1,10 @@
 # Product
 
-## Register
+## Product register
 
-brand
+Embed Club is a student-built, workshop-bench website for the embedded-systems
+and IoT club at P.A. College of Engineering, Mangalore. It should feel crafted,
+electric, and practical rather than like a generic technology product.
 
 ## Users
 
@@ -14,7 +16,7 @@ Embed Club's public face: showcase the club (est. 2018, "Inspiring Innovation"),
 
 ## Brand Personality
 
-Hands-on, technical, workshop-bench. The club solders real boards - the site should feel like the lab, not like a SaaS product. Three words: **crafted, electric, student-built**. Custom display fonts (Gobold, Sport Break), an animated logo intro, background music, and a star-field home give it personality; the visual language should feel deliberately made by the members, never templated.
+Hands-on, technical, workshop-bench. The club solders real boards - the site should feel like the lab, not like a SaaS product. Three words: **crafted, electric, student-built**. Custom display fonts (Gobold, Sport Break), an animated logo intro, background music, and a multi-section home give it personality; the visual language should feel deliberately made by the members, never templated.
 
 ## Anti-references
 
@@ -28,7 +30,7 @@ Hands-on, technical, workshop-bench. The club solders real boards - the site sho
 2. **Mobile is the primary device** - every layout decision is judged on a ~390px screen first; desktop is the enhancement.
 3. **Content outlives code** - page content (About, Feedback, Resources) lives in Payload CMS so club members can edit without a developer.
 4. **Motion earns its place** - the intro logo choreography is the signature moment; everything else stays quick and functional.
-5. **Student-built pride** - quirks (background music, custom cursor, star-field) are features of identity, kept polished rather than sanded off.
+5. **Student-built pride** - quirks (background music, custom cursor, and the intro choreography) are features of identity, kept polished rather than sanded off.
 
 ## Accessibility & Inclusion
 

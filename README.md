@@ -77,11 +77,12 @@ Embed Club connects over **100+ Members** who share a passion for embedded syste
 
 - **Intro Visual Identity**: A specialized **Shared Element Transition** (Logo Glide) that persists across page loads for a premium "App-like" feel.
 - **"Solder & Copper" design system**: copper-on-graphite theme with a fabric texture, documented in `docs/DESIGN.md` / `docs/PRODUCT.md`.
-- **Native Form Builder**: multi-step wizard forms built in Payload admin; submissions are stored locally AND forwarded to Google Forms so organizers keep working in Sheets.
-- **Automated Media Engine**: Integrated **Sharp-powered WebP compression** and responsive image generation hosted on Supabase S3.
+- **Native Form Builder**: multi-step wizard forms built in Payload admin; submissions are stored in Payload and can be mirrored idempotently to Google Sheets.
+- **Automated Media Engine**: Integrated **Sharp-powered responsive image generation** with local development storage and optional Supabase S3 storage in production.
 - **Relational Directory**: Sophisticated member profiles with hierarchical roles, categories, and achievement tracking.
 - **Resource Hub**: A curated repository of tools, tutorials, and simulators with advanced tagging, search, and cutout-card UI.
-- **Event Orchestration**: Full lifecycle management for workshops, meetings, and club activities - with optional registration forms.
+- **Event Orchestration**: Full lifecycle management for workshops, meetings, and club activities - with optional registration and feedback forms.
+- **Certificates**: Immediate or scheduled certificate delivery backed by Google Slides, Google Drive, Google Apps Script, and per-recipient tracking.
 
 ---
 
@@ -90,9 +91,9 @@ Embed Club connects over **100+ Members** who share a passion for embedded syste
 | Layer           | Technology                   | Purpose                                               |
 | :-------------- | :--------------------------- | :---------------------------------------------------- |
 | **Frontend**    | Next.js 15 (App Router)      | Core application routing and SSR/ISR                  |
-| **Backend/CMS** | Payload CMS 3.0              | Headless content management & headless API            |
+| **Backend/CMS** | Payload CMS 3.82             | Headless content management & local API               |
 | **Database**    | Neon (PostgreSQL)            | Serverless relational database, migration-managed     |
-| **Storage**     | Supabase (S3 Compatible)     | Cloud media storage (prod only, via `USE_S3_STORAGE`) |
+| **Storage**     | Local disk / Supabase S3     | Local by default; S3-compatible storage when enabled |
 | **Motion**      | Motion (motion/react) & GSAP | High-fidelity UI animations and transitions           |
 | **Styling**     | Tailwind CSS 3               | Copper design tokens + utility layout                 |
 
@@ -114,7 +115,8 @@ Ensure the following are set in production:
 
 - `DATABASE_URL`: Neon/Postgres connection string.
 - `PAYLOAD_SECRET`: A secure random string.
-- `S3_*`: AWS/S3 credentials for media storage.
+- `USE_S3_STORAGE` and `S3_*`: optional S3-compatible media storage configuration.
+- Google service-account or OAuth variables: optional Sheets, Drive, and certificate integrations.
 
 ## Getting Started
 
