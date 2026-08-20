@@ -9,7 +9,7 @@ const avataaars = new Style(definition)
 
 // Keep the Sunrise-style filled background inside the existing Solder & Copper
 // identity instead of introducing another site accent palette.
-const AVATAR_BACKGROUND = ['a05a20', 'd98e4a'] as const
+const AVATAR_BACKGROUND = ['#a05a20', '#d98e4a'] as const
 const FEMALE_TOP = ['hijab'] as const
 const MALE_TOP = [
   'dreads01',
