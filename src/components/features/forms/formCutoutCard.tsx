@@ -30,7 +30,7 @@ function formatDeadline(deadline: string): string {
  */
 export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
   const body = (
-    <CutoutCardContent className="flex flex-1 flex-col gap-2 p-5 pt-8">
+    <CutoutCardContent className="flex flex-1 flex-col gap-2 p-5 pb-12 pt-8">
       {card.eventTitle && (
         <span className="text-xs font-medium text-muted-foreground">{card.eventTitle}</span>
       )}
@@ -45,26 +45,6 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
       {card.description && (
         <p className="text-sm text-muted-foreground line-clamp-2">{card.description}</p>
       )}
-
-      <div className="mt-auto flex items-center justify-between gap-2 pt-3">
-        {card.deadline ? (
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock className="h-3.5 w-3.5" />
-            {card.closed ? 'Closed' : 'Open until'} {formatDeadline(card.deadline)}
-          </span>
-        ) : (
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <CalendarDays className="h-3.5 w-3.5" />
-            {card.closed ? 'Closed' : 'Open'}
-          </span>
-        )}
-
-        {!card.closed && (
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border text-muted-foreground transition-all group-hover/cutout:border-primary group-hover/cutout:bg-primary group-hover/cutout:text-primary-foreground">
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </span>
-        )}
-      </div>
     </CutoutCardContent>
   )
 
@@ -72,7 +52,7 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
     <CutoutCardInsetLabel
       className={cn(
         'top-0 right-0 rounded-bl-[16px] px-4 py-2',
-        card.closed ? 'bg-muted' : 'bg-card',
+        card.closed ? 'bg-muted' : 'bg-primary',
       )}
     >
       <span
@@ -80,7 +60,7 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
           'flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest',
           // `text-foreground` for closed: `text-muted-foreground` on `bg-muted`
           // is muted-on-muted, too low-contrast to read at a glance.
-          card.closed ? 'text-foreground/80' : 'text-primary',
+          card.closed ? 'text-foreground/80' : 'text-primary-foreground',
         )}
       >
         {card.closed && <Lock className="h-3 w-3" />}
@@ -89,16 +69,42 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
       <CutoutCorner
         className={cn(
           'absolute -left-[27px] -top-px -rotate-90',
-          card.closed ? 'text-muted' : 'text-card',
+          card.closed ? 'text-muted' : 'text-primary',
         )}
       />
       <CutoutCorner
         className={cn(
           'absolute -bottom-[27px] -right-px -rotate-90',
-          card.closed ? 'text-muted' : 'text-card',
+          card.closed ? 'text-muted' : 'text-primary',
         )}
       />
     </CutoutCardInsetLabel>
+  )
+
+  const deadlineStrip = (
+    <>
+      <CutoutCardInsetLabel className="bottom-0 left-0 rounded-tr-[16px] bg-background px-5 py-2.5 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5">
+          {card.deadline ? (
+            <Clock className="h-3.5 w-3.5" />
+          ) : (
+            <CalendarDays className="h-3.5 w-3.5" />
+          )}
+          {card.deadline
+            ? `${card.closed ? 'Closed' : 'Open until'} ${formatDeadline(card.deadline)}`
+            : card.closed
+              ? 'Closed'
+              : 'Open'}
+        </span>
+        <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-background" />
+        <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-background" />
+      </CutoutCardInsetLabel>
+      {!card.closed && (
+        <span className="absolute bottom-1.5 right-1.5 flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-all group-hover/cutout:border-primary group-hover/cutout:bg-primary group-hover/cutout:text-primary-foreground">
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </span>
+      )}
+    </>
   )
 
   if (card.closed) {
@@ -115,6 +121,7 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
         >
           {statusStrip}
           {body}
+          {deadlineStrip}
         </div>
       </CutoutCard>
     )
@@ -132,6 +139,7 @@ export const FormCutoutCard = React.memo(({ card }: { card: FormCardData }) => {
       >
         {statusStrip}
         {body}
+        {deadlineStrip}
       </Link>
     </CutoutCard>
   )

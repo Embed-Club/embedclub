@@ -37,6 +37,12 @@ export interface CertificateRequest {
   placeholders?: Record<string, string>
 }
 
+export interface CertificatePreview {
+  pdfBase64: string
+  fileName: string
+  mimeType: string
+}
+
 export function appsScriptConfigured(): boolean {
   return Boolean(process.env.APPS_SCRIPT_URL && process.env.APPS_SCRIPT_SECRET)
 }
@@ -78,5 +84,52 @@ export async function sendCertificate(request: CertificateRequest): Promise<void
 
   if (!payload.ok) {
     throw new Error(payload.error || 'Apps Script reported an unspecified failure')
+  }
+}
+
+/** Generate a certificate PDF without sending email, for the Payload test panel. */
+export async function previewCertificate(
+  request: Omit<CertificateRequest, 'email'>,
+): Promise<CertificatePreview> {
+  const url = process.env.APPS_SCRIPT_URL
+  const secret = process.env.APPS_SCRIPT_SECRET
+
+  if (!url || !secret) {
+    throw new Error('Apps Script is not configured (APPS_SCRIPT_URL / APPS_SCRIPT_SECRET)')
+  }
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    redirect: 'follow',
+    body: JSON.stringify({ secret, mode: 'preview', ...request }),
+  })
+
+  if (!res.ok) {
+    throw new Error(`Apps Script returned ${res.status}: ${(await res.text()).slice(0, 300)}`)
+  }
+
+  const text = await res.text()
+  let payload: {
+    ok?: boolean
+    error?: string
+    pdfBase64?: string
+    fileName?: string
+    mimeType?: string
+  }
+  try {
+    payload = JSON.parse(text) as typeof payload
+  } catch {
+    throw new Error(`Apps Script returned a non-JSON response: ${text.slice(0, 300)}`)
+  }
+
+  if (!payload.ok || !payload.pdfBase64) {
+    throw new Error(payload.error || 'Apps Script reported an unspecified failure')
+  }
+
+  return {
+    pdfBase64: payload.pdfBase64,
+    fileName: payload.fileName || 'EmbedClub_Certificate_Preview.pdf',
+    mimeType: payload.mimeType || 'application/pdf',
   }
 }

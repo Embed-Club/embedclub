@@ -1259,7 +1259,10 @@ export interface MemberRole {
  */
 export interface FormSubmission {
   id: number;
-  form: number | Form;
+  /**
+   * The form this response came from. It is cleared if that form is deleted so the response audit record remains.
+   */
+  form?: (number | null) | Form;
   /**
    * Taken from the question marked as the name. Printed on certificates.
    */

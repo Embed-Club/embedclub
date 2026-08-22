@@ -35,6 +35,7 @@ import * as migration_20260819_002946_addSupportPages from './20260819_002946_ad
 import * as migration_20260819_050734_addSupportFaq from './20260819_050734_addSupportFaq';
 import * as migration_20260819_053658_dropSupportPageFields from './20260819_053658_dropSupportPageFields';
 import * as migration_20260819_100524_addSimulatorLaunchType from './20260819_100524_addSimulatorLaunchType';
+import * as migration_20260821_120000_allow_form_deletion from './20260821_120000_allow_form_deletion';
 
 export const migrations = [
   {
@@ -221,5 +222,10 @@ export const migrations = [
     up: migration_20260819_100524_addSimulatorLaunchType.up,
     down: migration_20260819_100524_addSimulatorLaunchType.down,
     name: '20260819_100524_addSimulatorLaunchType'
+  },
+  {
+    up: migration_20260821_120000_allow_form_deletion.up,
+    down: migration_20260821_120000_allow_form_deletion.down,
+    name: '20260821_120000_allow_form_deletion'
   },
 ];

@@ -24,8 +24,7 @@ export const IntroContext = React.createContext<{
 
 export function SidebarShell({ children }: { children?: React.ReactNode }) {
   const pathname = usePathname()
-  const isLandingPage = pathname === '/' || pathname === '/home' // Adjust as needed
-
+  const isLandingPage = pathname === '/' || pathname === '/home'
   const [isIntroFinished, setIntroFinished] = React.useState(!isLandingPage)
   const [fillProgress, setFillProgress] = React.useState(0)
   const [isExpanded, setIsExpanded] = React.useState(false)
@@ -41,11 +40,17 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
   }, [])
 
   React.useEffect(() => {
+    const root = document.documentElement
+
     if (!isLandingPage) {
+      root.dataset.introReady = 'true'
       setIntroFinished(true)
-      return
+      return () => {
+        delete root.dataset.introReady
+      }
     }
 
+    delete root.dataset.introReady
     setIntroFinished(false)
     setIsExpanded(false)
     setFillProgress(0)
@@ -54,6 +59,9 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
     const duration = 800
     const start = Date.now()
 
+    let expandTimer: ReturnType<typeof setTimeout> | undefined
+    let finishTimer: ReturnType<typeof setTimeout> | undefined
+
     const fillTimer = setInterval(() => {
       const elapsed = Date.now() - start
       const progress = Math.min(elapsed / duration, 1)
@@ -61,13 +69,21 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
 
       if (progress >= 1) {
         clearInterval(fillTimer)
-        setTimeout(() => setIsExpanded(true), 200)
+        expandTimer = setTimeout(() => setIsExpanded(true), 200)
         // Wait for expansion + glide (1s) + tiny buffer
-        setTimeout(() => setIntroFinished(true), 1300)
+        finishTimer = setTimeout(() => {
+          root.dataset.introReady = 'true'
+          setIntroFinished(true)
+        }, 1300)
       }
     }, 16)
 
-    return () => clearInterval(fillTimer)
+    return () => {
+      clearInterval(fillTimer)
+      if (expandTimer) clearTimeout(expandTimer)
+      if (finishTimer) clearTimeout(finishTimer)
+      delete root.dataset.introReady
+    }
   }, [isLandingPage])
 
   return (

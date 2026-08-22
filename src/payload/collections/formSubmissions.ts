@@ -1,4 +1,4 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionConfig } from 'payload'
 
 /**
  * Every response to a native form. This is the club's record of who signed up
@@ -11,18 +11,13 @@ import type { CollectionConfig } from "payload";
  * question wording may well have changed.
  */
 export const FormSubmissions: CollectionConfig = {
-  slug: "form-submissions",
+  slug: 'form-submissions',
   admin: {
-    useAsTitle: "submitterName",
-    defaultColumns: [
-      "submitterName",
-      "submitterEmail",
-      "form",
-      "certificateStatus",
-      "createdAt",
-    ],
-    description: "Responses submitted through the website.",
-    group: "Forms",
+    useAsTitle: 'submitterName',
+    hidden: true,
+    defaultColumns: ['submitterName', 'submitterEmail', 'form', 'certificateStatus', 'createdAt'],
+    description: 'Responses submitted through the website.',
+    group: 'Forms',
   },
   access: {
     read: ({ req: { user } }) => Boolean(user), // admins only
@@ -38,76 +33,75 @@ export const FormSubmissions: CollectionConfig = {
   },
   fields: [
     {
-      name: "form",
-      type: "relationship",
-      relationTo: "forms",
+      name: 'form',
+      type: 'relationship',
+      relationTo: 'forms',
+      index: true,
+      access: { update: () => false },
+      admin: {
+        description:
+          'The form this response came from. It is cleared if that form is deleted so the response audit record remains.',
+      },
+    },
+    {
+      name: 'submitterName',
+      type: 'text',
+      index: true,
+      access: { update: () => false },
+      admin: {
+        description: 'Taken from the question marked as the name. Printed on certificates.',
+      },
+    },
+    {
+      name: 'submitterEmail',
+      type: 'text',
+      index: true,
+      access: { update: () => false },
+      admin: {
+        description: 'Taken from the question marked as the email. Certificates are sent here.',
+      },
+    },
+    {
+      name: 'answers',
+      type: 'json',
       required: true,
-      index: true,
-      access: { update: () => false },
-    },
-    {
-      name: "submitterName",
-      type: "text",
-      index: true,
       access: { update: () => false },
       admin: {
-        description:
-          "Taken from the question marked as the name. Printed on certificates.",
+        description: 'Field id → answer. Stable across question renames.',
       },
     },
     {
-      name: "submitterEmail",
-      type: "text",
-      index: true,
+      name: 'answersByLabel',
+      type: 'json',
       access: { update: () => false },
       admin: {
-        description:
-          "Taken from the question marked as the email. Certificates are sent here.",
-      },
-    },
-    {
-      name: "answers",
-      type: "json",
-      required: true,
-      access: { update: () => false },
-      admin: {
-        description: "Field id → answer. Stable across question renames.",
-      },
-    },
-    {
-      name: "answersByLabel",
-      type: "json",
-      access: { update: () => false },
-      admin: {
-        description:
-          "The same answers against the question wording as it was at submit time.",
+        description: 'The same answers against the question wording as it was at submit time.',
         readOnly: true,
       },
     },
     {
-      name: "attachments",
-      type: "array",
+      name: 'attachments',
+      type: 'array',
       access: { update: () => false },
       admin: {
         readOnly: true,
-        description:
-          "Photos this person attached. Stored in the form’s Google Drive folder.",
+        description: 'Photos this person attached. Stored in the form’s Google Drive folder.',
         components: {
-          RowLabel: "@/components/admin/formAttachmentRowLabel",
+          RowLabel: '@/components/admin/formAttachmentRowLabel',
         },
       },
       fields: [
-        { name: "label", type: "text" },
-        { name: "fieldId", type: "text" },
-        { name: "driveFileId", type: "text" },
-        { name: "fileName", type: "text" },
-        { name: "mimeType", type: "text" },
+        { name: 'label', type: 'text' },
+        { name: 'fieldId', type: 'text' },
+        { name: 'driveFileId', type: 'text' },
+        { name: 'fileName', type: 'text' },
+        { name: 'mimeType', type: 'text' },
         {
-          name: "preview",
-          type: "ui",
+          name: 'preview',
+          type: 'ui',
           admin: {
             components: {
-              Field: "@/components/admin/formAttachmentPreview",
+              Field: '@/components/admin/formAttachmentPreview',
             },
           },
         },
@@ -124,15 +118,14 @@ export const FormSubmissions: CollectionConfig = {
        * consent for those was given on Google's form, not this one, and writing
        * a stamp here would claim otherwise.
        */
-      name: "consentAcceptedAt",
-      label: "Consent Given At",
-      type: "date",
+      name: 'consentAcceptedAt',
+      label: 'Consent Given At',
+      type: 'date',
       access: { update: () => false },
       admin: {
         readOnly: true,
-        date: { pickerAppearance: "dayAndTime" },
-        description:
-          "When this person agreed to the privacy notice. Empty for imported rows.",
+        date: { pickerAppearance: 'dayAndTime' },
+        description: 'When this person agreed to the privacy notice. Empty for imported rows.',
       },
     },
     {
@@ -150,98 +143,96 @@ export const FormSubmissions: CollectionConfig = {
        * on the form would otherwise silently empty every value already typed.
        * The form's Certificate Fields say which markers are expected.
        */
-      name: "certificateValues",
-      label: "Certificate Values (set by a member)",
-      type: "array",
+      name: 'certificateValues',
+      label: 'Certificate Values (set by a member)',
+      type: 'array',
       admin: {
         description:
-          "Values printed on this person’s certificate. Unset ones use the form default.",
+          'Values printed on this person’s certificate. Unset ones use the form default.',
         components: {
-          RowLabel: "@/components/admin/certificateValueRowLabel",
+          RowLabel: '@/components/admin/certificateValueRowLabel',
         },
       },
       fields: [
         {
-          type: "row",
+          type: 'row',
           fields: [
             {
-              name: "key",
-              label: "Marker",
-              type: "text",
+              name: 'key',
+              label: 'Marker',
+              type: 'text',
               required: true,
               admin: {
-                width: "40%",
-                description: "Without the braces - for {{Place}} write Place.",
-                placeholder: "Place",
+                width: '40%',
+                description: 'Without the braces - for {{Place}} write Place.',
+                placeholder: 'Place',
               },
             },
             {
-              name: "value",
-              type: "text",
+              name: 'value',
+              type: 'text',
               required: true,
-              admin: { width: "60%", placeholder: "1st" },
+              admin: { width: '60%', placeholder: '1st' },
             },
           ],
         },
       ],
     },
     {
-      name: "certificateStatus",
-      type: "select",
+      name: 'certificateStatus',
+      type: 'select',
       required: true,
-      defaultValue: "notApplicable",
+      defaultValue: 'notApplicable',
       options: [
-        { label: "Not applicable", value: "notApplicable" },
-        { label: "Pending", value: "pending" },
-        { label: "Sent", value: "sent" },
-        { label: "Failed", value: "failed" },
+        { label: 'Not applicable', value: 'notApplicable' },
+        { label: 'Pending', value: 'pending' },
+        { label: 'Sent', value: 'sent' },
+        { label: 'Failed', value: 'failed' },
       ],
       index: true,
       admin: {
-        description: "Whether this person has been sent their certificate.",
+        description: 'Whether this person has been sent their certificate.',
       },
     },
     {
-      name: "certificateSentAt",
-      type: "date",
+      name: 'certificateSentAt',
+      type: 'date',
       admin: {
         readOnly: true,
-        date: { pickerAppearance: "dayAndTime" },
+        date: { pickerAppearance: 'dayAndTime' },
       },
     },
     {
-      name: "certificateError",
-      type: "text",
+      name: 'certificateError',
+      type: 'text',
       admin: {
         readOnly: true,
-        description: "Why the last send attempt failed, if it did.",
+        description: 'Why the last send attempt failed, if it did.',
       },
     },
     {
       // Which Google response this row came from, for the archive imported in
       // 2026-08. It is what lets the import resume after a partial failure
       // without writing every response a second time.
-      name: "googleResponseId",
-      type: "text",
+      name: 'googleResponseId',
+      type: 'text',
       index: true,
       access: { update: () => false },
       admin: {
         readOnly: true,
-        description:
-          "Set by the import script. Empty for responses submitted through the site.",
+        description: 'Set by the import script. Empty for responses submitted through the site.',
       },
     },
     {
-      name: "sheetSyncedAt",
-      type: "date",
+      name: 'sheetSyncedAt',
+      type: 'date',
       index: true,
       admin: {
         readOnly: true,
-        date: { pickerAppearance: "dayAndTime" },
-        description:
-          "When this row was copied to the Google Sheet. Empty means not synced.",
+        date: { pickerAppearance: 'dayAndTime' },
+        description: 'When this row was copied to the Google Sheet. Empty means not synced.',
       },
     },
   ],
   timestamps: true,
-};
+}

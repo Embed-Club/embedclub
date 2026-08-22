@@ -89,10 +89,11 @@ function doPost(e) {
     // certificateName / emailName arrive already case-formed by the site
     // (forms.certificateNameCase / certificateEmailNameCase) — this script
     // never decides casing, it just places whichever strings it is given.
+    var mode = body.mode || 'email'
     var certificateName = (body.certificateName || '').trim()
     var emailName = (body.emailName || '').trim()
     var email = (body.email || '').trim()
-    if (!certificateName || !emailName || !email) {
+    if (!certificateName || !emailName || (mode !== 'preview' && !email)) {
       return jsonResponse({ ok: false, error: 'Missing certificateName, emailName, or email' })
     }
 
@@ -103,6 +104,15 @@ function doPost(e) {
 
     var formTitle = body.formTitle || 'Embed Club'
     var pdf = buildCertificate(templateId, certificateName, formTitle, body.placeholders)
+
+    if (mode === 'preview') {
+      return jsonResponse({
+        ok: true,
+        pdfBase64: Utilities.base64Encode(pdf.getBytes()),
+        fileName: pdf.getName(),
+        mimeType: pdf.getContentType(),
+      })
+    }
 
     // emailSubject/emailBody arrive fully resolved ({{name}}/{{event}} already
     // filled in) when the form has a custom message; otherwise fall back to

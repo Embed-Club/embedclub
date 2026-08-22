@@ -81,10 +81,12 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell hideScrollbar>
-        <HeroSection />
-        <LatestEventsSection events={events} />
-        <FeaturedMembersSection rows={rows} />
-        <GalleryMarqueeSection images={galleryImages} />
+        <div className="home-content-gated">
+          <HeroSection />
+          <LatestEventsSection events={events} />
+          <FeaturedMembersSection rows={rows} />
+          <GalleryMarqueeSection images={galleryImages} />
+        </div>
       </MainbarShell>
     </SidebarShell>
   )

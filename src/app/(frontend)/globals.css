@@ -136,6 +136,19 @@
   background-attachment: local;
   background-blend-mode: multiply;
 }
+
+/* Keep server-rendered home content behind the intro until the client has
+   completed the logo choreography. This prevents the page from flashing first
+   while the intro overlay is still hydrating. */
+.home-content-gated {
+  transition: opacity 0.6s ease;
+}
+
+html:not([data-intro-ready="true"]) .home-content-gated {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
 .dark .texture-panel {
   background-blend-mode: overlay;
 }
