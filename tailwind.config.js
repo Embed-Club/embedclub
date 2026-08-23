@@ -13,7 +13,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        avant: ['var(--font-avant-garde)', 'sans-serif'],
+        texGyre: ['var(--font-tex-gyre-adventor)', 'sans-serif'],
       },
       keyframes: {
         marquee: {

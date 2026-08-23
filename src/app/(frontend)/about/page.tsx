@@ -50,7 +50,7 @@ function AboutSection({ section }: { section: Section }) {
             </>
           )}
           <div className="relative px-6 py-10 md:px-12 md:py-14 text-center">
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]">
               {section.heading}
             </h2>
             {section.subheading && (

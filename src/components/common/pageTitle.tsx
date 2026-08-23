@@ -24,7 +24,7 @@ export function PageTitle({ children, className }: PageTitleProps) {
   return (
     <h1
       className={cn(
-        "absolute left-5 top-5 md:left-20 md:top-12 text-2xl md:text-4xl font-bold uppercase",
+        "absolute left-5 top-5 md:left-20 md:top-12 text-[28px] md:text-[42px] font-extrabold uppercase",
         className,
       )}
     >

@@ -14,8 +14,9 @@ them to update it first.
   `src/app/(frontend)/globals.css`. **Never** introduce new hex colors, new
   accent hues, gradients-as-decoration, or change the token values. Need a
   color? Use `hsl(var(--primary))`, `--accent`, `--muted`, etc.
-- Fonts are fixed: ITC Avant Garde (body), Gobold + Sport Break (display).
-  Do not add fonts or swap families.
+- Fonts are fixed: TeX Gyre Adventor (body/UI), Gobold + Sport Break (display).
+  Keep TeX Gyre Adventor as the site-wide body font. Do not add or swap font
+  families without updating this instruction and docs/DESIGN.md.
 - Signature elements that must not be removed or "modernized": the intro logo
   animation, the fabric-of-squares panel texture (`.texture-panel`), the
   sidebar shell layout, cutout cards on resources/tutorials, background audio

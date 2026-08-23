@@ -37,7 +37,7 @@ export function XSSHoneypot({ isDetected }: XSSHoneypotProps) {
           className="flex items-center justify-center py-32 text-center gap-6"
         >
           <Info className="w-12 h-12 text-zinc-500" />
-          <h2 className="text-4xl md:text-6xl font-bold text-zinc-300 tracking-tighter uppercase">
+          <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px] text-zinc-300">
             {MESSAGES[msgIndex]}
           </h2>
         </motion.div>

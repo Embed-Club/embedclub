@@ -41,13 +41,17 @@ Tokens are shadcn-style HSL triplets in `src/app/(frontend)/globals.css`.
 
 | Use | Font | Source |
 |---|---|---|
-| Body / UI | ITC Avant Garde Std (XLt 200 / Md 500 / Bold 700) | `next/font/local`, `--font-avant-garde` |
+| Body / UI | TeX Gyre Adventor (regular 400 / bold 700) | `next/font/local`, `--font-tex-gyre-adventor` |
 | Display / logo lockups | Gobold Bold | `--font-gobold`, also inlined in SVG banners |
 | Accent display | Sport Break | `--font-sport-break` |
 
 - Page titles: uppercase, absolute-positioned top-left (`text-2xl` mobile → `text-4xl` desktop) - an established site signature.
 - Body line-length ≤75ch; `text-wrap: balance` on headings.
 - Display letter-spacing never tighter than `-0.04em`.
+- TeX Gyre Adventor is the open-source site-wide body and UI font. Preserve the
+  existing hierarchy: supporting copy uses regular (400), the default body
+  remains medium (500), and primary headers use extra-bold (800), synthesized
+  from the bundled bold (700) face.
 
 ## Components
 

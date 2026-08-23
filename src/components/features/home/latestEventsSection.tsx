@@ -14,7 +14,9 @@ export function LatestEventsContent({
     <div className={`flex flex-col gap-10 ${className ?? ''}`}>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold md:text-5xl">Latest Events</h2>
+          <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]">
+            Latest Events
+          </h2>
           <p className="mt-2 text-muted-foreground">What the club has been up to lately.</p>
         </div>
         <Link

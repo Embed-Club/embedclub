@@ -214,7 +214,9 @@ export function MembersPageContent({ members }: { members: MemberWithGeneratedAv
 
         {grouped.map(({ category, batches }) => (
           <section key={category} className="mb-12">
-            <h2 className="mb-4 text-2xl font-semibold text-foreground">{category}</h2>
+            <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px] mb-4 text-foreground">
+              {category}
+            </h2>
 
             {batches.map((batch) => (
               <div key={batch.label} className="mb-8">

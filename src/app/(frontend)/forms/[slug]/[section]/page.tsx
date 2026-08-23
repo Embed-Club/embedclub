@@ -58,7 +58,7 @@ export default async function FormSectionPage({ params }: SectionPageProps) {
             >
               {container?.title ?? 'All sections'}
             </Link>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+            <h1 className="text-[34px] md:text-[42px] font-extrabold tracking-tight">
               {doc.sectionLabel || doc.title}
             </h1>
             {(doc.description || container?.description) && (

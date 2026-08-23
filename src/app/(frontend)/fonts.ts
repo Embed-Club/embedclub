@@ -1,24 +1,29 @@
 import localFont from 'next/font/local'
 
-export const avantGarde = localFont({
+export const texGyreAdventor = localFont({
   src: [
     {
-      path: '../../../public/fonts/ITCAvantGardeStd-XLt.woff2',
-      weight: '200',
+      path: '../../../public/texgyreadventor-regular.otf',
+      weight: '400',
       style: 'normal',
     },
     {
-      path: '../../../public/fonts/ITCAvantGardeStd-Md.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/ITCAvantGardeStd-Bold.woff2',
+      path: '../../../public/texgyreadventor-bold.otf',
       weight: '700',
       style: 'normal',
     },
+    {
+      path: '../../../public/texgyreadventor-italic.otf',
+      weight: '400',
+      style: 'italic',
+    },
+    {
+      path: '../../../public/texgyreadventor-bolditalic.otf',
+      weight: '700',
+      style: 'italic',
+    },
   ],
-  variable: '--font-avant-garde',
+  variable: '--font-tex-gyre-adventor',
   display: 'swap',
 })
 

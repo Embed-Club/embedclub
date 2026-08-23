@@ -172,7 +172,7 @@ export function FormWizard({ form, consentNotice }: FormWizardProps) {
           <Check className="h-8 w-8" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold">
+          <h2 className="text-[28px] font-extrabold">
             {result.success ? 'Response Recorded' : 'Submission Failed'}
           </h2>
           <p className="text-muted-foreground max-w-md mx-auto">{result.message}</p>
@@ -239,7 +239,7 @@ export function FormWizard({ form, consentNotice }: FormWizardProps) {
       <div className={cn('rounded-2xl bg-card p-6 md:p-10', cutoutCardSurfaceShadowClassName)}>
         <div className="mb-8 space-y-4">
           <div className="space-y-1">
-            <h2 className="text-xl md:text-2xl font-bold">{step?.stepTitle}</h2>
+          <h2 className="text-[24px] md:text-[30px] font-extrabold">{step?.stepTitle}</h2>
             {step?.stepDescription && (
               <p className="text-sm text-muted-foreground">{step.stepDescription}</p>
             )}

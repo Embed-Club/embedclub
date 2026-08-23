@@ -14,7 +14,9 @@ export function FeaturedMembersSection({ rows }: { rows: FeaturedRow[] }) {
   return (
     <section className="relative flex min-h-[100svh] w-full flex-col items-center justify-center gap-12 px-4 py-20 md:px-12 lg:px-20">
       <div className="text-center">
-        <h2 className="text-3xl font-bold md:text-5xl">Meet the Team</h2>
+        <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]">
+          Meet the Team
+        </h2>
         <p className="mt-2 text-muted-foreground">The people building Embed Club.</p>
       </div>
 

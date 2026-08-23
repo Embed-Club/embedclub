@@ -2,7 +2,7 @@ import './globals.css'
 import ThemeWrapper from '@/components/theme/themeWrapper'
 import { getServerSideURL } from '@/lib/getUrl'
 import type { Metadata } from 'next'
-import { avantGarde, gobold, sportBreak } from './fonts'
+import { gobold, sportBreak, texGyreAdventor } from './fonts'
 
 const SITE_URL = getServerSideURL()
 const SITE_NAME = 'Embed Club'
@@ -83,10 +83,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${avantGarde.variable} ${gobold.variable} ${sportBreak.variable}`}
+      className={`${texGyreAdventor.variable} ${gobold.variable} ${sportBreak.variable}`}
     >
       <head />
-      <body className={`${avantGarde.className} font-medium`} suppressHydrationWarning>
+      <body className={`${texGyreAdventor.className} font-medium`} suppressHydrationWarning>
         <script
           type="application/ld+json"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: static, app-authored JSON-LD

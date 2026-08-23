@@ -33,7 +33,9 @@ export function GalleryMarqueeSection({ images }: { images: string[] }) {
     <section className="relative flex min-h-[100svh] w-full flex-col justify-center gap-8 overflow-hidden py-20">
       <div className="flex flex-wrap items-end justify-between gap-4 px-6 md:px-12 lg:px-20">
         <div>
-          <h2 className="text-3xl font-bold md:text-5xl">From the Gallery</h2>
+          <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]">
+            From the Gallery
+          </h2>
           <p className="mt-2 text-muted-foreground">Moments from workshops, builds, and events.</p>
         </div>
         <Link

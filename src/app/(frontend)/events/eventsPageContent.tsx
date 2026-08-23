@@ -110,7 +110,9 @@ export function EventsPageContent({ events }: { events: Event[] }) {
       </div>
 
       <div className="w-full px-6 pb-12 pt-8 md:px-12 lg:px-16 md:pb-10 md:pt-6">
-        <h2 className="relative text-2xl font-bold md:text-4xl mb-8">ALL EVENTS</h2>
+        <h2 className="relative text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px] mb-8">
+          ALL EVENTS
+        </h2>
         {totalPages > 1 && <div className="mt-6 flex w-full justify-end pb-6">{pager}</div>}
         {events.length === 0 ? (
           <EmptyState title="No Events Yet" />

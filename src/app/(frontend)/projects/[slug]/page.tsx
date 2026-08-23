@@ -107,7 +107,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                   </div>
                 )}
 
-                <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white max-w-4xl leading-[1.1]">
+                <h1 className="text-[40px] md:text-[66px] font-extrabold tracking-tight text-white max-w-4xl leading-[1.1]">
                   {project.title}
                 </h1>
 

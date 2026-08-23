@@ -18,7 +18,9 @@ export function SupportFaq({ items }: { items?: FaqItem[] | null }) {
 
   return (
     <section className="mt-14">
-      <h2 className="mb-5 text-2xl font-bold uppercase tracking-tight text-foreground">Support</h2>
+      <h2 className="mb-5 text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px] text-foreground">
+        Support
+      </h2>
       <div className="flex flex-col gap-3">
         {faq.map((item, index) => (
           <details

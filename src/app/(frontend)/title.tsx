@@ -10,8 +10,8 @@
 export default function DashboardTitle() {
   return (
     <div className="flex w-full flex-col items-center justify-center text-center">
-      <div className="text-2xl md:text-3xl lg:text-4xl font-light mb-4">WELCOME TO</div>
-      <div className="text-5xl md:text-6xl lg:text-7xl font-bold">EMBED CLUB</div>
+      <div className="text-[28px] md:text-[34px] lg:text-[42px] font-light mb-4">WELCOME TO</div>
+      <div className="text-[56px] md:text-[66px] lg:text-[78px] font-extrabold">EMBED CLUB</div>
     </div>
   )
 }

@@ -28,7 +28,9 @@ export function AccordionBlock({ block, headingIds }: AccordionBlockProps) {
   return (
     <section className="my-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {block.heading && (
-        <h2 className="mb-5 text-2xl font-bold text-foreground">{block.heading}</h2>
+        <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px] mb-5 text-foreground">
+          {block.heading}
+        </h2>
       )}
 
       <div className="flex flex-col gap-3">
