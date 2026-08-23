@@ -54,7 +54,7 @@ function AboutSection({ section }: { section: Section }) {
               {section.heading}
             </h2>
             {section.subheading && (
-              <p className="mt-3 text-muted-foreground md:text-lg">{section.subheading}</p>
+              <p className="mt-3 text-muted-foreground md:text-lg font-bold">{section.subheading}</p>
             )}
           </div>
         </div>

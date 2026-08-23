@@ -3,29 +3,33 @@ import { ArrowUpRight } from 'lucide-react'
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
-    heading: 'Explore',
-    links: [
-      { label: 'Home', href: '/' },
-      { label: 'Events', href: '/events' },
-      { label: 'Achievements', href: '/achievements' },
-      { label: 'Gallery', href: '/gallery' },
-      { label: 'Members', href: '/members' },
-    ],
-  },
-  {
     heading: 'Learn',
     links: [
       { label: 'Resources', href: '/resources' },
       { label: 'Tutorials', href: '/tutorials' },
+    ],
+  },
+  {
+    heading: 'Build',
+    links: [
+      { label: 'Projects', href: '/projects' },
       { label: 'Simulators', href: '/simulators' },
     ],
   },
   {
-    heading: 'Club',
+    heading: 'Participate',
     links: [
-      { label: 'About', href: '/about' },
+      { label: 'Events', href: '/events' },
+      { label: 'Forms', href: '/forms' },
       { label: 'Feedback', href: '/feedback' },
-      { label: 'Contact', href: '/contact' },
+    ],
+  },
+  {
+    heading: 'Discover',
+    links: [
+      { label: 'Members', href: '/members' },
+      { label: 'Achievements', href: '/achievements' },
+      { label: 'Gallery', href: '/gallery' },
     ],
   },
   {
@@ -74,15 +78,27 @@ export function SiteFooter() {
                 Get in touch
                 <ArrowUpRight className="h-4 w-4" />
               </a>
+              <div className="mt-5 flex items-center gap-4 text-sm font-semibold">
+                <a
+                  href="/about"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  About
+                </a>
+                <a
+                  href="/contact"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Contact
+                </a>
+              </div>
             </div>
 
             {/* Link columns */}
-            {/* Four columns only from lg - at sm the fourth wrapped into a
-                lone orphan under the other three. */}
-            <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">
               {COLUMNS.map((col) => (
                 <div key={col.heading}>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-primary">
+                  <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary">
                     {col.heading}
                   </h3>
                   <ul className="mt-4 space-y-2.5">
@@ -126,7 +142,7 @@ export function SiteFooter() {
               <br />
               Nadupadav, Montepadav Post, Kairangala
               <br />
-              Mangalore – 574153, Karnataka, INDIA
+              Mangalore - 574153, Karnataka, INDIA
             </address>
           </div>
 
