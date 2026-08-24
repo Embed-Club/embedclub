@@ -12,12 +12,22 @@ import type { CollectionConfig } from 'payload'
  */
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
+  labels: {
+    singular: 'Form Submission',
+    plural: 'Form Submissions',
+  },
   admin: {
     useAsTitle: 'submitterName',
-    hidden: true,
     defaultColumns: ['submitterName', 'submitterEmail', 'form', 'certificateStatus', 'createdAt'],
     description: 'Responses submitted through the website.',
     group: 'Forms',
+    components: {
+      views: {
+        list: {
+          Component: '@/components/admin/formSubmissionsDashboard',
+        },
+      },
+    },
   },
   access: {
     read: ({ req: { user } }) => Boolean(user), // admins only

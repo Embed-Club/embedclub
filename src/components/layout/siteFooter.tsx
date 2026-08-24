@@ -33,6 +33,13 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
     ],
   },
   {
+    heading: 'Club',
+    links: [
+      { label: 'About', href: '/about' },
+      { label: 'Contact', href: '/contact' },
+    ],
+  },
+  {
     heading: 'Legal',
     links: [
       { label: 'Privacy', href: '/privacy' },
@@ -78,24 +85,10 @@ export function SiteFooter() {
                 Get in touch
                 <ArrowUpRight className="h-4 w-4" />
               </a>
-              <div className="mt-5 flex items-center gap-4 text-sm font-semibold">
-                <a
-                  href="/about"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  About
-                </a>
-                <a
-                  href="/contact"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Contact
-                </a>
-              </div>
             </div>
 
             {/* Link columns */}
-            <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
               {COLUMNS.map((col) => (
                 <div key={col.heading}>
                   <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary">

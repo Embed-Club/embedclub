@@ -67,14 +67,6 @@ export default buildConfig({
         Logo: '@/components/admin/adminLogo',
         Icon: '@/components/admin/adminIcon',
       },
-      afterNavLinks: ['@/components/admin/formSubmissionsNavLink'],
-      views: {
-        formSubmissionsDashboard: {
-          Component: '@/components/admin/formSubmissionsDashboard',
-          exact: true,
-          path: '/form-submissions-dashboard',
-        },
-      },
     },
     importMap: {
       baseDir: path.resolve(dirname),

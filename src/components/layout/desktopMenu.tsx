@@ -267,7 +267,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         className="flex items-center gap-1 w-full py-3 text-center"
                       >
                         <item.icon />
-                        <span className="font-semibold text-2xl">{item.title}</span>
+                        <span className="font-bold text-2xl tracking-wider [-webkit-text-stroke:0.5px]">{item.title}</span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -284,7 +284,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         className="flex items-center gap-1 w-full py-3 text-center bg-transparent border-none p-0 cursor-default"
                       >
                         <group.icon />
-                        <span className="font-semibold text-2xl">{group.title}</span>
+                        <span className="font-bold text-2xl tracking-wider [-webkit-text-stroke:0.5px]">{group.title}</span>
                       </button>
                     </SidebarMenuButton>
                     {group.items?.length ? (
@@ -295,7 +295,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               <a href={sub.url}>
                                 {' '}
                                 <sub.icon />{' '}
-                                <span className="font-semibold text-md">{sub.title}</span>
+                                <span className="font-semibold text-md tracking-wider [-webkit-text-stroke:0.25px]">{sub.title}</span>
                               </a>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
@@ -316,7 +316,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         className="flex items-center gap-1 w-full py-3 text-center"
                       >
                         <item.icon />
-                        <span className="font-semibold text-2xl">{item.title}</span>
+                        <span className="font-semibold text-2xl tracking-wider [-webkit-text-stroke:0.5px]">{item.title}</span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -345,7 +345,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <SidebarMenuSubButton asChild>
                         <a href={item.url}>
                           {' '}
-                          <item.icon /> <span className="font-semibold text-md">{item.title}</span>
+                          <item.icon /> <span className="font-semibold tracking-wider [-webkit-text-stroke:0.5px] text-md">{item.title}</span>
                         </a>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>

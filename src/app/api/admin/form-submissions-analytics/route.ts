@@ -24,6 +24,7 @@ type DashboardSubmission = {
   certificateStatus: string | null
   answers: AnswerMap
   answersByLabel: AnswerMap
+  attachments: { fieldId: string; label: string; fileName: string; url: string }[]
 }
 
 type FormAnalytics = {
@@ -33,6 +34,18 @@ type FormAnalytics = {
   type: string | null
   active: boolean
   sectionLabel: string | null
+  parentId: number | null
+  parentTitle: string | null
+  description: string | null
+  headerImage: { url: string; alt: string } | null
+  event: {
+    title: string
+    date: string
+    mode: string
+    description: string
+    imageUrl: string | null
+    location: string | null
+  } | null
   submissionCount: number
   latestSubmission: string | null
   questions: QuestionAnalytics[]
@@ -52,8 +65,44 @@ function displayAnswer(value: unknown): string {
   return String(value)
 }
 
+function richTextToPlainText(value: unknown): string {
+  if (!value || typeof value !== 'object') return ''
+  const node = value as { root?: unknown; children?: unknown[]; text?: unknown }
+  if (typeof node.text === 'string') return node.text
+  const children = Array.isArray(node.root) ? node.root : node.root ? [node.root] : node.children
+  return Array.isArray(children) ? children.map(richTextToPlainText).filter(Boolean).join(' ') : ''
+}
+
+function mediaInfo(value: unknown): { url: string; alt: string } | null {
+  if (!value || typeof value !== 'object') return null
+  const media = value as { url?: unknown; alt?: unknown }
+  return typeof media.url === 'string'
+    ? { url: media.url, alt: typeof media.alt === 'string' ? media.alt : '' }
+    : null
+}
+
 function formFromRelation(value: FormSubmission['form']): Form | null {
   return value && typeof value === 'object' ? value : null
+}
+
+function relationId(value: number | Form | null | undefined): number | null {
+  if (typeof value === 'number') return value
+  return value && typeof value === 'object' ? value.id : null
+}
+
+function questionForm(form: Form, forms: Form[]): Form {
+  const parentId = relationId(form.sectionOf)
+  const hasOwnQuestions = (form.steps ?? []).some((step) => (step.fields ?? []).length > 0)
+  if (!parentId || hasOwnQuestions) return form
+  return forms.find((candidate) => candidate.id === parentId) ?? form
+}
+
+function answerByLabel(answers: AnswerMap, labels: string[]): unknown {
+  const wanted = labels.map((label) => label.trim().toLowerCase())
+  const entry = Object.entries(answers).find(([label]) =>
+    wanted.includes(label.trim().toLowerCase()),
+  )
+  return entry?.[1]
 }
 
 function buildQuestionAnalytics(form: Form, submissions: FormSubmission[]): QuestionAnalytics[] {
@@ -62,7 +111,11 @@ function buildQuestionAnalytics(form: Form, submissions: FormSubmission[]): Ques
     .filter((field) => field.fieldType !== 'image' && field.fieldType !== 'imageUpload')
     .map((field) => {
       const values = submissions
-        .map((submission) => answerMap(submission.answers)[field.id ?? ''])
+        .map((submission) => {
+          const answers = answerMap(submission.answers)
+          const answersByLabel = answerMap(submission.answersByLabel)
+          return answers[field.id ?? ''] ?? answersByLabel[field.label]
+        })
         .filter((value) => displayAnswer(value) !== '')
       const numericValues = values
         .map((value) => Number(value))
@@ -89,15 +142,35 @@ function buildQuestionAnalytics(form: Form, submissions: FormSubmission[]): Ques
     })
 }
 
-function serializeSubmission(submission: FormSubmission): DashboardSubmission {
+function serializeSubmission(submission: FormSubmission, form?: Form): DashboardSubmission {
+  const answersByLabel = answerMap(submission.answersByLabel)
+  const fields = (form?.steps ?? []).flatMap((step) => step.fields ?? [])
+  const nameField = fields.find((field) => field.role === 'name')
+  const emailField = fields.find((field) => field.role === 'email')
+  const recoveredName = answerByLabel(
+    answersByLabel,
+    [nameField?.label ?? '', 'name', 'full name', 'student name'].filter(Boolean),
+  )
+  const recoveredEmail = answerByLabel(
+    answersByLabel,
+    [emailField?.label ?? '', 'email', 'email address'].filter(Boolean),
+  )
   return {
     id: submission.id,
-    name: submission.submitterName?.trim() || 'Unnamed respondent',
-    email: submission.submitterEmail?.trim() || 'No email',
+    name: submission.submitterName?.trim() || displayAnswer(recoveredName) || 'Unnamed respondent',
+    email: submission.submitterEmail?.trim() || displayAnswer(recoveredEmail) || 'No email',
     createdAt: submission.createdAt,
     certificateStatus: submission.certificateStatus ?? null,
     answers: answerMap(submission.answers),
-    answersByLabel: answerMap(submission.answersByLabel),
+    answersByLabel,
+    attachments: (submission.attachments ?? [])
+      .filter((attachment) => Boolean(attachment.driveFileId))
+      .map((attachment) => ({
+        fieldId: attachment.fieldId ?? '',
+        label: attachment.label ?? 'Uploaded file',
+        fileName: attachment.fileName ?? 'Drive file',
+        url: `https://drive.google.com/file/d/${attachment.driveFileId}/view`,
+      })),
   }
 }
 
@@ -135,23 +208,42 @@ export async function GET(req: NextRequest) {
   const { user } = await payload.auth({ headers: req.headers })
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const [formsResult, submissionsResult] = await Promise.all([
-    payload.find({ collection: 'forms', depth: 1, limit: 1000, pagination: false }),
-    payload.find({
+  const forms: Form[] = []
+  const submissions: FormSubmission[] = []
+  let formsPage = 1
+  let submissionsPage = 1
+  while (true) {
+    const result = await payload.find({
+      collection: 'forms',
+      depth: 2,
+      limit: 1000,
+      page: formsPage,
+      sort: 'createdAt',
+    })
+    forms.push(...(result.docs as Form[]))
+    if (!result.hasNextPage) break
+    formsPage += 1
+  }
+  while (true) {
+    const result = await payload.find({
       collection: 'form-submissions',
       depth: 1,
-      limit: 10000,
-      pagination: false,
+      limit: 1000,
+      page: submissionsPage,
       sort: '-createdAt',
-    }),
-  ])
-
-  const forms = formsResult.docs as Form[]
-  const submissions = submissionsResult.docs as FormSubmission[]
+    })
+    submissions.push(...(result.docs as FormSubmission[]))
+    if (!result.hasNextPage) break
+    submissionsPage += 1
+  }
   const orphanSubmissions = submissions.filter((submission) => !formFromRelation(submission.form))
   const groups = new Map<string, FormAnalytics>()
 
   for (const form of forms) {
+    const eventForm =
+      form.relatedEvent || !form.sectionOf || typeof form.sectionOf !== 'object'
+        ? form
+        : form.sectionOf
     groups.set(String(form.id), {
       id: form.id,
       title: form.title,
@@ -159,6 +251,31 @@ export async function GET(req: NextRequest) {
       type: form.type ?? null,
       active: Boolean(form.active),
       sectionLabel: form.sectionLabel ?? null,
+      parentId: form.sectionOf && typeof form.sectionOf === 'object' ? form.sectionOf.id : null,
+      parentTitle:
+        form.sectionOf && typeof form.sectionOf === 'object' ? form.sectionOf.title : null,
+      description: form.description ?? null,
+      headerImage: mediaInfo(form.headerImage),
+      event:
+        eventForm.relatedEvent && typeof eventForm.relatedEvent === 'object'
+          ? {
+              title: eventForm.relatedEvent.title,
+              date: eventForm.relatedEvent.eventDate,
+              mode: eventForm.relatedEvent.eventMode,
+              description: richTextToPlainText(eventForm.relatedEvent.description),
+              imageUrl: mediaInfo(eventForm.relatedEvent.image)?.url ?? null,
+              location:
+                eventForm.relatedEvent.eventMode === 'online'
+                  ? (eventForm.relatedEvent.meetingLink ?? 'Online event')
+                  : [
+                      eventForm.relatedEvent.venue?.roomName,
+                      eventForm.relatedEvent.venue?.floor,
+                      eventForm.relatedEvent.location?.address,
+                    ]
+                      .filter(Boolean)
+                      .join(', ') || null,
+            }
+          : null,
       submissionCount: 0,
       latestSubmission: null,
       questions: [],
@@ -174,10 +291,15 @@ export async function GET(req: NextRequest) {
       type: null,
       active: false,
       sectionLabel: null,
+      parentId: null,
+      parentTitle: null,
+      description: null,
+      headerImage: null,
+      event: null,
       submissionCount: orphanSubmissions.length,
       latestSubmission: orphanSubmissions[0]?.createdAt ?? null,
       questions: buildOrphanQuestionAnalytics(orphanSubmissions),
-      submissions: orphanSubmissions.map(serializeSubmission),
+      submissions: orphanSubmissions.map((submission) => serializeSubmission(submission)),
     })
   }
 
@@ -186,18 +308,25 @@ export async function GET(req: NextRequest) {
     if (!form) continue
     const group = groups.get(String(form.id))
     if (!group) continue
-    group.submissions.push(serializeSubmission(submission))
+    group.submissions.push(serializeSubmission(submission, questionForm(form, forms)))
     group.submissionCount += 1
     group.latestSubmission ??= submission.createdAt
   }
 
   for (const group of groups.values()) {
     const form = group.id === null ? null : forms.find((candidate) => candidate.id === group.id)
-    if (form)
+    if (form) {
+      const definition = questionForm(form, forms)
       group.questions = buildQuestionAnalytics(
-        form,
+        definition,
         submissions.filter((submission) => formFromRelation(submission.form)?.id === form.id),
       )
+      if (!group.questions.length) {
+        group.questions = buildOrphanQuestionAnalytics(
+          submissions.filter((submission) => formFromRelation(submission.form)?.id === form.id),
+        )
+      }
+    }
   }
 
   const orderedGroups = [...groups.values()].sort((a, b) => {
