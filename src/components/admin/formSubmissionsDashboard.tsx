@@ -57,6 +57,17 @@ type DashboardData = {
   groups: Group[]
 }
 
+const analyticsColors = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+  'hsl(var(--chart-6))',
+  'hsl(var(--chart-7))',
+  'hsl(var(--chart-8))',
+]
+
 type NodePosition = { x: number; y: number }
 
 function answerText(value: unknown): string {
@@ -167,7 +178,7 @@ function DraggableGraph({
     setPositions((previous) => {
       const next = { ...previous }
       nodes.forEach((node, index) => {
-        next[node.id] ??= { x: 18 + (index % 4) * 160, y: 26 + Math.floor(index / 4) * 100 }
+        next[node.id] ??= { x: 18 + (index % 6) * 220, y: 24 + Math.floor(index / 6) * 104 }
       })
       return next
     })
@@ -181,7 +192,10 @@ function DraggableGraph({
         const bounds = event.currentTarget.getBoundingClientRect()
         const x = Math.max(
           8,
-          Math.min(bounds.width - 138, event.clientX - bounds.left - drag.current.offsetX),
+          Math.max(
+            8,
+            Math.min(bounds.width - 208, event.clientX - bounds.left - drag.current.offsetX),
+          ),
         )
         const y = Math.max(
           8,
@@ -256,6 +270,10 @@ function ResponseInspector({
   }
   const optionLabels = question.options.map((option) => option.label)
   const responseLabels = [...new Set([...optionLabels, ...responses.keys()])]
+  const maxResponse = Math.max(
+    ...responseLabels.map((label) => responses.get(label)?.count ?? 0),
+    1,
+  )
 
   return (
     <section className={styles.responseInspector} aria-label={`Responses for ${question.label}`}>
@@ -271,13 +289,36 @@ function ResponseInspector({
       </div>
       {responseLabels.length ? (
         <div className={styles.responseOptions}>
-          {responseLabels.map((label) => {
+          {responseLabels.map((label, index) => {
             const response = responses.get(label)
             return (
               <details className={styles.responseOption} key={label} open={printMode}>
                 <summary>
-                  <span>{label}</span>
-                  <span className={styles.badge}>{response?.count ?? 0}</span>
+                  <span className={styles.responseLabel}>
+                    <span
+                      className={styles.responseColor}
+                      style={{ background: analyticsColors[index % analyticsColors.length] }}
+                    />
+                    <span>{label}</span>
+                  </span>
+                  <span className={styles.responseBarTrack} aria-hidden="true">
+                    <span
+                      className={styles.responseBar}
+                      style={{
+                        width: `${((response?.count ?? 0) / maxResponse) * 100}%`,
+                        background: analyticsColors[index % analyticsColors.length],
+                      }}
+                    />
+                  </span>
+                  <span
+                    className={styles.badge}
+                    style={{
+                      borderColor: analyticsColors[index % analyticsColors.length],
+                      color: analyticsColors[index % analyticsColors.length],
+                    }}
+                  >
+                    {response?.count ?? 0}
+                  </span>
                 </summary>
                 {response?.people.length ? (
                   <ul className={styles.respondentList}>
@@ -320,7 +361,7 @@ function QuestionAnalyticsView({ questions }: { questions: QuestionAnalytics[] }
             {question.average !== null && (
               <div className={styles.formMeta}>Average response: {question.average.toFixed(2)}</div>
             )}
-            {question.options.slice(0, 5).map((option) => (
+            {question.options.slice(0, 5).map((option, index) => (
               <div className={styles.barRow} key={option.label}>
                 <span title={option.label}>{option.label}</span>
                 <span className={styles.barTrack}>
@@ -329,6 +370,7 @@ function QuestionAnalyticsView({ questions }: { questions: QuestionAnalytics[] }
                     style={{
                       width: `${(option.count / max) * 100}%`,
                       animationDelay: `${question.options.indexOf(option) * 70}ms`,
+                      background: analyticsColors[index % analyticsColors.length],
                     }}
                   />
                 </span>
@@ -341,14 +383,6 @@ function QuestionAnalyticsView({ questions }: { questions: QuestionAnalytics[] }
     </div>
   )
 }
-
-const chartColors = [
-  'var(--theme-warning-400)',
-  'var(--theme-warning-500)',
-  'var(--theme-warning-300)',
-  'var(--theme-warning-600)',
-  'var(--theme-warning-200)',
-]
 
 function PieChart({ question }: { question: QuestionAnalytics }) {
   const options = question.options.filter((option) => option.count > 0)
@@ -366,7 +400,7 @@ function PieChart({ question }: { question: QuestionAnalytics }) {
       'Z',
     ].join(' ')
     start = end
-    return { ...option, path, color: chartColors[index % chartColors.length] }
+    return { ...option, path, color: analyticsColors[index % analyticsColors.length] }
   })
   return (
     <div className={styles.chartLayout}>

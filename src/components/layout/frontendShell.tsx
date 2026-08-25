@@ -186,7 +186,7 @@ export function SidebarShell({ children }: { children?: React.ReactNode }) {
                       }}
                       className="w-full h-full"
                     >
-                      {/* InlineSVG injects SVG inline so @font-face rules work */}
+                      {/* Use the path-converted public artwork directly. */}
                       <div className="w-full h-full" style={{ clipPath: 'inset(0 0 0 120px)' }}>
                         <InlineSVG
                           src="/EmbedClubBanner-Dark.svg"

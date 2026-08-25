@@ -64,7 +64,7 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
               })}
             </div>
 
-            <h1 className="text-[5xl] md:text-[7xl] font-extrabold tracking-tight text-foreground max-w-4xl leading-[1.1]">
+            <h1 className="text-4xl md:text-6xl [-webkit-text-stroke:1px] font-extrabold tracking-tight text-foreground max-w-4xl leading-[1.1]">
               {doc.title}
             </h1>
 

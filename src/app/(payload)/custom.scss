@@ -1,5 +1,27 @@
 /* Custom Payload admin styles */
 
+:root {
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+  --chart-6: 258 90% 66%;
+  --chart-7: 190 80% 45%;
+  --chart-8: 48 95% 55%;
+}
+
+html[data-theme='dark'] {
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 54%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+  --chart-6: 330 81% 60%;
+  --chart-7: 258 90% 66%;
+  --chart-8: 217 91% 60%;
+}
+
 @media print {
   .nav,
   .template-default__nav,

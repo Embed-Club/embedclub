@@ -17,10 +17,8 @@ import { useEffect } from 'react'
  */
 export default function RouteError({
   error,
-  reset,
 }: {
   error: Error & { digest?: string }
-  reset: () => void
 }) {
   useEffect(() => {
     // The digest is the only handle on the server-side stack once this is
@@ -45,7 +43,7 @@ export default function RouteError({
 
       <button
         type="button"
-        onClick={reset}
+        onClick={() => window.location.reload()}
         className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         Try again
