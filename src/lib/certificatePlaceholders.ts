@@ -1,4 +1,4 @@
-import type { Form, FormSubmission } from "@/payload/payload-types";
+import type { Form, FormSubmission } from '@/payload/payload-types'
 
 /**
  * Certificates are designed in Google Slides, and whatever the member wants
@@ -14,7 +14,7 @@ import type { Form, FormSubmission } from "@/payload/payload-types";
  */
 
 /** `{{ Place }}` and `{{Place}}` are the same marker; whitespace is trimmed. */
-const PLACEHOLDER_RE = /\{\{\s*([^{}]+?)\s*\}\}/g;
+const PLACEHOLDER_RE = /\{\{\s*([^{}]+?)\s*\}\}/g
 
 /**
  * Every distinct placeholder in a template, in the order it first appears -
@@ -22,12 +22,12 @@ const PLACEHOLDER_RE = /\{\{\s*([^{}]+?)\s*\}\}/g;
  * sees them on the slide.
  */
 export function extractPlaceholders(templateText: string): string[] {
-  const found: string[] = [];
+  const found: string[] = []
   for (const match of templateText.matchAll(PLACEHOLDER_RE)) {
-    const key = match[1].trim();
-    if (key && !found.includes(key)) found.push(key);
+    const key = match[1].trim()
+    if (key && !found.includes(key)) found.push(key)
   }
-  return found;
+  return found
 }
 
 /**
@@ -47,49 +47,49 @@ export function resolvePlaceholders(
   submission: FormSubmission,
   certificateName: string,
 ): Record<string, string> {
-  const answers = (submission.answersByLabel ?? {}) as Record<string, unknown>;
+  const answers = (submission.answersByLabel ?? {}) as Record<string, unknown>
   const values: Record<string, string> = {
     name: certificateName,
     event: form.title,
-  };
+  }
 
   // What a member typed against this person, matched case-insensitively for
   // the same reason everything else here is: Slides substitutes that way, so
   // {{Place}} and {{PLACE}} are one marker and it would be a trap for them to
   // behave as two.
-  const perPerson = new Map<string, string>();
+  const perPerson = new Map<string, string>()
   for (const entry of submission.certificateValues ?? []) {
-    const key = entry.key?.trim().toLowerCase();
-    if (key && entry.value) perPerson.set(key, entry.value);
+    const key = entry.key?.trim().toLowerCase()
+    if (key && entry.value) perPerson.set(key, entry.value)
   }
 
   for (const mapping of form.certificatePlaceholders ?? []) {
-    const key = mapping.key?.trim();
-    if (!key) continue;
+    const key = mapping.key?.trim()
+    if (!key) continue
 
-    if (mapping.source === "fixed") {
-      if (mapping.fixedValue) values[key] = mapping.fixedValue;
-      continue;
+    if (mapping.source === 'fixed') {
+      if (mapping.fixedValue) values[key] = mapping.fixedValue
+      continue
     }
 
-    if (mapping.source === "perPerson") {
+    if (mapping.source === 'perPerson') {
       // The default is what most people get - nobody placed in a competition
       // except the two or three who did - so an unset value is normal, not a
       // gap. Empty stays empty, and the script blanks the marker.
-      const value = perPerson.get(key.toLowerCase()) ?? mapping.defaultValue;
-      if (value) values[key] = value;
-      continue;
+      const value = perPerson.get(key.toLowerCase()) ?? mapping.defaultValue
+      if (value) values[key] = value
+      continue
     }
 
-    const label = mapping.questionLabel?.trim();
-    if (!label) continue;
+    const label = mapping.questionLabel?.trim()
+    if (!label) continue
 
-    const answer = answers[label];
-    if (answer === undefined || answer === null || answer === "") continue;
-    values[key] = Array.isArray(answer) ? answer.join(", ") : String(answer);
+    const answer = answers[label]
+    if (answer === undefined || answer === null || answer === '') continue
+    values[key] = Array.isArray(answer) ? answer.join(', ') : String(answer)
   }
 
-  return values;
+  return values
 }
 
 /**
@@ -101,10 +101,10 @@ export function unmappedPlaceholders(found: string[], form: Form): string[] {
   // Case-insensitive, because Slides' own replaceAllText is: a deck written
   // with {{NAME}} is filled correctly by a mapping keyed `name`, so warning
   // that it is unmapped would be a lie.
-  const covered = new Set(["name", "event"]);
+  const covered = new Set(['name', 'event'])
   for (const mapping of form.certificatePlaceholders ?? []) {
-    const key = mapping.key?.trim().toLowerCase();
-    if (key) covered.add(key);
+    const key = mapping.key?.trim().toLowerCase()
+    if (key) covered.add(key)
   }
-  return found.filter((key) => !covered.has(key.toLowerCase()));
+  return found.filter((key) => !covered.has(key.toLowerCase()))
 }

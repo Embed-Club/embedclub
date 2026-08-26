@@ -13,6 +13,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        sans: ['var(--font-tex-gyre-adventor)', 'sans-serif'],
         texGyre: ['var(--font-tex-gyre-adventor)', 'sans-serif'],
       },
       keyframes: {

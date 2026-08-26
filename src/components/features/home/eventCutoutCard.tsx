@@ -73,11 +73,11 @@ export function EventCutoutCard({ event }: { event: Event }) {
           </CutoutCardMedia>
 
           <CutoutCardContent className="flex flex-1 flex-col gap-1 p-4">
-            <span className="text-xs font-medium text-primary">
+            <span className="text-xs font-normal text-primary tracking-wider">
               {card.category}
               {event.eventMode === 'online' && ' · Online'}
             </span>
-            <h3 className="font-semibold leading-snug line-clamp-2 group-hover/cutout:text-primary transition-colors">
+            <h3 className="font-bold leading-snug line-clamp-2 tracking-wider [-webkit-text-stroke:0.25px] transition-colors group-hover/cutout:text-primary">
               {card.title}
             </h3>
           </CutoutCardContent>

@@ -1,5 +1,5 @@
-import { rewriteUploadUrls } from "@/lib/mediaUrl";
-import type { CollectionConfig } from "payload";
+import { rewriteUploadUrls } from '@/lib/mediaUrl'
+import type { CollectionConfig } from 'payload'
 
 /**
  * Images a member attaches while authoring a form - a payment QR, a poster,
@@ -14,15 +14,14 @@ import type { CollectionConfig } from "payload";
  * Drive (see `lib/googleDrive.ts`).
  */
 export const FormMedia: CollectionConfig = {
-  slug: "form-media",
+  slug: 'form-media',
   labels: {
-    singular: "Form/Feedback Media",
-    plural: "Form/Feedback Media",
+    singular: 'Form/Feedback Media',
+    plural: 'Form/Feedback Media',
   },
   admin: {
-    group: "Forms",
-    description:
-      "Images used inside forms, kept separate from the site media library.",
+    group: 'Forms',
+    description: 'Images used inside forms, kept separate from the site media library.',
   },
   access: {
     read: () => true,
@@ -33,37 +32,36 @@ export const FormMedia: CollectionConfig = {
   },
   fields: [
     {
-      name: "alt",
-      type: "text",
+      name: 'alt',
+      type: 'text',
       required: true,
       admin: {
-        description:
-          'Describes the image for screen readers, e.g. "UPI payment QR code".',
+        description: 'Describes the image for screen readers, e.g. "UPI payment QR code".',
       },
     },
   ],
   upload: {
-    staticDir: "formMedia",
+    staticDir: 'formMedia',
     imageSizes: [
       {
-        name: "thumbnail",
+        name: 'thumbnail',
         width: 400,
         height: 300,
-        position: "centre",
-        formatOptions: { format: "webp", options: { quality: 80 } },
+        position: 'centre',
+        formatOptions: { format: 'webp', options: { quality: 80 } },
       },
       {
-        name: "inline",
+        name: 'inline',
         width: 900,
         height: undefined,
-        formatOptions: { format: "webp", options: { quality: 82 } },
+        formatOptions: { format: 'webp', options: { quality: 82 } },
       },
     ],
-    adminThumbnail: "thumbnail",
-    mimeTypes: ["image/*"],
+    adminThumbnail: 'thumbnail',
+    mimeTypes: ['image/*'],
     formatOptions: {
-      format: "webp",
+      format: 'webp',
       options: { quality: 82 },
     },
   },
-};
+}

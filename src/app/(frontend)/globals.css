@@ -141,7 +141,7 @@
    completed the logo choreography. This prevents the page from flashing first
    while the intro overlay is still hydrating. */
 .home-content-gated {
-  transition: opacity 0.6s ease;
+  transition: opacity 0.25s ease;
 }
 
 html:not([data-intro-ready="true"]) .home-content-gated {

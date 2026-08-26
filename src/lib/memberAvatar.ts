@@ -53,13 +53,7 @@ const EYEBROWS = [
   'upDown',
   'upDownNatural',
 ] as const
-const MOUTHS = [
-  'default',
-  'disbelief',
-  'serious',
-  'smile',
-  'twinkle',
-] as const
+const MOUTHS = ['default', 'disbelief', 'serious', 'smile', 'twinkle'] as const
 const HAIR_AND_FACIAL_HAIR_COLORS = [
   '#2c1b18', // black
   '#724133', // brown

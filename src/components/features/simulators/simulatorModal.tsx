@@ -141,7 +141,7 @@ function SimulatorModalPanel({
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
 
               <CutoutCardInsetLabel className="bottom-0 left-0 max-w-[85%] rounded-tr-[16px] bg-card px-4 py-2.5">
-                <span className="text-lg font-semibold leading-snug text-card-foreground">
+                <span className="text-lg font-extrabold [-webkit-text-stroke:0.5px] leading-snug text-card-foreground">
                   {title}
                 </span>
                 <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
@@ -150,7 +150,7 @@ function SimulatorModalPanel({
             </div>
 
             <div className="flex flex-col gap-6 p-6">
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <p className="text-sm font-semibold text-muted-foreground">{description}</p>
 
               {videoUrl ? <SimulatorVideo url={videoUrl} title={title} /> : null}
 
@@ -187,7 +187,7 @@ function SimulatorModalPanel({
 
               {hasInstructions ? (
                 <div className="border-border border-t pt-4">
-                  <h3 className="mb-3 font-semibold text-sm uppercase tracking-widest text-muted-foreground">
+                  <h3 className="mb-3 font-extrabold  text-sm uppercase tracking-widest text-muted-foreground">
                     How to use
                   </h3>
                   <BlockRenderer blocks={content} />

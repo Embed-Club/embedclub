@@ -1,6 +1,18 @@
-import type { SimulatorLinkBlock as SimulatorLinkBlockType } from '@/payload/payload-types'
-import { ArrowRight, Rocket } from 'lucide-react'
-import Link from 'next/link'
+'use client'
+
+import type {
+  Simulator,
+  SimulatorLinkBlock as SimulatorLinkBlockType,
+} from '@/payload/payload-types'
+import { Download, SquareArrowOutUpRight } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { useState } from 'react'
+
+import type { SimulatorCardData } from '@/app/(frontend)/simulators/simulatorsPageContent'
+
+const SimulatorModal = dynamic(() =>
+  import('@/components/features/simulators/simulatorModal').then((module) => module.SimulatorModal),
+)
 
 interface SimulatorLinkBlockProps {
   block: SimulatorLinkBlockType
@@ -9,47 +21,75 @@ interface SimulatorLinkBlockProps {
 export function SimulatorLinkBlock({ block }: SimulatorLinkBlockProps) {
   const { simulator, buttonText } = block
 
-  if (!simulator) return null
+  const [open, setOpen] = useState(false)
 
-  // Get slug from simulator relationship
-  let slug = ''
-  let title = ''
+  if (typeof simulator !== 'object' || simulator === null) return null
 
-  if (typeof simulator === 'object' && simulator !== null) {
-    // @ts-ignore - Simulators might not be in payload-types yet
-    slug = simulator.slug || ''
-    // @ts-ignore
-    title = simulator.title || 'Simulator'
-  }
+  const title = simulator.title || 'Simulator'
+  const card = toSimulatorCardData(simulator)
+  const isDownload = card.launchType === 'download'
+  const actionLabel = buttonText || (isDownload ? 'Download App' : 'Open Website')
 
   return (
     <div className="my-16 w-full animate-in fade-in zoom-in duration-500 delay-400">
-      <div className="relative group overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-8 md:p-12 text-center">
-        {/* Decorative background elements */}
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity duration-700" />
-        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity duration-700" />
-
-        <div className="relative z-10 flex flex-col items-center gap-6">
-          <div className="w-16 h-16 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_20px_hsl(var(--primary)/0.3)]">
-            <Rocket className="h-8 w-8" />
-          </div>
-
+      <div className="rounded-2xl border border-border bg-card/40 px-6 py-8 text-center md:px-10 md:py-10">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-5">
           <div className="space-y-2">
-            <h3 className="text-[28px] md:text-[36px] font-extrabold text-foreground">Ready to try it out?</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              Launch the {title} and explore the concepts interactively.
+            <h3 className="text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">
+              {isDownload ? `Get ${title}` : `Open ${title} online`}
+            </h3>
+            <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground md:text-base">
+              {isDownload
+                ? `Download ${title} and continue with the setup.`
+                : `Open ${title} in a new tab and start experimenting.`}
             </p>
           </div>
 
-          <Link
-            href={`/simulators/${slug}`}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-full hover:bg-primary/90 transition-all shadow-[0_0_30px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_40px_hsl(var(--primary)/0.6)] hover:-translate-y-1 active:translate-y-0"
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            {buttonText || 'Launch Simulator'}
-            <ArrowRight className="h-5 w-5" />
-          </Link>
+            {isDownload ? (
+              <Download className="h-4 w-4" />
+            ) : (
+              <SquareArrowOutUpRight className="h-4 w-4" />
+            )}
+            {actionLabel}
+          </button>
         </div>
       </div>
+
+      <SimulatorModal simulator={card} open={open} onOpenChange={setOpen} />
     </div>
   )
+}
+
+function toSimulatorCardData(simulator: Simulator): SimulatorCardData {
+  const image =
+    typeof simulator.thumbnail === 'object' && simulator.thumbnail !== null
+      ? simulator.thumbnail.url || `/api/media/file/${simulator.thumbnail.id}`
+      : `/api/media/file/${simulator.thumbnail}`
+
+  const tags = Array.isArray(simulator.tags)
+    ? simulator.tags
+        .map((tag) => (typeof tag === 'object' && tag !== null ? tag.name : null))
+        .filter((name): name is string => Boolean(name))
+    : []
+
+  return {
+    id: String(simulator.id),
+    title: simulator.title,
+    description: simulator.description,
+    image,
+    tags,
+    slug: simulator.slug,
+    difficulty: simulator.difficulty || undefined,
+    estimatedTime: simulator.estimatedTime ?? undefined,
+    createdAt: simulator.createdAt,
+    launchUrl: simulator.launchUrl || undefined,
+    launchType: simulator.launchType,
+    videoUrl: simulator.videoUrl || undefined,
+    content: simulator.content,
+  }
 }

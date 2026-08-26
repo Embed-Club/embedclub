@@ -1,13 +1,13 @@
-import "server-only";
+import 'server-only'
 
-import crypto from "node:crypto";
+import crypto from 'node:crypto'
 import {
   DRIVE_SCOPE,
   accessToken,
   googleCredentialsPresent,
   oauthAccessToken,
   oauthRefreshTokenPresent,
-} from "./googleAuth";
+} from './googleAuth'
 
 /**
  * Google Drive is where files that *respondents* attach to a form are kept -
@@ -43,31 +43,27 @@ import {
  * Drive - a college-wide capability created to solve a club-website problem -
  * and it needs a Workspace admin. Deliberately not used.
  */
-const UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files";
-const FILES_URL = "https://www.googleapis.com/drive/v3/files";
+const UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3/files'
+const FILES_URL = 'https://www.googleapis.com/drive/v3/files'
 
 /** What a form upload records about itself, so a submit can verify it. */
 export interface DriveFileMeta {
-  id: string;
-  name: string;
-  mimeType: string;
-  size?: number;
+  id: string
+  name: string
+  mimeType: string
+  size?: number
   /** Set by us at upload time - which form and question this file belongs to. */
-  formSlug?: string;
-  fieldId?: string;
+  formSlug?: string
+  fieldId?: string
 }
 
 export function driveConfigured(): boolean {
-  return oauthRefreshTokenPresent() || googleCredentialsPresent();
+  return oauthRefreshTokenPresent() || googleCredentialsPresent()
 }
 
 /** The folder a given form's uploads land in, or null when none is configured. */
-export function resolveDriveFolderId(
-  formFolderId?: string | null,
-): string | null {
-  return (
-    formFolderId?.trim() || process.env.GOOGLE_DRIVE_FOLDER_ID?.trim() || null
-  );
+export function resolveDriveFolderId(formFolderId?: string | null): string | null {
+  return formFolderId?.trim() || process.env.GOOGLE_DRIVE_FOLDER_ID?.trim() || null
 }
 
 async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
@@ -76,12 +72,12 @@ async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
   // service account path only reaches a Shared Drive.
   const token = oauthRefreshTokenPresent()
     ? await oauthAccessToken()
-    : await accessToken(DRIVE_SCOPE);
+    : await accessToken(DRIVE_SCOPE)
 
   return fetch(url, {
     ...init,
     headers: { ...init?.headers, Authorization: `Bearer ${token}` },
-  });
+  })
 }
 
 /**
@@ -89,31 +85,28 @@ async function driveFetch(url: string, init?: RequestInit): Promise<Response> {
  * but they arrive as a wall of JSON. Pull out the one line worth logging.
  */
 function explainDriveError(status: number, body: string): string {
-  if (body.includes("storageQuotaExceeded")) {
-    return "no GOOGLE_DRIVE_REFRESH_TOKEN is set, so this fell back to the service account, which cannot own files on My Drive. Run `pnpm drive:auth`";
+  if (body.includes('storageQuotaExceeded')) {
+    return 'no GOOGLE_DRIVE_REFRESH_TOKEN is set, so this fell back to the service account, which cannot own files on My Drive. Run `pnpm drive:auth`'
   }
-  if (
-    body.includes("has not been used in project") ||
-    body.includes("accessNotConfigured")
-  ) {
-    return "the Google Drive API is not enabled on the Cloud project";
+  if (body.includes('has not been used in project') || body.includes('accessNotConfigured')) {
+    return 'the Google Drive API is not enabled on the Cloud project'
   }
   if (status === 404) {
-    return "the folder id is wrong, or that folder is not reachable by the authorised account";
+    return 'the folder id is wrong, or that folder is not reachable by the authorised account'
   }
-  return body;
+  return body
 }
 
 function parseMeta(json: Record<string, unknown>): DriveFileMeta {
-  const props = (json.appProperties ?? {}) as Record<string, string>;
+  const props = (json.appProperties ?? {}) as Record<string, string>
   return {
     id: String(json.id),
-    name: String(json.name ?? ""),
-    mimeType: String(json.mimeType ?? "application/octet-stream"),
+    name: String(json.name ?? ''),
+    mimeType: String(json.mimeType ?? 'application/octet-stream'),
     size: json.size === undefined ? undefined : Number(json.size),
     formSlug: props.formSlug,
     fieldId: props.fieldId,
-  };
+  }
 }
 
 /**
@@ -124,64 +117,58 @@ function parseMeta(json: Record<string, unknown>): DriveFileMeta {
  * is what stops someone pasting an unrelated id into a submission.
  */
 export async function uploadFormFile(args: {
-  folderId: string;
-  fileName: string;
-  mimeType: string;
-  bytes: ArrayBuffer;
-  formSlug: string;
-  fieldId: string;
+  folderId: string
+  fileName: string
+  mimeType: string
+  bytes: ArrayBuffer
+  formSlug: string
+  fieldId: string
 }): Promise<DriveFileMeta> {
   const metadata = {
     name: args.fileName,
     parents: [args.folderId],
     appProperties: { formSlug: args.formSlug, fieldId: args.fieldId },
-  };
+  }
 
   // multipart/related: JSON metadata part, then the bytes.
-  const boundary = `embedclub-${crypto.randomUUID()}`;
+  const boundary = `embedclub-${crypto.randomUUID()}`
   const head = Buffer.from(
     `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: ${args.mimeType}\r\n\r\n`,
-  );
-  const tail = Buffer.from(`\r\n--${boundary}--\r\n`);
-  const body = Buffer.concat([head, Buffer.from(args.bytes), tail]);
+  )
+  const tail = Buffer.from(`\r\n--${boundary}--\r\n`)
+  const body = Buffer.concat([head, Buffer.from(args.bytes), tail])
 
   const res = await driveFetch(
     `${UPLOAD_URL}?uploadType=multipart&supportsAllDrives=true&fields=id,name,mimeType,size,appProperties`,
     {
-      method: "POST",
-      headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+      method: 'POST',
+      headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
       body: new Uint8Array(body),
     },
-  );
+  )
 
   if (!res.ok) {
     throw new Error(
       `Drive upload failed (${res.status}): ${explainDriveError(res.status, await res.text())}`,
-    );
+    )
   }
-  return parseMeta((await res.json()) as Record<string, unknown>);
+  return parseMeta((await res.json()) as Record<string, unknown>)
 }
 
-export async function getDriveFileMeta(
-  fileId: string,
-): Promise<DriveFileMeta | null> {
+export async function getDriveFileMeta(fileId: string): Promise<DriveFileMeta | null> {
   const res = await driveFetch(
     `${FILES_URL}/${encodeURIComponent(fileId)}?supportsAllDrives=true&fields=id,name,mimeType,size,appProperties`,
-  );
-  if (res.status === 404) return null;
+  )
+  if (res.status === 404) return null
   if (!res.ok) {
-    throw new Error(
-      `Drive metadata failed (${res.status}): ${await res.text()}`,
-    );
+    throw new Error(`Drive metadata failed (${res.status}): ${await res.text()}`)
   }
-  return parseMeta((await res.json()) as Record<string, unknown>);
+  return parseMeta((await res.json()) as Record<string, unknown>)
 }
 
 /** Raw bytes, for the admin-only proxy route. */
 export async function getDriveFileStream(fileId: string): Promise<Response> {
-  return driveFetch(
-    `${FILES_URL}/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`,
-  );
+  return driveFetch(`${FILES_URL}/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`)
 }
 
 /**
@@ -195,28 +182,28 @@ export async function getDriveFileStream(fileId: string): Promise<Response> {
 export async function exportDriveFileText(fileId: string): Promise<string> {
   const res = await driveFetch(
     `${FILES_URL}/${encodeURIComponent(fileId)}/export?mimeType=text/plain&supportsAllDrives=true`,
-  );
+  )
   if (!res.ok) {
     throw new Error(
       `Drive export failed (${res.status}): ${explainDriveError(res.status, await res.text())}`,
-    );
+    )
   }
-  return res.text();
+  return res.text()
 }
 
 /** Human-facing Drive link - what gets written into the Sheets mirror. */
 export function driveViewUrl(fileId: string): string {
-  return `https://drive.google.com/file/d/${fileId}/view`;
+  return `https://drive.google.com/file/d/${fileId}/view`
 }
 
 export async function deleteDriveFile(fileId: string): Promise<void> {
   const res = await driveFetch(
     `${FILES_URL}/${encodeURIComponent(fileId)}?supportsAllDrives=true`,
     {
-      method: "DELETE",
+      method: 'DELETE',
     },
-  );
+  )
   if (!res.ok && res.status !== 404) {
-    throw new Error(`Drive delete failed (${res.status}): ${await res.text()}`);
+    throw new Error(`Drive delete failed (${res.status}): ${await res.text()}`)
   }
 }

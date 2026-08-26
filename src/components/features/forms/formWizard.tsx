@@ -239,7 +239,7 @@ export function FormWizard({ form, consentNotice }: FormWizardProps) {
       <div className={cn('rounded-2xl bg-card p-6 md:p-10', cutoutCardSurfaceShadowClassName)}>
         <div className="mb-8 space-y-4">
           <div className="space-y-1">
-          <h2 className="text-[24px] md:text-[30px] font-extrabold">{step?.stepTitle}</h2>
+            <h2 className="text-[24px] md:text-[30px] font-extrabold">{step?.stepTitle}</h2>
             {step?.stepDescription && (
               <p className="text-sm text-muted-foreground">{step.stepDescription}</p>
             )}

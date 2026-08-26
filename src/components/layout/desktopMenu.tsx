@@ -19,7 +19,6 @@ import {
   UsersRound,
 } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
-import { useTheme } from 'next-themes'
 import * as React from 'react'
 
 import {
@@ -163,18 +162,9 @@ function CollapsedNavItem({ title, url, icon: Icon }: NavLeaf) {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [mounted, setMounted] = React.useState(false)
-  const { resolvedTheme } = useTheme()
   const { toggleSidebar, state } = useSidebar()
   const { isIntroFinished } = React.useContext(IntroContext)
 
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return null
-
-  const isDark = resolvedTheme === 'dark'
   const collapsed = state === 'collapsed'
 
   return (
@@ -190,16 +180,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               >
                 <div className="relative w-full h-[61px] flex items-center justify-center">
                   <AnimatePresence mode="wait">
-                    {isIntroFinished && !collapsed ? (
+                    {!collapsed ? (
                       <motion.div
                         key="expanded"
-                        layoutId="master-logo"
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        initial={false}
+                        animate={{ opacity: isIntroFinished ? 1 : 0 }}
                         transition={{
-                          duration: 1.0,
+                          duration: 0.35,
                           ease: [0.16, 1, 0.3, 1],
                         }}
+                        data-embed-logo-target
                         className="relative w-[180px] h-full overflow-hidden"
                       >
                         {/* Full banner SVG - logo and path-converted text artwork. */}
@@ -212,24 +202,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           className="w-full h-full block dark:hidden [&>svg]:w-full [&>svg]:h-full"
                         />
                       </motion.div>
-                    ) : isIntroFinished && collapsed ? (
+                    ) : (
                       <motion.div
                         key="collapsed"
-                        layoutId="master-logo"
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.5 }}
-                        transition={{ duration: 0.3 }}
+                        initial={false}
+                        animate={{ opacity: isIntroFinished ? 1 : 0, scale: 1 }}
+                        transition={{ duration: 0.35 }}
                         className="relative w-8 h-8"
                       >
                         {/* Logo-only SVG is simple paths, no font needed - Image is fine here */}
                         <img
-                          src={isDark ? '/embedClubLogo-Dark.svg' : '/embedClubLogo-Light.svg'}
+                          src="/embedClubLogo-Dark.svg"
                           alt="EmbedClub"
-                          className="w-full h-full object-contain"
+                          className="hidden dark:block w-full h-full object-contain"
+                        />
+                        <img
+                          src="/embedClubLogo-Light.svg"
+                          alt="EmbedClub"
+                          className="block dark:hidden w-full h-full object-contain"
                         />
                       </motion.div>
-                    ) : null}
+                    )}
                   </AnimatePresence>
                 </div>
               </button>

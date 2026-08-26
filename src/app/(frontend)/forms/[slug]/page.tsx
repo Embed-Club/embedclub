@@ -54,7 +54,9 @@ export default async function FormPage({ params }: FormPageProps) {
         <MainbarShell>
           <div className="max-w-5xl mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-20 space-y-8">
             <div className="text-center space-y-3">
-              <h1 className="text-[34px] md:text-[42px] font-extrabold tracking-tight">{form.title}</h1>
+              <h1 className="text-[34px] md:text-[42px] font-extrabold tracking-tight">
+                {form.title}
+              </h1>
               {form.description && (
                 <p className="text-muted-foreground max-w-xl mx-auto">{form.description}</p>
               )}
@@ -80,7 +82,9 @@ export default async function FormPage({ params }: FormPageProps) {
             into something narrower than either deserved. */}
         <div className="max-w-5xl mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-20 space-y-8">
           <div className="text-center space-y-3">
-              <h1 className="text-[34px] md:text-[42px] font-extrabold tracking-tight">{form.title}</h1>
+            <h1 className="text-[34px] md:text-[42px] font-extrabold tracking-tight">
+              {form.title}
+            </h1>
             {form.description && (
               <p className="text-muted-foreground max-w-xl mx-auto">{form.description}</p>
             )}
