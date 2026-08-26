@@ -57,12 +57,15 @@ function extractTextFromLexical(summary: Achievement['summary']): string {
     .trim()
 }
 
-/** Transform PayloadCMS achievements to timeline format (newest first). */
-function transformAchievements(achievements: Achievement[]): TimelineAchievement[] {
+/** Transform PayloadCMS achievements to timeline format with configured sort order. */
+function transformAchievements(
+  achievements: Achievement[],
+  sortOrder: 'asc' | 'desc' = 'desc',
+): TimelineAchievement[] {
   const sortedAchievements = [...achievements].sort((a, b) => {
     const dateA = a.date ? new Date(a.date).getTime() : 0
     const dateB = b.date ? new Date(b.date).getTime() : 0
-    return dateB - dateA
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA
   })
 
   return sortedAchievements.map((achievement) => {
@@ -86,10 +89,16 @@ function transformAchievements(achievements: Achievement[]): TimelineAchievement
  * Client presentation for the achievements page. Data is fetched server-side
  * and passed in; this component owns the responsive timeline rendering.
  */
-export function AchievementsPageContent({ achievements }: { achievements: Achievement[] }) {
+export function AchievementsPageContent({
+  achievements,
+  sortOrder = 'desc',
+}: {
+  achievements: Achievement[]
+  sortOrder?: 'asc' | 'desc'
+}) {
   const timelineAchievements = React.useMemo(
-    () => transformAchievements(achievements),
-    [achievements],
+    () => transformAchievements(achievements, sortOrder),
+    [achievements, sortOrder],
   )
 
   return (

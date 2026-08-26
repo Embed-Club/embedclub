@@ -14,7 +14,7 @@ const capAt =
 export const HomeFeaturedMembers: GlobalConfig = {
   slug: 'home-featured-members',
   label: 'Home · Featured Members',
-  admin: { group: 'Pages' },
+  admin: { group: 'Members' },
   access: { read: () => true },
   fields: [
     {

@@ -4,7 +4,7 @@ export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
-    group: 'System',
+    group: 'Library & System',
     description: 'Admin logins. Add new ones with scripts/createBackupAdmin.ts.',
   },
   auth: true,

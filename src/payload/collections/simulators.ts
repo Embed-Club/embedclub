@@ -20,7 +20,7 @@ export const Simulators: CollectionConfig = {
     description:
       'External simulators students can launch. Drag rows to set the order they appear on the site.',
     defaultColumns: ['title', 'difficulty', 'updatedAt'],
-    group: 'Content',
+    group: 'Simulators',
   },
   access: {
     read: () => true,

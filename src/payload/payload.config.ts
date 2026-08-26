@@ -26,6 +26,7 @@ import { Tags } from './collections/tags'
 import { Tutorials } from './collections/tutorials'
 import { Users } from './collections/users'
 import { AboutPage } from './globals/aboutPage'
+import { AchievementSettings } from './globals/achievementSettings'
 import { HomeFeaturedMembers } from './globals/homeFeaturedMembers'
 import { LegalPages } from './globals/legalPages'
 import { SupportPages } from './globals/supportPages'
@@ -75,14 +76,20 @@ export default buildConfig({
   // Order here drives the order *within* each admin nav group (see each
   // collection's `admin.group`), so keep grouped collections adjacent.
   collections: [
-    // Content
-    Events,
+    // Achievements
     Achievements,
+    // Events
+    Events,
+    // Gallery
     Gallery,
-    Resources,
-    Tutorials,
-    Simulators,
+    // Projects
     Projects,
+    // Resources
+    Resources,
+    // Tutorials
+    Tutorials,
+    // Simulators
+    Simulators,
     // Members
     Members,
     MemberRoles,
@@ -92,13 +99,12 @@ export default buildConfig({
     Forms,
     FormSubmissions,
     FormMedia,
-    // Library
+    // Library & System
     Media,
     Tags,
-    // System
     Users,
   ],
-  globals: [AboutPage, LegalPages, SupportPages, HomeFeaturedMembers],
+  globals: [AchievementSettings, AboutPage, HomeFeaturedMembers, LegalPages, SupportPages],
   // "Payload Settings" on the account view is a translation string, not config,
   // so the admin.meta rebrand can't reach it. Overrides merge over the defaults.
   i18n: {

@@ -52,14 +52,20 @@ must not be reintroduced.
 
 Admin nav is grouped so a new member can find things:
 
-| Group               | Collections                                                               |
-| ------------------- | ------------------------------------------------------------------------- |
-| **Content**         | Events, Achievements, Gallery, Resources, Tutorials, Simulators, Projects |
-| **Members**         | Members, Member Roles, Member Categories, Member Photos                   |
-| **Forms**           | Forms, Form Submissions, Form Media                                       |
-| **Library**         | Media, Tags                                                               |
-| **System**          | Users                                                                     |
-| **Pages** (globals) | About Page, Legal Pages, Support Pages, Home · Featured Members            |
+| Group                | Collections / Globals                                                 |
+| -------------------- | --------------------------------------------------------------------- |
+| **About**            | About Page                                                            |
+| **Achievements**     | Achievements, Achievement Settings                                    |
+| **Events**           | Events                                                                |
+| **Gallery**          | Gallery                                                               |
+| **Projects**         | Projects                                                              |
+| **Resources**        | Resources                                                             |
+| **Tutorials**        | Tutorials                                                             |
+| **Simulators**       | Simulators                                                            |
+| **Members**          | Members, Member Roles, Member Categories, Member Photos, Home · Featured Members |
+| **Forms**            | Forms, Form Submissions, Form Media                                   |
+| **Site & Legal**     | Contact (Support Pages), Legal Pages                                  |
+| **Library & System** | Media, Tags, Users                                                    |
 
 Notes on specific collections:
 

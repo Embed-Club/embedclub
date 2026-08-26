@@ -23,7 +23,7 @@ export const Events: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    group: 'Content',
+    group: 'Events',
   },
   hooks: {
     beforeValidate: [

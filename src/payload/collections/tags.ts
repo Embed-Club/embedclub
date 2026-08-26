@@ -22,7 +22,7 @@ export const Tags: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     description: 'Resource tags for categorization and filtering',
-    group: 'Library',
+    group: 'Library & System',
   },
   fields: [
     {

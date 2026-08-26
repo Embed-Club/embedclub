@@ -44,7 +44,7 @@ export const LegalPages: GlobalConfig = {
   slug: 'legal-pages',
   label: 'Legal Pages',
   admin: {
-    group: 'Pages',
+    group: 'Site & Legal',
     description: 'Privacy policy, terms, and the consent line shown on forms.',
   },
   access: {

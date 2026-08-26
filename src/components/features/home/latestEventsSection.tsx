@@ -12,18 +12,20 @@ export function LatestEventsContent({
 }: { events: Event[]; className?: string }) {
   return (
     <div className={`flex flex-col gap-10 ${className ?? ''}`}>
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4 ">
         <div>
           <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]">
             Latest Events
           </h2>
-          <p className="mt-2 text-muted-foreground">What the club has been up to lately.</p>
+          <p className="mt-2 text-muted-foreground font-semibold tracking-wide">
+            What the club has been up to lately.
+          </p>
         </div>
         <Link
           href="/events"
           className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
-          Show all
+          Show all events
           <ArrowUpRight className="h-4 w-4" />
         </Link>
       </div>
@@ -31,9 +33,14 @@ export function LatestEventsContent({
       {events.length === 0 ? (
         <EmptyState title="No Events Yet" />
       ) : (
-        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="flex w-full flex-wrap justify-center gap-5">
           {events.map((event) => (
-            <EventCutoutCard key={event.id} event={event} />
+            <div
+              key={event.id}
+              className="w-[calc((100%-1.25rem)/2)] shrink-0 sm:w-52 lg:w-64 xl:w-72"
+            >
+              <EventCutoutCard event={event} />
+            </div>
           ))}
         </div>
       )}
@@ -51,7 +58,7 @@ export function LatestEventsSection({ events }: { events: Event[] }) {
       id="events"
       className="relative flex min-h-[100svh] w-full flex-col gap-12 pb-16 pt-24 lg:pt-0"
     >
-      <div className="flex flex-1 flex-col justify-center px-6 md:px-12 lg:px-20">
+      <div className="flex flex-1 flex-col justify-center px-6 md:px-12 lg:px-20 py-20">
         <LatestEventsContent events={events} />
       </div>
     </section>

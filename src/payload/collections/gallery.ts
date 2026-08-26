@@ -21,7 +21,7 @@ export const Gallery: CollectionConfig = {
     useAsTitle: 'caption',
     defaultColumns: ['filename', 'caption', 'updatedAt'],
     description: 'Drag photos in to upload them in bulk, then add a caption to each.',
-    group: 'Content',
+    group: 'Gallery',
   },
   access: {
     read: () => true,

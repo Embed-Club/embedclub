@@ -341,18 +341,18 @@ export async function upsertLearningDoc({
 
   if (existing.docs.length > 0) {
     const id = existing.docs[0].id
-    // biome-ignore lint/suspicious/noExplicitAny: cross-collection data shape, see note above
     await payload.update({
       collection,
       id,
+      // biome-ignore lint/suspicious/noExplicitAny: cross-collection data shape, see note above
       data: data as any,
       overrideAccess: true,
     })
     console.log(`Updated existing ${collection} ${id} (${slug}).`)
   } else {
-    // biome-ignore lint/suspicious/noExplicitAny: cross-collection data shape, see note above
     const created = await payload.create({
       collection,
+      // biome-ignore lint/suspicious/noExplicitAny: cross-collection data shape, see note above
       data: data as any,
       overrideAccess: true,
     })

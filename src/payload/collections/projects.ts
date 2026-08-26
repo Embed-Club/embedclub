@@ -33,7 +33,7 @@ export const Projects: CollectionConfig = {
     useAsTitle: 'title',
     description: 'Member projects. The showcase arranges the cards itself.',
     defaultColumns: ['title', 'award', 'year', 'updatedAt'],
-    group: 'Content',
+    group: 'Projects',
   },
   fields: [
     {

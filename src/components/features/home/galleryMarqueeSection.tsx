@@ -36,7 +36,9 @@ export function GalleryMarqueeSection({ images }: { images: string[] }) {
           <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]">
             From the Gallery
           </h2>
-          <p className="mt-2 text-muted-foreground">Moments from workshops, builds, and events.</p>
+          <p className="mt-2 text-muted-foreground font-semibold tracking-wide">
+            Moments from workshops, builds, and events.
+          </p>
         </div>
         <Link
           href="/gallery"

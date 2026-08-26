@@ -16,7 +16,7 @@ export const Resources: CollectionConfig = {
     description:
       'Reference material and guides. Drag rows to set the order they appear on the site.',
     defaultColumns: ['title', 'difficulty', 'badge', 'updatedAt'],
-    group: 'Content',
+    group: 'Resources',
     ...buildLearningPreview('resources'),
   },
   fields: buildLearningFields({ noun: 'Resource' }),

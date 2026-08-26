@@ -67,13 +67,13 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    events: Event;
     achievements: Achievement;
+    events: Event;
     gallery: Gallery;
+    projects: Project;
     resources: Resource;
     tutorials: Tutorial;
     simulators: Simulator;
-    projects: Project;
     members: Member;
     'member-roles': MemberRole;
     'member-categories': MemberCategory;
@@ -98,13 +98,13 @@ export interface Config {
     };
   };
   collectionsSelect: {
-    events: EventsSelect<false> | EventsSelect<true>;
     achievements: AchievementsSelect<false> | AchievementsSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
     tutorials: TutorialsSelect<false> | TutorialsSelect<true>;
     simulators: SimulatorsSelect<false> | SimulatorsSelect<true>;
-    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
     'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
     'member-categories': MemberCategoriesSelect<false> | MemberCategoriesSelect<true>;
@@ -128,16 +128,18 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    'achievement-settings': AchievementSetting;
     'about-page': AboutPage;
+    'home-featured-members': HomeFeaturedMember;
     'legal-pages': LegalPage;
     'support-pages': SupportPage;
-    'home-featured-members': HomeFeaturedMember;
   };
   globalsSelect: {
+    'achievement-settings': AchievementSettingsSelect<false> | AchievementSettingsSelect<true>;
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
+    'home-featured-members': HomeFeaturedMembersSelect<false> | HomeFeaturedMembersSelect<true>;
     'legal-pages': LegalPagesSelect<false> | LegalPagesSelect<true>;
     'support-pages': SupportPagesSelect<false> | SupportPagesSelect<true>;
-    'home-featured-members': HomeFeaturedMembersSelect<false> | HomeFeaturedMembersSelect<true>;
   };
   locale: null;
   widgets: {
@@ -172,6 +174,83 @@ export interface UserAuthOperations {
   unlock: {
     email: string;
     password: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "achievements".
+ */
+export interface Achievement {
+  id: number;
+  title: string;
+  summary: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Date of the achievement (newest first)
+   */
+  date: string;
+  image?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Every image used across the site. Drag files in to upload in bulk.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    tablet?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
   };
 }
 /**
@@ -526,83 +605,6 @@ export interface FormMedia {
   };
 }
 /**
- * Every image used across the site. Drag files in to upload in bulk.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    tablet?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "achievements".
- */
-export interface Achievement {
-  id: number;
-  title: string;
-  summary: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * Date of the achievement (newest first)
-   */
-  date: string;
-  image?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Drag photos in to upload them in bulk, then add a caption to each.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -654,59 +656,185 @@ export interface Gallery {
   };
 }
 /**
- * Reference material and guides. Drag rows to set the order they appear on the site.
+ * Member projects. The showcase arranges the cards itself.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resources".
+ * via the `definition` "projects".
  */
-export interface Resource {
+export interface Project {
   id: number;
-  _order?: string | null;
   title: string;
   /**
-   * Auto-generates from the title. Enter your own if it clashes with another page.
+   * Generated from the title.
    */
   slug: string;
   /**
-   * One-line summary shown in cards and previews (max 200 characters)
+   * One-line summary shown on the project card (max 200 characters)
    */
   description: string;
   /**
-   * Image displayed in cards
+   * Optional. Without one the card is typeset instead.
    */
-  thumbnail: number | Media;
+  thumbnail?: (number | null) | Media;
   /**
-   * Difficulty level for this resource
+   * The result, shown large on the card. Leave empty if there is none.
    */
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  award?: string | null;
   /**
-   * Categorize with tags (Python, React, Backend, etc.)
+   * Where it was won.
+   */
+  event?: string | null;
+  /**
+   * The year the project was built.
+   */
+  year?: number | null;
+  /**
+   * Who built this
+   */
+  team?: (number | Member)[] | null;
+  /**
+   * Categorize with tags (IoT, Robotics, PCB, etc.)
    */
   tags?: (number | Tag)[] | null;
   /**
-   * Approximate time to complete this resource
+   * Optional link to the source code (GitHub, GitLab, …)
    */
-  estimatedReadTime?: number | null;
+  repoUrl?: string | null;
   /**
-   * Optional badge on the card. "Coming Soon" also makes it unclickable.
+   * Optional link to a live demo or video
    */
-  badge?: ('featured' | 'popular' | 'essential' | 'comingSoon') | null;
+  demoUrl?: string | null;
   /**
-   * The page body. Add text, code, images, diagrams and more as blocks.
+   * The write-up: how it works, what it took, what broke. Optional.
    */
   content?:
-    | (
-        | TextBlock
-        | CodeBlock
-        | TableBlock
-        | GraphBlock
-        | ImageBlock
-        | VideoBlock
-        | RowBlock
-        | AccordionBlock
-        | SimulatorLinkBlock
-      )[]
+    | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: number;
+  fullName: string;
+  /**
+   * Optional. Without one, an avatar is generated instead.
+   */
+  photo?: (number | null) | MemberPhoto;
+  /**
+   * Only used to pick a generated avatar. Never shown on the site.
+   */
+  gender?: ('male' | 'female' | 'unspecified') | null;
+  category: number | MemberCategory;
+  /**
+   * A member can hold multiple roles over time (e.g. Member, then President). First role listed is shown most prominently.
+   */
+  roles: (number | MemberRole)[];
+  bio?: string | null;
+  /**
+   * e.g. 2021
+   */
+  startYear: number;
+  /**
+   * Leave empty if still active
+   */
+  endYear?: number | null;
+  github?: string | null;
+  linkedin?: string | null;
+  socialAccounts?:
+    | {
+        platform?: ('twitter' | 'instagram' | 'facebook' | 'youtube' | 'tiktok' | 'other') | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-photo".
+ */
+export interface MemberPhoto {
+  id: number;
+  /**
+   * e.g., "Photo of John Doe"
+   */
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    profile?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-categories".
+ */
+export interface MemberCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  /**
+   * Ascending shows the latest year first. Descending shows the oldest year.
+   */
+  batchOrder: 'oldestFirst' | 'newestFirst';
+  /**
+   * Position in the list. Lower numbers appear first.
+   */
+  sortOrder: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-roles".
+ */
+export interface MemberRole {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  /**
+   * Position in the list. Lower numbers appear first.
+   */
+  sortOrder: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -980,6 +1108,63 @@ export interface Simulator {
   createdAt: string;
 }
 /**
+ * Reference material and guides. Drag rows to set the order they appear on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources".
+ */
+export interface Resource {
+  id: number;
+  _order?: string | null;
+  title: string;
+  /**
+   * Auto-generates from the title. Enter your own if it clashes with another page.
+   */
+  slug: string;
+  /**
+   * One-line summary shown in cards and previews (max 200 characters)
+   */
+  description: string;
+  /**
+   * Image displayed in cards
+   */
+  thumbnail: number | Media;
+  /**
+   * Difficulty level for this resource
+   */
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  /**
+   * Categorize with tags (Python, React, Backend, etc.)
+   */
+  tags?: (number | Tag)[] | null;
+  /**
+   * Approximate time to complete this resource
+   */
+  estimatedReadTime?: number | null;
+  /**
+   * Optional badge on the card. "Coming Soon" also makes it unclickable.
+   */
+  badge?: ('featured' | 'popular' | 'essential' | 'comingSoon') | null;
+  /**
+   * The page body. Add text, code, images, diagrams and more as blocks.
+   */
+  content?:
+    | (
+        | TextBlock
+        | CodeBlock
+        | TableBlock
+        | GraphBlock
+        | ImageBlock
+        | VideoBlock
+        | RowBlock
+        | AccordionBlock
+        | SimulatorLinkBlock
+      )[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "AccordionBlock".
  */
@@ -1065,189 +1250,6 @@ export interface Tutorial {
         | SimulatorLinkBlock
       )[]
     | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Member projects. The showcase arranges the cards itself.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects".
- */
-export interface Project {
-  id: number;
-  title: string;
-  /**
-   * Generated from the title.
-   */
-  slug: string;
-  /**
-   * One-line summary shown on the project card (max 200 characters)
-   */
-  description: string;
-  /**
-   * Optional. Without one the card is typeset instead.
-   */
-  thumbnail?: (number | null) | Media;
-  /**
-   * The result, shown large on the card. Leave empty if there is none.
-   */
-  award?: string | null;
-  /**
-   * Where it was won.
-   */
-  event?: string | null;
-  /**
-   * The year the project was built.
-   */
-  year?: number | null;
-  /**
-   * Who built this
-   */
-  team?: (number | Member)[] | null;
-  /**
-   * Categorize with tags (IoT, Robotics, PCB, etc.)
-   */
-  tags?: (number | Tag)[] | null;
-  /**
-   * Optional link to the source code (GitHub, GitLab, …)
-   */
-  repoUrl?: string | null;
-  /**
-   * Optional link to a live demo or video
-   */
-  demoUrl?: string | null;
-  /**
-   * The write-up: how it works, what it took, what broke. Optional.
-   */
-  content?:
-    | (TextBlock | CodeBlock | TableBlock | GraphBlock | ImageBlock | VideoBlock | RowBlock | SimulatorLinkBlock)[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "members".
- */
-export interface Member {
-  id: number;
-  fullName: string;
-  /**
-   * Optional. Without one, an avatar is generated instead.
-   */
-  photo?: (number | null) | MemberPhoto;
-  /**
-   * Only used to pick a generated avatar. Never shown on the site.
-   */
-  gender?: ('male' | 'female' | 'unspecified') | null;
-  category: number | MemberCategory;
-  /**
-   * A member can hold multiple roles over time (e.g. Member, then President). First role listed is shown most prominently.
-   */
-  roles: (number | MemberRole)[];
-  bio?: string | null;
-  /**
-   * e.g. 2021
-   */
-  startYear: number;
-  /**
-   * Leave empty if still active
-   */
-  endYear?: number | null;
-  github?: string | null;
-  linkedin?: string | null;
-  socialAccounts?:
-    | {
-        platform?: ('twitter' | 'instagram' | 'facebook' | 'youtube' | 'tiktok' | 'other') | null;
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-photo".
- */
-export interface MemberPhoto {
-  id: number;
-  /**
-   * e.g., "Photo of John Doe"
-   */
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    profile?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-categories".
- */
-export interface MemberCategory {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string | null;
-  /**
-   * Ascending shows the latest year first. Descending shows the oldest year.
-   */
-  batchOrder: 'oldestFirst' | 'newestFirst';
-  /**
-   * Position in the list. Lower numbers appear first.
-   */
-  sortOrder: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "member-roles".
- */
-export interface MemberRole {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string | null;
-  /**
-   * Position in the list. Lower numbers appear first.
-   */
-  sortOrder: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -1563,16 +1565,20 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'events';
-        value: number | Event;
-      } | null)
-    | ({
         relationTo: 'achievements';
         value: number | Achievement;
       } | null)
     | ({
+        relationTo: 'events';
+        value: number | Event;
+      } | null)
+    | ({
         relationTo: 'gallery';
         value: number | Gallery;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: number | Project;
       } | null)
     | ({
         relationTo: 'resources';
@@ -1585,10 +1591,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'simulators';
         value: number | Simulator;
-      } | null)
-    | ({
-        relationTo: 'projects';
-        value: number | Project;
       } | null)
     | ({
         relationTo: 'members';
@@ -1674,6 +1676,18 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "achievements_select".
+ */
+export interface AchievementsSelect<T extends boolean = true> {
+  title?: T;
+  summary?: T;
+  date?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events_select".
  */
 export interface EventsSelect<T extends boolean = true> {
@@ -1711,18 +1725,6 @@ export interface EventsSelect<T extends boolean = true> {
             };
         zoom?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "achievements_select".
- */
-export interface AchievementsSelect<T extends boolean = true> {
-  title?: T;
-  summary?: T;
-  date?: T;
-  image?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1781,18 +1783,20 @@ export interface GallerySelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resources_select".
+ * via the `definition` "projects_select".
  */
-export interface ResourcesSelect<T extends boolean = true> {
-  _order?: T;
+export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
   thumbnail?: T;
-  difficulty?: T;
+  award?: T;
+  event?: T;
+  year?: T;
+  team?: T;
   tags?: T;
-  estimatedReadTime?: T;
-  badge?: T;
+  repoUrl?: T;
+  demoUrl?: T;
   content?:
     | T
     | {
@@ -1803,7 +1807,6 @@ export interface ResourcesSelect<T extends boolean = true> {
         imageBlock?: T | ImageBlockSelect<T>;
         videoBlock?: T | VideoBlockSelect<T>;
         rowBlock?: T | RowBlockSelect<T>;
-        accordionBlock?: T | AccordionBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
   updatedAt?: T;
@@ -1921,6 +1924,36 @@ export interface SimulatorLinkBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources_select".
+ */
+export interface ResourcesSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  slug?: T;
+  description?: T;
+  thumbnail?: T;
+  difficulty?: T;
+  tags?: T;
+  estimatedReadTime?: T;
+  badge?: T;
+  content?:
+    | T
+    | {
+        textBlock?: T | TextBlockSelect<T>;
+        codeBlock?: T | CodeBlockSelect<T>;
+        tableBlock?: T | TableBlockSelect<T>;
+        graphBlock?: T | GraphBlockSelect<T>;
+        imageBlock?: T | ImageBlockSelect<T>;
+        videoBlock?: T | VideoBlockSelect<T>;
+        rowBlock?: T | RowBlockSelect<T>;
+        accordionBlock?: T | AccordionBlockSelect<T>;
+        simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "AccordionBlock_select".
  */
 export interface AccordionBlockSelect<T extends boolean = true> {
@@ -1993,37 +2026,6 @@ export interface SimulatorsSelect<T extends boolean = true> {
   launchType?: T;
   launchUrl?: T;
   videoUrl?: T;
-  content?:
-    | T
-    | {
-        textBlock?: T | TextBlockSelect<T>;
-        codeBlock?: T | CodeBlockSelect<T>;
-        tableBlock?: T | TableBlockSelect<T>;
-        graphBlock?: T | GraphBlockSelect<T>;
-        imageBlock?: T | ImageBlockSelect<T>;
-        videoBlock?: T | VideoBlockSelect<T>;
-        rowBlock?: T | RowBlockSelect<T>;
-        simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects_select".
- */
-export interface ProjectsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  description?: T;
-  thumbnail?: T;
-  award?: T;
-  event?: T;
-  year?: T;
-  team?: T;
-  tags?: T;
-  repoUrl?: T;
-  demoUrl?: T;
   content?:
     | T
     | {
@@ -2513,6 +2515,21 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Configure timeline display and ordering preferences for achievements.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "achievement-settings".
+ */
+export interface AchievementSetting {
+  id: number;
+  /**
+   * Choose whether the achievements timeline starts from the most recent achievements (newest first) or earliest achievements (oldest first).
+   */
+  sortOrder: 'desc' | 'asc';
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about-page".
  */
@@ -2583,6 +2600,31 @@ export interface AboutPage {
             blockType: 'aboutImageBlock';
           }
       )[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-featured-members".
+ */
+export interface HomeFeaturedMember {
+  id: number;
+  /**
+   * Each row is a category plus the members to feature from it. Rows show top → bottom.
+   */
+  rows?:
+    | {
+        /**
+         * The row label + which members you can pick below.
+         */
+        category: number | MemberCategory;
+        /**
+         * Members to show in this row (order = display order, up to 8).
+         */
+        members: (number | Member)[];
+        id?: string | null;
+      }[]
     | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2807,28 +2849,13 @@ export interface SupportPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "home-featured-members".
+ * via the `definition` "achievement-settings_select".
  */
-export interface HomeFeaturedMember {
-  id: number;
-  /**
-   * Each row is a category plus the members to feature from it. Rows show top → bottom.
-   */
-  rows?:
-    | {
-        /**
-         * The row label + which members you can pick below.
-         */
-        category: number | MemberCategory;
-        /**
-         * Members to show in this row (order = display order, up to 8).
-         */
-        members: (number | Member)[];
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
+export interface AchievementSettingsSelect<T extends boolean = true> {
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2866,6 +2893,22 @@ export interface AboutPageSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-featured-members_select".
+ */
+export interface HomeFeaturedMembersSelect<T extends boolean = true> {
+  rows?:
+    | T
+    | {
+        category?: T;
+        members?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -2962,22 +3005,6 @@ export interface SupportPagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "home-featured-members_select".
- */
-export interface HomeFeaturedMembersSelect<T extends boolean = true> {
-  rows?:
-    | T
-    | {
-        category?: T;
-        members?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -2996,13 +3023,13 @@ export interface TaskCreateCollectionExport {
     name: string;
     batchSize?: number | null;
     collectionSlug:
-      | 'events'
       | 'achievements'
+      | 'events'
       | 'gallery'
+      | 'projects'
       | 'resources'
       | 'tutorials'
       | 'simulators'
-      | 'projects'
       | 'members'
       | 'member-roles'
       | 'member-categories'

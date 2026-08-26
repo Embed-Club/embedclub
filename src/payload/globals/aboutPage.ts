@@ -3,7 +3,7 @@ import type { GlobalConfig } from 'payload'
 export const AboutPage: GlobalConfig = {
   slug: 'about-page',
   label: 'About Page',
-  admin: { group: 'Pages' },
+  admin: { group: 'About' },
   access: {
     read: () => true,
   },

@@ -17,7 +17,7 @@ export const SupportPages: GlobalConfig = {
   // migration for a label change nobody sees.
   label: 'Contact',
   admin: {
-    group: 'Pages',
+    group: 'Site & Legal',
     description: 'The /contact page. /support redirects here.',
   },
   access: {
