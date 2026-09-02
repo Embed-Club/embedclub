@@ -9,6 +9,8 @@ export interface StaggeredMenuItem {
   label: string
   ariaLabel: string
   link: string
+  icon?: React.ComponentType<{ className?: string }>
+  dividerAfter?: boolean
 }
 export interface StaggeredMenuSocialItem {
   label: string
@@ -68,6 +70,23 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   useLayoutEffect(() => {
     setMounted(true)
   }, [])
+
+  const sectionGroups = React.useMemo(() => {
+    const groups: StaggeredMenuItem[][] = []
+    let currentGroup: StaggeredMenuItem[] = []
+
+    for (const item of items) {
+      currentGroup.push(item)
+      if (item.dividerAfter) {
+        groups.push(currentGroup)
+        currentGroup = []
+      }
+    }
+    if (currentGroup.length > 0) {
+      groups.push(currentGroup)
+    }
+    return groups
+  }, [items])
 
   const panelRef = useRef<HTMLDivElement | null>(null)
   const preLayersRef = useRef<HTMLDivElement | null>(null)
@@ -136,9 +155,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     }
     itemEntranceTweenRef.current?.kill()
 
+    const sectionEls = Array.from(panel.querySelectorAll('.sm-panel-section')) as HTMLElement[]
     const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel')) as HTMLElement[]
+    const dividerEls = Array.from(panel.querySelectorAll('.sm-item-divider')) as HTMLElement[]
     const numberEls = Array.from(
-      panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'),
+      panel.querySelectorAll('.sm-panel-section[data-numbering] .sm-panel-item'),
     ) as HTMLElement[]
     const socialTitle = panel.querySelector('.sm-socials-title') as HTMLElement | null
     const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link')) as HTMLElement[]
@@ -149,25 +170,27 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     }))
     const panelStart = Number(gsap.getProperty(panel, 'xPercent'))
 
-    if (itemEls.length) gsap.set(itemEls, { yPercent: 140, rotate: 10 })
+    if (itemEls.length) gsap.set(itemEls, { yPercent: 140, rotate: 8, opacity: 0 })
+    if (dividerEls.length)
+      gsap.set(dividerEls, { opacity: 0, scaleX: 0, transformOrigin: '0% 50%' })
     if (numberEls.length) gsap.set(numberEls, { '--sm-num-opacity': 0 } as gsap.TweenVars)
     if (socialTitle) gsap.set(socialTitle, { opacity: 0 })
     if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 })
 
     const tl = gsap.timeline({ paused: true })
 
-    layerStates.forEach((ls, i) => {
+    for (const [i, ls] of layerStates.entries()) {
       tl.fromTo(
         ls.el,
         { xPercent: ls.start },
-        { xPercent: 0, duration: 0.5, ease: 'power4.out' },
+        { xPercent: 0, duration: 0.55, ease: 'power4.out' },
         i * 0.07,
       )
-    })
+    }
 
     const lastTime = layerStates.length ? (layerStates.length - 1) * 0.07 : 0
     const panelInsertTime = lastTime + (layerStates.length ? 0.08 : 0)
-    const panelDuration = 0.65
+    const panelDuration = 0.7
 
     tl.fromTo(
       panel,
@@ -176,21 +199,59 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       panelInsertTime,
     )
 
-    if (itemEls.length) {
-      const itemsStartRatio = 0.15
+    if (sectionEls.length || itemEls.length) {
+      const itemsStartRatio = 0.18
       const itemsStart = panelInsertTime + panelDuration * itemsStartRatio
 
-      tl.to(
-        itemEls,
-        {
-          yPercent: 0,
-          rotate: 0,
-          duration: 1,
-          ease: 'power4.out',
-          stagger: { each: 0.1, from: 'start' },
-        },
-        itemsStart,
-      )
+      // Animate every section simultaneously with a graceful, cinematic reveal
+      if (sectionEls.length) {
+        for (const sec of sectionEls) {
+          const secItemEls = Array.from(
+            sec.querySelectorAll('.sm-panel-itemLabel'),
+          ) as HTMLElement[]
+          if (secItemEls.length) {
+            tl.to(
+              secItemEls,
+              {
+                yPercent: 0,
+                rotate: 0,
+                opacity: 1,
+                duration: 1.4,
+                ease: 'power3.out',
+                stagger: { each: 0.14, from: 'start' },
+              },
+              itemsStart,
+            )
+          }
+        }
+      } else if (itemEls.length) {
+        tl.to(
+          itemEls,
+          {
+            yPercent: 0,
+            rotate: 0,
+            opacity: 1,
+            duration: 1.4,
+            ease: 'power3.out',
+            stagger: { each: 0.14, from: 'start' },
+          },
+          itemsStart,
+        )
+      }
+
+      if (dividerEls.length) {
+        tl.to(
+          dividerEls,
+          {
+            opacity: 1,
+            scaleX: 1,
+            duration: 0.75,
+            ease: 'power3.out',
+            stagger: 0.08,
+          },
+          itemsStart + 0.15,
+        )
+      }
 
       if (numberEls.length) {
         tl.to(
@@ -267,7 +328,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       overwrite: 'auto',
       onComplete: () => {
         const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel')) as HTMLElement[]
-        if (itemEls.length) gsap.set(itemEls, { yPercent: 140, rotate: 10 })
+        const dividerEls = Array.from(panel.querySelectorAll('.sm-item-divider')) as HTMLElement[]
+        if (itemEls.length) gsap.set(itemEls, { yPercent: 140, rotate: 8, opacity: 0 })
+        if (dividerEls.length) gsap.set(dividerEls, { opacity: 0, scaleX: 0 })
 
         const numberEls = Array.from(
           panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'),
@@ -563,43 +626,59 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           }}
           aria-hidden={!open}
         >
-          <div className="sm-panel-inner flex-1 flex flex-col gap-5">
-            <ul
-              className="sm-panel-list list-none m-0 p-0 flex flex-col gap-2"
-              data-numbering={displayItemNumbering || undefined}
-            >
-              {items?.length ? (
-                items.map((it, idx) => (
-                  <li
-                    className="sm-panel-itemWrap relative overflow-hidden leading-[1.15]"
-                    // biome-ignore lint/suspicious/noArrayIndexKey: nav items
-                    key={it.label + idx}
-                  >
-                    <a
-                      className="sm-panel-item relative font-semibold text-[4rem] cursor-pointer leading-[1.15] tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
-                      href={it.link}
-                      aria-label={it.ariaLabel}
-                      data-index={idx + 1}
+          <div className="sm-panel-inner flex-1 flex flex-col gap-3">
+            <div className="sm-panel-sections flex flex-col gap-0">
+              {sectionGroups.length ? (
+                sectionGroups.map((group, gIdx) => (
+                  <React.Fragment key={group[0]?.link || gIdx}>
+                    <ul
+                      className="sm-panel-section sm-panel-list list-none m-0 p-0 flex flex-col gap-1"
+                      data-numbering={displayItemNumbering || undefined}
                     >
-                      <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
-                        {it.label}
-                      </span>
-                    </a>
-                  </li>
+                      {group.map((it) => (
+                        <li
+                          key={it.link || it.label}
+                          className="sm-panel-itemWrap relative overflow-hidden leading-[1.15]"
+                        >
+                          <a
+                            className="sm-panel-item relative font-semibold cursor-pointer leading-[1.15] uppercase transition-colors duration-150 ease-linear flex items-center no-underline"
+                            href={it.link}
+                            aria-label={it.ariaLabel}
+                          >
+                            <span className="sm-panel-itemLabel flex items-center gap-3 sm:gap-4 [transform-origin:50%_100%] will-change-transform">
+                              {it.icon && (
+                                <span className="sm-item-icon inline-flex items-center justify-center shrink-0">
+                                  <it.icon className="h-6 w-6 sm:h-7 sm:w-7 stroke-[1.8]" />
+                                </span>
+                              )}
+                              <span className="sm-item-text">{it.label}</span>
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                    {gIdx < sectionGroups.length - 1 && (
+                      <div
+                        className="sm-item-divider my-2 h-[1px] w-full"
+                        style={{
+                          background:
+                            mounted && isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
+                        }}
+                        aria-hidden="true"
+                      />
+                    )}
+                  </React.Fragment>
                 ))
               ) : (
-                <li
-                  className="sm-panel-itemWrap relative overflow-hidden leading-[1.15]"
-                  aria-hidden="true"
-                >
-                  <span className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-[1.15] tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
+                <div className="sm-panel-itemWrap relative overflow-hidden leading-[1.15]">
+                  <span className="sm-panel-item relative text-black font-semibold text-[2rem] cursor-pointer uppercase inline-block no-underline">
                     <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
                       No items
                     </span>
                   </span>
-                </li>
+                </div>
               )}
-            </ul>
+            </div>
 
             {displaySocials && socialItems && socialItems.length > 0 && (
               <div
@@ -687,14 +766,18 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-socials-link { font-size: 1.2rem; font-weight: 500; color: var(--sm-fg,#000000); text-decoration: none; position: relative; padding: 2px 0; display: inline-block; transition: color 0.3s ease, opacity 0.3s ease; }
 .sm-scope .sm-socials-link:hover { color: var(--sm-accent, #ff0000); }
 .sm-scope .sm-panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; text-transform: uppercase; }
-.sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.sm-scope .sm-panel-item { position: relative; color: var(--sm-fg,#000000); font-weight: 600; font-size: clamp(2.0rem, 6vw, 3.4rem); cursor: pointer; line-height: 1.15; letter-spacing: -1px; text-transform: uppercase; transition: background 0.25s, color 0.25s; display: inline-block; text-decoration: none; padding-right: 1.4em; }
-.sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
-.sm-scope .sm-panel-item:hover { color: var(--sm-accent, #ff0000); }
+.sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+.sm-scope .sm-panel-item { position: relative; color: var(--sm-fg,#000000); font-weight: 600; font-size: clamp(1.4rem, 4.2vw, 2.2rem); cursor: pointer; line-height: 1.2; letter-spacing: -0.5px; text-transform: uppercase; transition: color 0.2s ease; display: flex; align-items: center; text-decoration: none; padding: 0.2rem 0; }
+.sm-scope .sm-panel-itemLabel { display: flex; align-items: center; will-change: transform; transform-origin: 50% 100%; width: 100%; }
+.sm-scope .sm-item-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--sm-muted, #888888); transition: color 0.2s ease, transform 0.2s ease; }
+.sm-scope .sm-panel-item:hover .sm-item-icon,
+.sm-scope .sm-panel-item:focus-visible .sm-item-icon { color: var(--sm-accent, #d98e4a); transform: scale(1.1); }
+.sm-scope .sm-panel-item:hover,
+.sm-scope .sm-panel-item:focus-visible { color: var(--sm-accent, #d98e4a); }
 .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }
-.sm-scope .sm-panel-list[data-numbering] .sm-panel-item::after { counter-increment: smItem; content: counter(smItem, decimal-leading-zero); position: absolute; top: 0.1em; right: 3.2em; font-size: 18px; font-weight: 400; color: var(--sm-accent, #ff0000); letter-spacing: 0; pointer-events: none; user-select: none; opacity: var(--sm-num-opacity, 0); }
-@media (max-width: 1024px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } }
-@media (max-width: 640px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } }
+.sm-scope .sm-panel-list[data-numbering] .sm-panel-item::after { counter-increment: smItem; content: counter(smItem, decimal-leading-zero); margin-left: auto; padding-right: 0.5rem; font-size: 14px; font-weight: 400; color: var(--sm-accent, #d98e4a); letter-spacing: 0; pointer-events: none; user-select: none; opacity: var(--sm-num-opacity, 0); }
+@media (max-width: 1024px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; padding: 5em 1.5em 2em 1.5em; } }
+@media (max-width: 640px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; padding: 4.5em 1.25em 2em 1.25em; } }
       `}</style>
     </div>
   )

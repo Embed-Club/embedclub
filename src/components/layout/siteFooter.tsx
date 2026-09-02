@@ -1,5 +1,7 @@
+import { CreditsModalTrigger } from '@/components/common/creditsModal'
+import { TextReveal } from '@/components/common/textReveal'
 import { cn } from '@/lib/utils'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Sparkles } from 'lucide-react'
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -78,13 +80,19 @@ export function SiteFooter() {
                 Student-run embedded systems & IoT club at PA College of Engineering. We build,
                 break, and ship - turning circuits and code into things that work.
               </p>
-              <a
-                href="/contact"
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                Get in touch
-                <ArrowUpRight className="h-4 w-4" />
-              </a>
+              <div className="mt-6 flex flex-col items-start gap-3">
+                <a
+                  href="/contact"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  Get in touch
+                  <ArrowUpRight className="h-4 w-4" />
+                </a>
+                <CreditsModalTrigger className="group inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3.5 py-1.5 text-xs font-semibold text-muted-foreground backdrop-blur-sm transition-all duration-200 hover:border-primary/60 hover:bg-primary/10 hover:text-primary cursor-pointer">
+                  <Sparkles className="h-3.5 w-3.5 text-muted-foreground transition-colors group-hover:text-primary" />
+                  <span>Original Website Tribute</span>
+                </CreditsModalTrigger>
+              </div>
             </div>
 
             {/* Link columns */}
@@ -151,14 +159,20 @@ export function SiteFooter() {
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 z-0 flex justify-center overflow-hidden"
         >
-          <span
+          <TextReveal
+            as="span"
+            by="character"
+            stagger={0.05}
+            duration={0.9}
+            amount="some"
+            margin="0px"
             style={{ fontFamily: 'Gobold, sans-serif' }}
             className={cn(
               'translate-y-[28%] select-none text-[26vw] font-bold leading-none text-primary/25 md:text-[20vw]',
             )}
           >
             Embed
-          </span>
+          </TextReveal>
         </div>
       </div>
     </footer>

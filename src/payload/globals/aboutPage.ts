@@ -15,6 +15,16 @@ export const AboutPage: GlobalConfig = {
       required: true,
     },
     {
+      name: 'legacyWebsiteUrl',
+      type: 'text',
+      label: 'Legacy Website URL (v1.0)',
+      defaultValue: 'https://embedclub.org/',
+      admin: {
+        description:
+          'URL pointing to the original website (e.g. Netlify URL once embedclub.org domain transfers).',
+      },
+    },
+    {
       name: 'content',
       type: 'richText',
       admin: {
@@ -85,6 +95,45 @@ export const AboutPage: GlobalConfig = {
           ],
         },
       ],
+    },
+    {
+      name: 'currentDevelopers',
+      type: 'array',
+      label: 'Current Website Team (v2.0)',
+      labels: { singular: 'Developer / Contributor', plural: 'Developers / Contributors' },
+      admin: {
+        description:
+          'Developers and contributors who worked or are working on the current (v2.0) website.',
+      },
+      fields: [
+        { name: 'name', type: 'text', required: true },
+        { name: 'role', type: 'text', defaultValue: 'Lead Developer' },
+        { name: 'url', type: 'text', label: 'Profile / GitHub URL' },
+        { name: 'description', type: 'text' },
+      ],
+    },
+    {
+      name: 'legacyDevelopers',
+      type: 'array',
+      label: 'Original Website Team (v1.0)',
+      labels: { singular: 'Developer / Contributor', plural: 'Developers / Contributors' },
+      admin: {
+        description:
+          'Developers and contributors who built or added to the original (v1.0) embedclub.org website.',
+      },
+      fields: [
+        { name: 'name', type: 'text', required: true },
+        { name: 'role', type: 'text', defaultValue: 'Original Developer' },
+        { name: 'url', type: 'text', label: 'Profile / GitHub URL' },
+        { name: 'description', type: 'text' },
+      ],
+    },
+    {
+      name: 'heritageCommunityNote',
+      type: 'textarea',
+      label: 'Heritage Community Acknowledgments Note',
+      defaultValue:
+        'Heartfelt gratitude to all past and present Embed Club executive members, faculty mentors, workshop leads, and student authors at P.A. College of Engineering who contributed tutorials, project documentation, and photography across both generations of the website.',
     },
   ],
 }

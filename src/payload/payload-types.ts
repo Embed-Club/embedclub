@@ -2537,6 +2537,10 @@ export interface AboutPage {
   id: number;
   title: string;
   /**
+   * URL pointing to the original website (e.g. Netlify URL once embedclub.org domain transfers).
+   */
+  legacyWebsiteUrl?: string | null;
+  /**
    * Intro text shown at the top of the page (rendered before the sections below).
    */
   content?: {
@@ -2601,6 +2605,31 @@ export interface AboutPage {
           }
       )[]
     | null;
+  /**
+   * Developers and contributors who worked or are working on the current (v2.0) website.
+   */
+  currentDevelopers?:
+    | {
+        name: string;
+        role?: string | null;
+        url?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Developers and contributors who built or added to the original (v1.0) embedclub.org website.
+   */
+  legacyDevelopers?:
+    | {
+        name: string;
+        role?: string | null;
+        url?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  heritageCommunityNote?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2863,6 +2892,7 @@ export interface AchievementSettingsSelect<T extends boolean = true> {
  */
 export interface AboutPageSelect<T extends boolean = true> {
   title?: T;
+  legacyWebsiteUrl?: T;
   content?: T;
   sections?:
     | T
@@ -2894,6 +2924,25 @@ export interface AboutPageSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  currentDevelopers?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        url?: T;
+        description?: T;
+        id?: T;
+      };
+  legacyDevelopers?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        url?: T;
+        description?: T;
+        id?: T;
+      };
+  heritageCommunityNote?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

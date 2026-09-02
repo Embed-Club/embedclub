@@ -5,6 +5,7 @@ import {
 import { GalleryMarqueeSection } from '@/components/features/home/galleryMarqueeSection'
 import { HeroSection } from '@/components/features/home/heroSection'
 import { LatestEventsSection } from '@/components/features/home/latestEventsSection'
+import { ScrollAnimationSection } from '@/components/features/home/scrollAnimationSection'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import type { Event, Gallery, Member } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
@@ -83,6 +84,7 @@ export default async function Page() {
       <MainbarShell hideScrollbar>
         <div className="home-content-gated">
           <HeroSection />
+          <ScrollAnimationSection />
           <LatestEventsSection events={events} />
           <FeaturedMembersSection rows={rows} />
           <GalleryMarqueeSection images={galleryImages} />

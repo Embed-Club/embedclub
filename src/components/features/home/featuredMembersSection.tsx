@@ -1,7 +1,8 @@
+import { TextReveal } from '@/components/common/textReveal'
 import { MemberCutoutCard } from '@/components/features/home/memberCutoutCard'
 import type { Member } from '@/payload/payload-types'
 import { ArrowUpRight } from 'lucide-react'
-import Link from 'next/dist/client/link'
+import Link from 'next/link'
 
 export type FeaturedRow = {
   id: string
@@ -17,9 +18,12 @@ export function FeaturedMembersSection({ rows }: { rows: FeaturedRow[] }) {
     <section className="relative flex min-h-[100svh] w-full flex-col justify-center gap-12 px-6 py-20 md:px-12 lg:px-20">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]">
+          <TextReveal
+            as="h2"
+            className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]"
+          >
             Meet the Team
-          </h2>
+          </TextReveal>
           <p className="mt-2 text-muted-foreground font-semibold tracking-wide">
             The people building Embed Club.
           </p>

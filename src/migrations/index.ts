@@ -37,6 +37,8 @@ import * as migration_20260819_053658_dropSupportPageFields from './20260819_053
 import * as migration_20260819_100524_addSimulatorLaunchType from './20260819_100524_addSimulatorLaunchType';
 import * as migration_20260821_120000_allow_form_deletion from './20260821_120000_allow_form_deletion';
 import * as migration_20260826_193506_add_achievement_settings from './20260826_193506_add_achievement_settings';
+import * as migration_20260826_210352_add_legacy_website_url from './20260826_210352_add_legacy_website_url';
+import * as migration_20260827_083031_add_heritage_contributors from './20260827_083031_add_heritage_contributors';
 
 export const migrations = [
   {
@@ -232,6 +234,16 @@ export const migrations = [
   {
     up: migration_20260826_193506_add_achievement_settings.up,
     down: migration_20260826_193506_add_achievement_settings.down,
-    name: '20260826_193506_add_achievement_settings'
+    name: '20260826_193506_add_achievement_settings',
+  },
+  {
+    up: migration_20260826_210352_add_legacy_website_url.up,
+    down: migration_20260826_210352_add_legacy_website_url.down,
+    name: '20260826_210352_add_legacy_website_url',
+  },
+  {
+    up: migration_20260827_083031_add_heritage_contributors.up,
+    down: migration_20260827_083031_add_heritage_contributors.down,
+    name: '20260827_083031_add_heritage_contributors'
   },
 ];

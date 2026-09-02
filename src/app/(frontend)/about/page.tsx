@@ -1,6 +1,7 @@
 import { EmptyState } from '@/components/common/emptyState'
 import { PageTitle } from '@/components/common/pageTitle'
 import RichTextRender from '@/components/common/richTextRender'
+import { HeritageSection } from '@/components/features/about/heritageSection'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import { cn } from '@/lib/utils'
 import type { AboutPage, Media } from '@/payload/payload-types'
@@ -126,6 +127,12 @@ export default async function Page() {
               ))}
             </div>
           )}
+          <HeritageSection
+            legacyUrl={about?.legacyWebsiteUrl}
+            currentDevelopers={about?.currentDevelopers}
+            legacyDevelopers={about?.legacyDevelopers}
+            communityNote={about?.heritageCommunityNote}
+          />
         </div>
       </MainbarShell>
     </SidebarShell>

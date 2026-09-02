@@ -1,5 +1,20 @@
 'use client'
 
+import {
+  Bot,
+  Boxes,
+  CalendarRange,
+  ClipboardList,
+  FolderGit2,
+  Images,
+  Info,
+  LucideHome,
+  Mail,
+  MessageSquareText,
+  School,
+  Trophy,
+  UsersRound,
+} from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 // StaggeredMenu pulls in gsap for its open/close choreography. It's mounted
@@ -15,29 +30,52 @@ const StaggeredMenu = dynamic(() => import('@/components/layout/staggeredMenu'),
 /**
  * The same destinations as the desktop sidebar, in the same order.
  *
- * Flattened rather than grouped: the desktop rail nests Events/Achievements
- * under "Activities" and the three learning pages under "Learning", but those
- * headers are labels, not links, and a staggered mobile panel has nowhere to
- * put a non-tappable row. The order preserves the grouping's reading, so the
- * two navs stay recognisably the same list.
+ * Each item carries its respective Lucide icon from desktopMenu, with subtle
+ * cluster dividers separating primary destinations, learning tools, showcase,
+ * and club engagement links.
  *
  * Keep in step with `desktopMenu.tsx` - a page reachable from one and not the
  * other is the bug this list exists to prevent.
  */
 const navItems = [
-  { label: 'HOME', ariaLabel: 'Home', link: '/' },
-  { label: 'EVENTS', ariaLabel: 'Events', link: '/events' },
-  { label: 'ACHIEVEMENTS', ariaLabel: 'Achievements', link: '/achievements' },
-  { label: 'RESOURCES', ariaLabel: 'Resources', link: '/resources' },
-  { label: 'TUTORIALS', ariaLabel: 'Tutorials', link: '/tutorials' },
-  { label: 'SIMULATORS', ariaLabel: 'Simulators', link: '/simulators' },
-  { label: 'PROJECTS', ariaLabel: 'Projects', link: '/projects' },
-  { label: 'GALLERY', ariaLabel: 'Gallery', link: '/gallery' },
-  { label: 'MEMBERS', ariaLabel: 'Members', link: '/members' },
-  { label: 'ABOUT', ariaLabel: 'About', link: '/about' },
-  { label: 'FORMS', ariaLabel: 'Forms', link: '/forms' },
-  { label: 'FEEDBACK', ariaLabel: 'Feedback', link: '/feedback' },
-  { label: 'CONTACT', ariaLabel: 'Contact', link: '/contact' },
+  // Primary
+  { label: 'HOME', ariaLabel: 'Home', link: '/', icon: LucideHome },
+  { label: 'EVENTS', ariaLabel: 'Events', link: '/events', icon: CalendarRange },
+  {
+    label: 'ACHIEVEMENTS',
+    ariaLabel: 'Achievements',
+    link: '/achievements',
+    icon: Trophy,
+    dividerAfter: true,
+  },
+
+  // Learning
+  { label: 'RESOURCES', ariaLabel: 'Resources', link: '/resources', icon: Boxes },
+  { label: 'TUTORIALS', ariaLabel: 'Tutorials', link: '/tutorials', icon: School },
+  {
+    label: 'SIMULATORS',
+    ariaLabel: 'Simulators',
+    link: '/simulators',
+    icon: Bot,
+    dividerAfter: true,
+  },
+
+  // Showcase & Community
+  { label: 'PROJECTS', ariaLabel: 'Projects', link: '/projects', icon: FolderGit2 },
+  { label: 'GALLERY', ariaLabel: 'Gallery', link: '/gallery', icon: Images },
+  {
+    label: 'MEMBERS',
+    ariaLabel: 'Members',
+    link: '/members',
+    icon: UsersRound,
+    dividerAfter: true,
+  },
+
+  // Club & Interaction
+  { label: 'ABOUT', ariaLabel: 'About', link: '/about', icon: Info },
+  { label: 'FORMS', ariaLabel: 'Forms', link: '/forms', icon: ClipboardList },
+  { label: 'FEEDBACK', ariaLabel: 'Feedback', link: '/feedback', icon: MessageSquareText },
+  { label: 'CONTACT', ariaLabel: 'Contact', link: '/contact', icon: Mail },
 ]
 
 export default function MobileMenu() {
