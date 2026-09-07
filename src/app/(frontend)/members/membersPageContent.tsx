@@ -3,6 +3,7 @@
 import ChromaScene from '@/components/common/chromaScene'
 import { EmptyState } from '@/components/common/emptyState'
 import { PageTitle } from '@/components/common/pageTitle'
+import { TextReveal } from '@/components/common/textReveal'
 import { MemberModal, type MemberModalData } from '@/components/features/members/memberModal'
 import type { Member as MemberDoc, MemberPhoto as MemberPhotoDoc } from '@/payload/payload-types'
 import React from 'react'
@@ -214,9 +215,12 @@ export function MembersPageContent({ members }: { members: MemberWithGeneratedAv
 
         {grouped.map(({ category, batches }) => (
           <section key={category} className="mb-12">
-            <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px] mb-4 text-foreground">
+            <TextReveal
+              as="h2"
+              className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px] mb-4 text-foreground"
+            >
               {category}
-            </h2>
+            </TextReveal>
 
             {batches.map((batch) => (
               <div key={batch.label} className="mb-8">

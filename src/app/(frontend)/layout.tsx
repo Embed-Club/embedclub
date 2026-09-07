@@ -1,6 +1,7 @@
 import './globals.css'
 import ThemeWrapper from '@/components/theme/themeWrapper'
 import { getServerSideURL } from '@/lib/getUrl'
+import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
 import { gobold, sportBreak, texGyreAdventor } from './fonts'
 
@@ -93,6 +94,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeWrapper>{children}</ThemeWrapper>
+        {/* Vercel Web Analytics. Only on the public site - the Payload admin
+            has its own layout and its traffic is not what we are measuring.
+            Injects nothing in development; the script is production-only. */}
+        <Analytics />
       </body>
     </html>
   )

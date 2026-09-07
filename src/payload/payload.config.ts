@@ -23,6 +23,7 @@ import { Projects } from './collections/projects'
 import { Resources } from './collections/resources'
 import { Simulators } from './collections/simulators'
 import { Tags } from './collections/tags'
+import { TrackedEvents } from './collections/trackedEvents'
 import { Tutorials } from './collections/tutorials'
 import { Users } from './collections/users'
 import { AboutPage } from './globals/aboutPage'
@@ -102,6 +103,7 @@ export default buildConfig({
     // Library & System
     Media,
     Tags,
+    TrackedEvents,
     Users,
   ],
   globals: [AchievementSettings, AboutPage, HomeFeaturedMembers, LegalPages, SupportPages],

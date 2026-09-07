@@ -52,7 +52,7 @@ export function CodeTabs({ codes, className }: CodeTabsProps) {
           ))}
         </div>
         <div className="flex items-center px-2">
-          <CopyButton code={codes[activeTab].code} />
+          <CopyButton code={codes[activeTab].code} language={codes[activeTab].language} />
         </div>
       </div>
 

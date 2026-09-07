@@ -1,4 +1,5 @@
 import { BlockRenderer } from '@/components/features/resources/blockRenderer'
+import { ReadingProgress } from '@/components/features/resources/readingProgress'
 import { TableOfContents } from '@/components/features/resources/tableOfContents'
 import { collectHeadings } from '@/lib/richTextHeadings'
 import type { Resource, Tutorial } from '@/payload/payload-types'
@@ -34,6 +35,10 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
     // both - which is what pinned this page to near-black in light mode and
     // hid the site texture.
     <div className="w-full min-h-screen text-foreground pb-24">
+      {/* Phone and tablet stand-in for the sticky contents rail, which is
+          `hidden lg:block`. */}
+      <ReadingProgress />
+
       {/* Hero Section */}
       <div className="relative w-full py-16 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />

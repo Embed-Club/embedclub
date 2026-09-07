@@ -65,11 +65,11 @@ const char* WIFI_PASSWORD = "";
 // ---- MQTT ----
 const char* MQTT_BROKER = "broker.hivemq.com";
 const int   MQTT_PORT   = 1883;
-const char* MQTT_CLIENT_ID = "embedclub-YOURNAME-esp32";
+const char* MQTT_CLIENT_ID = "iot-YOURNAME-dht22";
 
 // Change YOURNAME below too, so your topics don't collide with anyone else's
-const char* TOPIC_TEMPERATURE = "embedclub/YOURNAME/dht22/temperature";
-const char* TOPIC_HUMIDITY    = "embedclub/YOURNAME/dht22/humidity";
+const char* TOPIC_TEMPERATURE = "YOURNAME/dht22/temperature";
+const char* TOPIC_HUMIDITY    = "YOURNAME/dht22/humidity";
 
 DHTesp dht;
 WiFiClient espClient;
@@ -138,6 +138,97 @@ void loop() {
   delay(2500); // DHT22 refreshes at most every ~2s
 }`
 
+const MICROPYTHON = `# ESP32 + DHT22 -> MQTT -> Node-RED demo (Wokwi, MicroPython)
+#
+# Wiring:
+#   DHT22 VCC -> ESP32 3V3
+#   DHT22 SDA -> ESP32 GPIO15
+#   DHT22 NC  -> not connected
+#   DHT22 GND -> ESP32 GND
+#
+# Uses the built-in \`dht\` and \`network\` modules, plus umqtt.simple
+# for MQTT -- Wokwi's MicroPython firmware bundles umqtt.simple by
+# default. If it's missing, add a requirements.txt with the line
+# "umqtt.simple" to your project and Wokwi will fetch it.
+
+from machine import Pin
+import network
+import dht
+import time
+from umqtt.simple import MQTTClient
+
+# ---- Wiring ----
+DHT_PIN = 15
+
+# ---- WiFi (Wokwi's built-in virtual network) ----
+WIFI_SSID = "Wokwi-GUEST"
+WIFI_PASSWORD = ""
+
+# ---- MQTT ----
+MQTT_BROKER = "broker.hivemq.com"
+MQTT_PORT = 1883
+MQTT_CLIENT_ID = "embedclub-YOURNAME-dht22"
+
+TOPIC_TEMPERATURE = "YOURNAME/dht22/temperature"
+TOPIC_HUMIDITY = "YOURNAME/dht22/humidity"
+
+sensor = dht.DHT22(Pin(DHT_PIN))
+
+
+def connect_wifi():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    if not wlan.isconnected():
+        print('Connecting to WiFi "{}" '.format(WIFI_SSID), end="")
+        wlan.connect(WIFI_SSID, WIFI_PASSWORD)
+        while not wlan.isconnected():
+            time.sleep_ms(300)
+            print(".", end="")
+        print(" connected!")
+        print("IP address:", wlan.ifconfig()[0])
+    return wlan
+
+
+def connect_mqtt():
+    client = MQTTClient(MQTT_CLIENT_ID, MQTT_BROKER, MQTT_PORT)
+    while True:
+        try:
+            print("Connecting to MQTT broker...", end="")
+            client.connect()
+            print(" connected!")
+            return client
+        except Exception as e:
+            print(" failed, retrying in 2s:", e)
+            time.sleep(2)
+
+
+wlan = connect_wifi()
+mqtt = connect_mqtt()
+
+while True:
+    if not wlan.isconnected():
+        wlan = connect_wifi()
+
+    try:
+        sensor.measure()
+        temp = sensor.temperature()
+        hum = sensor.humidity()
+
+        print("Temp: {} C  Humidity: {} %".format(temp, hum))
+
+        mqtt.publish(TOPIC_TEMPERATURE, str(temp))
+        mqtt.publish(TOPIC_HUMIDITY, str(hum))
+    except OSError as e:
+        print("DHT22 error:", e)
+    except Exception as e:
+        print("MQTT publish failed, reconnecting:", e)
+        mqtt = connect_mqtt()
+
+    time.sleep_ms(2500)
+`
+
+const NODE_RED_FALLBACK = `"%APPDATA%\\npm\\node-red.cmd"`
+
 const SERIAL_OUTPUT = `Connecting to WiFi "Wokwi-GUEST" ..... connected!
 IP address: 10.10.0.2
 Connecting to MQTT broker... connected!
@@ -196,7 +287,7 @@ async function main() {
         ),
         code('YOURNAME'),
         text(' everywhere below with your name or roll number, no spaces. For example '),
-        code('embedclub/rafan42/dht22/temperature'),
+        code('rafan42/dht22/temperature'),
         text('.'),
       ]),
       paragraph([
@@ -264,6 +355,26 @@ async function main() {
     codeBlock('cpp', SKETCH, 'sketch.ino'),
 
     textBlock([
+      paragraph([
+        bold('Prefer MicroPython? '),
+        text('Start the Wokwi project from the '),
+        bold('ESP32 MicroPython'),
+        text(' template instead, paste this into '),
+        code('main.py'),
+        text(
+          ', and skip the Library Manager step entirely. It publishes the same two topics, so every step after this one is identical. Wokwi bundles ',
+        ),
+        code('umqtt.simple'),
+        text('. If your project cannot find it, add a '),
+        code('requirements.txt'),
+        text(' with the single line '),
+        code('umqtt.simple'),
+        text(' and Wokwi will fetch it on the next run.'),
+      ]),
+    ]),
+    codeBlock('python', MICROPYTHON, 'main.py'),
+
+    textBlock([
       heading('h2', [text('Step 5: Run it')]),
       paragraph([
         text('Click the green '),
@@ -329,7 +440,7 @@ async function main() {
           text('Expand '),
           bold('Subscriptions'),
           text(', add the topic '),
-          code('embedclub/YOURNAME/dht22/#'),
+          code('YOURNAME/dht22/#'),
           text(', and click Subscribe.'),
         ],
         [text('Expand '), bold('Messages'), text('.')],
@@ -368,7 +479,33 @@ async function main() {
         ),
       ]),
     ]),
+    textBlock([
+      paragraph([
+        bold('Node.js has to be installed first. '),
+        text(
+          'Node-RED is a Node.js program, so if this machine has never had Node.js on it, install that before anything else. Download the Windows installer from ',
+        ),
+        link([text('nodejs.org')], 'https://nodejs.org/dist/v24.20.0/node-v24.20.0-x64.msi', {
+          newTab: true,
+        }),
+        text(
+          ', run it, and click Next through every screen, accepting the licence and answering Yes to any prompt Windows raises, including the User Account Control dialog. Leave the default options as they are. When it finishes, close the terminal and open a new one so the updated PATH is picked up.',
+        ),
+      ]),
+      paragraph([text('Then install Node-RED itself:')]),
+    ]),
     codeBlock('bash', INSTALL_NODE_RED, 'Terminal'),
+    textBlock([
+      paragraph([
+        bold('If node-red is "not recognised" or "not found": '),
+        text('the install worked, but Windows puts global npm binaries in '),
+        code('%APPDATA%\\npm'),
+        text(
+          ', and that folder is not always on PATH. You do not need to fix PATH to carry on, just start it by its full path instead:',
+        ),
+      ]),
+    ]),
+    codeBlock('bash', NODE_RED_FALLBACK, 'Command Prompt'),
     await shot(
       payload,
       'NodeREDInstall.png',
@@ -428,6 +565,12 @@ async function main() {
 
     textBlock([
       heading('h2', [text('Step 9: Build the flow')]),
+      paragraph([
+        bold('Start on a clean canvas. '),
+        text(
+          'If the editor still has nodes from an earlier attempt, clear them out first: press Ctrl+A on the canvas and hit Delete, or open the tab menu, delete the whole flow, and add a new one. Half-configured leftovers are the most common reason a flow misbehaves later.',
+        ),
+      ]),
       paragraph([
         text('Drag two '),
         bold('mqtt in'),
@@ -578,6 +721,14 @@ async function main() {
       'Each mqtt in node wired to its gauge in Node-RED',
       'Two independent pairs. Nothing crosses over.',
     ),
+    textBlock([
+      paragraph([
+        bold('Read every field back before you deploy. '),
+        text(
+          'Each dialog has more than one dropdown and picking the wrong entry is easy. Both mqtt in nodes must point at the same broker.hivemq.com config rather than a second one you created by accident, the topics must match your firmware character for character, QoS and output format can stay on their defaults, and each gauge must sit in the DHT22 group with the correct range. Open each node once more and check it.',
+        ),
+      ]),
+    ]),
 
     textBlock([
       heading('h2', [text('Step 10: Deploy and watch it move')]),

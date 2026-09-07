@@ -1,7 +1,9 @@
 'use client'
 
 import { Marquee } from '@/components/common/marquee'
+import { TextReveal } from '@/components/common/textReveal'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
+import { trackEvent } from '@/lib/trackEvent'
 import { cn } from '@/lib/utils'
 import type { AboutPage } from '@/payload/payload-types'
 import { ArrowUpRight, Code2, Heart, History, X } from 'lucide-react'
@@ -308,9 +310,13 @@ export function HeritageSection({
     <section className="my-16">
       <div className="relative my-12 overflow-hidden rounded-2xl border border-border">
         <div className="relative px-6 py-10 md:px-12 md:py-14 text-center">
-          <h2 className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]">
+          <TextReveal
+            as="h2"
+            innerClassName="justify-center"
+            className="text-4xl md:text-5xl font-extrabold uppercase tracking-normal [-webkit-text-stroke:1.2px]"
+          >
             Website Evolution & Tribute
-          </h2>
+          </TextReveal>
           <p className="mt-3 text-muted-foreground md:text-lg font-bold max-w-3xl mx-auto">
             Honoring the developers and community members who built and contributed to Embed Club's
             digital platforms across generations.
@@ -350,6 +356,7 @@ export function HeritageSection({
               href={finalLegacyUrl}
               target="_blank"
               rel="noreferrer noopener"
+              onClick={() => trackEvent('legacy_site_visit', legacyHost)}
               className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
             >
               {legacyHost}

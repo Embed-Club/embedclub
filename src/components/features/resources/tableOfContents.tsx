@@ -1,5 +1,6 @@
 'use client'
 
+import { measureReadingProgress } from '@/lib/readingProgress'
 import type { RichTextHeading } from '@/lib/richTextHeadings'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -82,21 +83,8 @@ export function TableOfContents({ headings }: { headings: RichTextHeading[] }) {
 
     const scrollerTop = scroller.getBoundingClientRect().top
 
-    // Progress is measured across the article only. The scroll container also
-    // holds the full-viewport SiteFooter, so dividing by the container's own
-    // scrollHeight caps the bar around 80% at the end of the actual reading -
-    // the remainder is footer.
-    const scope = document.querySelector('[data-toc-scope]')
-    let progress: number
-    if (scope) {
-      const rect = scope.getBoundingClientRect()
-      const readable = rect.height - scroller.clientHeight
-      const scrolled = scrollerTop - rect.top
-      progress = readable > 0 ? Math.min(1, Math.max(0, scrolled / readable)) : 1
-    } else {
-      const scrollable = scroller.scrollHeight - scroller.clientHeight
-      progress = scrollable > 0 ? Math.min(1, Math.max(0, scroller.scrollTop / scrollable)) : 0
-    }
+    // Article-scoped, shared with the mobile bar so the two always agree.
+    const progress = measureReadingProgress() ?? 0
 
     if (barRef.current) barRef.current.style.width = `${progress * 100}%`
     if (labelRef.current) labelRef.current.textContent = `${Math.round(progress * 100)}%`

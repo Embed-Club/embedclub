@@ -83,6 +83,7 @@ export interface Config {
     'form-media': FormMedia;
     media: Media;
     tags: Tag;
+    'tracked-events': TrackedEvent;
     users: User;
     exports: Export;
     imports: Import;
@@ -114,6 +115,7 @@ export interface Config {
     'form-media': FormMediaSelect<false> | FormMediaSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    'tracked-events': TrackedEventsSelect<false> | TrackedEventsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     exports: ExportsSelect<false> | ExportsSelect<true>;
     imports: ImportsSelect<false> | ImportsSelect<true>;
@@ -1348,6 +1350,29 @@ export interface FormSubmission {
   createdAt: string;
 }
 /**
+ * Anonymous counts for actions that do not load a page (simulator launches, code copies, contact taps). No visitor information is stored.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tracked-events".
+ */
+export interface TrackedEvent {
+  id: number;
+  /**
+   * Event name, from the allowlist in lib/trackEvent.
+   */
+  name: string;
+  /**
+   * What it happened to - a simulator slug, a code language.
+   */
+  detail?: string | null;
+  /**
+   * Page the action happened on.
+   */
+  path?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Admin logins. Add new ones with scripts/createBackupAdmin.ts.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1627,6 +1652,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'tags';
         value: number | Tag;
+      } | null)
+    | ({
+        relationTo: 'tracked-events';
+        value: number | TrackedEvent;
       } | null)
     | ({
         relationTo: 'users';
@@ -2365,6 +2394,17 @@ export interface TagsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tracked-events_select".
+ */
+export interface TrackedEventsSelect<T extends boolean = true> {
+  name?: T;
+  detail?: T;
+  path?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -3088,6 +3128,7 @@ export interface TaskCreateCollectionExport {
       | 'form-media'
       | 'media'
       | 'tags'
+      | 'tracked-events'
       | 'users'
       | 'exports'
       | 'imports';

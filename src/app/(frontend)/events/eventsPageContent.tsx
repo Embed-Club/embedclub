@@ -3,6 +3,7 @@
 import { EmptyState } from '@/components/common/emptyState'
 import { FocusCards } from '@/components/common/focusCards'
 import { PageTitle } from '@/components/common/pageTitle'
+import { TextReveal } from '@/components/common/textReveal'
 import { EventCard } from '@/components/features/events/eventsCards'
 import { Carousel } from '@/components/features/events/eventsCarousel'
 import {
@@ -110,9 +111,12 @@ export function EventsPageContent({ events }: { events: Event[] }) {
       </div>
 
       <div className="w-full px-6 pb-12 pt-8 md:px-12 lg:px-16 md:pb-10 md:pt-6">
-        <h2 className="relative text-2xl font-extrabold md:text-4xl mb-8 text-[28px] md:text-[42px] uppercase">
+        <TextReveal
+          as="h2"
+          className="relative text-2xl font-extrabold md:text-4xl mb-8 text-[28px] md:text-[42px] uppercase"
+        >
           ALL EVENTS
-        </h2>
+        </TextReveal>
         {totalPages > 1 && <div className="mt-6 flex w-full justify-end pb-6">{pager}</div>}
         {events.length === 0 ? (
           <EmptyState title="No Events Yet" />

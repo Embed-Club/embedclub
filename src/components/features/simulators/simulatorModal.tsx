@@ -10,6 +10,7 @@ import { BlockRenderer } from '@/components/features/resources/blockRenderer'
 import { SimulatorVideo } from '@/components/features/simulators/simulatorVideo'
 import { useCardMorph } from '@/hooks/useCardMorph'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
+import { trackEvent } from '@/lib/trackEvent'
 import { cn } from '@/lib/utils'
 import { Download, ExternalLink, SquareArrowOutUpRight, X } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
@@ -158,6 +159,7 @@ function SimulatorModalPanel({
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <a
                     href={launchUrl}
+                    onClick={() => trackEvent('simulator_launch', title)}
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     {isDownload ? (
@@ -171,6 +173,7 @@ function SimulatorModalPanel({
                     href={launchUrl}
                     target="_blank"
                     rel="noreferrer noopener"
+                    onClick={() => trackEvent('simulator_launch', title)}
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border px-4 py-3 font-semibold transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <SquareArrowOutUpRight className="h-4 w-4" />

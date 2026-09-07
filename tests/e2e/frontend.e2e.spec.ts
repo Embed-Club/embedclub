@@ -2,12 +2,12 @@ import { expect, test } from '@playwright/test'
 
 test.describe('Frontend', () => {
   test('home page loads with the club branding', async ({ page }) => {
-    await page.goto('http://localhost:3000')
+    await page.goto('/')
     await expect(page).toHaveTitle(/Embed Club/)
   })
 
   test('resources page renders content or empty state', async ({ page }) => {
-    await page.goto('http://localhost:3000/resources')
+    await page.goto('/resources')
     await expect(page.getByRole('heading', { name: 'RESOURCES' })).toBeVisible()
     // either resource cards or the shared empty state must appear
     const cards = page.locator('[data-slot="cutout-card"]')
@@ -16,7 +16,7 @@ test.describe('Frontend', () => {
   })
 
   test('feedback page renders list or empty state', async ({ page }) => {
-    await page.goto('http://localhost:3000/feedback')
+    await page.goto('/feedback')
     // The page h1 always renders; scope to level 1 so the footer's "Feedback"
     // link (a level-3 nav column) can't satisfy a looser /feedback/i match.
     await expect(page.getByRole('heading', { name: /feedback/i, level: 1 })).toBeVisible({
@@ -31,7 +31,7 @@ test.describe('Frontend', () => {
   })
 
   test('events page renders content or empty state', async ({ page }) => {
-    await page.goto('http://localhost:3000/events')
+    await page.goto('/events')
     await expect(
       page
         .getByRole('heading', { name: 'RECENT EVENTS' })

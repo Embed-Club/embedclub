@@ -6,6 +6,11 @@ import { defineConfig, devices } from '@playwright/test'
  */
 import 'dotenv/config'
 
+// Port 3000 is often already serving another project, and `reuseExistingServer`
+// would happily run the whole suite against it. Set E2E_PORT to move ours.
+const port = Number(process.env.E2E_PORT ?? 3000)
+const baseURL = `http://localhost:${port}`
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -18,11 +23,13 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  /* The HTML reporter starts a blocking web server after a failed local run,
+     which hangs the terminal. Keep the report on CI, print a list locally. */
+  reporter: process.env.CI ? 'html' : [['list'], ['html', { open: 'never' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://localhost:3000',
+    baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -30,12 +37,15 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], channel: 'chromium' },
+      // Uses the Google Chrome already installed on the machine instead of
+      // Playwright's downloaded chromium build. CI still needs
+      // `pnpm exec playwright install chrome`.
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
   ],
   webServer: {
-    command: 'pnpm dev',
+    command: `pnpm dev --port ${port}`,
     reuseExistingServer: true,
-    url: 'http://localhost:3000',
+    url: baseURL,
   },
 })

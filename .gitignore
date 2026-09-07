@@ -73,3 +73,6 @@ next-env.d.ts
 
 # Scratch output from local seed/screenshot scripts
 /scripts/tmp-*.png
+
+# Local state from the impeccable design skill (critique snapshots, live-mode config)
+/.impeccable/

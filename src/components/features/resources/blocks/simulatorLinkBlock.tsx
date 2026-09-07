@@ -6,7 +6,7 @@ import type {
 } from '@/payload/payload-types'
 import { Download, SquareArrowOutUpRight } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import type { SimulatorCardData } from '@/app/(frontend)/simulators/simulatorsPageContent'
 
@@ -22,6 +22,10 @@ export function SimulatorLinkBlock({ block }: SimulatorLinkBlockProps) {
   const { simulator, buttonText } = block
 
   const [open, setOpen] = useState(false)
+  // The panel morphs out of this card, the same way it does from a card on
+  // /simulators - without an origin box the modal just appears.
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null)
 
   if (typeof simulator !== 'object' || simulator === null) return null
 
@@ -32,7 +36,10 @@ export function SimulatorLinkBlock({ block }: SimulatorLinkBlockProps) {
 
   return (
     <div className="my-16 w-full animate-in fade-in zoom-in duration-500 delay-400">
-      <div className="rounded-2xl border border-border bg-card/40 px-6 py-8 text-center md:px-10 md:py-10">
+      <div
+        ref={cardRef}
+        className="rounded-2xl border border-border bg-card/40 px-6 py-8 text-center md:px-10 md:py-10"
+      >
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-5">
           <div className="space-y-2">
             <h3 className="text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">
@@ -47,7 +54,10 @@ export function SimulatorLinkBlock({ block }: SimulatorLinkBlockProps) {
 
           <button
             type="button"
-            onClick={() => setOpen(true)}
+            onClick={() => {
+              setOriginRect(cardRef.current?.getBoundingClientRect() ?? null)
+              setOpen(true)
+            }}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             {isDownload ? (
@@ -60,7 +70,15 @@ export function SimulatorLinkBlock({ block }: SimulatorLinkBlockProps) {
         </div>
       </div>
 
-      <SimulatorModal simulator={card} open={open} onOpenChange={setOpen} />
+      <SimulatorModal
+        simulator={card}
+        open={open}
+        originRect={originRect}
+        onOpenChange={(next) => {
+          setOpen(next)
+          if (!next) setOriginRect(null)
+        }}
+      />
     </div>
   )
 }

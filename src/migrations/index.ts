@@ -39,6 +39,7 @@ import * as migration_20260821_120000_allow_form_deletion from './20260821_12000
 import * as migration_20260826_193506_add_achievement_settings from './20260826_193506_add_achievement_settings';
 import * as migration_20260826_210352_add_legacy_website_url from './20260826_210352_add_legacy_website_url';
 import * as migration_20260827_083031_add_heritage_contributors from './20260827_083031_add_heritage_contributors';
+import * as migration_20260903_034338_add_tracked_events from './20260903_034338_add_tracked_events';
 
 export const migrations = [
   {
@@ -244,6 +245,11 @@ export const migrations = [
   {
     up: migration_20260827_083031_add_heritage_contributors.up,
     down: migration_20260827_083031_add_heritage_contributors.down,
-    name: '20260827_083031_add_heritage_contributors'
+    name: '20260827_083031_add_heritage_contributors',
+  },
+  {
+    up: migration_20260903_034338_add_tracked_events.up,
+    down: migration_20260903_034338_add_tracked_events.down,
+    name: '20260903_034338_add_tracked_events'
   },
 ];
