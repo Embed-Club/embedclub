@@ -11,9 +11,10 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useState,
+  useRef,
 } from 'react'
 
+import { useImagePainted } from '@/components/common/imageWithSkeleton'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
@@ -221,9 +222,11 @@ export function CutoutCardImage({
   fill = true,
   sizes = '(max-width: 768px) 100vw, 28rem',
   onLoad,
+  onError,
   ...props
 }: CutoutCardImageProps) {
-  const [loaded, setLoaded] = useState(false)
+  const ref = useRef<HTMLImageElement>(null)
+  const [painted, setPainted] = useImagePainted(ref, props.src)
 
   return (
     <>
@@ -234,19 +237,24 @@ export function CutoutCardImage({
           // scaling image slides under it and the geometry visibly breaks.
           'object-cover transition-opacity duration-300',
           fill && 'h-full w-full',
-          loaded ? 'opacity-100' : 'opacity-0',
+          painted ? 'opacity-100' : 'opacity-0',
           className,
         )}
         data-slot="cutout-card-image"
         {...props}
+        ref={ref}
         fill={fill}
         sizes={fill ? sizes : undefined}
         onLoad={(e) => {
-          setLoaded(true)
+          setPainted(true)
           onLoad?.(e)
         }}
+        onError={(e) => {
+          setPainted(true)
+          onError?.(e)
+        }}
       />
-      {!loaded && (
+      {!painted && (
         <Skeleton
           className="absolute inset-0 h-full w-full"
           data-slot="cutout-card-image-skeleton"

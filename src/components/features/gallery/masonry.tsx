@@ -5,12 +5,13 @@ import {
   CutoutCorner,
   cutoutCardSurfaceShadowClassName,
 } from '@/components/common/cutoutCard'
+import { useImagePainted } from '@/components/common/imageWithSkeleton'
 import { GalleryPhotoModal } from '@/components/features/gallery/photoModal'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { motion, useReducedMotion } from 'motion/react'
 import type React from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 export interface MasonryItem {
   id: string
@@ -44,7 +45,8 @@ function MasonryCard({
   /** True while this card's own modal is open. */
   isActive?: boolean
 }) {
-  const [loaded, setLoaded] = useState(false)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [loaded, setLoaded] = useImagePainted(imgRef, item.img)
   const reduceMotion = useReducedMotion()
   const aspectRatio = item.width > 0 && item.height > 0 ? item.width / item.height : 1
 
@@ -70,12 +72,14 @@ function MasonryCard({
       >
         <div className="relative w-full" style={{ aspectRatio }}>
           <img
+            ref={imgRef}
             src={item.img}
             alt={item.caption || ''}
             aria-hidden={!item.caption}
             loading="lazy"
             decoding="async"
             onLoad={() => setLoaded(true)}
+            onError={() => setLoaded(true)}
             className={cn(
               'absolute inset-0 h-full w-full object-cover',
               loaded ? 'opacity-100' : 'opacity-0',
