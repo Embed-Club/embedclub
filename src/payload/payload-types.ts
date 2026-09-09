@@ -2689,7 +2689,7 @@ export interface HomeFeaturedMember {
          */
         category: number | MemberCategory;
         /**
-         * Members to show in this row (order = display order, up to 8).
+         * Members to show in this row (order = display order, up to 10).
          */
         members: (number | Member)[];
         id?: string | null;

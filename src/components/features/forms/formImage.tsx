@@ -1,6 +1,6 @@
+import { ImageWithSkeleton } from '@/components/common/imageWithSkeleton'
 import { cn } from '@/lib/utils'
 import type { FormMedia } from '@/payload/payload-types'
-import Image from 'next/image'
 
 /**
  * a member-attached picture inside a form - header banner, step banner, the
@@ -44,7 +44,7 @@ export function FormImage({ media, slot, className, caption, priority }: FormIma
 
   return (
     <figure className={cn('space-y-2', className)}>
-      <Image
+      <ImageWithSkeleton
         src={url}
         alt={alt || ''}
         width={width || 900}

@@ -1,10 +1,10 @@
 'use client'
 
 import type { ProjectCardData, TileSize } from '@/app/(frontend)/projects/projectsPageContent'
+import { ImageWithSkeleton } from '@/components/common/imageWithSkeleton'
 import { ProjectModal } from '@/components/features/projects/projectModal'
 import { cn } from '@/lib/utils'
 import { ArrowUpRight } from 'lucide-react'
-import Image from 'next/image'
 import React from 'react'
 
 /**
@@ -57,10 +57,11 @@ export const ProjectShowcaseTile = React.memo(
         >
           {hasImage && card.image && (
             <>
-              <Image
+              <ImageWithSkeleton
                 src={card.image}
                 alt={card.title}
                 fill
+                wrapperClassName="absolute inset-0"
                 sizes={wide ? '(max-width: 1024px) 100vw, 66vw' : '(max-width: 1024px) 100vw, 33vw'}
                 className="object-cover transition-transform duration-500 group-hover/tile:scale-105"
               />

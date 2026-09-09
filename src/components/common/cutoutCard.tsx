@@ -11,8 +11,10 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useState,
 } from 'react'
 
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
 // ============================================================================
@@ -218,23 +220,39 @@ export function CutoutCardImage({
   alt = '',
   fill = true,
   sizes = '(max-width: 768px) 100vw, 28rem',
+  onLoad,
   ...props
 }: CutoutCardImageProps) {
+  const [loaded, setLoaded] = useState(false)
+
   return (
-    <Image
-      alt={alt}
-      className={cn(
-        // No hover scale: the cutout notch is cut to the card's edge, so a
-        // scaling image slides under it and the geometry visibly breaks.
-        'object-cover',
-        fill && 'h-full w-full',
-        className,
+    <>
+      <Image
+        alt={alt}
+        className={cn(
+          // No hover scale: the cutout notch is cut to the card's edge, so a
+          // scaling image slides under it and the geometry visibly breaks.
+          'object-cover transition-opacity duration-300',
+          fill && 'h-full w-full',
+          loaded ? 'opacity-100' : 'opacity-0',
+          className,
+        )}
+        data-slot="cutout-card-image"
+        {...props}
+        fill={fill}
+        sizes={fill ? sizes : undefined}
+        onLoad={(e) => {
+          setLoaded(true)
+          onLoad?.(e)
+        }}
+      />
+      {!loaded && (
+        <Skeleton
+          className="absolute inset-0 h-full w-full"
+          data-slot="cutout-card-image-skeleton"
+        />
       )}
-      data-slot="cutout-card-image"
-      {...props}
-      fill={fill}
-      sizes={fill ? sizes : undefined}
-    />
+    </>
   )
 }
 

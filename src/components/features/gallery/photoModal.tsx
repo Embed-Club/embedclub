@@ -1,6 +1,7 @@
 'use client'
 
 import { cutoutCardSurfaceShadowClassName } from '@/components/common/cutoutCard'
+import { ImgWithSkeleton } from '@/components/common/imageWithSkeleton'
 import type { MasonryItem } from '@/components/features/gallery/masonry'
 import { useCardMorph } from '@/hooks/useCardMorph'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
@@ -142,7 +143,7 @@ function GalleryPhotoModalPanel({
               {/* Plain <img>: gallery files are served from whichever storage
                   the environment is configured for, and next/image would need
                   every such host allow-listed in next.config. */}
-              <img
+              <ImgWithSkeleton
                 src={src}
                 alt={photo.caption || ''}
                 aria-hidden={!photo.caption}

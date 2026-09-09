@@ -1,4 +1,5 @@
 'use client'
+import { ImgWithSkeleton } from '@/components/common/imageWithSkeleton'
 import React from 'react'
 
 /**
@@ -97,7 +98,14 @@ function renderUploadNode(node: Record<string, unknown>, key: number): React.Rea
       {/* Plain <img>: rich-text uploads have no known layout box, and the
           editor allows arbitrary remote media that next/image can't optimise
           without every host being allow-listed in next.config. */}
-      <img src={url} alt={alt} className="h-auto w-full rounded-xl border border-border" />
+      <ImgWithSkeleton
+        src={url}
+        alt={alt}
+        // No known width/height on this node, so the wrapper carries a min-height
+        // itself - otherwise there is no box for the skeleton to fill pre-load.
+        wrapperClassName="block w-full min-h-[220px]"
+        className="h-auto w-full rounded-xl border border-border"
+      />
       {caption && (
         <figcaption className="text-center text-sm italic text-muted-foreground">
           {caption}

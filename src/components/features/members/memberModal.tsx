@@ -1,6 +1,7 @@
 'use client'
 
 import { CutoutCorner } from '@/components/common/cutoutCard'
+import { ImgWithSkeleton } from '@/components/common/imageWithSkeleton'
 import { useCardMorph } from '@/hooks/useCardMorph'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { cn } from '@/lib/utils'
@@ -171,7 +172,7 @@ export function MemberModal({
             className="grid max-h-[85svh] grid-cols-1 gap-6 overflow-y-auto p-3 md:max-h-[90svh] md:grid-cols-[minmax(0,17rem)_1fr] md:gap-8 md:p-8"
           >
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-muted">
-              <img
+              <ImgWithSkeleton
                 src={member.image}
                 alt={member.fullName}
                 className="h-full w-full object-cover"

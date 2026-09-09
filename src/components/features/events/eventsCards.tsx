@@ -6,6 +6,7 @@ import {
   cutoutCardSurfaceShadowClassName,
 } from '@/components/common/cutoutCard'
 import { EventDetails } from '@/components/features/events/eventDetails'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useCardMorph } from '@/hooks/useCardMorph'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { isNewEvent } from '@/lib/eventUtils'
@@ -400,32 +401,35 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
   }, [src])
 
   return (
-    <img
-      ref={imgRef}
-      className={cn(
-        'h-full w-full transition duration-300',
-        // No filter class once loaded, rather than `blur-0`. `blur(0px)` is not
-        // `none`: it still promotes the image to its own composited layer and
-        // routes it through the filter pipeline, and stacked with the card's
-        // transition-transform and Embla's translate3d on the track, Chrome
-        // rasterises that layer at the wrong scale - leaving the image
-        // permanently soft long after it has finished loading. The grid cards
-        // never set a filter, which is why only the carousel looked blurry.
-        isLoading && 'blur-sm',
-        className,
-      )}
-      onLoad={() => setLoading(false)}
-      // A broken image must not stay blurred behind a permanent placeholder.
-      onError={() => setLoading(false)}
-      src={src as string}
-      width={width}
-      height={height}
-      loading="lazy"
-      decoding="async"
-      alt={alt || ''}
-      aria-hidden={!alt}
-      {...rest}
-    />
+    <>
+      <img
+        ref={imgRef}
+        className={cn(
+          'h-full w-full transition duration-300',
+          // No filter class once loaded, rather than `blur-0`. `blur(0px)` is not
+          // `none`: it still promotes the image to its own composited layer and
+          // routes it through the filter pipeline, and stacked with the card's
+          // transition-transform and Embla's translate3d on the track, Chrome
+          // rasterises that layer at the wrong scale - leaving the image
+          // permanently soft long after it has finished loading. The grid cards
+          // never set a filter, which is why only the carousel looked blurry.
+          isLoading && 'blur-sm opacity-0',
+          className,
+        )}
+        onLoad={() => setLoading(false)}
+        // A broken image must not stay blurred behind a permanent placeholder.
+        onError={() => setLoading(false)}
+        src={src as string}
+        width={width}
+        height={height}
+        loading="lazy"
+        decoding="async"
+        alt={alt || ''}
+        aria-hidden={!alt}
+        {...rest}
+      />
+      {isLoading && <Skeleton className={cn('absolute inset-0 h-full w-full', className)} />}
+    </>
   )
 }
 

@@ -1,4 +1,5 @@
 import { EmptyState } from '@/components/common/emptyState'
+import { ImageWithSkeleton } from '@/components/common/imageWithSkeleton'
 import { PageTitle } from '@/components/common/pageTitle'
 import RichTextRender from '@/components/common/richTextRender'
 import { TextReveal } from '@/components/common/textReveal'
@@ -8,7 +9,6 @@ import { cn } from '@/lib/utils'
 import type { AboutPage, Media } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import { getPayload } from 'payload'
 
 // ISR so CMS edits show up without a redeploy
@@ -47,7 +47,14 @@ function AboutSection({ section }: { section: Section }) {
         <div className="relative my-12 overflow-hidden rounded-2xl border border-border">
           {bg && (
             <>
-              <Image src={bg} alt="" fill className="object-cover" sizes="64rem" />
+              <ImageWithSkeleton
+                src={bg}
+                alt=""
+                fill
+                wrapperClassName="absolute inset-0"
+                className="object-cover"
+                sizes="64rem"
+              />
               <div className="absolute inset-0 bg-background/70" />
             </>
           )}
@@ -91,7 +98,7 @@ function AboutSection({ section }: { section: Section }) {
       return (
         <figure className={cn('my-8 space-y-2', sizeClass, positionClass)}>
           <div className="relative overflow-hidden rounded-2xl border border-border">
-            <Image
+            <ImageWithSkeleton
               src={src}
               alt={media.alt || section.caption || ''}
               width={media.width ?? 1200}
