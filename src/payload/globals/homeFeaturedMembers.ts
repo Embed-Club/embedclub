@@ -40,14 +40,14 @@ export const HomeFeaturedMembers: GlobalConfig = {
           relationTo: 'members',
           hasMany: true,
           required: true,
-          validate: capAt(8),
+          validate: capAt(10),
           // Restrict the picker to members in the row's selected category.
           filterOptions: ({ siblingData }) => {
             const categoryId = (siblingData as { category?: number | string } | undefined)?.category
             if (!categoryId) return true
             return { category: { equals: categoryId } }
           },
-          admin: { description: 'Members to show in this row (order = display order, up to 8).' },
+          admin: { description: 'Members to show in this row (order = display order, up to 10).' },
         },
       ],
     },
