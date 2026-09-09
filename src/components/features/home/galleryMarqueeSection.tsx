@@ -1,3 +1,4 @@
+import { ImgWithSkeleton } from '@/components/common/imageWithSkeleton'
 import { Marquee } from '@/components/common/marquee'
 import { TextReveal } from '@/components/common/textReveal'
 import { ArrowUpRight } from 'lucide-react'
@@ -6,7 +7,7 @@ import Link from 'next/link'
 function Tile({ src }: { src: string }) {
   return (
     <div className="mx-2 h-40 w-64 shrink-0 overflow-hidden rounded-xl border border-border md:h-56 md:w-80">
-      <img src={src} alt="" className="h-full w-full object-cover" />
+      <ImgWithSkeleton src={src} alt="" className="h-full w-full object-cover" />
     </div>
   )
 }

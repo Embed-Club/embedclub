@@ -6,6 +6,7 @@ import {
   CutoutCorner,
   cutoutCardSurfaceShadowClassName,
 } from '@/components/common/cutoutCard'
+import { ImgWithSkeleton } from '@/components/common/imageWithSkeleton'
 import { EventModal, eventToCard } from '@/components/features/events/eventsCards'
 import { isNewEvent } from '@/lib/eventUtils'
 import { cn } from '@/lib/utils'
@@ -49,9 +50,10 @@ export const Card = React.memo(
           isActive && 'opacity-0',
         )}
       >
-        <img
+        <ImgWithSkeleton
           src={card.src}
           alt={card.title}
+          wrapperClassName="absolute inset-0"
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
         <div

@@ -1,4 +1,5 @@
 import { CutoutCorner } from '@/components/common/cutoutCard'
+import { ImgWithSkeleton } from '@/components/common/imageWithSkeleton'
 import { cn } from '@/lib/utils'
 import { useTheme } from 'next-themes'
 import type React from 'react'
@@ -196,10 +197,11 @@ const ChromaGrid: React.FC<ChromaGridProps> = ({
               )}
 
               <div className="relative z-10 aspect-[4/5] w-full">
-                <img
+                <ImgWithSkeleton
                   src={c.image}
                   alt={c.title}
                   loading="lazy"
+                  wrapperClassName="absolute inset-0"
                   className="absolute inset-0 h-full w-full object-cover transition-all duration-300"
                 />
 
