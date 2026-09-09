@@ -25,10 +25,15 @@ export default {
           from: { transform: 'translateY(0)' },
           to: { transform: 'translateY(calc(-100% - var(--gap)))' },
         },
+        shimmer: {
+          from: { transform: 'translateX(-100%)' },
+          to: { transform: 'translateX(100%)' },
+        },
       },
       animation: {
         marquee: 'marquee var(--duration) linear infinite',
         'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
+        shimmer: 'shimmer 1.6s ease-in-out infinite',
       },
       borderRadius: {
         lg: 'var(--radius)',

@@ -382,21 +382,30 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
   useEffect(() => {
     const img = imgRef.current
     if (!img) return
-    let cancelled = false
-    const clear = () => {
-      if (!cancelled) setLoading(false)
-    }
     // `naturalWidth`, not `complete`: a lazy image restored from cache inside
     // the carousel's overflow-hidden track can sit at `complete === false`
     // forever, with neither `load` nor `decode()` ever settling - but it has
     // real dimensions and paints fine. Dimensions mean there is a bitmap.
     if (img.naturalWidth > 0) {
-      clear()
+      setLoading(false)
       return
     }
+    let cancelled = false
+    const timers: { poll?: ReturnType<typeof setInterval> } = {}
+    const clear = () => {
+      if (timers.poll) clearInterval(timers.poll)
+      if (!cancelled) setLoading(false)
+    }
     img.decode().then(clear, clear)
+    // Those same carousel images only reach `naturalWidth > 0` *after* mount,
+    // without ever settling `decode()` or firing `load`, so polling is the one
+    // signal that catches them. It stops the moment there are pixels.
+    timers.poll = setInterval(() => {
+      if (img.naturalWidth > 0) clear()
+    }, 250)
     return () => {
       cancelled = true
+      if (timers.poll) clearInterval(timers.poll)
     }
   }, [src])
 
@@ -413,7 +422,7 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
           // rasterises that layer at the wrong scale - leaving the image
           // permanently soft long after it has finished loading. The grid cards
           // never set a filter, which is why only the carousel looked blurry.
-          isLoading && 'blur-sm opacity-0',
+          isLoading && 'blur-sm',
           className,
         )}
         onLoad={() => setLoading(false)}
@@ -428,7 +437,9 @@ export const BlurImage = ({ height, width, src, className, alt, fill, ...rest }:
         aria-hidden={!alt}
         {...rest}
       />
-      {isLoading && <Skeleton className={cn('absolute inset-0 h-full w-full', className)} />}
+      {/* Deliberately not given the image's own classes: the image is what sits
+          on top, so a placeholder that outlived a stuck load can never hide it. */}
+      {isLoading && <Skeleton className="absolute inset-0 h-full w-full" />}
     </>
   )
 }
