@@ -5,9 +5,6 @@ import {
 import { GalleryMarqueeSection } from '@/components/features/home/galleryMarqueeSection'
 import { HeroSection } from '@/components/features/home/heroSection'
 import { LatestEventsSection } from '@/components/features/home/latestEventsSection'
-// Temporarily out: the section is still an empty placeholder, and it reserved
-// a full viewport of blank space between the hero and the events list.
-// import { ScrollAnimationSection } from '@/components/features/home/scrollAnimationSection'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import type { Event, Gallery, Member } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
