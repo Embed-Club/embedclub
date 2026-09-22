@@ -71,6 +71,13 @@ const jsonLd = {
       url: SITE_URL,
       logo: `${SITE_URL}/icon512.png`,
       description: SITE_DESCRIPTION,
+      // The profiles that are the same entity as this site. Without these,
+      // the club's website, Instagram and LinkedIn are three unrelated things
+      // to a search engine, and facts stated on one do not count for another.
+      sameAs: [
+        'https://www.instagram.com/embed_club',
+        'https://www.linkedin.com/company/embed-club',
+      ],
       location: {
         '@type': 'Place',
         name: 'PA College of Engineering',
