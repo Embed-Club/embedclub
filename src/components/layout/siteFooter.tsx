@@ -197,9 +197,13 @@ export function SiteFooter() {
             duration={0.9}
             amount="some"
             margin="0px"
-            style={{ fontFamily: 'Gobold, sans-serif' }}
+            // Temporary face. Gobold and Sport Break were removed because they
+            // ship as free-for-personal-use only and this repo is public, so
+            // redistributing the files is not ours to allow. TeX Gyre Adventor
+            // is already bundled under the libre GUST licence; a display face
+            // chosen for the wordmark replaces this.
             className={cn(
-              'translate-y-[28%] select-none text-[26vw] font-bold leading-none text-primary/25 md:text-[20vw]',
+              'translate-y-[28%] select-none text-[26vw] font-bold uppercase leading-none tracking-[-0.03em] text-primary/25 md:text-[20vw]',
             )}
           >
             Embed

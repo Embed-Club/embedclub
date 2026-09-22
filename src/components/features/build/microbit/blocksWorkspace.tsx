@@ -39,6 +39,11 @@ export function BlocksWorkspace({ initialState, onChange }: BlocksWorkspaceProps
     defineMicrobitBlocks()
     installMicrobitGenerators(pythonGenerator)
 
+    // Blockly sizes its scrollbars at 25px once it detects touch, and 15px
+    // otherwise - both heavy enough to eat the canvas on a phone. Set before
+    // injecting, since the workspace reads it while building its scrollbars.
+    Blockly.Scrollbar.scrollbarThickness = 8
+
     const workspace = Blockly.inject(host, {
       toolbox: TOOLBOX,
       theme: theme(),

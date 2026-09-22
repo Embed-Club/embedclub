@@ -62,9 +62,11 @@ Bundled typefaces keep their own licences and are not covered by the MIT grant:
 
 - **TeX Gyre Adventor** (`public/texgyreadventor-*.otf`) - GUST Font License,
   free to use and redistribute.
-- **Gobold** (`public/fonts/GoboldBold.otf`) and **Sport Break**
-  (`public/fonts/SportBreakFreeVersion.otf`) - free versions, whose terms
-  restrict commercial use. Check before using them in anything commercial.
+
+Gobold and Sport Break were removed on 2026-09-22. Both ship as free-for-
+personal-use only, which does not permit redistributing the font file, and
+this repository is public. Do not add a font here without checking that its
+licence allows redistribution.
 
 ### Site content
 

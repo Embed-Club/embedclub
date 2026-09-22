@@ -3,7 +3,7 @@ import ThemeWrapper from '@/components/theme/themeWrapper'
 import { getServerSideURL } from '@/lib/getUrl'
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import { gobold, sportBreak, texGyreAdventor } from './fonts'
+import { texGyreAdventor } from './fonts'
 
 const SITE_URL = getServerSideURL()
 const SITE_NAME = 'Embed Club'
@@ -115,11 +115,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${texGyreAdventor.variable} ${gobold.variable} ${sportBreak.variable}`}
-    >
+    <html lang="en" suppressHydrationWarning className={texGyreAdventor.variable}>
       <head />
       <body className={`${texGyreAdventor.className} font-medium`} suppressHydrationWarning>
         <script

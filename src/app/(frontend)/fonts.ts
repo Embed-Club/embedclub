@@ -26,15 +26,3 @@ export const texGyreAdventor = localFont({
   variable: '--font-tex-gyre-adventor',
   display: 'swap',
 })
-
-export const gobold = localFont({
-  src: '../../../public/fonts/GoboldBold.otf',
-  variable: '--font-gobold',
-  display: 'swap',
-})
-
-export const sportBreak = localFont({
-  src: '../../../public/fonts/SportBreakFreeVersion.otf',
-  variable: '--font-sport-break',
-  display: 'swap',
-})

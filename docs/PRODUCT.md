@@ -16,7 +16,7 @@ Embed Club's public face: showcase the club (est. 2018, "Inspiring Innovation"),
 
 ## Brand Personality
 
-Hands-on, technical, workshop-bench. The club solders real boards - the site should feel like the lab, not like a SaaS product. Three words: **crafted, electric, student-built**. Custom display fonts (Gobold, Sport Break), an animated logo intro, background music, and a multi-section home give it personality; the visual language should feel deliberately made by the members, never templated.
+Hands-on, technical, workshop-bench. The club solders real boards - the site should feel like the lab, not like a SaaS product. Three words: **crafted, electric, student-built**. An animated logo intro, background music, and a multi-section home give it personality; the visual language should feel deliberately made by the members, never templated.
 
 ## Anti-references
 

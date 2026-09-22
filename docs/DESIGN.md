@@ -42,8 +42,7 @@ Tokens are shadcn-style HSL triplets in `src/app/(frontend)/globals.css`.
 | Use | Font | Source |
 |---|---|---|
 | Body / UI | TeX Gyre Adventor (regular 400 / bold 700) | `next/font/local`, `--font-tex-gyre-adventor` |
-| Display / logo lockups | Gobold Bold | `--font-gobold`, also inlined in SVG banners |
-| Accent display | Sport Break | `--font-sport-break` |
+| Display / logo lockups | TeX Gyre Adventor (temporary) | A licensed display face is still to be chosen |
 
 - Page titles: uppercase, absolute-positioned top-left (`text-2xl` mobile → `text-4xl` desktop) - an established site signature.
 - Body line-length ≤75ch; `text-wrap: balance` on headings.
