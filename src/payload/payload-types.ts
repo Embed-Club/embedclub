@@ -1132,6 +1132,14 @@ export interface Resource {
    */
   thumbnail: number | Media;
   /**
+   * Write the page in the Content tab, or paste a link and the site embeds it - a YouTube video, a PDF, a Google Drive file or folder, or a website.
+   */
+  source: 'manual' | 'link';
+  /**
+   * Paste the link exactly as your browser shows it. The preview below updates as you type.
+   */
+  externalUrl?: string | null;
+  /**
    * Difficulty level for this resource
    */
   difficulty: 'beginner' | 'intermediate' | 'advanced';
@@ -1220,6 +1228,14 @@ export interface Tutorial {
    * Image displayed in cards
    */
   thumbnail: number | Media;
+  /**
+   * Write the page in the Content tab, or paste a link and the site embeds it - a YouTube video, a PDF, a Google Drive file or folder, or a website.
+   */
+  source: 'manual' | 'link';
+  /**
+   * Paste the link exactly as your browser shows it. The preview below updates as you type.
+   */
+  externalUrl?: string | null;
   /**
    * Difficulty level for this tutorial
    */
@@ -1961,6 +1977,8 @@ export interface ResourcesSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   thumbnail?: T;
+  source?: T;
+  externalUrl?: T;
   difficulty?: T;
   tags?: T;
   estimatedReadTime?: T;
@@ -2019,6 +2037,8 @@ export interface TutorialsSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   thumbnail?: T;
+  source?: T;
+  externalUrl?: T;
   difficulty?: T;
   tags?: T;
   estimatedReadTime?: T;

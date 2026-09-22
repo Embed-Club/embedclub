@@ -40,6 +40,7 @@ import * as migration_20260826_193506_add_achievement_settings from './20260826_
 import * as migration_20260826_210352_add_legacy_website_url from './20260826_210352_add_legacy_website_url';
 import * as migration_20260827_083031_add_heritage_contributors from './20260827_083031_add_heritage_contributors';
 import * as migration_20260903_034338_add_tracked_events from './20260903_034338_add_tracked_events';
+import * as migration_20260922_110000_add_learning_source from './20260922_110000_add_learning_source';
 
 export const migrations = [
   {
@@ -251,5 +252,10 @@ export const migrations = [
     up: migration_20260903_034338_add_tracked_events.up,
     down: migration_20260903_034338_add_tracked_events.down,
     name: '20260903_034338_add_tracked_events'
+  },
+  {
+    up: migration_20260922_110000_add_learning_source.up,
+    down: migration_20260922_110000_add_learning_source.down,
+    name: '20260922_110000_add_learning_source',
   },
 ];

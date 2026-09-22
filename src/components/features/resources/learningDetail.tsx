@@ -1,4 +1,5 @@
 import { BlockRenderer } from '@/components/features/resources/blockRenderer'
+import { ExternalResourceFrame } from '@/components/features/resources/externalResourceFrame'
 import { ReadingProgress } from '@/components/features/resources/readingProgress'
 import { TableOfContents } from '@/components/features/resources/tableOfContents'
 import { collectHeadings } from '@/lib/richTextHeadings'
@@ -27,7 +28,9 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
     year: 'numeric',
   })
 
-  const headings = collectHeadings(doc.content)
+  const isLinked = doc.source === 'link' && Boolean(doc.externalUrl)
+  // A linked resource has no body text, so there is nothing for the contents rail to index.
+  const headings = isLinked ? [] : collectHeadings(doc.content)
 
   return (
     // No background of its own: ContentPanel already paints `bg-background`
@@ -108,7 +111,11 @@ export function LearningDetail({ doc, basePath, backLabel }: LearningDetailProps
           {/* `data-toc-scope` bounds the reading-progress calculation to the
               article, so the full-viewport footer below doesn't count. */}
           <div data-toc-scope className="flex-1 min-w-0 max-w-4xl">
-            <BlockRenderer blocks={doc.content || []} />
+            {isLinked ? (
+              <ExternalResourceFrame url={doc.externalUrl as string} title={doc.title} />
+            ) : (
+              <BlockRenderer blocks={doc.content || []} />
+            )}
           </div>
 
           {/* Table of contents - hidden entirely when the doc has no headings,
