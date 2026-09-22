@@ -9,7 +9,9 @@ const MicrobitStudio = dynamic(
   () => import('./microbit/microbitStudio').then((m) => m.MicrobitStudio),
   {
     ssr: false,
-    loading: () => <div className="h-[70vh] rounded-2xl border border-border bg-card/60" />,
+    loading: () => (
+      <div className="h-[58svh] min-h-[320px] rounded-2xl border border-border bg-card/50" />
+    ),
   },
 )
 

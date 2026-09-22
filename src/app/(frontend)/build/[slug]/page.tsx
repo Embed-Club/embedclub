@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: BuildTargetPageProps): Promis
   return {
     title: `Build: ${target.title}`,
     description: target.description,
-    robots: { index: false, follow: false },
+    alternates: { canonical: `/build/${slug}` },
   }
 }
 

@@ -63,7 +63,7 @@ export function PythonEditor({ value, onChange }: PythonEditorProps) {
     view.dispatch({ changes: { from: 0, to: current.length, insert: value } })
   }, [value])
 
-  return <div ref={hostRef} className="h-full w-full overflow-hidden" />
+  return <div ref={hostRef} className="absolute inset-0 overflow-hidden" />
 }
 
 const siteTheme = EditorView.theme({

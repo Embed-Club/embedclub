@@ -4,6 +4,7 @@ import {
   Bot,
   Boxes,
   CalendarRange,
+  CircuitBoard,
   ClipboardList,
   FolderGit2,
   Images,
@@ -52,11 +53,12 @@ const navItems = [
   // Learning
   { label: 'RESOURCES', ariaLabel: 'Resources', link: '/resources', icon: Boxes },
   { label: 'TUTORIALS', ariaLabel: 'Tutorials', link: '/tutorials', icon: School },
+  { label: 'SIMULATORS', ariaLabel: 'Simulators', link: '/simulators', icon: Bot },
   {
-    label: 'SIMULATORS',
-    ariaLabel: 'Simulators',
-    link: '/simulators',
-    icon: Bot,
+    label: 'BUILD',
+    ariaLabel: 'Build',
+    link: '/build',
+    icon: CircuitBoard,
     dividerAfter: true,
   },
 

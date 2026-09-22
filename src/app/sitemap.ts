@@ -16,6 +16,7 @@ const STATIC_ROUTES = [
   '/resources',
   '/tutorials',
   '/simulators',
+  '/build',
   '/feedback',
   '/contact',
 ]
@@ -35,8 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const payload = await getPayload({ config })
 
     // Resources and tutorials are separate collections with a route each.
-    // (Forms are intentionally excluded - they're noindex, single-use pages,
-    // and so is /build, which is unlisted.)
+    // (Forms are intentionally excluded - they're noindex, single-use pages.)
     for (const collection of ['resources', 'tutorials'] as const) {
       const docs = await payload.find({
         collection,

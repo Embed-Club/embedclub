@@ -44,7 +44,15 @@ export function BlocksWorkspace({ initialState, onChange }: BlocksWorkspaceProps
       theme: theme(),
       renderer: 'zelos',
       grid: { spacing: 24, length: 3, colour: 'hsl(var(--border))', snap: true },
-      zoom: { controls: true, wheel: true, startScale: 0.9, maxScale: 2, minScale: 0.4 },
+      // Blocks start larger on a touch screen: a 0.9 scale block is a fiddly
+      // drag target with a fingertip, and pinch-zoom is there to go smaller.
+      zoom: {
+        controls: true,
+        wheel: true,
+        startScale: window.matchMedia('(pointer: coarse)').matches ? 1.15 : 0.9,
+        maxScale: 2.5,
+        minScale: 0.4,
+      },
       move: { scrollbars: true, drag: true, wheel: false },
       trashcan: true,
     })
@@ -73,15 +81,22 @@ export function BlocksWorkspace({ initialState, onChange }: BlocksWorkspaceProps
 
     const observer = new ResizeObserver(() => Blockly.svgResize(workspace))
     observer.observe(host)
+    // One resize after the first paint, for the case where the host was still
+    // being laid out when Blockly measured it.
+    const raf = requestAnimationFrame(() => Blockly.svgResize(workspace))
 
     return () => {
+      cancelAnimationFrame(raf)
       observer.disconnect()
       workspace.removeChangeListener(listener)
       workspace.dispose()
     }
   }, [])
 
-  return <div ref={hostRef} className="h-full w-full" />
+  // Absolute rather than h-full: Blockly measures its host at inject time, and
+  // a flex child that has not been laid out yet measures zero, which left the
+  // workspace as a 150px stub until something forced a resize.
+  return <div ref={hostRef} className="absolute inset-0" />
 }
 
 /**

@@ -5,11 +5,18 @@ import { useMicrobitUsb } from '@/hooks/useMicrobitUsb'
 import { STARTER_WORKSPACE } from '@/lib/microbit/blocks'
 import { buildHex } from '@/lib/microbit/hexBuilder'
 import { cn } from '@/lib/utils'
-import { Blocks, Code2, Download, Plug, Trash2, Unplug, Usb, Zap } from 'lucide-react'
+import { Blocks, Code2, Download, Plug, RotateCcw, Unplug, Usb, Zap } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BlocksWorkspace } from './blocksWorkspace'
 import { PythonEditor } from './pythonEditor'
 import { SerialConsole } from './serialConsole'
+
+/**
+ * Controls are finger-sized on a phone and settle to the compact desktop size
+ * from `sm` up. PRODUCT.md puts the floor at 44px, and shadcn's `sm` is 32.
+ */
+const TOUCH_BUTTON = 'h-11 px-4 sm:h-8 sm:px-3'
+const TOUCH_ICON_BUTTON = 'h-11 w-11 px-0 sm:h-8 sm:w-auto sm:px-3'
 
 type Mode = 'blocks' | 'python'
 
@@ -33,6 +40,10 @@ interface MicrobitStudioProps {
  * that text; the moment you do, the two detach and going back to blocks asks
  * before throwing your edits away. Everything is saved to localStorage as you
  * go, so a refresh does not lose the program.
+ *
+ * The layout is a column that fills whatever height the page gives it. The
+ * editor is the part that stretches; the toolbar and the console stay their
+ * own size, so a phone still gets a usable canvas instead of a letterbox.
  */
 export function MicrobitStudio({ storageKey }: MicrobitStudioProps) {
   const key = `build:microbit:${storageKey}`
@@ -43,7 +54,7 @@ export function MicrobitStudio({ storageKey }: MicrobitStudioProps) {
   }, [key])
 
   if (!loaded) {
-    return <div className="h-[70vh] rounded-2xl border border-border bg-card/60" />
+    return <div className="h-[58svh] min-h-[320px] rounded-2xl border border-border bg-card/50" />
   }
 
   return <Studio storageKey={key} initial={loaded} />
@@ -59,6 +70,7 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
   const generatedRef = useRef(initial.python)
   const [downloading, setDownloading] = useState(false)
   const [downloadError, setDownloadError] = useState<string | null>(null)
+  const touch = useIsTouch()
 
   const usb = useMicrobitUsb()
 
@@ -120,83 +132,131 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
 
   const busy = usb.flash.phase === 'building' || usb.flash.phase === 'flashing'
   const connected = usb.status === 'Connected'
+  // Only the writing stages report a meaningful fraction; the connect stages
+  // sit at 0 and would otherwise show a stuck "0%".
+  const progress =
+    usb.flash.phase === 'flashing' &&
+    (usb.flash.stage === 'PartialFlashing' || usb.flash.stage === 'FullFlashing')
+      ? usb.flash.progress
+      : null
 
-  const statusLine = useMemo(() => {
+  const status = useMemo(() => {
     if (usb.supported === false) {
-      return 'This browser cannot flash over USB. Use Chrome or Edge, or download the hex and drop it on the MICROBIT drive.'
+      return {
+        tone: 'muted' as const,
+        text: touch
+          ? 'This browser cannot flash over USB. Chrome on Android can, with an OTG adapter. On iPhone, download the hex and copy it to the MICROBIT drive from a computer.'
+          : 'This browser cannot flash over USB. Use Chrome or Edge, or download the hex and drop it on the MICROBIT drive.',
+      }
     }
     switch (usb.flash.phase) {
       case 'building':
-        return 'Building hex...'
+        return { tone: 'muted' as const, text: 'Building the hex...' }
       case 'flashing':
-        return usb.flash.stage === 'PartialFlashing' || usb.flash.stage === 'FullFlashing'
-          ? `Flashing ${Math.round(usb.flash.progress * 100)}%`
-          : 'Connecting to the micro:bit...'
+        return {
+          tone: 'muted' as const,
+          text: progress === null ? 'Connecting to the micro:bit...' : 'Writing to the board...',
+        }
       case 'done':
-        return 'Flashed. The program is running on the micro:bit.'
+        return { tone: 'good' as const, text: 'Flashed. The program is running on the micro:bit.' }
       case 'error':
-        return usb.flash.message
+        return { tone: 'bad' as const, text: usb.flash.message }
       default:
-        return connected
-          ? `Connected to micro:bit ${usb.boardVersion ?? ''}`
-          : 'Plug in a micro:bit and press Flash.'
+        return {
+          tone: 'muted' as const,
+          text: connected
+            ? `Connected to micro:bit ${usb.boardVersion ?? ''}`.trim()
+            : touch
+              ? 'Connect a micro:bit with an OTG adapter, then press Flash.'
+              : 'Plug in a micro:bit and press Flash.',
+        }
     }
-  }, [usb.supported, usb.flash, usb.boardVersion, connected])
+  }, [usb.supported, usb.flash, usb.boardVersion, connected, progress, touch])
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex rounded-md border border-border bg-card p-1">
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <fieldset className="inline-flex min-w-0 rounded-lg border border-border bg-card p-1">
+          <legend className="sr-only">Editor mode</legend>
           <ModeButton active={mode === 'blocks'} onClick={() => switchMode('blocks')}>
-            <Blocks /> Blocks
+            <Blocks aria-hidden /> Blocks
           </ModeButton>
           <ModeButton active={mode === 'python'} onClick={() => switchMode('python')}>
-            <Code2 /> Python
+            <Code2 aria-hidden /> Python
           </ModeButton>
-        </div>
+        </fieldset>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={resetProject} title="Start over">
-            <Trash2 /> Reset
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={resetProject}
+            className={TOUCH_ICON_BUTTON}
+            title="Start over with a fresh program"
+          >
+            <RotateCcw aria-hidden />
+            <span className="sr-only sm:not-sr-only">Reset</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={download} disabled={downloading}>
-            <Download /> {downloading ? 'Building...' : 'Download .hex'}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={download}
+            disabled={downloading}
+            className={TOUCH_BUTTON}
+          >
+            <Download aria-hidden />
+            {downloading ? 'Building...' : 'Download .hex'}
           </Button>
           {usb.supported && (
             <>
-              {connected ? (
-                <Button variant="outline" size="sm" onClick={usb.disconnect} disabled={busy}>
-                  <Unplug /> Disconnect
-                </Button>
-              ) : (
-                <Button variant="outline" size="sm" onClick={usb.connect} disabled={busy}>
-                  <Plug /> Connect
-                </Button>
-              )}
-              <Button size="sm" onClick={() => usb.flashScript(python)} disabled={busy}>
-                <Zap /> {busy ? 'Flashing...' : 'Flash'}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={connected ? usb.disconnect : usb.connect}
+                disabled={busy}
+                className={TOUCH_ICON_BUTTON}
+              >
+                {connected ? <Unplug aria-hidden /> : <Plug aria-hidden />}
+                <span className="sr-only sm:not-sr-only">
+                  {connected ? 'Disconnect' : 'Connect'}
+                </span>
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => usb.flashScript(python)}
+                disabled={busy}
+                className={TOUCH_BUTTON}
+              >
+                <Zap aria-hidden />
+                {busy ? 'Flashing' : 'Flash'}
+                {progress !== null && ` ${Math.round(progress * 100)}%`}
               </Button>
             </>
           )}
         </div>
       </div>
 
-      {/* Status */}
-      <p
+      {/* <output> carries role="status" natively, so a flash result or an
+          error is announced without a redundant ARIA role. */}
+      <output
         className={cn(
-          'flex items-center gap-2 text-sm',
-          usb.flash.phase === 'error' || downloadError
-            ? 'text-destructive'
-            : 'text-muted-foreground',
+          'flex items-start gap-2 text-sm',
+          status.tone === 'bad' && 'text-destructive',
+          status.tone === 'good' && 'text-primary',
+          status.tone === 'muted' && 'text-muted-foreground',
         )}
       >
-        <Usb className="h-4 w-4 shrink-0" />
-        {downloadError ?? statusLine}
-      </p>
+        <Usb className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+        <span className="max-w-[70ch]">{downloadError ?? status.text}</span>
+      </output>
 
-      {/* Editor */}
-      <div className="relative h-[65vh] min-h-[480px] w-full overflow-hidden rounded-2xl border border-border bg-background">
+      {/* The editor is the part that stretches. min-h-0 lets it shrink inside
+          the column; the min-height keeps it usable on a short phone. */}
+      {/* A viewport height, not a flex share. The shell's scroll container
+          passes `min-height` down rather than a height, so a percentage here
+          resolves against an auto-height parent and collapses - which is what
+          left the canvas 2px tall on a phone. svh is definite everywhere. */}
+      <div className="relative h-[58svh] min-h-[320px] shrink-0 overflow-hidden rounded-2xl border border-border bg-background lg:h-[calc(100svh-21rem)]">
         {mode === 'blocks' ? (
           <BlocksWorkspace
             initialState={workspace ?? STARTER_WORKSPACE}
@@ -207,7 +267,6 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
         )}
       </div>
 
-      {/* Console */}
       {usb.supported && <SerialConsole lines={usb.serial} onClear={usb.clearSerial} />}
     </div>
   )
@@ -226,16 +285,26 @@ function ModeButton({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
-        'inline-flex items-center gap-2 rounded-sm px-3 py-1.5 text-sm font-medium transition-colors [&_svg]:size-4',
+        'inline-flex h-11 items-center gap-2 rounded-md px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-8 sm:px-3 [&_svg]:size-4',
         active
           ? 'bg-primary text-primary-foreground'
-          : 'text-muted-foreground hover:text-foreground',
+          : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
       )}
     >
       {children}
     </button>
   )
+}
+
+/** Coarse pointer means a phone or tablet, which changes what the advice says. */
+function useIsTouch(): boolean {
+  const [touch, setTouch] = useState(false)
+  useEffect(() => {
+    setTouch(window.matchMedia('(pointer: coarse)').matches)
+  }, [])
+  return touch
 }
 
 function readProject(key: string): SavedProject {
