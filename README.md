@@ -177,74 +177,25 @@ documents in place instead of duplicating them.
 
 ## Contributing
 
-Anyone in the club can work on this site. You do not need permission to start,
-and you do not need production access - the quickstart above gives you a full
-working copy on your own database.
+Anyone in the club can work on this site, and you do not need production access
+to start. **[CONTRIBUTING.md](CONTRIBUTING.md)** has the whole thing: setting
+up, what reviewers look for, how schema changes work, and where in the tree to
+find the thing you want to change.
 
-### Before your first change
+The short version:
 
-Read **[AGENTS.md](AGENTS.md)**. It defines the design language, the naming
-conventions and the rules that are not up for negotiation, and it applies to
-humans and to any AI coding assistant you use. Most rejected changes are
-rejected because they contradict it.
+1. Read **[AGENTS.md](AGENTS.md)** - design language, naming, hard rules. It
+   applies to humans and to any AI coding assistant you use.
+2. Branch from `main`: `git checkout -b feat/short-description`
+3. `pnpm verify` before every commit, `pnpm verify:full` before the PR.
+4. Never push straight to `main` - it auto-deploys and migrates production.
 
-### Workflow
+## Licence
 
-```bash
-git checkout -b feat/short-description   # never work on main
-# ... make your change ...
-pnpm verify                              # before every commit
-pnpm verify:full                         # before opening the PR
-```
-
-Then open a pull request against `main` describing what changed and why. Never
-push straight to `main`: it auto-deploys and runs migrations against the
-production database.
-
-### What reviewers will look for
-
-- **`pnpm verify` passes.** Biome, TypeScript and the integration tests. No
-  `as any`, `@ts-ignore`, `ignoreBuildErrors` or lint suppressions without a
-  written reason in a comment.
-- **camelCase file and folder names.** `resourceCutoutCard.tsx`, not
-  `resource-cutout-card.tsx`. Components stay PascalCase inside the file. The
-  `shadcn` CLI emits kebab-case - rename after adding.
-- **No plain content in JSX.** Page copy lives in Payload, not hardcoded. If
-  you need a new field, extend the collection.
-- **Hyphens, never dashes.** Use a plain `-`. The em dash and en dash are
-  banned everywhere: page copy, CMS content, comments, commit messages, docs.
-  `scripts/replaceEmDashes.ts` sweeps the database if one gets in.
-- **Design tokens only.** Colours come from `hsl(var(--primary))` and friends
-  in `globals.css`. No new hex values, no new accent hues.
-- **Schema changes ship complete.** Edit the collection, then
-  `pnpm generate:types`, then write a migration, and commit all three together.
-  Never edit a migration that is already committed.
-
-### Working on the database schema
-
-Migrations are the only source of truth for the schema. A change applied by
-hand and not written down means the next person to set up from scratch gets a
-database the app cannot run on - which has already happened twice.
-
-After any schema work, prove a fresh database still matches production by
-running the migrations against an empty one and comparing. `docs/SETUP.md` §4
-has the workflow.
-
-### Where things live
-
-| You want to change...          | Look in                                        |
-| ------------------------------ | ---------------------------------------------- |
-| A page's layout                | `src/app/(frontend)/<route>/`                  |
-| A reusable component           | `src/components/common/` or `features/<domain>/` |
-| What editors can enter         | `src/payload/collections/` or `globals/`       |
-| The colours, fonts or spacing  | `src/app/(frontend)/globals.css` + docs/DESIGN.md |
-| Demo content for local work    | `scripts/seedDemo.ts`                          |
-
-### Reporting something broken
-
-Open an issue with what you did, what you expected and what happened. A
-screenshot at the width you saw it is worth more than a description - several
-of the bugs fixed so far were only visible at one screen size.
+Source code is MIT, see **[LICENSE](LICENSE)**. The Embed Club logo, wordmark
+and banner are excluded and remain the club's - replace them with your own
+before publishing anything built on this code. Bundled fonts keep their own
+licences.
 
 ---
 

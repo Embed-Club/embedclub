@@ -70,8 +70,10 @@ them to update it first.
   - `admin/` - Payload admin field components
   - `features/<domain>/` - page-specific (events, resources, simulators, forms, …)
   - `animate-ui/` - the animate-ui registry tree
-- Docs live in `docs/` (SETUP, PRODUCT, DESIGN). Only README, AGENTS, CLAUDE
-  stay at the repo root (they must be auto-discovered).
+- Docs live in `docs/` (SETUP, PRODUCT, DESIGN, CHANGELOG). The root holds
+  only the files that something else discovers by name: README, AGENTS, CLAUDE,
+  CONTRIBUTING and LICENSE (GitHub surfaces the last two), plus `.env.example`.
+  Anything else you want to write goes in `docs/`.
 
 ## 3. Data & CMS rules
 

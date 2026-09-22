@@ -1,0 +1,73 @@
+MIT License
+
+Copyright (c) 2026 Embed Club, P.A. College of Engineering
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## What this licence does and does not cover
+
+The MIT licence above applies to the **source code** of this repository. Take
+it, learn from it, build your own club site on it.
+
+It does **not** apply to the following, which are not the club's to give away
+or are reserved:
+
+### Embed Club brand assets - all rights reserved
+
+The Embed Club name, logo, wordmark and banner remain the property of Embed
+Club and may not be used to identify your project, imply endorsement, or
+suggest that your site is the club's.
+
+    public/embedClubLogo-Dark.svg
+    public/embedClubLogo-Light.svg
+    public/EmbedClubBanner-Dark.svg
+    public/EmbedClubBanner-Light.svg
+    public/favicon.ico
+    public/icon192.png
+    public/icon512.png
+    public/appleTouchIcon.png
+    src/app/icon.svg
+
+Replace them with your own before publishing anything built on this code.
+
+### P.A. College of Engineering marks
+
+    public/pace-logo.png
+    public/pacesilvioralogo.png
+
+These belong to the institution, not to the club, and are included only so the
+club's own site can display them.
+
+### Fonts
+
+Bundled typefaces keep their own licences and are not covered by the MIT grant:
+
+- **TeX Gyre Adventor** (`public/texgyreadventor-*.otf`) - GUST Font License,
+  free to use and redistribute.
+- **Gobold** (`public/fonts/GoboldBold.otf`) and **Sport Break**
+  (`public/fonts/SportBreakFreeVersion.otf`) - free versions, whose terms
+  restrict commercial use. Check before using them in anything commercial.
+
+### Site content
+
+Text, photographs, member details, event records and other content published
+through the CMS belong to Embed Club and the people in them. The demo dataset
+produced by `pnpm seed:demo` is invented and carries no such restriction.
