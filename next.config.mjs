@@ -48,6 +48,21 @@ const nextConfig = {
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }]
   },
+  /**
+   * The previous embedclub.org was a static site with `/pages/<name>.html`
+   * routes and a singular `/simulator`. Google's sitelinks and anyone's old
+   * bookmarks still point there; permanent redirects carry both the visitor
+   * and the page's search ranking across.
+   */
+  async redirects() {
+    return [
+      { source: '/pages/simulator.html', destination: '/simulators', permanent: true },
+      { source: '/pages/:page.html', destination: '/:page', permanent: true },
+      { source: '/pages/:page', destination: '/:page', permanent: true },
+      { source: '/simulator', destination: '/simulators', permanent: true },
+      { source: '/index.html', destination: '/', permanent: true },
+    ]
+  },
   // Your Next.js config here
   images: {
     remotePatterns: [
