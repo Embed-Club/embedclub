@@ -54,7 +54,7 @@ export function MicrobitStudio({ storageKey }: MicrobitStudioProps) {
   }, [key])
 
   if (!loaded) {
-    return <div className="h-[58svh] min-h-[320px] rounded-2xl border border-border bg-card/50" />
+    return <div className="h-[70svh] min-h-[420px] rounded-2xl border border-border bg-card/50" />
   }
 
   return <Studio storageKey={key} initial={loaded} />
@@ -174,7 +174,7 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
   }, [usb.supported, usb.flash, usb.boardVersion, connected, progress, touch])
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3">
+    <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <fieldset className="inline-flex min-w-0 rounded-lg border border-border bg-card p-1">
           <legend className="sr-only">Editor mode</legend>
@@ -255,8 +255,9 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
       {/* A viewport height, not a flex share. The shell's scroll container
           passes `min-height` down rather than a height, so a percentage here
           resolves against an auto-height parent and collapses - which is what
-          left the canvas 2px tall on a phone. svh is definite everywhere. */}
-      <div className="relative h-[58svh] min-h-[320px] shrink-0 overflow-hidden rounded-2xl border border-border bg-background lg:h-[calc(100svh-21rem)]">
+          left the canvas 2px tall on a phone. svh is definite everywhere, and
+          unlike vh it accounts for mobile browser chrome. */}
+      <div className="relative h-[70svh] min-h-[420px] overflow-hidden rounded-2xl border border-border bg-background">
         {mode === 'blocks' ? (
           <BlocksWorkspace
             initialState={workspace ?? STARTER_WORKSPACE}

@@ -10,7 +10,7 @@ const MicrobitStudio = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[58svh] min-h-[320px] rounded-2xl border border-border bg-card/50" />
+      <div className="h-[70svh] min-h-[420px] rounded-2xl border border-border bg-card/50" />
     ),
   },
 )
