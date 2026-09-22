@@ -74,6 +74,7 @@ export interface Config {
     resources: Resource;
     tutorials: Tutorial;
     simulators: Simulator;
+    'build-targets': BuildTarget;
     members: Member;
     'member-roles': MemberRole;
     'member-categories': MemberCategory;
@@ -106,6 +107,7 @@ export interface Config {
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
     tutorials: TutorialsSelect<false> | TutorialsSelect<true>;
     simulators: SimulatorsSelect<false> | SimulatorsSelect<true>;
+    'build-targets': BuildTargetsSelect<false> | BuildTargetsSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
     'member-roles': MemberRolesSelect<false> | MemberRolesSelect<true>;
     'member-categories': MemberCategoriesSelect<false> | MemberCategoriesSelect<true>;
@@ -1272,6 +1274,52 @@ export interface Tutorial {
   createdAt: string;
 }
 /**
+ * Boards programmable from the Build page. Drag rows to set the order they appear on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "build-targets".
+ */
+export interface BuildTarget {
+  id: number;
+  _order?: string | null;
+  title: string;
+  /**
+   * Generated from the title.
+   */
+  slug: string;
+  /**
+   * Shown on the card and at the top of the page (max 200 characters)
+   */
+  description: string;
+  thumbnail: number | Media;
+  /**
+   * Which in-browser editor the page embeds. New boards need a new option here.
+   */
+  editor: 'microbitPython';
+  tags?: (number | Tag)[] | null;
+  difficulty?: ('beginner' | 'intermediate' | 'advanced') | null;
+  /**
+   * Optional - shown above the editor. Firmware updates, cable tips, which browser to use.
+   */
+  notes?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Responses submitted through the website.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1632,6 +1680,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'simulators';
         value: number | Simulator;
+      } | null)
+    | ({
+        relationTo: 'build-targets';
+        value: number | BuildTarget;
       } | null)
     | ({
         relationTo: 'members';
@@ -2087,6 +2139,23 @@ export interface SimulatorsSelect<T extends boolean = true> {
         rowBlock?: T | RowBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "build-targets_select".
+ */
+export interface BuildTargetsSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  slug?: T;
+  description?: T;
+  thumbnail?: T;
+  editor?: T;
+  tags?: T;
+  difficulty?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3139,6 +3208,7 @@ export interface TaskCreateCollectionExport {
       | 'resources'
       | 'tutorials'
       | 'simulators'
+      | 'build-targets'
       | 'members'
       | 'member-roles'
       | 'member-categories'

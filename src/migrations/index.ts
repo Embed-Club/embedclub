@@ -41,6 +41,7 @@ import * as migration_20260826_210352_add_legacy_website_url from './20260826_21
 import * as migration_20260827_083031_add_heritage_contributors from './20260827_083031_add_heritage_contributors';
 import * as migration_20260903_034338_add_tracked_events from './20260903_034338_add_tracked_events';
 import * as migration_20260922_110000_add_learning_source from './20260922_110000_add_learning_source';
+import * as migration_20260922_140000_add_build_targets from './20260922_140000_add_build_targets';
 
 export const migrations = [
   {
@@ -257,5 +258,10 @@ export const migrations = [
     up: migration_20260922_110000_add_learning_source.up,
     down: migration_20260922_110000_add_learning_source.down,
     name: '20260922_110000_add_learning_source',
+  },
+  {
+    up: migration_20260922_140000_add_build_targets.up,
+    down: migration_20260922_140000_add_build_targets.down,
+    name: '20260922_140000_add_build_targets',
   },
 ];

@@ -9,6 +9,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Achievements } from './collections/achievements'
+import { BuildTargets } from './collections/buildTargets'
 import { Events } from './collections/events'
 import { FormMedia } from './collections/formMedia'
 import { FormSubmissions } from './collections/formSubmissions'
@@ -91,6 +92,9 @@ export default buildConfig({
     Tutorials,
     // Simulators
     Simulators,
+
+    // Build
+    BuildTargets,
     // Members
     Members,
     MemberRoles,
