@@ -47,9 +47,17 @@ export const metadata: Metadata = {
   verification: process.env.GOOGLE_SITE_VERIFICATION
     ? { google: process.env.GOOGLE_SITE_VERIFICATION }
     : undefined,
+  // Built by scripts/buildFavicons.mjs from the logo, on the theme's graphite
+  // background - the white-and-grey mark is unreadable on a light tab strip or
+  // a light search results card without it. Apple ignores SVG, so it gets a PNG.
   icons: {
-    icon: [{ url: '/favicon.ico' }, { url: '/embedClubLogo-Dark.svg', type: 'image/svg+xml' }],
-    apple: '/embedClubLogo-Dark.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: { url: '/appleTouchIcon.png', sizes: '180x180' },
   },
 }
 
@@ -61,7 +69,7 @@ const jsonLd = {
       '@id': `${SITE_URL}/#organization`,
       name: SITE_NAME,
       url: SITE_URL,
-      logo: `${SITE_URL}/embedClubLogo-Dark.svg`,
+      logo: `${SITE_URL}/icon512.png`,
       description: SITE_DESCRIPTION,
       location: {
         '@type': 'Place',
