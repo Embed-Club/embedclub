@@ -1,7 +1,9 @@
 import { EmptyState } from '@/components/common/emptyState'
+import { JsonLdScript } from '@/components/common/jsonLdScript'
 import { LegalDocument } from '@/components/common/legalDocument'
 import { ContactLinks } from '@/components/features/contact/contactLinks'
 import { SupportFaq } from '@/components/features/contact/supportFaq'
+import { faqJsonLd } from '@/lib/structuredData'
 import { getSupportPages } from '@/lib/support'
 import type { Metadata } from 'next'
 
@@ -18,6 +20,7 @@ export default async function Page() {
   const support = await getSupportPages()
   const email = support?.contactEmail
   const phone = support?.contactPhone
+  const faq = faqJsonLd(support?.supportFaq ?? [], '/contact')
 
   return (
     <LegalDocument
@@ -26,6 +29,7 @@ export default async function Page() {
       sections={support?.contactSections}
       extra={
         <>
+          {faq && <JsonLdScript data={faq} />}
           {(email || phone) && <ContactLinks email={email} phone={phone} />}
           <SupportFaq items={support?.supportFaq} />
         </>

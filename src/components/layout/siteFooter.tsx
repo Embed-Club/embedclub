@@ -1,7 +1,7 @@
 import { CreditsModalTrigger } from '@/components/common/creditsModal'
 import { TextReveal } from '@/components/common/textReveal'
 import { cn } from '@/lib/utils'
-import { ArrowUpRight, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Instagram, Linkedin, Sparkles } from 'lucide-react'
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -51,6 +51,16 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
 ]
 
 /**
+ * The club's profiles. Visible links, not just `sameAs` in the page's JSON-LD:
+ * a search engine treats a claimed profile as confirmed when the site and the
+ * profile point at each other.
+ */
+const SOCIALS = [
+  { label: 'Instagram', href: 'https://www.instagram.com/embed_club', Icon: Instagram },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/embed-club', Icon: Linkedin },
+]
+
+/**
  * Full-viewport footer at the bottom of every page's scroll container. Plain
  * full-page section - no scroll snapping (free to scroll into and back out of).
  */
@@ -95,27 +105,50 @@ export function SiteFooter() {
               </div>
             </div>
 
-            {/* Link columns */}
-            <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
-              {COLUMNS.map((col) => (
-                <div key={col.heading}>
-                  <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary">
-                    {col.heading}
-                  </h3>
-                  <ul className="mt-4 space-y-2.5">
-                    {col.links.map((link) => (
-                      <li key={link.href}>
-                        <a
-                          href={link.href}
-                          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                        >
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            {/* Link columns, with the club's profiles under them */}
+            <div className="flex flex-col gap-8">
+              <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
+                {COLUMNS.map((col) => (
+                  <div key={col.heading}>
+                    <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary">
+                      {col.heading}
+                    </h3>
+                    <ul className="mt-4 space-y-2.5">
+                      {col.links.map((link) => (
+                        <li key={link.href}>
+                          <a
+                            href={link.href}
+                            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                          >
+                            {link.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col gap-3 border-t border-border pt-6 lg:items-end">
+                <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary">
+                  Follow
+                </h3>
+                <ul className="flex flex-wrap gap-2.5">
+                  {SOCIALS.map(({ label, href, Icon }) => (
+                    <li key={href}>
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="me noreferrer noopener"
+                        className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3.5 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary/60 hover:bg-primary/10 hover:text-primary"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
 

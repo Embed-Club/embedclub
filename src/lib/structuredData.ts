@@ -153,3 +153,65 @@ export function eventsListJsonLd(events: Event[]): JsonLd {
     })),
   }
 }
+
+/**
+ * Flatten a Lexical rich-text value to plain text.
+ *
+ * Schema.org answers are strings, not markup, so the CMS's paragraph tree has
+ * to be walked. Block-level nodes are joined with a blank line, everything
+ * else with nothing, which keeps sentences intact without gluing paragraphs
+ * together.
+ */
+export function richTextToPlainText(value: unknown): string {
+  const BLOCK_TYPES = new Set(['paragraph', 'heading', 'listitem', 'quote'])
+
+  const walk = (node: unknown): string => {
+    if (!node || typeof node !== 'object') return ''
+    const n = node as { type?: string; text?: string; children?: unknown[] }
+
+    if (typeof n.text === 'string') return n.text
+    if (n.type === 'linebreak') return ' '
+
+    const inner = Array.isArray(n.children) ? n.children.map(walk).join('') : ''
+    return n.type && BLOCK_TYPES.has(n.type) ? `${inner}\n\n` : inner
+  }
+
+  const root = (value as { root?: unknown } | null)?.root
+  return walk(root)
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+/**
+ * The support questions on /contact, as a FAQPage.
+ *
+ * These answers are the club's own account of what it is and how to join -
+ * the things an assistant is asked most often. Stated here, they can be
+ * quoted from the club's own site instead of from write-ups about it.
+ */
+export function faqJsonLd(
+  items: { question?: string | null; answer?: unknown }[],
+  pagePath: string,
+): JsonLd | null {
+  const entries = items
+    .map((item) => ({
+      question: item.question?.trim(),
+      answer: richTextToPlainText(item.answer),
+    }))
+    .filter((entry): entry is { question: string; answer: string } =>
+      Boolean(entry.question && entry.answer),
+    )
+
+  if (entries.length === 0) return null
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${SITE_URL}${pagePath}#faq`,
+    mainEntity: entries.map((entry) => ({
+      '@type': 'Question',
+      name: entry.question,
+      acceptedAnswer: { '@type': 'Answer', text: entry.answer },
+    })),
+  }
+}

@@ -78,6 +78,19 @@ const jsonLd = {
         'https://www.instagram.com/embed_club',
         'https://www.linkedin.com/company/embed-club',
       ],
+      // Stated here because assistants were answering these from third-party
+      // write-ups about the club rather than from the club's own site.
+      foundingDate: '2018',
+      founder: [
+        { '@type': 'Person', name: 'Habeeb Ur Rehman' },
+        { '@type': 'Person', name: 'Nishant Narayanan' },
+        { '@type': 'Person', name: 'Mohammed Saifuddin' },
+      ],
+      parentOrganization: {
+        '@type': 'CollegeOrUniversity',
+        name: 'P.A. College of Engineering',
+        url: 'https://www.pace.edu.in',
+      },
       location: {
         '@type': 'Place',
         name: 'PA College of Engineering',
