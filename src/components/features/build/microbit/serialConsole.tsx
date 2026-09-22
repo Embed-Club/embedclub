@@ -16,11 +16,15 @@ interface SerialConsoleProps {
  * messages - which is how a student finds out their program crashed.
  */
 export function SerialConsole({ lines, onClear }: SerialConsoleProps) {
-  const endRef = useRef<HTMLDivElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll on every new line, which is what `lines` changing means
+  // The log scrolls itself rather than calling scrollIntoView on a marker:
+  // scrollIntoView moves whatever ancestor it has to, which on mount dragged
+  // the whole page down past the editor to reach an empty console.
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: 'end' })
+    if (lines.length === 0) return
+    const log = logRef.current
+    if (log) log.scrollTop = log.scrollHeight
   }, [lines])
 
   return (
@@ -33,7 +37,10 @@ export function SerialConsole({ lines, onClear }: SerialConsoleProps) {
           <Eraser /> Clear
         </Button>
       </div>
-      <div className="h-40 overflow-y-auto px-4 py-3 font-mono text-sm leading-relaxed">
+      <div
+        ref={logRef}
+        className="h-40 overflow-y-auto px-4 py-3 font-mono text-sm leading-relaxed"
+      >
         {lines.length === 0 ? (
           <p className="text-muted-foreground">
             Nothing yet. Use the &quot;print to console&quot; block, or <code>print()</code> in
@@ -46,7 +53,6 @@ export function SerialConsole({ lines, onClear }: SerialConsoleProps) {
             </div>
           ))
         )}
-        <div ref={endRef} />
       </div>
     </section>
   )
