@@ -105,50 +105,27 @@ export function SiteFooter() {
               </div>
             </div>
 
-            {/* Link columns, with the club's profiles under them */}
-            <div className="flex flex-col gap-8">
-              <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
-                {COLUMNS.map((col) => (
-                  <div key={col.heading}>
-                    <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary">
-                      {col.heading}
-                    </h3>
-                    <ul className="mt-4 space-y-2.5">
-                      {col.links.map((link) => (
-                        <li key={link.href}>
-                          <a
-                            href={link.href}
-                            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                          >
-                            {link.label}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col gap-3 border-t border-border pt-6 lg:items-end">
-                <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary">
-                  Follow
-                </h3>
-                <ul className="flex flex-wrap gap-2.5">
-                  {SOCIALS.map(({ label, href, Icon }) => (
-                    <li key={href}>
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="me noreferrer noopener"
-                        className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3.5 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary/60 hover:bg-primary/10 hover:text-primary"
-                      >
-                        <Icon className="h-4 w-4" />
-                        {label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Link columns */}
+            <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
+              {COLUMNS.map((col) => (
+                <div key={col.heading}>
+                  <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary">
+                    {col.heading}
+                  </h3>
+                  <ul className="mt-4 space-y-2.5">
+                    {col.links.map((link) => (
+                      <li key={link.href}>
+                        <a
+                          href={link.href}
+                          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          {link.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -180,10 +157,28 @@ export function SiteFooter() {
             </address>
           </div>
 
-          {/* Bottom bar */}
-          <div className="flex flex-col gap-2 border-t border-border pt-5 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-            <span>© 2026 Embed Club · PA College of Engineering, Mangalore</span>
-            <span className="uppercase tracking-[0.3em]">Inspiring Innovation</span>
+          {/* Bottom bar: fine print left, the club's profiles in the corner */}
+          <div className="flex flex-col gap-5 border-t border-border pt-5 text-xs text-muted-foreground md:flex-row md:items-end md:justify-between">
+            <div className="flex flex-col gap-2">
+              <span>© 2026 Embed Club · PA College of Engineering, Mangalore</span>
+              <span className="uppercase tracking-[0.3em]">Inspiring Innovation</span>
+            </div>
+
+            <ul className="flex flex-wrap gap-2.5">
+              {SOCIALS.map(({ label, href, Icon }) => (
+                <li key={href}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="me noreferrer noopener"
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3.5 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary/60 hover:bg-primary/10 hover:text-primary"
+                  >
+                    <Icon className="h-4 w-4" />
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
