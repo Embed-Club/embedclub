@@ -70,6 +70,30 @@ export function BlocksWorkspace({ initialState, onChange }: BlocksWorkspaceProps
       }
     }
 
+    // Blockly hides the flyout but leaves the flyout's scrollbar drawn. The
+    // scrollbar is an <svg> sibling of the flyout inside injectionDiv rather
+    // than a child of it, so `display: none` on the flyout never reaches it,
+    // and opening then closing a category leaves a stray vertical line down
+    // the canvas. Mirror the flyout's own display onto it.
+    const mirrorFlyoutScrollbar = () => {
+      const flyoutEl = host.querySelector<SVGElement>('.blocklyFlyout')
+      const scrollbarEl = host.querySelector<SVGElement>('.blocklyFlyoutScrollbar')
+      if (!scrollbarEl) return
+      const flyoutHidden = !flyoutEl || window.getComputedStyle(flyoutEl).display === 'none'
+      // Cleared rather than set to 'block' when open, so Blockly keeps control
+      // of its own scrollbar while the flyout is actually showing.
+      scrollbarEl.style.display = flyoutHidden ? 'none' : ''
+    }
+
+    const flyoutObserver = new MutationObserver(mirrorFlyoutScrollbar)
+    flyoutObserver.observe(host, {
+      attributes: true,
+      subtree: true,
+      childList: true,
+      attributeFilter: ['style', 'class'],
+    })
+    mirrorFlyoutScrollbar()
+
     const emit = () => {
       const state = Blockly.serialization.workspaces.save(workspace)
       const python = SCRIPT_HEADER + pythonGenerator.workspaceToCode(workspace)
@@ -92,6 +116,7 @@ export function BlocksWorkspace({ initialState, onChange }: BlocksWorkspaceProps
 
     return () => {
       cancelAnimationFrame(raf)
+      flyoutObserver.disconnect()
       observer.disconnect()
       workspace.removeChangeListener(listener)
       workspace.dispose()
