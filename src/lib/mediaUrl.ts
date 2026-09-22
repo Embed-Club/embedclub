@@ -7,7 +7,13 @@ import type { CollectionAfterReadHook } from 'payload'
  * Payload `/api/<collection>/file/<name>` route (Vercel → Sydney on every hit).
  * Unset → URLs are left untouched, so this degrades safely.
  */
-const CDN_BASE = process.env.NEXT_PUBLIC_SUPABASE_MEDIA_URL?.replace(/\/$/, '')
+const CDN_BASE =
+  process.env.USE_S3_STORAGE === 'true'
+    ? process.env.NEXT_PUBLIC_SUPABASE_MEDIA_URL?.replace(/\/$/, '')
+    : // Uploads only reach the bucket when S3 storage is on. Rewriting without
+      // it points every image at a CDN that does not have the file - which is
+      // what a contributor gets if they copy a full .env but run on local disk.
+      undefined
 
 /** Rewrite a Payload upload route URL to the Supabase public CDN URL. */
 export function toCdnUrl<T extends string | null | undefined>(url: T): T {

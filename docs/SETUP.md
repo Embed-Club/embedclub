@@ -20,22 +20,56 @@ pnpm install
 
 ## 3. Environment
 
-Create `.env` in the repo root:
+```bash
+cp .env.example .env
+```
+
+`.env.example` documents every variable. Two are required: `DATABASE_URL` and
+`PAYLOAD_SECRET`. Leave the storage block commented out - uploads then go to
+local disk, which is what you want locally.
+
+**Use your own database.** Point `DATABASE_URL` at a database nobody else is
+working in: a free Neon project, or Postgres in Docker. The next two steps
+write schema and content to whatever it points at.
+
+## 3a. Quickstart: your own database with demo content
+
+From nothing to a site with something on every page:
 
 ```bash
-# Required
-DATABASE_URL=postgresql://...        # Neon connection string (pooled)
-PAYLOAD_SECRET=<64-hex random>       # node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-
-# Only needed when testing S3 storage locally - leave unset for normal dev.
-# When unset, uploads use local storage for development.
-# USE_S3_STORAGE=true
-# S3_ENDPOINT=https://<project-ref>.storage.supabase.co/storage/v1/s3
-# S3_REGION=<supabase region>
-# S3_ACCESS_KEY_ID=...
-# S3_SECRET_ACCESS_KEY=...
-# S3_BUCKET=<bucket name>
+cp .env.example .env         # fill in DATABASE_URL and PAYLOAD_SECRET
+pnpm install
+pnpm payload migrate         # build the schema
+pnpm seed:demo               # fill it with demo content
+pnpm create:admin            # first admin account, from BACKUP_ADMIN_* in .env
+pnpm dev                     # http://localhost:3000, admin at /admin
 ```
+
+`pnpm seed:demo` is safe to re-run - it matches documents on slug and updates
+them rather than making duplicates.
+
+### What the demo data is for
+
+It is invented. No real member, photo or contact detail is in it, so nothing
+that belongs to anyone ends up in a fork. The images are drawn at seed time,
+labelled with their own dimensions, so a wrongly-scaled one is obvious.
+
+It is also deliberately awkward, because a layout that has only seen tidy
+content hides its bugs:
+
+- **Both sides of every branch.** Events online and in person, past and
+  upcoming, with and without a venue. Resources written in the CMS and linked
+  out to YouTube, a PDF and a website. Simulators that open a site and ones
+  that send you to a download. Members with and without a photo, a bio, an end
+  year.
+- **Strings that fight the layout.** A title that wraps three or four times
+  next to a two-word one, a description sitting exactly on the 200-character
+  card limit, a single unbroken 70-character token, and some non-ASCII text.
+- **Images that fight the layout.** Ultra-wide, tall portrait, square, and one
+  deliberately too small to fill its slot.
+
+If something looks wrong after seeding, that is usually the point - it found a
+real bug. Fix the layout rather than softening the demo data.
 
 ## 4. Database
 
@@ -45,8 +79,15 @@ The schema is **migration-managed** - never let dev mode "push" schema changes.
 pnpm payload migrate        # apply all migrations in src/migrations/
 ```
 
-First run creates every table. Then start the app and create the first admin
-user at `http://localhost:3000/admin`.
+First run creates every table. Then `pnpm create:admin` makes the first
+account - the Users collection does not allow sign-ups, so the admin UI has no
+"create account" screen.
+
+A database built from these migrations is kept identical to production. If you
+change the schema by hand anywhere, write a migration for it in the same
+commit, or the next person to set up from scratch gets a schema the app cannot
+run on. That happened twice and is what
+`20260922_190000_reconcile_schema_drift` repairs.
 
 ### Changing the schema (collections/globals/fields)
 
