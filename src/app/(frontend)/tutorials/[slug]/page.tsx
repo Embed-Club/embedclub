@@ -1,5 +1,7 @@
+import { JsonLdScript } from '@/components/common/jsonLdScript'
 import { LearningDetail } from '@/components/features/resources/learningDetail'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
+import { breadcrumbJsonLd, learningArticleJsonLd } from '@/lib/structuredData'
 import config from '@/payload/payload.config'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -58,6 +60,15 @@ export default async function TutorialDetailPage({ params }: TutorialDetailPageP
   return (
     <SidebarShell>
       <MainbarShell>
+        <JsonLdScript
+          data={[
+            learningArticleJsonLd(tutorial, '/tutorials'),
+            breadcrumbJsonLd([
+              { name: 'Tutorials', path: '/tutorials' },
+              { name: tutorial.title, path: `/tutorials/${slug}` },
+            ]),
+          ]}
+        />
         <LearningDetail doc={tutorial} basePath="/tutorials" backLabel="tutorials" />
       </MainbarShell>
     </SidebarShell>

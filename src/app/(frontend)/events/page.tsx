@@ -1,5 +1,7 @@
 import { EventsPageContent } from '@/app/(frontend)/events/eventsPageContent'
+import { JsonLdScript } from '@/components/common/jsonLdScript'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
+import { eventsListJsonLd } from '@/lib/structuredData'
 import type { Event } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import type { Metadata } from 'next'
@@ -40,6 +42,7 @@ export default async function Page() {
   return (
     <SidebarShell>
       <MainbarShell>
+        <JsonLdScript data={eventsListJsonLd(events)} />
         <EventsPageContent events={events} />
       </MainbarShell>
     </SidebarShell>
