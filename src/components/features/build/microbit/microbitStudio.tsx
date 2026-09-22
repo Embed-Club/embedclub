@@ -257,7 +257,12 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
           resolves against an auto-height parent and collapses - which is what
           left the canvas 2px tall on a phone. svh is definite everywhere, and
           unlike vh it accounts for mobile browser chrome. */}
-      <div className="relative h-[70svh] min-h-[420px] overflow-hidden rounded-2xl border border-border bg-background">
+      {/* `isolate` matters: Blockly's toolbox is absolutely positioned at
+          z-index 70 and none of its own ancestors create a stacking context,
+          so it competed with the rest of the page and painted over the mobile
+          nav panel. A stacking context here keeps that 70 inside the editor
+          instead of raising every overlay on the site to outrank it. */}
+      <div className="relative isolate h-[70svh] min-h-[420px] overflow-hidden rounded-2xl border border-border bg-background">
         {mode === 'blocks' ? (
           <BlocksWorkspace
             initialState={workspace ?? STARTER_WORKSPACE}
