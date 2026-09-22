@@ -164,7 +164,10 @@ export function SiteFooter() {
               <span className="uppercase tracking-[0.3em]">Inspiring Innovation</span>
             </div>
 
-            <ul className="flex flex-wrap gap-2.5">
+            {/* `shrink-0` so the two pills stay on one line and the copyright
+                wraps instead - at tablet widths the row is tight enough that
+                otherwise LinkedIn drops below Instagram. */}
+            <ul className="flex shrink-0 flex-wrap gap-2.5">
               {SOCIALS.map(({ label, href, Icon }) => (
                 <li key={href}>
                   <a
