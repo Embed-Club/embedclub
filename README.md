@@ -64,11 +64,15 @@ Embed Club connects over **100+ Members** who share a passion for embedded syste
 ## Project Structure
 
 ```text
-/public       - Static assets (fonts, brand logos, etc.)
+/docs         - SETUP, DESIGN, PRODUCT, CHANGELOG
+/public       - Static assets (fonts, brand logos, MicroPython runtimes)
+/scripts      - Seed and maintenance scripts, run with pnpm tsx
+/tests        - Vitest integration tests and Playwright e2e
 /src
-  /app        - Next.js 15 App Router (Frontend & Payload Admin)
-  /components - Reusable React components & Layouts
-  /payload    - Payload CMS Config & Collections
+  /app        - Next.js 15 App Router (frontend + Payload admin)
+  /components - Reusable React components and layouts
+  /payload    - Payload config, collections and globals
+  /migrations - Migration-managed schema history - never edit a committed one
   /lib        - Shared utilities and type-safe helpers
   /hooks      - Custom React hooks
 ```
@@ -111,42 +115,136 @@ The build command in `package.json` includes critical steps for Payload 3.x:
 
 ### Environment Variables
 
-Ensure the following are set in production:
+Every variable is documented in **[.env.example](.env.example)**. Locally you
+need two: `DATABASE_URL` and `PAYLOAD_SECRET`. Production additionally sets
+`USE_S3_STORAGE=true` with the `S3_*` values, `NEXT_PUBLIC_SITE_URL`,
+`NEXT_PUBLIC_SUPABASE_MEDIA_URL`, and the Google service-account variables for
+the Sheets, Drive and certificate integrations.
 
-- `DATABASE_URL`: Neon/Postgres connection string.
-- `PAYLOAD_SECRET`: A secure random string.
-- `USE_S3_STORAGE` and `S3_*`: optional S3-compatible media storage configuration.
-- Google service-account or OAuth variables: optional Sheets, Drive, and certificate integrations.
+Values are never hardcoded as defaults or fallbacks, not even non-secret ones.
+If something is missing in an environment, set it there.
 
 ## Getting Started
 
-Full instructions live in **[docs/SETUP.md](docs/SETUP.md)** - environment, database
-migrations, content model, deployment, and troubleshooting. TLDR:
+You need **Node 20.9+**, **pnpm 9 or 10**, and a **Postgres database of your
+own** - a free [Neon](https://neon.tech) project or Postgres in Docker. You do
+not need the club's production database, and you should not use it.
 
 ```bash
+git clone https://github.com/Embed-Club/embedclub.git
+cd embedclub
 pnpm install
-# create .env (see docs/SETUP.md §3)
-pnpm payload migrate
-pnpm dev            # http://localhost:3000  (+ /admin)
+
+cp .env.example .env    # fill in DATABASE_URL and PAYLOAD_SECRET
+pnpm payload migrate    # build the schema
+pnpm seed:demo          # fill it with demo content
+pnpm create:admin       # first admin account, from BACKUP_ADMIN_* in .env
+
+pnpm dev                # http://localhost:3000  (admin at /admin)
 ```
+
+Full instructions, the content model, deployment and troubleshooting live in
+**[docs/SETUP.md](docs/SETUP.md)**.
+
+### The demo dataset
+
+`pnpm seed:demo` gives you a site with something on every page. It is invented
+content - no real member, photo or contact detail - and its images are drawn at
+seed time rather than committed.
+
+It is deliberately awkward, because a layout that has only seen tidy content
+hides its bugs. It covers both branches of every conditional field (events
+online and in person, resources written here and linked elsewhere), titles that
+wrap four times beside two-word ones, a description sitting exactly on the
+200-character card limit, an unbroken 70-character token, and images from
+ultra-wide to tall portrait.
+
+If a page looks wrong after seeding, that is usually the point. Fix the layout
+rather than softening the demo data. Re-running the seed is safe - it updates
+documents in place instead of duplicating them.
 
 ### Daily commands
 
-| Command               | Purpose                                                         |
-| --------------------- | --------------------------------------------------------------- |
-| `pnpm verify`         | biome + typecheck + integration tests - run before every commit |
-| `pnpm verify:full`    | verify + production build + Playwright e2e - run before merging |
-| `pnpm generate:types` | regenerate Payload types after schema changes                   |
+| Command               | Purpose                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| `pnpm dev`            | dev server at :3000, admin at /admin                             |
+| `pnpm verify`         | biome + typecheck + integration tests - run before every commit  |
+| `pnpm verify:full`    | verify + production build + Playwright e2e - run before merging  |
+| `pnpm generate:types` | regenerate Payload types after a collection or global changes    |
+| `pnpm seed:demo`      | fill an empty database with demo content                         |
+| `pnpm create:admin`   | create the first admin user - there is no sign-up screen         |
+| `pnpm payload migrate`| apply migrations in `src/migrations/`                            |
 
 ## Contributing
 
-1. Read **[AGENTS.md](AGENTS.md)** first - it defines the design language,
-   naming conventions, and hard rules. It applies to humans and to any AI
-   coding assistant you use.
-2. Branch from `main`: `git checkout -b feature/your-feature-name`
-3. `pnpm verify` before every commit; `pnpm verify:full` before the PR.
-4. Never push directly to `main` - it auto-deploys and migrates the production
-   database.
+Anyone in the club can work on this site. You do not need permission to start,
+and you do not need production access - the quickstart above gives you a full
+working copy on your own database.
+
+### Before your first change
+
+Read **[AGENTS.md](AGENTS.md)**. It defines the design language, the naming
+conventions and the rules that are not up for negotiation, and it applies to
+humans and to any AI coding assistant you use. Most rejected changes are
+rejected because they contradict it.
+
+### Workflow
+
+```bash
+git checkout -b feat/short-description   # never work on main
+# ... make your change ...
+pnpm verify                              # before every commit
+pnpm verify:full                         # before opening the PR
+```
+
+Then open a pull request against `main` describing what changed and why. Never
+push straight to `main`: it auto-deploys and runs migrations against the
+production database.
+
+### What reviewers will look for
+
+- **`pnpm verify` passes.** Biome, TypeScript and the integration tests. No
+  `as any`, `@ts-ignore`, `ignoreBuildErrors` or lint suppressions without a
+  written reason in a comment.
+- **camelCase file and folder names.** `resourceCutoutCard.tsx`, not
+  `resource-cutout-card.tsx`. Components stay PascalCase inside the file. The
+  `shadcn` CLI emits kebab-case - rename after adding.
+- **No plain content in JSX.** Page copy lives in Payload, not hardcoded. If
+  you need a new field, extend the collection.
+- **Hyphens, never dashes.** Use a plain `-`. The em dash and en dash are
+  banned everywhere: page copy, CMS content, comments, commit messages, docs.
+  `scripts/replaceEmDashes.ts` sweeps the database if one gets in.
+- **Design tokens only.** Colours come from `hsl(var(--primary))` and friends
+  in `globals.css`. No new hex values, no new accent hues.
+- **Schema changes ship complete.** Edit the collection, then
+  `pnpm generate:types`, then write a migration, and commit all three together.
+  Never edit a migration that is already committed.
+
+### Working on the database schema
+
+Migrations are the only source of truth for the schema. A change applied by
+hand and not written down means the next person to set up from scratch gets a
+database the app cannot run on - which has already happened twice.
+
+After any schema work, prove a fresh database still matches production by
+running the migrations against an empty one and comparing. `docs/SETUP.md` §4
+has the workflow.
+
+### Where things live
+
+| You want to change...          | Look in                                        |
+| ------------------------------ | ---------------------------------------------- |
+| A page's layout                | `src/app/(frontend)/<route>/`                  |
+| A reusable component           | `src/components/common/` or `features/<domain>/` |
+| What editors can enter         | `src/payload/collections/` or `globals/`       |
+| The colours, fonts or spacing  | `src/app/(frontend)/globals.css` + docs/DESIGN.md |
+| Demo content for local work    | `scripts/seedDemo.ts`                          |
+
+### Reporting something broken
+
+Open an issue with what you did, what you expected and what happened. A
+screenshot at the width you saw it is worth more than a description - several
+of the bugs fixed so far were only visible at one screen size.
 
 ---
 
