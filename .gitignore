@@ -8,7 +8,7 @@ jspm_packages/
 # Next.js build output
 .next/
 out/
-build/
+/build/
 dist/
 
 # Payload CMS generated files
