@@ -41,6 +41,12 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },
+  // Search Console's "HTML tag" verification. Set GOOGLE_SITE_VERIFICATION in
+  // the deployment environment; without it the tag is simply absent, which is
+  // the right state for a preview deploy or a local run.
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   icons: {
     icon: [{ url: '/favicon.ico' }, { url: '/embedClubLogo-Dark.svg', type: 'image/svg+xml' }],
     apple: '/embedClubLogo-Dark.svg',

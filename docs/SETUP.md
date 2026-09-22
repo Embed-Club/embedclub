@@ -89,6 +89,10 @@ E2E tests boot their own dev server; make sure port 3000 is free. First run:
 - Required env vars in Vercel (Production): `DATABASE_URL` (via Neon
   integration), `PAYLOAD_SECRET`, `USE_S3_STORAGE=true`, `S3_ENDPOINT`,
   `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`.
+- Optional: `GOOGLE_SITE_VERIFICATION` - the token from Search Console's
+  "HTML tag" method, without the surrounding markup. Only needed while
+  verifying a URL-prefix property; leave it set afterwards so a re-check
+  never fails.
 - `USE_S3_STORAGE` is deliberately NOT tied to NODE_ENV - local production
   builds (`pnpm build:app && pnpm start`) keep using local disk.
 
