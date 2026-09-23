@@ -2,12 +2,13 @@
 
 import { Button } from '@/components/ui/button'
 import { useMicrobitUsb } from '@/hooks/useMicrobitUsb'
-import { STARTER_WORKSPACE } from '@/lib/microbit/blocks'
+import { EXAMPLES, type MicrobitExample, STARTER_EXAMPLE } from '@/lib/microbit/examples'
 import { buildHex } from '@/lib/microbit/hexBuilder'
 import { cn } from '@/lib/utils'
 import { Blocks, Code2, Download, Plug, RotateCcw, Unplug, Usb, Zap } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BlocksWorkspace } from './blocksWorkspace'
+import { ExamplesPanel } from './examplesPanel'
 import { PythonEditor } from './pythonEditor'
 import { SerialConsole } from './serialConsole'
 
@@ -26,6 +27,12 @@ interface SavedProject {
   python: string
   /** True once the Python has been edited by hand and no longer mirrors the blocks. */
   detached: boolean
+  /**
+   * The Python of whatever the program started as - a fresh project or the
+   * last example loaded. Anything different means the student has changed
+   * it, and loading an example over it should ask first.
+   */
+  baseline: string
 }
 
 interface MicrobitStudioProps {
@@ -65,6 +72,11 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
   const [workspace, setWorkspace] = useState<object | null>(initial.workspace)
   const [python, setPython] = useState(initial.python)
   const [detached, setDetached] = useState(initial.detached)
+  const [baseline, setBaseline] = useState(initial.baseline)
+  // Bumped to remount the canvas with a different program.
+  const [canvasKey, setCanvasKey] = useState(0)
+  // Set when fresh blocks are loaded; their first output becomes the baseline.
+  const takeBaselineRef = useRef(initial.workspace === null)
   // The Python the blocks last produced, kept apart from the editable text so
   // we can tell whether the text has been changed by hand.
   const generatedRef = useRef(initial.python)
@@ -75,13 +87,17 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
   const usb = useMicrobitUsb()
 
   useEffect(() => {
-    writeProject(storageKey, { mode, workspace, python, detached })
-  }, [storageKey, mode, workspace, python, detached])
+    writeProject(storageKey, { mode, workspace, python, detached, baseline })
+  }, [storageKey, mode, workspace, python, detached, baseline])
 
   const onBlocksChange = useCallback(
     (state: object, generated: string) => {
       setWorkspace(state)
       generatedRef.current = generated
+      if (takeBaselineRef.current) {
+        takeBaselineRef.current = false
+        setBaseline(generated)
+      }
       if (!detached) setPython(generated)
     },
     [detached],
@@ -103,6 +119,23 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
       setPython(generatedRef.current)
     }
     setMode(next)
+  }
+
+  const isEdited = () =>
+    (mode === 'blocks' ? generatedRef.current : python).trim() !== baseline.trim()
+
+  const loadExample = (example: MicrobitExample) => {
+    if (mode === 'blocks') {
+      takeBaselineRef.current = true
+      setWorkspace(example.blocks)
+      setDetached(false)
+      setCanvasKey((key) => key + 1)
+    } else {
+      // Hand-written Python has no blocks behind it, so it starts detached.
+      setPython(example.python)
+      setDetached(true)
+      setBaseline(example.python)
+    }
   }
 
   const resetProject = () => {
@@ -265,7 +298,8 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
       <div className="relative isolate h-[70svh] min-h-[420px] overflow-hidden rounded-2xl border border-border bg-background">
         {mode === 'blocks' ? (
           <BlocksWorkspace
-            initialState={workspace ?? STARTER_WORKSPACE}
+            key={canvasKey}
+            initialState={workspace ?? STARTER_EXAMPLE.blocks}
             onChange={onBlocksChange}
           />
         ) : (
@@ -274,6 +308,8 @@ function Studio({ storageKey, initial }: { storageKey: string; initial: SavedPro
       </div>
 
       {usb.supported && <SerialConsole lines={usb.serial} onClear={usb.clearSerial} />}
+
+      <ExamplesPanel examples={EXAMPLES} mode={mode} isEdited={isEdited} onLoad={loadExample} />
     </div>
   )
 }
@@ -319,6 +355,7 @@ function readProject(key: string): SavedProject {
     workspace: null,
     python: '',
     detached: false,
+    baseline: '',
   }
   try {
     const raw = window.localStorage.getItem(key)
@@ -329,6 +366,7 @@ function readProject(key: string): SavedProject {
       workspace: parsed.workspace ?? null,
       python: typeof parsed.python === 'string' ? parsed.python : '',
       detached: Boolean(parsed.detached),
+      baseline: typeof parsed.baseline === 'string' ? parsed.baseline : '',
     }
   } catch {
     return fallback
