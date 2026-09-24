@@ -66,6 +66,11 @@ export async function getSection(containerSlug: string, sectionSlug: string): Pr
  * rather than the two halves means callers keep using `form.steps` and
  * `form.id` exactly as they did: the id is still the section's, so a response
  * is recorded against the section that collected it.
+ *
+ * The Google Sheet and Drive folder are inherited the same way. A section is
+ * almost never given its own - members set them once on the parent - and a
+ * section that fell back to "none" silently dropped its photo uploads and
+ * never reached the sheet.
  */
 export async function withResolvedSteps(form: Form): Promise<Form> {
   if (!form.sectionOf) return form
@@ -73,7 +78,17 @@ export async function withResolvedSteps(form: Form): Promise<Form> {
   const parent =
     typeof form.sectionOf === 'object' ? form.sectionOf : await getFormById(form.sectionOf)
 
-  return { ...form, steps: parent?.steps ?? [] }
+  return inheritFromParent(form, parent)
+}
+
+/** A section merged with what it takes from its parent. Pure, for callers that already hold both. */
+export function inheritFromParent(form: Form, parent: Form | null | undefined): Form {
+  return {
+    ...form,
+    steps: parent?.steps ?? [],
+    sheetId: form.sheetId?.trim() || parent?.sheetId || null,
+    driveFolderId: form.driveFolderId?.trim() || parent?.driveFolderId || null,
+  }
 }
 
 /** Used when a relationship came back as a bare id rather than a document. */

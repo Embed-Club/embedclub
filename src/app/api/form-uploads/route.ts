@@ -1,3 +1,4 @@
+import { withResolvedSteps } from '@/lib/formQueries'
 import { driveConfigured, resolveDriveFolderId, uploadFormFile } from '@/lib/googleDrive'
 import { isRateLimited } from '@/lib/rateLimit'
 import config from '@/payload/payload.config'
@@ -118,7 +119,10 @@ export async function POST(req: NextRequest) {
       limit: 1,
       depth: 0,
     })
-    const formDoc = found.docs[0]
+    // A section asks its parent's questions and uses its parent's folder, so
+    // look both up there - checking the section's own (empty) steps rejected
+    // every photo on a sectioned form.
+    const formDoc = found.docs[0] ? await withResolvedSteps(found.docs[0]) : undefined
 
     if (!formDoc)
       return NextResponse.json({ error: 'This form no longer exists.' }, { status: 404 })

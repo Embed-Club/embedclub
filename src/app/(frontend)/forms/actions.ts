@@ -3,6 +3,7 @@
 import { dispatchCertificatesForForm } from '@/lib/certificateDispatch'
 import { withResolvedSteps } from '@/lib/formQueries'
 import { driveConfigured, getDriveFileMeta } from '@/lib/googleDrive'
+import { syncPendingSubmissions } from '@/lib/googleSheets'
 import { isRateLimited } from '@/lib/rateLimit'
 import { USN_FORMAT_HINT, isValidUsn, normalizeUsn } from '@/lib/usn'
 import type { Form } from '@/payload/payload-types'
@@ -282,6 +283,20 @@ export async function submitForm(
         collection: 'form-submissions',
         overrideAccess: true,
         data,
+      })
+    }
+
+    // Mirror to the form's Google Sheet once the response is on its way back,
+    // so the sheet shows it within seconds instead of at the next cron run -
+    // which GitHub Actions stretches to hours. A failure here only means the
+    // cron picks it up later; the response itself is already safe.
+    if (form.sheetId || process.env.GOOGLE_SHEETS_ID) {
+      after(async () => {
+        try {
+          await syncPendingSubmissions(20, form.id)
+        } catch (err) {
+          console.error('[Forms] Sheet sync after submit failed:', err)
+        }
       })
     }
 

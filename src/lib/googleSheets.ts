@@ -3,7 +3,14 @@ import 'server-only'
 import type { Form, FormSubmission } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
-import { SHEETS_SCOPE, accessToken, googleCredentialsPresent } from './googleAuth'
+import { inheritFromParent } from './formQueries'
+import {
+  SHEETS_SCOPE,
+  accessToken,
+  googleCredentialsPresent,
+  oauthAccessToken,
+  oauthRefreshTokenPresent,
+} from './googleAuth'
 import { driveViewUrl } from './googleDrive'
 
 /**
@@ -30,19 +37,32 @@ import { driveViewUrl } from './googleDrive'
 const BASE_HEADERS = ['Submission ID', 'Submitted At', 'Name', 'Email'] as const
 
 export function sheetsCredentialsPresent(): boolean {
-  return googleCredentialsPresent()
+  return oauthRefreshTokenPresent() || googleCredentialsPresent()
 }
 
+/**
+ * Calls go out as the club's own Google account first (the refresh token that
+ * Drive uploads already use - its `drive` scope covers Sheets). That account
+ * made the sheet, so there is nothing to share. The service account is the
+ * fallback, and only reaches sheets shared with its address: a sheet that was
+ * never shared with it failed every sync with a 403.
+ */
 async function sheetsFetch(path: string, init?: RequestInit): Promise<Response> {
-  const token = await accessToken(SHEETS_SCOPE)
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${path}`, {
-    ...init,
-    headers: {
-      ...init?.headers,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  })
+  const call = (token: string) =>
+    fetch(`https://sheets.googleapis.com/v4/spreadsheets/${path}`, {
+      ...init,
+      headers: {
+        ...init?.headers,
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+  if (oauthRefreshTokenPresent()) {
+    const res = await call(await oauthAccessToken())
+    if ((res.status !== 403 && res.status !== 404) || !googleCredentialsPresent()) return res
+  }
+  return call(await accessToken(SHEETS_SCOPE))
 }
 
 /** Current header row, or an empty list when the sheet is untouched. */
@@ -201,14 +221,50 @@ function resolveSheetId(form: Form): string | null {
 }
 
 /**
+ * Every form whose responses go to a sheet, keyed by id, with sections already
+ * merged with their parent (questions, and the sheet itself when the section
+ * has none of its own).
+ */
+async function mirroredForms(onlyFormId?: number): Promise<Map<number, Form>> {
+  const payload = await getPayload({ config })
+  const all = await payload.find({
+    collection: 'forms',
+    limit: 1000,
+    depth: 0,
+    pagination: false,
+    overrideAccess: true,
+  })
+  const byId = new Map(all.docs.map((form) => [form.id, form]))
+
+  const out = new Map<number, Form>()
+  for (const form of all.docs) {
+    if (onlyFormId !== undefined && form.id !== onlyFormId) continue
+    const parentId = typeof form.sectionOf === 'object' ? form.sectionOf?.id : form.sectionOf
+    const resolved = parentId ? inheritFromParent(form, byId.get(parentId)) : form
+    if (resolveSheetId(resolved)) out.set(form.id, resolved)
+  }
+  return out
+}
+
+/**
  * Push submissions that have not reached their form's sheet yet.
  *
  * Idempotent: a submission is only marked synced once its row is written, and
  * the submission id leads every row, so a re-run can never double-append.
- * Deliberately not done during submit - a slow or rate-limited Sheets call
- * should never make a student wait, nor risk their response if Google is down.
+ *
+ * Only submissions of forms that actually have a sheet are fetched. It used to
+ * take the oldest 200 unsynced submissions of *any* form and skip the ones
+ * with no sheet - and the two thousand responses imported from the old Google
+ * Forms have no sheet, never get stamped, and so filled every batch forever.
+ * A form set up with a sheet afterwards never had a row reach it.
+ *
+ * Runs straight after each submit (for that form only) and again from the
+ * cron, which is the retry path when Google was down or slow.
  */
-export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResult> {
+export async function syncPendingSubmissions(
+  limit = 200,
+  onlyFormId?: number,
+): Promise<SheetSyncResult> {
   if (!sheetsCredentialsPresent()) {
     return {
       synced: 0,
@@ -217,12 +273,17 @@ export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResu
     }
   }
 
+  const forms = await mirroredForms(onlyFormId)
+  if (forms.size === 0) return { synced: 0, failed: 0 }
+
   const payload = await getPayload({ config })
   const pending = await payload.find({
     collection: 'form-submissions',
-    where: { sheetSyncedAt: { exists: false } },
+    where: {
+      and: [{ sheetSyncedAt: { exists: false } }, { form: { in: [...forms.keys()] } }],
+    },
     limit,
-    depth: 1,
+    depth: 0,
     sort: 'createdAt',
     overrideAccess: true,
   })
@@ -232,8 +293,9 @@ export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResu
   // Group by form so headers are reconciled once per sheet, not per row.
   const byForm = new Map<number, { form: Form; submissions: FormSubmission[] }>()
   for (const submission of pending.docs) {
-    const form = submission.form
-    if (typeof form !== 'object' || form === null) continue
+    const formId = typeof submission.form === 'object' ? submission.form?.id : submission.form
+    const form = formId ? forms.get(formId) : undefined
+    if (!form) continue
     const entry = byForm.get(form.id) ?? { form, submissions: [] }
     entry.submissions.push(submission)
     byForm.set(form.id, entry)
@@ -244,7 +306,7 @@ export async function syncPendingSubmissions(limit = 200): Promise<SheetSyncResu
 
   for (const { form, submissions } of byForm.values()) {
     const sheetId = resolveSheetId(form)
-    if (!sheetId) continue // this form simply isn't mirrored
+    if (!sheetId) continue
 
     const uploads = uploadLabels(form)
 
