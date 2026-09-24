@@ -1,4 +1,5 @@
 import { previewCertificate, sendCertificate } from '@/lib/appsScript'
+import { fillPlaceholders } from '@/lib/certificateDispatch'
 import { applyNameCase } from '@/lib/textCase'
 import config from '@/payload/payload.config'
 import { type NextRequest, NextResponse } from 'next/server'
@@ -7,15 +8,11 @@ import { getPayload } from 'payload'
 export const dynamic = 'force-dynamic'
 
 type TestRequest = {
-  formId?: number
+  certificateId?: number
   mode?: 'preview' | 'email'
   name?: string
   email?: string
   placeholders?: Record<string, string>
-}
-
-function fillPlaceholders(template: string, name: string, event: string): string {
-  return template.replaceAll('{{name}}', name).replaceAll('{{event}}', event)
 }
 
 export async function POST(req: NextRequest) {
@@ -30,19 +27,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
   }
 
-  if (!body.formId || !body.name?.trim()) {
-    return NextResponse.json({ error: 'A form and test name are required.' }, { status: 400 })
-  }
-
-  const form = await payload.findByID({ collection: 'forms', id: body.formId, depth: 0 })
-  if (!form.showCertificate) {
+  if (!body.certificateId || !body.name?.trim()) {
     return NextResponse.json(
-      { error: 'Enable certificate delivery on this form before testing it.' },
+      { error: 'Save the certificate first, and enter a test name.' },
       { status: 400 },
     )
   }
 
-  const templateId = form.certificateTemplateDriveId?.trim()
+  const certificate = await payload.findByID({
+    collection: 'certificates',
+    id: body.certificateId,
+    depth: 1,
+    overrideAccess: true,
+  })
+
+  const templateId = certificate.templateDriveId?.trim()
   if (!templateId) {
     return NextResponse.json(
       { error: 'Add a Google Slides certificate template first.' },
@@ -57,34 +56,27 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     )
   }
-  if (
-    mode === 'email' &&
-    (!form.certificateEmailSubject?.trim() || !form.certificateEmailBody?.trim())
-  ) {
-    return NextResponse.json(
-      { error: 'Add an email subject and body before sending a test certificate.' },
-      { status: 400 },
-    )
-  }
 
-  const certificateName = applyNameCase(body.name.trim(), form.certificateNameCase)
-  const emailName = applyNameCase(body.name.trim(), form.certificateEmailNameCase)
+  const form = typeof certificate.form === 'object' ? certificate.form : null
+  const eventName = certificate.eventName?.trim() || form?.title || certificate.title || ''
+  const certificateName = applyNameCase(body.name.trim(), certificate.nameCase)
+  const emailName = applyNameCase(body.name.trim(), certificate.emailNameCase)
   const placeholders = {
     name: certificateName,
-    event: form.title,
+    event: eventName,
     ...(body.placeholders ?? {}),
   }
   const request = {
     certificateName,
     emailName,
-    formTitle: form.title,
+    formTitle: eventName,
     templateId,
     placeholders,
-    emailSubject: form.certificateEmailSubject
-      ? fillPlaceholders(form.certificateEmailSubject, emailName, form.title)
+    emailSubject: certificate.emailSubject
+      ? fillPlaceholders(certificate.emailSubject, emailName, eventName)
       : undefined,
-    emailBody: form.certificateEmailBody
-      ? fillPlaceholders(form.certificateEmailBody, emailName, form.title)
+    emailBody: certificate.emailBody
+      ? fillPlaceholders(certificate.emailBody, emailName, eventName)
       : undefined,
   }
 

@@ -3,6 +3,7 @@ import 'server-only'
 import type { Form, FormSubmission } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
+import { answerLabels } from './formAnswers'
 import { inheritFromParent } from './formQueries'
 import {
   SHEETS_SCOPE,
@@ -146,22 +147,6 @@ async function writeRow(sheetId: string, row: number, values: string[]): Promise
   if (!res.ok) {
     throw new Error(`Sheets row update failed (${res.status}): ${await res.text()}`)
   }
-}
-
-/**
- * The form's answerable questions, in order. `image` rows are decoration the
- * member placed between questions - they hold no answer, so they get no
- * column.
- */
-function questionLabels(form: Form): string[] {
-  const labels: string[] = []
-  for (const step of form.steps ?? []) {
-    for (const field of step.fields ?? []) {
-      if (field.fieldType === 'image') continue
-      if (field.label && !labels.includes(field.label)) labels.push(field.label)
-    }
-  }
-  return labels
 }
 
 /** Labels whose answer is a Drive file id rather than text. */
@@ -313,7 +298,7 @@ export async function syncPendingSubmissions(
     let headers: string[]
     let rowIndex: Map<string, number>
     try {
-      headers = await reconcileHeaders(sheetId, [...BASE_HEADERS, ...questionLabels(form)])
+      headers = await reconcileHeaders(sheetId, [...BASE_HEADERS, ...answerLabels(form.steps)])
       rowIndex = await readRowIndex(sheetId, headers)
     } catch (error) {
       console.error(`[Sheets] Header setup failed for form "${form.slug}":`, error)

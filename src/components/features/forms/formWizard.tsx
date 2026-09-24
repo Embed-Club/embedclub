@@ -1,45 +1,38 @@
 'use client'
 
-import { type FormAnswers, type SubmitFormResult, submitForm } from '@/app/(frontend)/forms/actions'
-import { cutoutCardSurfaceShadowClassName } from '@/components/common/cutoutCard'
+import { type SubmitFormResult, submitForm } from '@/app/(frontend)/forms/actions'
 import { ScrollContainerContext } from '@/components/layout/scrollContainerContext'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radioGroup'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import {
+  type FormAnswer,
+  type FormAnswers,
+  answerError,
+  isDisplayOnly,
+  nextStep,
+} from '@/lib/formAnswers'
 import { USN_FORMAT_HINT, isValidUsn } from '@/lib/usn'
 import { cn } from '@/lib/utils'
 import type { Form } from '@/payload/payload-types'
-import { ArrowLeft, ArrowRight, Check, ChevronRight, ImagePlus, Loader2 } from 'lucide-react'
-import { useContext, useRef, useState } from 'react'
+import { CheckCircle2, Loader2 } from 'lucide-react'
+import { type ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import { FormHeader } from './formHeader'
 import { FormImage } from './formImage'
-
-type Step = NonNullable<Form['steps']>[number]
-type Field = NonNullable<Step['fields']>[number]
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-/**
- * Answers are keyed by the field row's Payload id, which is stable across
- * label edits. (It replaced the Google Form `entry.<id>` key in 2026-07.)
- */
-function fieldKey(field: Field): string {
-  return field.id ?? ''
-}
+import { FormQuestion } from './formQuestion'
+import { LinkifiedText } from './linkifiedText'
 
 /**
  * Fallback for the consent line, used until a member writes one in the CMS.
- * The label appends a link to the policy, so the sentence is written to lead
- * into it rather than to end.
+ * The label appends a link to the policy, so the sentence leads into it.
  */
 const DEFAULT_CONSENT_NOTICE =
   'I agree that Embed Club may store the details I have entered here, and use them to contact me about this event and to issue my certificate. See the'
@@ -48,85 +41,136 @@ interface FormWizardProps {
   form: Form
   /** The consent sentence from the Legal Pages global. */
   consentNotice?: string | null
+  /** Overrides the header title - a section shows its own label. */
+  title?: string
+  /** Above the header title - a section links back to its parent here. */
+  above?: ReactNode
 }
 
-export function FormWizard({ form, consentNotice }: FormWizardProps) {
+const draftKey = (slug: string) => `form-draft:${slug}`
+
+/**
+ * A form, the way Google Forms runs one: a header card, one card per question,
+ * pages with a progress bar, "go to page based on answer", and Back/Next that
+ * retrace the route actually taken.
+ *
+ * Unsent answers are kept in this browser, so a respondent who reloads or
+ * comes back later picks up where they left off. Uploaded file ids are kept
+ * too; the server re-verifies them on submit, so a stale one is just asked for
+ * again.
+ */
+export function FormWizard({ form, consentNotice, title, above }: FormWizardProps) {
   const scrollContainer = useContext(ScrollContainerContext)
   const steps = form.steps ?? []
-  const [stepIndex, setStepIndex] = useState(0)
+  // The pages visited so far, in order - Back pops this rather than going to
+  // page n-1, because a branch may have skipped pages in between.
+  const [history, setHistory] = useState<number[]>([0])
   const [answers, setAnswers] = useState<FormAnswers>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
-  // Field ids with a photo still going to Drive. Moving on mid-upload would
-  // submit an answer whose file does not exist yet.
   const [uploading, setUploading] = useState<Set<string>>(new Set())
   const [result, setResult] = useState<SubmitFormResult | null>(null)
-  // Bots fill every field they find; people never see this one.
   const [honeypot, setHoneypot] = useState('')
-  // Consent is per-submission, not a question on the form: it is asked once, on
-  // the last step, right above the button that sends the answers.
   const [consented, setConsented] = useState(false)
   const [consentError, setConsentError] = useState(false)
+  const [confirmClear, setConfirmClear] = useState(false)
+  const topRef = useRef<HTMLDivElement>(null)
+  const restored = useRef(false)
 
-  const step = steps[stepIndex]
-  const isLast = stepIndex === steps.length - 1
+  const page = history[history.length - 1] ?? 0
+  const step = steps[page]
+  const next = nextStep(steps, page, answers)
+  const isLast = next === 'submit'
   const busyUploading = uploading.size > 0
+  const hasRequired = steps.some((s) => (s.fields ?? []).some((f) => f.required))
+  const headerTitle = title ?? form.title
 
-  const scrollToFormTop = () => {
-    scrollContainer?.scrollTo({ top: 0, behavior: 'smooth' })
+  // Restore a draft after mount - reading storage during render would differ
+  // from the server's HTML.
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(draftKey(form.slug))
+      if (saved) setAnswers(JSON.parse(saved) as FormAnswers)
+    } catch {
+      // Private mode or blocked storage: start empty.
+    }
+    restored.current = true
+  }, [form.slug])
+
+  useEffect(() => {
+    if (!restored.current) return
+    try {
+      if (Object.keys(answers).length === 0) window.localStorage.removeItem(draftKey(form.slug))
+      else window.localStorage.setItem(draftKey(form.slug), JSON.stringify(answers))
+    } catch {
+      // Storage is a convenience; the form works without it.
+    }
+  }, [answers, form.slug])
+
+  const scrollTo = (el: Element | null) => {
+    if (!el) return
+    if (scrollContainer) {
+      const top =
+        el.getBoundingClientRect().top -
+        scrollContainer.getBoundingClientRect().top +
+        scrollContainer.scrollTop -
+        24
+      scrollContainer.scrollTo({ top, behavior: 'smooth' })
+    } else {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
-  const setAnswer = (key: string, value: string | string[]) => {
+  const setAnswer = (key: string, value: FormAnswer) => {
     setAnswers((prev) => ({ ...prev, [key]: value }))
     setErrors((prev) => {
       if (!prev[key]) return prev
-      const next = { ...prev }
-      delete next[key]
-      return next
+      const copy = { ...prev }
+      delete copy[key]
+      return copy
     })
   }
 
-  const validateStep = (): boolean => {
-    const next: Record<string, string> = {}
+  const validatePage = (): boolean => {
+    const found: Record<string, string> = {}
     for (const field of step?.fields ?? []) {
-      // Image rows are decoration - nothing to fill in, nothing to check.
-      if (field.fieldType === 'image') continue
-      const key = fieldKey(field)
-      const value = answers[key]
-      const empty =
-        value === undefined || value === '' || (Array.isArray(value) && value.length === 0)
-      if (field.required && empty) {
-        next[key] = `${field.label} is required`
-      } else if (
-        field.fieldType === 'email' &&
-        typeof value === 'string' &&
-        value !== '' &&
-        !EMAIL_RE.test(value)
-      ) {
-        next[key] = 'Enter a valid email address'
-      } else if (
-        field.role === 'usn' &&
-        typeof value === 'string' &&
-        value !== '' &&
-        !isValidUsn(value)
-      ) {
-        // Checked here as well as on the server so a typo is caught on the step
-        // it was made on, rather than after the whole form is submitted.
-        next[key] = `Enter a valid USN - ${USN_FORMAT_HINT}`
+      if (isDisplayOnly(field) || !field.id) continue
+      const value = answers[field.id]
+      const problem = answerError(field, value)
+      if (problem) found[field.id] = problem
+      else if (field.role === 'usn' && typeof value === 'string' && value && !isValidUsn(value)) {
+        found[field.id] = `Enter a valid USN - ${USN_FORMAT_HINT}`
       }
     }
-    setErrors(next)
-    return Object.keys(next).length === 0
+    setErrors(found)
+    const first = Object.keys(found)[0]
+    if (first) scrollTo(document.querySelector(`[data-question="${first}"]`))
+    return !first
   }
 
-  const handleNext = () => {
-    if (!validateStep()) return
-    setStepIndex((i) => Math.min(steps.length - 1, i + 1))
-    scrollToFormTop()
+  const goNext = () => {
+    if (!validatePage() || next === 'submit') return
+    setHistory((h) => [...h, next])
+    scrollTo(topRef.current)
+  }
+
+  const goBack = () => {
+    setErrors({})
+    setHistory((h) => (h.length > 1 ? h.slice(0, -1) : h))
+    scrollTo(topRef.current)
+  }
+
+  const clearForm = () => {
+    setAnswers({})
+    setErrors({})
+    setHistory([0])
+    setConsented(false)
+    setConfirmClear(false)
+    scrollTo(topRef.current)
   }
 
   const handleSubmit = async () => {
-    if (!validateStep()) return
+    if (!validatePage()) return
     if (!consented) {
       setConsentError(true)
       return
@@ -134,515 +178,251 @@ export function FormWizard({ form, consentNotice }: FormWizardProps) {
     setSubmitting(true)
     const res = await submitForm(form.slug, answers, honeypot, consented)
     setSubmitting(false)
+
     if (res.success) {
       setResult(res)
-    } else if (res.consentError) {
-      setConsentError(true)
-    } else if (res.fieldErrors && Object.keys(res.fieldErrors).length > 0) {
-      setErrors(res.fieldErrors)
-      // jump back to the first step containing an error
-      const errKeys = Object.keys(res.fieldErrors)
-      const idx = steps.findIndex((s) =>
-        (s.fields ?? []).some((f) => errKeys.includes(fieldKey(f))),
-      )
-      if (idx >= 0) {
-        setStepIndex(idx)
-        scrollToFormTop()
-      }
-    } else {
-      setResult(res)
+      try {
+        window.localStorage.removeItem(draftKey(form.slug))
+      } catch {}
+      scrollTo(topRef.current)
+      return
     }
+    if (res.consentError) {
+      setConsentError(true)
+      return
+    }
+    if (res.fieldErrors && Object.keys(res.fieldErrors).length > 0) {
+      setErrors(res.fieldErrors)
+      const keys = Object.keys(res.fieldErrors)
+      const at = history.find((p) =>
+        (steps[p]?.fields ?? []).some((f) => keys.includes(f.id ?? '')),
+      )
+      if (at !== undefined) setHistory((h) => h.slice(0, h.indexOf(at) + 1))
+      return
+    }
+    setResult(res)
   }
 
-  // ── Success / failure screen ────────────────────────────────────────────
   if (result) {
     return (
-      <div
-        className={cn(
-          'rounded-2xl bg-card p-8 md:p-12 text-center space-y-6',
-          cutoutCardSurfaceShadowClassName,
-        )}
-      >
-        <div
-          className={cn(
-            'mx-auto flex h-16 w-16 items-center justify-center rounded-full',
-            result.success ? 'bg-primary/15 text-primary' : 'bg-destructive/15 text-destructive',
-          )}
-        >
-          <Check className="h-8 w-8" />
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-[28px] font-extrabold">
-            {result.success ? 'Response Recorded' : 'Submission Failed'}
-          </h2>
-          <p className="text-muted-foreground max-w-md mx-auto">{result.message}</p>
-        </div>
-        {!result.success && (
-          <Button onClick={() => setResult(null)} variant="outline">
-            Try again
-          </Button>
-        )}
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-8">
-      {/* ── Stepper header ─────────────────────────────────────────────── */}
-      <nav aria-label="Form steps" className="flex items-center justify-center gap-2 md:gap-4">
-        {steps.map((s, i) => {
-          const state = i < stepIndex ? 'done' : i === stepIndex ? 'current' : 'todo'
-          return (
-            <div key={s.id ?? i} className="flex items-center gap-2 md:gap-4 min-w-0">
-              <div className="flex items-center gap-3 min-w-0">
-                <span
-                  className={cn(
-                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors',
-                    state === 'current' && 'bg-primary text-primary-foreground',
-                    state === 'done' && 'bg-primary/20 text-primary',
-                    state === 'todo' && 'bg-muted text-muted-foreground',
-                  )}
-                >
-                  {state === 'done' ? <Check className="h-4 w-4" /> : i + 1}
-                </span>
-                {/* labels: current step only on mobile, all on desktop */}
-                <span
-                  className={cn(
-                    'min-w-0 flex-col leading-tight',
-                    state === 'current' ? 'flex' : 'hidden md:flex',
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'truncate text-sm font-semibold',
-                      state === 'todo' && 'text-muted-foreground',
-                    )}
-                  >
-                    {s.stepTitle}
-                  </span>
-                  {s.stepDescription && (
-                    <span className="truncate text-xs text-muted-foreground">
-                      {s.stepDescription}
-                    </span>
-                  )}
-                </span>
+      <div ref={topRef} className="space-y-4">
+        <FormHeader title={headerTitle} headerImage={form.headerImage} above={above} />
+        <section className="rounded-2xl border border-border bg-card p-6 md:p-8" aria-live="polite">
+          {result.success ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-7 w-7 shrink-0 text-primary" />
+                <h2 className="text-xl font-extrabold">Response recorded</h2>
               </div>
-              {i < steps.length - 1 && (
-                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50" />
-              )}
-            </div>
-          )
-        })}
-      </nav>
-
-      {/* ── Step card ──────────────────────────────────────────────────── */}
-      <div className={cn('rounded-2xl bg-card p-6 md:p-10', cutoutCardSurfaceShadowClassName)}>
-        <div className="mb-8 space-y-4">
-          <div className="space-y-1">
-            <h2 className="text-[24px] md:text-[30px] font-extrabold">{step?.stepTitle}</h2>
-            {step?.stepDescription && (
-              <p className="text-sm text-muted-foreground">{step.stepDescription}</p>
-            )}
-          </div>
-          <FormImage media={step?.stepImage} slot="step" />
-        </div>
-
-        {/* Honeypot: off-screen rather than display:none, which some bots skip.
-            aria-hidden + tabIndex -1 keep it away from real users entirely.
-
-            The name is deliberately meaningless. It used to be
-            "company-website", which is exactly what a browser or password
-            manager matches when it autofills an organisation URL - and a filled
-            honeypot silently bins the submission. The data-* attributes opt out
-            of the major password managers for the same reason. */}
-        <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
-          <label htmlFor="hp-control">Leave this field empty</label>
-          <input
-            id="hp-control"
-            name="hp-control"
-            type="text"
-            tabIndex={-1}
-            autoComplete="off"
-            data-1p-ignore
-            data-lpignore="true"
-            data-form-type="other"
-            value={honeypot}
-            onChange={(e) => setHoneypot(e.target.value)}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-          {(step?.fields ?? []).map((field) => (
-            <WizardField
-              key={fieldKey(field)}
-              field={field}
-              formSlug={form.slug}
-              value={answers[fieldKey(field)]}
-              error={errors[fieldKey(field)]}
-              onChange={(v) => setAnswer(fieldKey(field), v)}
-              onUploadingChange={(busy) =>
-                setUploading((prev) => {
-                  const next = new Set(prev)
-                  if (busy) next.add(fieldKey(field))
-                  else next.delete(fieldKey(field))
-                  return next
-                })
-              }
-            />
-          ))}
-        </div>
-
-        {/* ── Consent ────────────────────────────────────────────────────
-            Only on the last step, so it sits with the button that actually
-            sends the answers rather than being agreed to three steps early. */}
-        {isLast && (
-          <div
-            className={cn(
-              'mt-10 flex items-start gap-3 rounded-xl border p-4',
-              consentError ? 'border-destructive bg-destructive/5' : 'border-border bg-muted/40',
-            )}
-          >
-            <Checkbox
-              id="form-consent"
-              checked={consented}
-              onCheckedChange={(checked) => {
-                setConsented(checked === true)
-                if (checked === true) setConsentError(false)
-              }}
-              className="mt-0.5"
-              aria-describedby={consentError ? 'form-consent-error' : undefined}
-            />
-            <div className="space-y-1">
-              <Label htmlFor="form-consent" className="text-sm font-normal leading-relaxed">
-                {consentNotice?.trim() || DEFAULT_CONSENT_NOTICE}{' '}
-                <a
-                  href="/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary underline underline-offset-2"
-                >
-                  Privacy Policy
-                </a>
-                .
-              </Label>
-              {consentError && (
-                <p id="form-consent-error" className="text-sm text-destructive">
-                  Tick this to submit your response.
+              <LinkifiedText text={result.message} className="text-[15px] leading-relaxed" />
+              {result.certificate && (
+                <p className="text-sm text-muted-foreground">
+                  Your certificate is being emailed to you now. Check your spam folder if it has not
+                  arrived in a few minutes.
                 </p>
               )}
-            </div>
-          </div>
-        )}
-
-        {/* ── Navigation ─────────────────────────────────────────────── */}
-        <div className="mt-10 flex items-center justify-between gap-4">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              setStepIndex((i) => Math.max(0, i - 1))
-              scrollToFormTop()
-            }}
-            disabled={stepIndex === 0 || submitting}
-            className={cn(stepIndex === 0 && 'invisible')}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Previous
-          </Button>
-          {isLast ? (
-            <Button type="button" onClick={handleSubmit} disabled={submitting || busyUploading}>
-              {submitting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Check className="mr-2 h-4 w-4" />
+              {form.allowAnotherResponse && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearForm()
+                    setResult(null)
+                  }}
+                  className="text-sm text-primary underline underline-offset-4 hover:text-primary/80"
+                >
+                  Submit another response
+                </button>
               )}
-              {submitting ? 'Submitting…' : busyUploading ? 'Uploading photo…' : 'Submit'}
-            </Button>
+            </div>
           ) : (
-            <Button type="button" onClick={handleNext} disabled={busyUploading}>
-              {busyUploading ? 'Uploading photo…' : 'Next'}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            <div className="space-y-4">
+              <h2 className="text-xl font-extrabold">Your response was not sent</h2>
+              <p className="text-[15px]">{result.message}</p>
+              <Button variant="outline" onClick={() => setResult(null)}>
+                Back to the form
+              </Button>
+            </div>
           )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ── Single field renderer ─────────────────────────────────────────────────
-
-interface WizardFieldProps {
-  field: Field
-  formSlug: string
-  value: string | string[] | undefined
-  error?: string
-  onChange: (value: string | string[]) => void
-  onUploadingChange: (busy: boolean) => void
-}
-
-function WizardField({
-  field,
-  formSlug,
-  value,
-  error,
-  onChange,
-  onUploadingChange,
-}: WizardFieldProps) {
-  const id = fieldKey(field)
-  const options = (field.options ?? []).map((o) => o.option)
-  const str = typeof value === 'string' ? value : ''
-  const arr = Array.isArray(value) ? value : []
-
-  // A standalone image row is the whole cell - no label, no control, no
-  // required marker. It exists to show a poster or a payment QR mid-form.
-  if (field.fieldType === 'image') {
-    return (
-      <div className={cn(field.width === 'half' ? 'md:col-span-1' : 'md:col-span-2')}>
-        <FormImage media={field.displayImage} slot="standalone" caption={field.label} />
-        {field.helpText && <p className="mt-2 text-xs text-muted-foreground">{field.helpText}</p>}
+        </section>
       </div>
     )
   }
 
-  const control = (() => {
-    switch (field.fieldType) {
-      case 'imageUpload':
-        return (
-          <ImageUploadControl
-            fieldId={id}
-            formSlug={formSlug}
-            value={str}
-            onChange={onChange}
-            onUploadingChange={onUploadingChange}
-          />
-        )
-      case 'textarea':
-        return (
-          <Textarea
-            id={id}
-            value={str}
-            placeholder={field.placeholder || undefined}
-            onChange={(e) => onChange(e.target.value)}
-            rows={4}
-          />
-        )
-      case 'select':
-        return (
-          <Select value={str || undefined} onValueChange={onChange}>
-            <SelectTrigger id={id}>
-              <SelectValue placeholder={field.placeholder || 'Select…'} />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map((opt) => (
-                <SelectItem key={opt} value={opt}>
-                  {opt}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )
-      case 'radio':
-        return (
-          <RadioGroup value={str} onValueChange={onChange} className="gap-3 pt-1">
-            {options.map((opt) => (
-              <div key={opt} className="flex items-center gap-2">
-                <RadioGroupItem id={`${id}-${opt}`} value={opt} />
-                <Label htmlFor={`${id}-${opt}`} className="font-normal">
-                  {opt}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        )
-      case 'checkbox':
-        return (
-          <div className="flex flex-col gap-3 pt-1">
-            {options.map((opt) => (
-              <div key={opt} className="flex items-center gap-2">
-                <Checkbox
-                  id={`${id}-${opt}`}
-                  checked={arr.includes(opt)}
-                  onCheckedChange={(checked) =>
-                    onChange(checked ? [...arr, opt] : arr.filter((v) => v !== opt))
-                  }
-                />
-                <Label htmlFor={`${id}-${opt}`} className="font-normal">
-                  {opt}
-                </Label>
-              </div>
-            ))}
-          </div>
-        )
-      default: {
-        const inputType =
-          field.fieldType === 'email'
-            ? 'email'
-            : field.fieldType === 'number'
-              ? 'number'
-              : field.fieldType === 'phone'
-                ? 'tel'
-                : field.fieldType === 'date'
-                  ? 'date'
-                  : 'text'
-        return (
-          <Input
-            id={id}
-            type={inputType}
-            value={str}
-            placeholder={field.placeholder || undefined}
-            onChange={(e) => onChange(e.target.value)}
-          />
-        )
-      }
-    }
-  })()
+  const progress =
+    steps.length > 1 ? Math.round(((isLast ? steps.length : page + 1) / steps.length) * 100) : 0
+  const showStepCard =
+    steps.length > 1 || Boolean(step?.stepDescription) || Boolean(step?.stepImage)
 
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-2',
-        field.width === 'half' ? 'md:col-span-1' : 'md:col-span-2',
-      )}
-    >
-      <Label htmlFor={id} className={cn(error && 'text-destructive')}>
-        {field.label}
-        {field.required && <span className="text-primary"> *</span>}
-      </Label>
-      <FormImage media={field.image} slot="question" />
-      {control}
-      {field.helpText && !error && (
-        <p className="text-xs text-muted-foreground">{field.helpText}</p>
-      )}
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
-  )
-}
-
-// ── Respondent photo upload ───────────────────────────────────────────────
-
-interface ImageUploadControlProps {
-  fieldId: string
-  formSlug: string
-  value: string
-  onChange: (value: string) => void
-  onUploadingChange: (busy: boolean) => void
-}
-
-/**
- * Sends the picked image straight to the form's Google Drive folder and keeps
- * only the returned file id as the answer - nothing is uploaded to this site.
- *
- * The preview is a local object URL, so it costs no round trip: the file we
- * just read is already in the browser. Nobody but a member can read it back
- * from Drive afterwards, which is the point.
- */
-function ImageUploadControl({
-  fieldId,
-  formSlug,
-  value,
-  onChange,
-  onUploadingChange,
-}: ImageUploadControlProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [busy, setBusy] = useState(false)
-  const [failure, setFailure] = useState<string | null>(null)
-  const [preview, setPreview] = useState<{ url: string; name: string } | null>(null)
-
-  const handlePick = async (file: File | undefined) => {
-    if (!file) return
-
-    setFailure(null)
-    setBusy(true)
-    onUploadingChange(true)
-
-    // Revoke the previous preview before replacing it, or a respondent who
-    // re-picks a few times leaks a blob per attempt.
-    setPreview((prev) => {
-      if (prev) URL.revokeObjectURL(prev.url)
-      return { url: URL.createObjectURL(file), name: file.name }
-    })
-
-    try {
-      const body = new FormData()
-      body.append('file', file)
-      body.append('formSlug', formSlug)
-      body.append('fieldId', fieldId)
-
-      const res = await fetch('/api/form-uploads', { method: 'POST', body })
-      const json = (await res.json()) as { id?: string; error?: string }
-
-      if (!res.ok || !json.id) {
-        throw new Error(json.error || 'Upload failed - please try again.')
-      }
-      onChange(json.id)
-    } catch (err) {
-      setFailure(err instanceof Error ? err.message : 'Upload failed - please try again.')
-      onChange('')
-      setPreview((prev) => {
-        if (prev) URL.revokeObjectURL(prev.url)
-        return null
-      })
-    } finally {
-      setBusy(false)
-      onUploadingChange(false)
-    }
-  }
-
-  const clear = () => {
-    setPreview((prev) => {
-      if (prev) URL.revokeObjectURL(prev.url)
-      return null
-    })
-    setFailure(null)
-    onChange('')
-    if (inputRef.current) inputRef.current.value = ''
-  }
-
-  return (
-    <div className="space-y-3">
-      <input
-        ref={inputRef}
-        id={fieldId}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => handlePick(e.target.files?.[0])}
+    <div ref={topRef} className="space-y-4">
+      <FormHeader
+        title={headerTitle}
+        description={page === 0 ? form.description : null}
+        headerImage={form.headerImage}
+        above={above}
+        showRequiredNote={page === 0 && hasRequired}
       />
 
-      {preview && (
-        <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-muted/30 p-3">
-          {/* Plain <img>: a blob: URL from the file the user just picked, which
-              next/image cannot optimise. */}
-          <img src={preview.url} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
-          <span className="min-w-0 flex-1 truncate text-sm">{preview.name}</span>
-          {busy ? (
-            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
-          ) : value ? (
-            <Check className="h-4 w-4 shrink-0 text-primary" />
-          ) : null}
+      {form.showProgressBar !== false && steps.length > 1 && (
+        <div
+          className="flex items-center gap-3 px-1"
+          aria-label={`Page ${page + 1} of ${steps.length}`}
+        >
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+            Page {page + 1} of {steps.length}
+          </span>
         </div>
       )}
 
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={busy}
-          onClick={() => inputRef.current?.click()}
-        >
-          <ImagePlus className="mr-2 h-4 w-4" />
-          {value ? 'Replace photo' : 'Choose photo'}
-        </Button>
-        {value && !busy && (
-          <Button type="button" variant="ghost" size="sm" onClick={clear}>
-            Remove
-          </Button>
-        )}
+      {showStepCard && step && (
+        <section className="rounded-2xl border border-border bg-card">
+          {steps.length > 1 && (
+            <div className="rounded-t-2xl bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground md:px-7">
+              Section {page + 1} of {steps.length}
+            </div>
+          )}
+          <div className="space-y-3 p-6 md:p-7">
+            <h2 className="text-balance text-xl font-extrabold tracking-tight md:text-2xl">
+              {step.stepTitle}
+            </h2>
+            <LinkifiedText text={step.stepDescription} className="text-[15px] text-foreground/85" />
+            <FormImage media={step.stepImage} slot="step" />
+          </div>
+        </section>
+      )}
+
+      {/* Honeypot: off-screen rather than display:none, which some bots skip.
+          The name is deliberately meaningless - a browser that autofills an
+          organisation URL into "company-website" silently binned real answers. */}
+      <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+        <label htmlFor="hp-control">Leave this field empty</label>
+        <input
+          id="hp-control"
+          name="hp-control"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
+          data-form-type="other"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
       </div>
 
-      {failure && <p className="text-xs text-destructive">{failure}</p>}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {(step?.fields ?? []).map((field) => (
+          <FormQuestion
+            key={field.id ?? field.label}
+            field={field}
+            formSlug={form.slug}
+            value={answers[field.id ?? '']}
+            error={errors[field.id ?? '']}
+            onChange={(v) => setAnswer(field.id ?? '', v)}
+            onUploadingChange={(busy) =>
+              setUploading((prev) => {
+                const copy = new Set(prev)
+                if (busy) copy.add(field.id ?? '')
+                else copy.delete(field.id ?? '')
+                return copy
+              })
+            }
+          />
+        ))}
+      </div>
+
+      {/* Consent sits on the page that submits, next to the button that sends. */}
+      {isLast && (
+        <div
+          className={cn(
+            'flex items-start gap-3 rounded-2xl border bg-card p-5 md:p-6',
+            consentError ? 'border-destructive ring-1 ring-destructive' : 'border-border',
+          )}
+        >
+          <Checkbox
+            id="form-consent"
+            checked={consented}
+            onCheckedChange={(checked) => {
+              setConsented(checked === true)
+              if (checked === true) setConsentError(false)
+            }}
+            className="mt-0.5 h-5 w-5"
+            aria-describedby={consentError ? 'form-consent-error' : undefined}
+          />
+          <div className="space-y-1">
+            <Label htmlFor="form-consent" className="text-sm font-normal leading-relaxed">
+              {consentNotice?.trim() || DEFAULT_CONSENT_NOTICE}{' '}
+              <a
+                href="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline underline-offset-2"
+              >
+                Privacy Policy
+              </a>
+              .
+            </Label>
+            {consentError && (
+              <p id="form-consent-error" className="text-sm text-destructive dark:text-foreground">
+                Tick this to submit your response.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center gap-3 pt-2">
+        {history.length > 1 && (
+          <Button type="button" variant="outline" onClick={goBack} disabled={submitting}>
+            Back
+          </Button>
+        )}
+        {isLast ? (
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting || busyUploading}
+            className="min-w-28"
+          >
+            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {submitting ? 'Submitting…' : busyUploading ? 'Uploading…' : 'Submit'}
+          </Button>
+        ) : (
+          <Button type="button" onClick={goNext} disabled={busyUploading} className="min-w-28">
+            {busyUploading ? 'Uploading…' : 'Next'}
+          </Button>
+        )}
+        <button
+          type="button"
+          onClick={() => setConfirmClear(true)}
+          className="ml-auto rounded-md px-2 py-1 text-sm text-primary hover:bg-accent/50"
+        >
+          Clear form
+        </button>
+      </div>
+
+      <Dialog open={confirmClear} onOpenChange={setConfirmClear}>
+        <DialogContent className="max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Clear form?</DialogTitle>
+            <DialogDescription>
+              This removes your answers from every page and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setConfirmClear(false)}>
+              Cancel
+            </Button>
+            <Button onClick={clearForm}>Clear form</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

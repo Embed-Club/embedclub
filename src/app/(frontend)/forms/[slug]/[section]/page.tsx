@@ -1,5 +1,5 @@
 import { EmptyState } from '@/components/common/emptyState'
-import { FormImage } from '@/components/features/forms/formImage'
+import { FormHeader } from '@/components/features/forms/formHeader'
 import { FormWizard } from '@/components/features/forms/formWizard'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
 import { getFormBySlug, getSection, withResolvedSteps } from '@/lib/formQueries'
@@ -47,36 +47,42 @@ export default async function FormSectionPage({ params }: SectionPageProps) {
   const closed =
     !doc.active || (doc.deadline ? new Date(doc.deadline).getTime() < Date.now() : false)
 
+  const back = (
+    <Link
+      href={`/forms/${slug}`}
+      className="inline-block text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+    >
+      {container?.title ?? 'All sections'}
+    </Link>
+  )
+  const title = doc.sectionLabel || doc.title
+  const description = doc.description || container?.description
+  const headerImage = doc.headerImage ?? container?.headerImage
+
   return (
     <SidebarShell>
       <MainbarShell>
-        <div className="max-w-5xl mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-20 space-y-8">
-          <div className="text-center space-y-3">
-            <Link
-              href={`/forms/${slug}`}
-              className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-            >
-              {container?.title ?? 'All sections'}
-            </Link>
-            <h1 className="text-[34px] md:text-[42px] font-extrabold tracking-tight">
-              {doc.sectionLabel || doc.title}
-            </h1>
-            {(doc.description || container?.description) && (
-              <p className="text-muted-foreground max-w-xl mx-auto">
-                {doc.description || container?.description}
-              </p>
-            )}
-          </div>
-
-          <FormImage media={doc.headerImage ?? container?.headerImage} slot="header" priority />
-
+        <div className="mx-auto max-w-3xl px-4 pb-20 pt-20 md:px-6 md:pt-28">
           {closed ? (
-            <EmptyState
-              title="This Form Is Closed"
-              message="Submissions are no longer accepted - contact the organizers if you think this is a mistake."
-            />
+            <div className="space-y-4">
+              <FormHeader
+                title={title}
+                description={description}
+                headerImage={headerImage}
+                above={back}
+              />
+              <EmptyState
+                title="This Form Is Closed"
+                message="Submissions are no longer accepted - contact the organizers if you think this is a mistake."
+              />
+            </div>
           ) : (
-            <FormWizard form={form} consentNotice={legal?.consentNotice} />
+            <FormWizard
+              form={{ ...form, description, headerImage }}
+              title={title}
+              above={back}
+              consentNotice={legal?.consentNotice}
+            />
           )}
         </div>
       </MainbarShell>

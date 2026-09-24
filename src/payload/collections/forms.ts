@@ -20,18 +20,56 @@ type StepRow = {
  * Field types that hold no typed answer, so they can never be the question
  * that supplies a name or an email address for a certificate.
  */
-const ROLELESS_TYPES = ['image', 'imageUpload']
+const ROLELESS_TYPES = ['image', 'imageUpload', 'sectionText', 'video']
 
-/** Count how many questions across the whole form carry a given role. */
-function countRole(steps: StepRow[] | null | undefined, role: string): number {
-  let n = 0
+/** Items that show something but take no answer - never required, never a column. */
+const DISPLAY_ONLY_TYPES = ['image', 'sectionText', 'video']
+
+/**
+ * The question an option row belongs to, from the option's schema path
+ * (`steps.0.fields.2.options.1.goToPage`). Option conditions only get their own
+ * row as sibling data, and "is branching on" lives one level up.
+ */
+function parentField(data: unknown, path: (string | number)[] | undefined) {
+  const at = path?.lastIndexOf('options') ?? -1
+  if (at < 0) return undefined
+  let node: unknown = data
+  for (const key of path?.slice(0, at) ?? []) {
+    node = (node as Record<string | number, unknown> | undefined)?.[key]
+  }
+  return node as { branching?: boolean } | undefined
+}
+
+/**
+ * Question types that need more than a label to render - grids need rows and
+ * columns, choice questions need options, a video needs its link. Caught on
+ * save so the live form never shows a question with nothing to click.
+ */
+function incompleteQuestions(steps: StepRow[] | null | undefined): string[] {
+  const out: string[] = []
   for (const step of steps ?? []) {
-    for (const field of step.fields ?? []) {
-      if (ROLELESS_TYPES.includes(field.fieldType ?? '')) continue
-      if (field.role === role) n += 1
+    for (const field of (step.fields ?? []) as (FieldRow & Record<string, unknown>)[]) {
+      const name = field.label || 'Untitled'
+      const count = (key: string) => ((field[key] as unknown[] | null | undefined) ?? []).length
+      switch (field.fieldType) {
+        case 'select':
+        case 'radio':
+        case 'checkbox':
+          if (count('options') === 0) out.push(`${name} has no options`)
+          break
+        case 'radioGrid':
+        case 'checkboxGrid':
+          if (count('gridRows') === 0 || count('gridColumns') === 0) {
+            out.push(`${name} needs rows and columns`)
+          }
+          break
+        case 'video':
+          if (!field.videoUrl) out.push(`${name} has no YouTube link`)
+          break
+      }
     }
   }
-  return n
+  return out
 }
 
 /** Steps that would render as a blank screen - no questions and no image. */
@@ -279,6 +317,16 @@ export const Forms: CollectionConfig = {
           },
         },
         {
+          name: 'afterStep',
+          label: 'After this page, go to page',
+          type: 'number',
+          min: 0,
+          admin: {
+            description:
+              'Optional. Blank = the next page. 0 = submit. A question with "Go to page based on answer" overrides this.',
+          },
+        },
+        {
           // Not required: a step may carry nothing but its image - a poster, a
           // payment QR, a WhatsApp group code - and asking for a question to go
           // with it would mean inventing one. The collection's beforeValidate
@@ -313,15 +361,22 @@ export const Forms: CollectionConfig = {
                     { label: 'Dropdown', value: 'select' },
                     { label: 'Multiple Choice (one answer)', value: 'radio' },
                     { label: 'Checkboxes (many answers)', value: 'checkbox' },
+                    { label: 'Linear Scale (e.g. 1 to 5)', value: 'linearScale' },
+                    { label: 'Rating (stars)', value: 'rating' },
+                    { label: 'Multiple Choice Grid', value: 'radioGrid' },
+                    { label: 'Checkbox Grid', value: 'checkboxGrid' },
                     { label: 'Date', value: 'date' },
+                    { label: 'Time', value: 'time' },
                     {
-                      label: 'Image Upload (respondent attaches a photo)',
+                      label: 'File Upload (respondent attaches a photo or PDF)',
                       value: 'imageUpload',
                     },
+                    { label: 'Title and Description (no answer)', value: 'sectionText' },
                     {
                       label: 'Image (no answer - just shows a picture)',
                       value: 'image',
                     },
+                    { label: 'Video (no answer - a YouTube video)', value: 'video' },
                   ],
                 },
               ],
@@ -356,7 +411,8 @@ export const Forms: CollectionConfig = {
                   type: 'checkbox',
                   defaultValue: false,
                   admin: {
-                    condition: (_data, siblingData) => siblingData?.fieldType !== 'image',
+                    condition: (_data, siblingData) =>
+                      !DISPLAY_ONLY_TYPES.includes(siblingData?.fieldType),
                   },
                 },
                 {
@@ -378,15 +434,102 @@ export const Forms: CollectionConfig = {
               type: 'text',
               admin: {
                 condition: (_data, siblingData) =>
-                  !['image', 'imageUpload'].includes(siblingData?.fieldType),
+                  ['text', 'email', 'phone', 'number', 'textarea', 'select'].includes(
+                    siblingData?.fieldType,
+                  ),
               },
             },
             {
+              // Text, not rich text: a sentence or two under a question. Links
+              // typed into it are made clickable on the page.
               name: 'helpText',
+              label: 'Description',
+              type: 'textarea',
+              admin: {
+                rows: 2,
+                description:
+                  'Optional. Shown under the question - or under the title, for a Title and Description item. Links become clickable.',
+              },
+            },
+            {
+              name: 'videoUrl',
+              label: 'YouTube URL',
               type: 'text',
               admin: {
-                description: 'Optional hint shown under the field',
+                condition: (_data, siblingData) => siblingData?.fieldType === 'video',
+                placeholder: 'https://www.youtube.com/watch?v=...',
               },
+            },
+            {
+              type: 'row',
+              admin: {
+                condition: (_data, siblingData) => siblingData?.fieldType === 'linearScale',
+              },
+              fields: [
+                {
+                  name: 'scaleMin',
+                  label: 'From',
+                  type: 'number',
+                  defaultValue: 1,
+                  min: 0,
+                  max: 1,
+                  admin: { width: '20%' },
+                },
+                {
+                  name: 'scaleMax',
+                  label: 'To',
+                  type: 'number',
+                  defaultValue: 5,
+                  min: 2,
+                  max: 10,
+                  admin: { width: '20%' },
+                },
+                {
+                  name: 'scaleMinLabel',
+                  label: 'Label at the low end',
+                  type: 'text',
+                  admin: { width: '30%', placeholder: 'e.g. Poor' },
+                },
+                {
+                  name: 'scaleMaxLabel',
+                  label: 'Label at the high end',
+                  type: 'text',
+                  admin: { width: '30%', placeholder: 'e.g. Excellent' },
+                },
+              ],
+            },
+            {
+              name: 'ratingMax',
+              label: 'Number of stars',
+              type: 'number',
+              defaultValue: 5,
+              min: 3,
+              max: 10,
+              admin: {
+                condition: (_data, siblingData) => siblingData?.fieldType === 'rating',
+              },
+            },
+            {
+              name: 'gridRows',
+              label: 'Rows',
+              type: 'array',
+              admin: {
+                condition: (_data, siblingData) =>
+                  ['radioGrid', 'checkboxGrid'].includes(siblingData?.fieldType),
+                description: 'One per thing being rated - e.g. Content, Pace, Speaker.',
+              },
+              fields: [{ name: 'row', type: 'text', required: true }],
+            },
+            {
+              name: 'gridColumns',
+              label: 'Columns',
+              type: 'array',
+              admin: {
+                condition: (_data, siblingData) =>
+                  ['radioGrid', 'checkboxGrid'].includes(siblingData?.fieldType),
+                description: 'The choices offered on every row - e.g. Poor, Okay, Good.',
+              },
+              fields: [{ name: 'column', type: 'text', required: true }],
             },
             {
               // Decoration attached to a question - the diagram the question is
@@ -423,9 +566,126 @@ export const Forms: CollectionConfig = {
               },
               fields: [
                 {
-                  name: 'option',
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'option',
+                      type: 'text',
+                      required: true,
+                      admin: { width: '70%' },
+                    },
+                    {
+                      // Google Forms' "Go to section based on answer". Only read
+                      // when the question has branching switched on.
+                      name: 'goToPage',
+                      label: 'Then go to page',
+                      type: 'number',
+                      min: 0,
+                      admin: {
+                        width: '30%',
+                        condition: (data, _siblingData, { path }) =>
+                          Boolean(parentField(data, path)?.branching),
+                        description: 'Blank = next page. 0 = submit.',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'row',
+              admin: {
+                condition: (_data, siblingData) =>
+                  ['select', 'radio', 'checkbox'].includes(siblingData?.fieldType),
+              },
+              fields: [
+                {
+                  name: 'allowOther',
+                  label: 'Add "Other" with a text box',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    condition: (_data, siblingData) =>
+                      ['radio', 'checkbox'].includes(siblingData?.fieldType),
+                  },
+                },
+                {
+                  name: 'shuffleOptions',
+                  label: 'Shuffle option order',
+                  type: 'checkbox',
+                  defaultValue: false,
+                },
+                {
+                  name: 'branching',
+                  label: 'Go to page based on answer',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    condition: (_data, siblingData) =>
+                      ['select', 'radio'].includes(siblingData?.fieldType),
+                  },
+                },
+              ],
+            },
+            {
+              name: 'validationType',
+              label: 'Response validation',
+              type: 'select',
+              defaultValue: 'none',
+              options: [
+                { label: 'None', value: 'none' },
+                { label: 'Number between', value: 'numberBetween' },
+                { label: 'At least this many characters', value: 'minLength' },
+                { label: 'At most this many characters', value: 'maxLength' },
+                { label: 'Matches a pattern (regular expression)', value: 'pattern' },
+              ],
+              admin: {
+                condition: (_data, siblingData) =>
+                  ['text', 'textarea', 'number', 'phone'].includes(siblingData?.fieldType),
+              },
+            },
+            {
+              type: 'row',
+              admin: {
+                condition: (_data, siblingData) =>
+                  Boolean(siblingData?.validationType) && siblingData?.validationType !== 'none',
+              },
+              fields: [
+                {
+                  name: 'validationMin',
+                  label: 'Minimum',
+                  type: 'number',
+                  admin: {
+                    width: '25%',
+                    condition: (_data, siblingData) =>
+                      ['numberBetween', 'minLength'].includes(siblingData?.validationType),
+                  },
+                },
+                {
+                  name: 'validationMax',
+                  label: 'Maximum',
+                  type: 'number',
+                  admin: {
+                    width: '25%',
+                    condition: (_data, siblingData) =>
+                      ['numberBetween', 'maxLength'].includes(siblingData?.validationType),
+                  },
+                },
+                {
+                  name: 'validationPattern',
+                  label: 'Pattern',
                   type: 'text',
-                  required: true,
+                  admin: {
+                    width: '50%',
+                    placeholder: 'e.g. ^[0-9]{10}$',
+                    condition: (_data, siblingData) => siblingData?.validationType === 'pattern',
+                  },
+                },
+                {
+                  name: 'validationMessage',
+                  label: 'Error message',
+                  type: 'text',
+                  admin: { width: '50%', placeholder: 'Shown when the answer does not fit' },
                 },
               ],
             },
@@ -437,6 +697,23 @@ export const Forms: CollectionConfig = {
       name: 'confirmationMessage',
       type: 'textarea',
       defaultValue: 'Your response has been recorded. Thank you!',
+    },
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'showProgressBar',
+          label: 'Show progress bar',
+          type: 'checkbox',
+          defaultValue: true,
+        },
+        {
+          name: 'allowAnotherResponse',
+          label: 'Show "Submit another response" link',
+          type: 'checkbox',
+          defaultValue: false,
+        },
+      ],
     },
     {
       name: 'sheetId',
@@ -476,257 +753,16 @@ export const Forms: CollectionConfig = {
       },
     },
     {
-      name: 'showCertificate',
-      type: 'checkbox',
-      defaultValue: false,
+      // Certificates live in their own collection and point at a form. This
+      // shows the one linked here, with a link to create one if there is none.
+      name: 'certificate',
+      type: 'join',
+      collection: 'certificates',
+      on: 'form',
       admin: {
-        description: 'Give respondents a certificate (usually for feedback forms)',
+        condition: (data) => !data?.sectionOf,
+        description: 'Set up under Forms > Certificates. Pick this form there.',
       },
-    },
-    {
-      name: 'certificateDelivery',
-      type: 'select',
-      defaultValue: 'immediate',
-      options: [
-        { label: 'Straight after they submit', value: 'immediate' },
-        { label: 'Email everyone at a set time', value: 'scheduled' },
-      ],
-      admin: {
-        condition: (data) => data.showCertificate,
-        description: 'Immediate sends on submit. Scheduled sends at the time you set below.',
-      },
-    },
-    {
-      name: 'certificateSendAt',
-      type: 'date',
-      admin: {
-        condition: (data) => data.showCertificate && data.certificateDelivery === 'scheduled',
-        date: { pickerAppearance: 'dayAndTime' },
-        description:
-          'Default send time. Anyone not matched by a batch below goes out at this time.',
-      },
-    },
-    {
-      name: 'certificateBatches',
-      type: 'array',
-      admin: {
-        condition: (data) => data.showCertificate && data.certificateDelivery === 'scheduled',
-        description: 'Optional. Send different groups at different times, matched on one question.',
-      },
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'label',
-              type: 'text',
-              required: true,
-              admin: { placeholder: 'e.g. Section B', width: '33%' },
-            },
-            {
-              name: 'matchField',
-              label: 'Question',
-              type: 'text',
-              required: true,
-              admin: {
-                description: 'Exact wording of the question that identifies the group',
-                placeholder: 'e.g. Which section are you in?',
-                width: '34%',
-              },
-            },
-            {
-              name: 'matchValue',
-              label: 'Answer',
-              type: 'text',
-              required: true,
-              admin: {
-                description: 'The answer that puts someone in this batch',
-                placeholder: 'e.g. Section B',
-                width: '33%',
-              },
-            },
-          ],
-        },
-        {
-          name: 'sendAt',
-          type: 'date',
-          required: true,
-          admin: { date: { pickerAppearance: 'dayAndTime' } },
-        },
-      ],
-    },
-    {
-      type: 'row',
-      admin: { condition: (data) => data.showCertificate },
-      fields: [
-        {
-          name: 'certificateNameCase',
-          label: 'Name on Certificate',
-          type: 'select',
-          defaultValue: 'asTyped',
-          options: [
-            { label: 'As typed', value: 'asTyped' },
-            { label: 'UPPERCASE', value: 'upper' },
-            { label: 'Title Case', value: 'title' },
-          ],
-          admin: {
-            width: '50%',
-            description: 'How the name prints where {{name}} appears on the certificate itself',
-          },
-        },
-        {
-          name: 'certificateEmailNameCase',
-          label: 'Name in Email Greeting',
-          type: 'select',
-          defaultValue: 'asTyped',
-          options: [
-            { label: 'As typed', value: 'asTyped' },
-            { label: 'UPPERCASE', value: 'upper' },
-            { label: 'Title Case', value: 'title' },
-          ],
-          admin: {
-            width: '50%',
-            description: 'How the name reads in the email body, independent of the certificate',
-          },
-        },
-      ],
-    },
-    {
-      name: 'certificateEmailSubject',
-      type: 'text',
-      admin: {
-        condition: (data) => data.showCertificate,
-        placeholder: 'Your certificate - {{event}}',
-        description:
-          'Optional. {{event}} is replaced with this form’s title. Leave empty for the default subject.',
-      },
-    },
-    {
-      name: 'certificateEmailBody',
-      type: 'textarea',
-      admin: {
-        condition: (data) => data.showCertificate,
-        placeholder:
-          'Dear {{name}},\n\nThank you for attending {{event}}. Your certificate is attached.\n\nRegards,\nEmbed Club',
-        description: 'Optional. {{name}} and {{event}} are filled in per person.',
-      },
-    },
-    {
-      name: 'certificateTemplateDriveId',
-      label: 'Certificate Template (Google Slides)',
-      type: 'text',
-      admin: {
-        condition: (data) => data.showCertificate,
-        description: 'Google Slides link for the certificate. The slide must contain {{name}}.',
-      },
-      hooks: {
-        // members will paste the whole URL from the address bar; keep the id.
-        beforeValidate: [
-          ({ value }) => {
-            if (typeof value !== 'string') return value
-            const match = value.match(/\/presentation\/d\/([a-zA-Z0-9-_]+)/)
-            return match ? match[1] : value.trim()
-          },
-        ],
-      },
-    },
-    {
-      // Reads the Slides deck and reports which {{markers}} it contains, and
-      // which of them nothing fills in yet. Purely advisory - it writes no
-      // data, it just saves the member from guessing.
-      name: 'certificatePlaceholderScan',
-      type: 'ui',
-      admin: {
-        condition: (data) => data.showCertificate,
-        components: {
-          Field: '@/components/admin/certificatePlaceholderScanner',
-        },
-      },
-    },
-    {
-      name: 'certificateTest',
-      label: 'Test Certificate',
-      type: 'ui',
-      admin: {
-        condition: (data) => data.showCertificate,
-        components: {
-          Field: '@/components/admin/certificateTestPanel',
-        },
-      },
-    },
-    {
-      name: 'certificatePlaceholders',
-      label: 'Certificate Fields',
-      type: 'array',
-      admin: {
-        condition: (data) => data.showCertificate,
-        description:
-          'Fills the other {{markers}} in the template. {{name}} and {{event}} are automatic.',
-        components: {
-          RowLabel: '@/components/admin/certificatePlaceholderRowLabel',
-        },
-      },
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'key',
-              label: 'Marker',
-              type: 'text',
-              required: true,
-              admin: {
-                width: '40%',
-                description: 'Without the braces - for {{USN}} write USN.',
-                placeholder: 'USN',
-              },
-            },
-            {
-              name: 'source',
-              type: 'select',
-              required: true,
-              defaultValue: 'question',
-              options: [
-                { label: 'An answer from this form', value: 'question' },
-                { label: 'The same value for everyone', value: 'fixed' },
-                // Placings are the case this exists for: the winner cannot be
-                // asked to declare themselves on a feedback form, and one fixed
-                // value would print "1st" on all fifty certificates.
-                { label: 'Set per person, by a member', value: 'perPerson' },
-              ],
-              admin: { width: '60%' },
-            },
-          ],
-        },
-        {
-          name: 'questionLabel',
-          label: 'Question',
-          type: 'text',
-          admin: {
-            condition: (_data, siblingData) => siblingData?.source === 'question',
-            description: 'Exact wording of the question whose answer goes here',
-            placeholder: 'e.g. USN',
-          },
-        },
-        {
-          name: 'fixedValue',
-          label: 'Value',
-          type: 'text',
-          admin: {
-            condition: (_data, siblingData) => siblingData?.source === 'fixed',
-            description: 'Printed identically on every certificate for this form',
-          },
-        },
-        {
-          name: 'defaultValue',
-          label: 'Default',
-          type: 'text',
-          admin: {
-            condition: (_data, siblingData) => siblingData?.source === 'perPerson',
-            description: 'Used when no per-person value is set. Leave empty to print nothing.',
-          },
-        },
-      ],
     },
   ],
   hooks: {
@@ -779,21 +815,12 @@ export const Forms: CollectionConfig = {
           )
         }
 
-        // A certificate needs a name to print and an address to send to. Catch
-        // that here rather than at send time, when the event is already over.
-        if (data?.showCertificate) {
-          const names = countRole(data.steps, 'name')
-          const emails = countRole(data.steps, 'email')
-          const problems: string[] = []
-          if (names !== 1) {
-            problems.push(`exactly one question marked as the person's name (found ${names})`)
-          }
-          if (emails !== 1) {
-            problems.push(`exactly one question marked as the person's email (found ${emails})`)
-          }
-          if (problems.length > 0) {
-            throw new APIError(`Certificates need ${problems.join(', and ')}.`, 400)
-          }
+        const incomplete = incompleteQuestions(data?.steps)
+        if (incomplete.length > 0) {
+          throw new APIError(
+            `Some questions are missing their setup: ${incomplete.join('; ')}.`,
+            400,
+          )
         }
 
         return data

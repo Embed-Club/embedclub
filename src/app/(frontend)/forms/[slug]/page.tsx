@@ -1,6 +1,6 @@
 import { EmptyState } from '@/components/common/emptyState'
 import { formToCard } from '@/components/features/forms/formCardData'
-import { FormImage } from '@/components/features/forms/formImage'
+import { FormHeader } from '@/components/features/forms/formHeader'
 import { FormWizard } from '@/components/features/forms/formWizard'
 import { FormsListing } from '@/components/features/forms/formsListing'
 import { MainbarShell, SidebarShell } from '@/components/layout/frontendShell'
@@ -52,21 +52,19 @@ export default async function FormPage({ params }: FormPageProps) {
     return (
       <SidebarShell>
         <MainbarShell>
-          <div className="max-w-5xl mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-20 space-y-8">
-            <div className="text-center space-y-3">
-              <h1 className="text-[34px] md:text-[42px] font-extrabold tracking-tight">
-                {form.title}
-              </h1>
-              {form.description && (
-                <p className="text-muted-foreground max-w-xl mx-auto">{form.description}</p>
-              )}
-            </div>
-
-            <FormImage media={form.headerImage} slot="header" priority />
-
+          <div className="mx-auto max-w-3xl space-y-6 px-4 pb-20 pt-20 md:px-6 md:pt-28">
+            <FormHeader
+              title={form.title}
+              description={form.description}
+              headerImage={form.headerImage}
+            />
+            <p className="px-1 text-sm text-muted-foreground">
+              Pick the one you are in. Each keeps its own responses.
+            </p>
             <FormsListing
               cards={sections.map((section) => formToCard(section, now))}
               emptyTitle="No Sections Yet"
+              compact
             />
           </div>
         </MainbarShell>
@@ -77,26 +75,21 @@ export default async function FormPage({ params }: FormPageProps) {
   return (
     <SidebarShell>
       <MainbarShell>
-        {/* Wider than a typical prose column: the step card lays questions out
-            two-up on desktop, so 768px squeezed a pair of half-width fields
-            into something narrower than either deserved. */}
-        <div className="max-w-5xl mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-20 space-y-8">
-          <div className="text-center space-y-3">
-            <h1 className="text-[34px] md:text-[42px] font-extrabold tracking-tight">
-              {form.title}
-            </h1>
-            {form.description && (
-              <p className="text-muted-foreground max-w-xl mx-auto">{form.description}</p>
-            )}
-          </div>
-
-          <FormImage media={form.headerImage} slot="header" priority />
-
+        {/* Google Forms' column width: questions read one per card, top to
+            bottom, and a wide column only stretches the inputs. */}
+        <div className="mx-auto max-w-3xl px-4 pb-20 pt-20 md:px-6 md:pt-28">
           {closed ? (
-            <EmptyState
-              title="This Form Is Closed"
-              message="Submissions are no longer accepted - contact the organizers if you think this is a mistake."
-            />
+            <div className="space-y-4">
+              <FormHeader
+                title={form.title}
+                description={form.description}
+                headerImage={form.headerImage}
+              />
+              <EmptyState
+                title="This Form Is Closed"
+                message="Submissions are no longer accepted - contact the organizers if you think this is a mistake."
+              />
+            </div>
           ) : (
             <FormWizard form={form} consentNotice={legal?.consentNotice} />
           )}

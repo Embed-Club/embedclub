@@ -11,7 +11,7 @@ import { useState } from 'react'
  * value Payload stores at an array field's own path is the number of rows,
  * not the rows - iterating it threw and took the whole edit view down.
  */
-const ROW_KEY = /^certificatePlaceholders\.\d+\.key$/
+const ROW_KEY = /^placeholders\.\d+\.key$/
 
 function mappedKeys(fields: Record<string, { value?: unknown }>): string[] {
   return Object.entries(fields)
@@ -39,7 +39,7 @@ const CertificatePlaceholderScanner: UIFieldClientComponent = () => {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
-  const templateId = (fields?.certificateTemplateDriveId?.value as string | undefined)?.trim()
+  const templateId = (fields?.templateDriveId?.value as string | undefined)?.trim()
 
   const scan = async () => {
     setBusy(true)

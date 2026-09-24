@@ -1,5 +1,8 @@
-import { resolvePlaceholders, unmappedPlaceholders } from '@/lib/certificatePlaceholders'
-import type { Form, FormSubmission } from '@/payload/payload-types'
+import {
+  resolvePlaceholders as resolveForEvent,
+  unmappedPlaceholders,
+} from '@/lib/certificatePlaceholders'
+import type { Certificate, FormSubmission } from '@/payload/payload-types'
 import { describe, expect, it } from 'vitest'
 
 /**
@@ -8,14 +11,14 @@ import { describe, expect, it } from 'vitest'
  * winner's that says nothing, and neither is visible until they have gone out.
  */
 
-type Mapping = NonNullable<Form['certificatePlaceholders']>[number]
+type Mapping = NonNullable<Certificate['placeholders']>[number]
 
-function form(mappings: Mapping[]): Form {
-  return {
-    title: 'IoT Workshop 2026',
-    certificatePlaceholders: mappings,
-  } as Form
+function form(mappings: Mapping[]): Certificate {
+  return { placeholders: mappings } as Certificate
 }
+
+const resolvePlaceholders = (certificate: Certificate, answers: FormSubmission, name: string) =>
+  resolveForEvent(certificate, answers, name, 'IoT Workshop 2026')
 
 function submission(
   answersByLabel: Record<string, unknown>,

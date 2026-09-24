@@ -1,4 +1,4 @@
-import type { Form, FormSubmission } from '@/payload/payload-types'
+import type { Certificate, FormSubmission } from '@/payload/payload-types'
 
 /**
  * Certificates are designed in Google Slides, and whatever the member wants
@@ -43,14 +43,15 @@ export function extractPlaceholders(templateText: string): string[] {
  * absent here is what lets the admin warn about placeholders with no source.
  */
 export function resolvePlaceholders(
-  form: Form,
+  certificate: Pick<Certificate, 'placeholders'>,
   submission: FormSubmission,
   certificateName: string,
+  eventName: string,
 ): Record<string, string> {
   const answers = (submission.answersByLabel ?? {}) as Record<string, unknown>
   const values: Record<string, string> = {
     name: certificateName,
-    event: form.title,
+    event: eventName,
   }
 
   // What a member typed against this person, matched case-insensitively for
@@ -63,7 +64,7 @@ export function resolvePlaceholders(
     if (key && entry.value) perPerson.set(key, entry.value)
   }
 
-  for (const mapping of form.certificatePlaceholders ?? []) {
+  for (const mapping of certificate.placeholders ?? []) {
     const key = mapping.key?.trim()
     if (!key) continue
 
@@ -97,12 +98,15 @@ export function resolvePlaceholders(
  * warns about, so a missing value is caught while editing the form rather than
  * discovered on fifty printed certificates.
  */
-export function unmappedPlaceholders(found: string[], form: Form): string[] {
+export function unmappedPlaceholders(
+  found: string[],
+  certificate: Pick<Certificate, 'placeholders'>,
+): string[] {
   // Case-insensitive, because Slides' own replaceAllText is: a deck written
   // with {{NAME}} is filled correctly by a mapping keyed `name`, so warning
   // that it is unmapped would be a lie.
   const covered = new Set(['name', 'event'])
-  for (const mapping of form.certificatePlaceholders ?? []) {
+  for (const mapping of certificate.placeholders ?? []) {
     const key = mapping.key?.trim().toLowerCase()
     if (key) covered.add(key)
   }

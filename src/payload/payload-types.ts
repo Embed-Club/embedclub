@@ -81,6 +81,7 @@ export interface Config {
     'member-photo': MemberPhoto;
     forms: Form;
     'form-submissions': FormSubmission;
+    certificates: Certificate;
     'form-media': FormMedia;
     media: Media;
     tags: Tag;
@@ -98,6 +99,9 @@ export interface Config {
     events: {
       forms: 'forms';
     };
+    forms: {
+      certificate: 'certificates';
+    };
   };
   collectionsSelect: {
     achievements: AchievementsSelect<false> | AchievementsSelect<true>;
@@ -114,6 +118,7 @@ export interface Config {
     'member-photo': MemberPhotoSelect<false> | MemberPhotoSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
+    certificates: CertificatesSelect<false> | CertificatesSelect<true>;
     'form-media': FormMediaSelect<false> | FormMediaSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
@@ -425,6 +430,10 @@ export interface Form {
          */
         stepImage?: (number | null) | FormMedia;
         /**
+         * Optional. Blank = the next page. 0 = submit. A question with "Go to page based on answer" overrides this.
+         */
+        afterStep?: number | null;
+        /**
          * The questions on this step. A step with no questions is allowed if it has an image - use one to show a poster or a QR code.
          */
         fields?:
@@ -439,9 +448,16 @@ export interface Form {
                 | 'select'
                 | 'radio'
                 | 'checkbox'
+                | 'linearScale'
+                | 'rating'
+                | 'radioGrid'
+                | 'checkboxGrid'
                 | 'date'
+                | 'time'
                 | 'imageUpload'
-                | 'image';
+                | 'sectionText'
+                | 'image'
+                | 'video';
               /**
                * Tells the club what this answer is, so it can be used automatically. Name and email are what certificates are printed with and sent to, so a form that issues them needs one of each. A USN is upper-cased and format-checked on submission, which keeps the responses sheet sortable by batch and department. Leave as "Just an answer" for ordinary questions.
                */
@@ -453,9 +469,33 @@ export interface Form {
               width?: ('full' | 'half') | null;
               placeholder?: string | null;
               /**
-               * Optional hint shown under the field
+               * Optional. Shown under the question - or under the title, for a Title and Description item. Links become clickable.
                */
               helpText?: string | null;
+              videoUrl?: string | null;
+              scaleMin?: number | null;
+              scaleMax?: number | null;
+              scaleMinLabel?: string | null;
+              scaleMaxLabel?: string | null;
+              ratingMax?: number | null;
+              /**
+               * One per thing being rated - e.g. Content, Pace, Speaker.
+               */
+              gridRows?:
+                | {
+                    row: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * The choices offered on every row - e.g. Poor, Okay, Good.
+               */
+              gridColumns?:
+                | {
+                    column: string;
+                    id?: string | null;
+                  }[]
+                | null;
               /**
                * Optional picture shown under this question’s label.
                */
@@ -470,9 +510,21 @@ export interface Form {
               options?:
                 | {
                     option: string;
+                    /**
+                     * Blank = next page. 0 = submit.
+                     */
+                    goToPage?: number | null;
                     id?: string | null;
                   }[]
                 | null;
+              allowOther?: boolean | null;
+              shuffleOptions?: boolean | null;
+              branching?: boolean | null;
+              validationType?: ('none' | 'numberBetween' | 'minLength' | 'maxLength' | 'pattern') | null;
+              validationMin?: number | null;
+              validationMax?: number | null;
+              validationPattern?: string | null;
+              validationMessage?: string | null;
               id?: string | null;
             }[]
           | null;
@@ -480,6 +532,8 @@ export interface Form {
       }[]
     | null;
   confirmationMessage?: string | null;
+  showProgressBar?: boolean | null;
+  allowAnotherResponse?: boolean | null;
   /**
    * Optional. Paste a Sheet URL to mirror responses there. Share it with the service account as an Editor first.
    */
@@ -489,80 +543,13 @@ export interface Form {
    */
   driveFolderId?: string | null;
   /**
-   * Give respondents a certificate (usually for feedback forms)
+   * Set up under Forms > Certificates. Pick this form there.
    */
-  showCertificate?: boolean | null;
-  /**
-   * Immediate sends on submit. Scheduled sends at the time you set below.
-   */
-  certificateDelivery?: ('immediate' | 'scheduled') | null;
-  /**
-   * Default send time. Anyone not matched by a batch below goes out at this time.
-   */
-  certificateSendAt?: string | null;
-  /**
-   * Optional. Send different groups at different times, matched on one question.
-   */
-  certificateBatches?:
-    | {
-        label: string;
-        /**
-         * Exact wording of the question that identifies the group
-         */
-        matchField: string;
-        /**
-         * The answer that puts someone in this batch
-         */
-        matchValue: string;
-        sendAt: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * How the name prints where {{name}} appears on the certificate itself
-   */
-  certificateNameCase?: ('asTyped' | 'upper' | 'title') | null;
-  /**
-   * How the name reads in the email body, independent of the certificate
-   */
-  certificateEmailNameCase?: ('asTyped' | 'upper' | 'title') | null;
-  /**
-   * Optional. {{event}} is replaced with this form’s title. Leave empty for the default subject.
-   */
-  certificateEmailSubject?: string | null;
-  /**
-   * Optional. {{name}} and {{event}} are filled in per person.
-   */
-  certificateEmailBody?: string | null;
-  /**
-   * Google Slides link for the certificate. The slide must contain {{name}}.
-   */
-  certificateTemplateDriveId?: string | null;
-  /**
-   * Fills the other {{markers}} in the template. {{name}} and {{event}} are automatic.
-   */
-  certificatePlaceholders?:
-    | {
-        /**
-         * Without the braces - for {{USN}} write USN.
-         */
-        key: string;
-        source: 'question' | 'fixed' | 'perPerson';
-        /**
-         * Exact wording of the question whose answer goes here
-         */
-        questionLabel?: string | null;
-        /**
-         * Printed identically on every certificate for this form
-         */
-        fixedValue?: string | null;
-        /**
-         * Used when no per-person value is set. Leave empty to print nothing.
-         */
-        defaultValue?: string | null;
-        id?: string | null;
-      }[]
-    | null;
+  certificate?: {
+    docs?: (number | Certificate)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -607,6 +594,104 @@ export interface FormMedia {
       filename?: string | null;
     };
   };
+}
+/**
+ * Certificates emailed to the people who answer a form. Pick the form first - the question lists load from it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates".
+ */
+export interface Certificate {
+  id: number;
+  /**
+   * Start here. For a form answered in sections, pick the parent - every section is covered.
+   */
+  form: number | Form;
+  /**
+   * Only for the admin list. Filled in from the form if left empty.
+   */
+  title?: string | null;
+  /**
+   * Switch off to pause sending without losing the setup.
+   */
+  enabled?: boolean | null;
+  /**
+   * What {{event}} prints as, on the certificate and in the email. Defaults to the form title.
+   */
+  eventName?: string | null;
+  /**
+   * Google Slides link for the certificate. The slide must contain {{name}}.
+   */
+  templateDriveId?: string | null;
+  /**
+   * Fills the other {{markers}} in the template. {{name}} and {{event}} are automatic.
+   */
+  placeholders?:
+    | {
+        /**
+         * Without the braces - for {{USN}} write USN.
+         */
+        key: string;
+        source: 'question' | 'fixed' | 'perPerson';
+        /**
+         * The answer to this question is printed.
+         */
+        questionLabel?: string | null;
+        /**
+         * Printed identically on every certificate
+         */
+        fixedValue?: string | null;
+        /**
+         * Used when no per-person value is set. Leave empty to print nothing.
+         */
+        defaultValue?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Immediate also sends to everyone who has already answered, on the next run after saving.
+   */
+  delivery?: ('immediate' | 'scheduled') | null;
+  /**
+   * Default send time. Anyone not matched by a batch below goes out at this time.
+   */
+  sendAt?: string | null;
+  /**
+   * Optional. Send different groups at different times, matched on one answer.
+   */
+  batches?:
+    | {
+        label: string;
+        /**
+         * The question that identifies the group
+         */
+        matchField: string;
+        /**
+         * The answer that puts someone in this batch
+         */
+        matchValue: string;
+        sendAt: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * How the name prints where {{name}} appears on the certificate
+   */
+  nameCase?: ('asTyped' | 'upper' | 'title') | null;
+  /**
+   * How the name reads in the email body
+   */
+  emailNameCase?: ('asTyped' | 'upper' | 'title') | null;
+  /**
+   * Optional. {{event}} is filled in. Leave empty for the default subject.
+   */
+  emailSubject?: string | null;
+  /**
+   * Optional. {{name}} and {{event}} are filled in per person.
+   */
+  emailBody?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Drag photos in to upload them in bulk, then add a caption to each.
@@ -1725,6 +1810,10 @@ export interface PayloadLockedDocument {
         value: number | FormSubmission;
       } | null)
     | ({
+        relationTo: 'certificates';
+        value: number | Certificate;
+      } | null)
+    | ({
         relationTo: 'form-media';
         value: number | FormMedia;
       } | null)
@@ -2312,6 +2401,7 @@ export interface FormsSelect<T extends boolean = true> {
         stepTitle?: T;
         stepDescription?: T;
         stepImage?: T;
+        afterStep?: T;
         fields?:
           | T
           | {
@@ -2322,48 +2412,51 @@ export interface FormsSelect<T extends boolean = true> {
               width?: T;
               placeholder?: T;
               helpText?: T;
+              videoUrl?: T;
+              scaleMin?: T;
+              scaleMax?: T;
+              scaleMinLabel?: T;
+              scaleMaxLabel?: T;
+              ratingMax?: T;
+              gridRows?:
+                | T
+                | {
+                    row?: T;
+                    id?: T;
+                  };
+              gridColumns?:
+                | T
+                | {
+                    column?: T;
+                    id?: T;
+                  };
               image?: T;
               displayImage?: T;
               options?:
                 | T
                 | {
                     option?: T;
+                    goToPage?: T;
                     id?: T;
                   };
+              allowOther?: T;
+              shuffleOptions?: T;
+              branching?: T;
+              validationType?: T;
+              validationMin?: T;
+              validationMax?: T;
+              validationPattern?: T;
+              validationMessage?: T;
               id?: T;
             };
         id?: T;
       };
   confirmationMessage?: T;
+  showProgressBar?: T;
+  allowAnotherResponse?: T;
   sheetId?: T;
   driveFolderId?: T;
-  showCertificate?: T;
-  certificateDelivery?: T;
-  certificateSendAt?: T;
-  certificateBatches?:
-    | T
-    | {
-        label?: T;
-        matchField?: T;
-        matchValue?: T;
-        sendAt?: T;
-        id?: T;
-      };
-  certificateNameCase?: T;
-  certificateEmailNameCase?: T;
-  certificateEmailSubject?: T;
-  certificateEmailBody?: T;
-  certificateTemplateDriveId?: T;
-  certificatePlaceholders?:
-    | T
-    | {
-        key?: T;
-        source?: T;
-        questionLabel?: T;
-        fixedValue?: T;
-        defaultValue?: T;
-        id?: T;
-      };
+  certificate?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2400,6 +2493,44 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   certificateError?: T;
   googleResponseId?: T;
   sheetSyncedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates_select".
+ */
+export interface CertificatesSelect<T extends boolean = true> {
+  form?: T;
+  title?: T;
+  enabled?: T;
+  eventName?: T;
+  templateDriveId?: T;
+  placeholders?:
+    | T
+    | {
+        key?: T;
+        source?: T;
+        questionLabel?: T;
+        fixedValue?: T;
+        defaultValue?: T;
+        id?: T;
+      };
+  delivery?: T;
+  sendAt?: T;
+  batches?:
+    | T
+    | {
+        label?: T;
+        matchField?: T;
+        matchValue?: T;
+        sendAt?: T;
+        id?: T;
+      };
+  nameCase?: T;
+  emailNameCase?: T;
+  emailSubject?: T;
+  emailBody?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3241,6 +3372,7 @@ export interface TaskCreateCollectionExport {
       | 'member-photo'
       | 'forms'
       | 'form-submissions'
+      | 'certificates'
       | 'form-media'
       | 'media'
       | 'tags'

@@ -23,7 +23,6 @@ export const maxDuration = 60
  * trusting the id it is handed (see `forms/actions.ts`).
  */
 const MAX_BYTES = 10 * 1024 * 1024
-const ALLOWED_PREFIX = 'image/'
 
 /**
  * Leading bytes of the raster formats we accept, checked against the file
@@ -37,9 +36,11 @@ const MAGIC_NUMBERS: { mime: string; bytes: number[] }[] = [
   { mime: 'image/gif', bytes: [0x47, 0x49, 0x46, 0x38] },
   // RIFF....WEBP - the four bytes at offset 8 are checked separately below.
   { mime: 'image/webp', bytes: [0x52, 0x49, 0x46, 0x46] },
+  // %PDF - certificates, payment receipts, ID scans.
+  { mime: 'application/pdf', bytes: [0x25, 0x50, 0x44, 0x46] },
 ]
 
-/** The real image type of these bytes, or null if it is not one we accept. */
+/** The real type of these bytes, or null if it is not one we accept. */
 function sniffImageType(bytes: ArrayBuffer): string | null {
   const head = new Uint8Array(bytes.slice(0, 16))
 
@@ -90,14 +91,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing file, form or question.' }, { status: 400 })
     }
 
-    if (!file.type.startsWith(ALLOWED_PREFIX)) {
-      return NextResponse.json({ error: 'Only image files can be attached.' }, { status: 400 })
-    }
     // Size before reading the body, so an oversized file is rejected without
     // being pulled into memory first.
     if (file.size > MAX_BYTES) {
       return NextResponse.json(
-        { error: `That image is too large - the limit is ${MAX_BYTES / (1024 * 1024)}MB.` },
+        { error: `That file is too large - the limit is ${MAX_BYTES / (1024 * 1024)}MB.` },
         { status: 413 },
       )
     }
@@ -107,7 +105,7 @@ export async function POST(req: NextRequest) {
 
     if (!sniffedType) {
       return NextResponse.json(
-        { error: 'That file is not a JPEG, PNG, GIF or WebP image.' },
+        { error: 'Attach a photo (JPEG, PNG, GIF, WebP) or a PDF.' },
         { status: 400 },
       )
     }
