@@ -305,6 +305,34 @@ export const VideoBlock: Block = {
 }
 
 /**
+ * BuildLinkBlock: a card that opens a board's in-browser editor on /build.
+ *
+ * For tutorials that walk through an outside editor (MakeCode, the Python
+ * editor) and want to say "or do it right here". No button-text field: the
+ * card's wording comes from the board, so every tutorial says it the same way.
+ */
+export const BuildLinkBlock: Block = {
+  slug: 'buildLinkBlock',
+  interfaceName: 'BuildLinkBlock',
+  labels: {
+    singular: 'Build Page Link',
+    plural: 'Build Page Links',
+  },
+  fields: [
+    {
+      name: 'buildTarget',
+      label: 'Board',
+      type: 'relationship',
+      relationTo: 'build-targets',
+      required: true,
+      admin: {
+        description: 'The board whose Build page this card opens',
+      },
+    },
+  ],
+}
+
+/**
  * SimulatorLinkBlock: Link to an interactive simulator
  */
 export const SimulatorLinkBlock: Block = {

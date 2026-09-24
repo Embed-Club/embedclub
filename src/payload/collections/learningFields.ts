@@ -3,6 +3,7 @@ import type { CollectionConfig, Field, TextFieldValidation } from 'payload'
 
 import {
   AccordionBlock,
+  BuildLinkBlock,
   CodeBlock,
   GraphBlock,
   ImageBlock,
@@ -216,6 +217,7 @@ export function buildLearningFields({ noun }: { noun: string }): Field[] {
                 RowBlock,
                 AccordionBlock,
                 SimulatorLinkBlock,
+                BuildLinkBlock,
               ],
               admin: {
                 description: 'The page body. Add text, code, images, diagrams and more as blocks.',

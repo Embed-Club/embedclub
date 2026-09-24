@@ -3,62 +3,25 @@
  * as hand-written Python, so the example matches whichever editor is open.
  * The Python is written the way a person would write it rather than copied
  * from the blocks' output - it is meant to be read and learned from.
+ *
+ * The sensor programs (compass, spirit level and the rest) live in
+ * `sensorExamples.ts` and slot in before the last card.
  */
 
-export interface MicrobitExample {
-  id: string
-  name: string
-  description: string
-  /** Five rows of five brightness digits, drawn as the card's LED preview. */
-  preview: string
-  blocks: object
-  python: string
-}
+import {
+  type MicrobitExample,
+  icon,
+  leds,
+  num,
+  pause,
+  script,
+  text,
+  variable,
+  workspace,
+} from './exampleBlocks'
+import { SENSOR_EXAMPLES } from './sensorExamples'
 
-type BlockJson = Record<string, unknown>
-
-const num = (NUM: number) => ({ shadow: { type: 'math_number', fields: { NUM } } })
-const text = (TEXT: string) => ({ shadow: { type: 'text', fields: { TEXT } } })
-const variable = (id: string) => ({ VAR: { id } })
-
-/** Stack blocks top to bottom, each one's `next` the block after it. */
-function stack(...blocks: BlockJson[]): BlockJson | undefined {
-  return blocks.reduceRight<BlockJson | undefined>(
-    (next, block) => (next ? { ...block, next: { block: next } } : block),
-    undefined,
-  )
-}
-
-/** A hat block at a spot on the canvas, holding a stack. */
-function script(
-  type: string,
-  at: [number, number],
-  body: BlockJson[],
-  fields?: Record<string, unknown>,
-): BlockJson {
-  const first = stack(...body)
-  return {
-    type,
-    x: at[0],
-    y: at[1],
-    ...(fields ? { fields } : {}),
-    ...(first ? { inputs: { DO: { block: first } } } : {}),
-  }
-}
-
-function workspace(blocks: BlockJson[], variables: string[] = []): object {
-  return {
-    blocks: { languageVersion: 0, blocks },
-    ...(variables.length ? { variables: variables.map((name) => ({ name, id: name })) } : {}),
-  }
-}
-
-const pause = (ms: number) => ({ type: 'mb_pause', inputs: { MS: num(ms) } })
-const icon = (ICON: string) => ({ type: 'mb_show_icon', fields: { ICON } })
-const leds = (rows: string) => {
-  const [ROW0, ROW1, ROW2, ROW3, ROW4] = rows.split(':')
-  return { type: 'mb_show_leds', fields: { ROW0, ROW1, ROW2, ROW3, ROW4 } }
-}
+export type { MicrobitExample }
 
 const HAND = '00900:00900:09990:99999:09990'
 
@@ -315,6 +278,7 @@ while True:
         display.scroll(message)
 `,
   },
+  ...SENSOR_EXAMPLES,
   {
     id: 'special',
     name: 'Special',

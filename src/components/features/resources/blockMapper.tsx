@@ -11,6 +11,7 @@ import type {
   VideoBlock,
 } from '@/payload/payload-types'
 import { AccordionBlock as AccordionBlockComp } from './blocks/accordionBlock'
+import { BuildLinkBlock as BuildLinkBlockComp } from './blocks/buildLinkBlock'
 import { CodeBlockServer } from './blocks/codeBlockServer'
 import { GraphBlock as GraphBlockComp } from './blocks/graphBlock'
 import { ImageBlock as ImageBlockComp } from './blocks/imageBlock'
@@ -59,6 +60,8 @@ export function BlockMapper({
       )
     case 'simulatorLinkBlock':
       return <SimulatorLinkBlockComp key={b.id || index} block={b as SimulatorLinkBlockType} />
+    case 'buildLinkBlock':
+      return <BuildLinkBlockComp key={b.id || index} block={b} />
     default:
       return null
   }

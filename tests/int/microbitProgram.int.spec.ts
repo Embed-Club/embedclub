@@ -1,6 +1,7 @@
 import { defineMicrobitBlocks } from '@/lib/microbit/blocks'
 import { EXAMPLES } from '@/lib/microbit/examples'
 import { workspaceToMicroPython } from '@/lib/microbit/generator'
+import { SENSOR_EXAMPLES } from '@/lib/microbit/sensorExamples'
 import * as Blockly from 'blockly/core'
 import 'blockly/blocks'
 import * as En from 'blockly/msg/en'
@@ -106,6 +107,24 @@ describe('workspaceToMicroPython', () => {
     expect(radio).toContain("radio_message = ''")
     expect(radio).toContain('radio_message = _incoming')
   })
+
+  it('turns the compass example into an if / elif / else chain', () => {
+    const python = generate(EXAMPLES.find((example) => example.id === 'compass')?.blocks ?? {})
+    expect(python).toContain('heading = compass.heading()')
+    expect(python).toMatch(/if heading < 45 or heading >= 315:/)
+    expect(python).toContain('elif heading < 135:')
+    expect(python).toContain('display.show(Image.ARROW_E)')
+  })
+
+  // A class often has V1 and V2 boards side by side; these have to run on both.
+  it.each(SENSOR_EXAMPLES.map((example) => [example.id, example] as const))(
+    'keeps the %s example to V1 hardware',
+    (_id, example) => {
+      for (const python of [generate(example.blocks), example.python]) {
+        expect(python).not.toMatch(/microphone|speaker|audio|Sound\.|set_volume|pin_logo/)
+      }
+    },
+  )
 
   it.each(EXAMPLES.map((example) => [example.id, example] as const))(
     'generates the %s example',

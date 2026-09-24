@@ -1171,6 +1171,7 @@ export interface Resource {
         | RowBlock
         | AccordionBlock
         | SimulatorLinkBlock
+        | BuildLinkBlock
       )[]
     | null;
   updatedAt: string;
@@ -1207,6 +1208,65 @@ export interface AccordionBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'accordionBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BuildLinkBlock".
+ */
+export interface BuildLinkBlock {
+  /**
+   * The board whose Build page this card opens
+   */
+  buildTarget: number | BuildTarget;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'buildLinkBlock';
+}
+/**
+ * Boards programmable from the Build page. Drag rows to set the order they appear on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "build-targets".
+ */
+export interface BuildTarget {
+  id: number;
+  _order?: string | null;
+  title: string;
+  /**
+   * Generated from the title.
+   */
+  slug: string;
+  /**
+   * Shown on the card and at the top of the page (max 200 characters)
+   */
+  description: string;
+  thumbnail: number | Media;
+  /**
+   * Which in-browser editor the page embeds. New boards need a new option here.
+   */
+  editor: 'microbitPython';
+  tags?: (number | Tag)[] | null;
+  difficulty?: ('beginner' | 'intermediate' | 'advanced') | null;
+  /**
+   * Optional - shown above the editor. Firmware updates, cable tips, which browser to use.
+   */
+  notes?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Step-by-step walkthroughs. Drag rows to set the order they appear on the site.
@@ -1268,54 +1328,9 @@ export interface Tutorial {
         | RowBlock
         | AccordionBlock
         | SimulatorLinkBlock
+        | BuildLinkBlock
       )[]
     | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Boards programmable from the Build page. Drag rows to set the order they appear on the site.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "build-targets".
- */
-export interface BuildTarget {
-  id: number;
-  _order?: string | null;
-  title: string;
-  /**
-   * Generated from the title.
-   */
-  slug: string;
-  /**
-   * Shown on the card and at the top of the page (max 200 characters)
-   */
-  description: string;
-  thumbnail: number | Media;
-  /**
-   * Which in-browser editor the page embeds. New boards need a new option here.
-   */
-  editor: 'microbitPython';
-  tags?: (number | Tag)[] | null;
-  difficulty?: ('beginner' | 'intermediate' | 'advanced') | null;
-  /**
-   * Optional - shown above the editor. Firmware updates, cable tips, which browser to use.
-   */
-  notes?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2047,6 +2062,7 @@ export interface ResourcesSelect<T extends boolean = true> {
         rowBlock?: T | RowBlockSelect<T>;
         accordionBlock?: T | AccordionBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
+        buildLinkBlock?: T | BuildLinkBlockSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -2081,6 +2097,15 @@ export interface AccordionBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BuildLinkBlock_select".
+ */
+export interface BuildLinkBlockSelect<T extends boolean = true> {
+  buildTarget?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tutorials_select".
  */
 export interface TutorialsSelect<T extends boolean = true> {
@@ -2107,6 +2132,7 @@ export interface TutorialsSelect<T extends boolean = true> {
         rowBlock?: T | RowBlockSelect<T>;
         accordionBlock?: T | AccordionBlockSelect<T>;
         simulatorLinkBlock?: T | SimulatorLinkBlockSelect<T>;
+        buildLinkBlock?: T | BuildLinkBlockSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;

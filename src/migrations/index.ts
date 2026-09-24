@@ -43,6 +43,7 @@ import * as migration_20260903_034338_add_tracked_events from './20260903_034338
 import * as migration_20260922_110000_add_learning_source from './20260922_110000_add_learning_source';
 import * as migration_20260922_140000_add_build_targets from './20260922_140000_add_build_targets';
 import * as migration_20260922_190000_reconcile_schema_drift from './20260922_190000_reconcile_schema_drift';
+import * as migration_20260924_120000_add_build_link_block from './20260924_120000_add_build_link_block';
 
 export const migrations = [
   {
@@ -269,5 +270,10 @@ export const migrations = [
     up: migration_20260922_190000_reconcile_schema_drift.up,
     down: migration_20260922_190000_reconcile_schema_drift.down,
     name: '20260922_190000_reconcile_schema_drift',
+  },
+  {
+    up: migration_20260924_120000_add_build_link_block.up,
+    down: migration_20260924_120000_add_build_link_block.down,
+    name: '20260924_120000_add_build_link_block',
   },
 ];
