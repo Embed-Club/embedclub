@@ -1,4 +1,5 @@
 import { rewriteUploadUrls } from '@/lib/mediaUrl'
+import { preventMediaDelete } from '@/payload/hooks/preventMediaDelete'
 import type { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
@@ -11,10 +12,21 @@ export const Media: CollectionConfig = {
     read: () => true,
   },
   hooks: {
+    beforeDelete: [preventMediaDelete],
     // Serve media from the Supabase public CDN (see NEXT_PUBLIC_SUPABASE_MEDIA_URL).
     afterRead: [rewriteUploadUrls],
   },
   fields: [
+    {
+      // No column: a button that opens the bulk drawer from "Create New".
+      name: 'bulkUpload',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/components/admin/mediaBulkUploadButton',
+        },
+      },
+    },
     {
       name: 'alt',
       type: 'text',
