@@ -87,7 +87,7 @@ function toSimulatorCardData(simulator: Simulator): SimulatorCardData {
   const image =
     typeof simulator.thumbnail === 'object' && simulator.thumbnail !== null
       ? simulator.thumbnail.url || `/api/media/file/${simulator.thumbnail.id}`
-      : `/api/media/file/${simulator.thumbnail}`
+      : '/placeholder/placeholder.jpg'
 
   const tags = Array.isArray(simulator.tags)
     ? simulator.tags

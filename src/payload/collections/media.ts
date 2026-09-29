@@ -1,5 +1,5 @@
 import { rewriteUploadUrls } from '@/lib/mediaUrl'
-import { preventMediaDelete } from '@/payload/hooks/preventMediaDelete'
+import { findMediaUsage } from '@/payload/hooks/mediaUsage'
 import type { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
@@ -7,15 +7,43 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Library & System',
     description: 'Every image used across the site. Drag files in to upload in bulk.',
+    components: {
+      views: {
+        list: {
+          Component: '@/components/admin/mediaListView',
+        },
+      },
+    },
   },
   access: {
     read: () => true,
   },
   hooks: {
-    beforeOperation: [preventMediaDelete],
     // Serve media from the Supabase public CDN (see NEXT_PUBLIC_SUPABASE_MEDIA_URL).
     afterRead: [rewriteUploadUrls],
   },
+  endpoints: [
+    {
+      path: '/usage',
+      method: 'get',
+      handler: async (req) => {
+        if (!req.user) {
+          return Response.json(
+            { errors: [{ message: 'You must be signed in to inspect media usage.' }] },
+            { status: 401 },
+          )
+        }
+
+        const ids = new URL(req.url || '', 'http://payload.local').searchParams
+          .getAll('id')
+          .flatMap((value) => value.split(','))
+          .map((value) => Number(value))
+          .filter((value) => Number.isInteger(value) && value > 0)
+
+        return Response.json({ usage: await findMediaUsage(ids, req) })
+      },
+    },
+  ],
   fields: [
     {
       // No column: a button that opens the bulk drawer from "Create New".

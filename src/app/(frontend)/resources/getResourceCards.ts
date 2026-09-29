@@ -2,8 +2,7 @@ import type { ResourceCardData } from '@/app/(frontend)/resources/resourcesPageC
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 
-const FALLBACK_IMAGE =
-  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop'
+const FALLBACK_IMAGE = '/placeholder/placeholder.jpg'
 
 /**
  * Fetch cards for the Resources or Tutorials page. The two are separate

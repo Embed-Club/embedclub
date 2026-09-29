@@ -44,6 +44,7 @@ import * as migration_20260922_110000_add_learning_source from './20260922_11000
 import * as migration_20260922_140000_add_build_targets from './20260922_140000_add_build_targets';
 import * as migration_20260922_190000_reconcile_schema_drift from './20260922_190000_reconcile_schema_drift';
 import * as migration_20260924_120000_add_build_link_block from './20260924_120000_add_build_link_block';
+import * as migration_20260929_150324_allow_null_media_relations from './20260929_150324_allow_null_media_relations';
 
 export const migrations = [
   {
@@ -254,7 +255,7 @@ export const migrations = [
   {
     up: migration_20260903_034338_add_tracked_events.up,
     down: migration_20260903_034338_add_tracked_events.down,
-    name: '20260903_034338_add_tracked_events'
+    name: '20260903_034338_add_tracked_events',
   },
   {
     up: migration_20260922_110000_add_learning_source.up,
@@ -275,5 +276,10 @@ export const migrations = [
     up: migration_20260924_120000_add_build_link_block.up,
     down: migration_20260924_120000_add_build_link_block.down,
     name: '20260924_120000_add_build_link_block',
+  },
+  {
+    up: migration_20260929_150324_allow_null_media_relations.up,
+    down: migration_20260929_150324_allow_null_media_relations.down,
+    name: '20260929_150324_allow_null_media_relations'
   },
 ];

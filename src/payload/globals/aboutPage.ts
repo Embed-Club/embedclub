@@ -69,7 +69,7 @@ export const AboutPage: GlobalConfig = {
               name: 'image',
               type: 'upload',
               relationTo: 'media',
-              required: true,
+              required: false,
             },
             { name: 'caption', type: 'text' },
             {

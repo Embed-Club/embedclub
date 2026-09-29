@@ -239,7 +239,7 @@ export const ImageBlock: Block = {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
-      required: true,
+      required: false,
       admin: {
         description: 'Upload an image to display',
       },

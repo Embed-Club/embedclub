@@ -119,7 +119,7 @@ export const Events: CollectionConfig = {
               name: 'image',
               type: 'upload',
               relationTo: 'media',
-              required: true,
+              required: false,
               label: 'Event Poster/Image',
               admin: {
                 description: 'Poster shown on the event card.',

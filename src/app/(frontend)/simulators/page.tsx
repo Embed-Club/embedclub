@@ -29,8 +29,7 @@ async function getSimulators(): Promise<SimulatorCardData[]> {
 
     // Transform Payload simulators to SimulatorCardData format
     return simulators.docs.map((simulator) => {
-      let imageUrl =
-        'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=400&h=300&fit=crop' // fallback
+      let imageUrl = '/placeholder/placeholder.jpg'
 
       if (simulator.thumbnail) {
         if (

@@ -22,7 +22,7 @@ export async function getBuildTargetCards(): Promise<ResourceCardData[]> {
     const image =
       typeof thumbnail === 'object' && thumbnail !== null && thumbnail.url
         ? thumbnail.url
-        : `/api/media/file/${thumbnail}`
+        : '/placeholder/placeholder.jpg'
 
     const tags = Array.isArray(doc.tags)
       ? doc.tags

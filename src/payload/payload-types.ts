@@ -295,7 +295,7 @@ export interface Event {
   /**
    * Poster shown on the event card.
    */
-  image: number | Media;
+  image?: (number | null) | Media;
   /**
    * Short tagline shown on the event card (max 200 characters).
    */
@@ -1001,7 +1001,7 @@ export interface ImageBlock {
   /**
    * Upload an image to display
    */
-  image: number | Media;
+  image?: (number | null) | Media;
   /**
    * Optional caption or alt text for the image
    */
@@ -1083,7 +1083,7 @@ export interface Simulator {
    * Shown on the card and at the top of the modal (max 200 characters)
    */
   description: string;
-  thumbnail: number | Media;
+  thumbnail?: (number | null) | Media;
   tags?: (number | Tag)[] | null;
   difficulty?: ('beginner' | 'intermediate' | 'advanced') | null;
   /**
@@ -1132,7 +1132,7 @@ export interface Resource {
   /**
    * Image displayed in cards
    */
-  thumbnail: number | Media;
+  thumbnail?: (number | null) | Media;
   /**
    * Write the page in the Content tab, or paste a link and the site embeds it - a YouTube video, a PDF, a Google Drive file or folder, or a website.
    */
@@ -1240,7 +1240,7 @@ export interface BuildTarget {
    * Shown on the card and at the top of the page (max 200 characters)
    */
   description: string;
-  thumbnail: number | Media;
+  thumbnail?: (number | null) | Media;
   /**
    * Which in-browser editor the page embeds. New boards need a new option here.
    */
@@ -1289,7 +1289,7 @@ export interface Tutorial {
   /**
    * Image displayed in cards
    */
-  thumbnail: number | Media;
+  thumbnail?: (number | null) | Media;
   /**
    * Write the page in the Content tab, or paste a link and the site embeds it - a YouTube video, a PDF, a Google Drive file or folder, or a website.
    */
@@ -2750,7 +2750,7 @@ export interface AboutPage {
             blockType: 'aboutTextBlock';
           }
         | {
-            image: number | Media;
+            image?: (number | null) | Media;
             caption?: string | null;
             position?: ('center' | 'left' | 'right') | null;
             size?: ('small' | 'medium' | 'large') | null;

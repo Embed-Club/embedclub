@@ -83,9 +83,9 @@ function AboutSection({ section }: { section: Section }) {
         </div>
       )
     case 'aboutImageBlock': {
-      const src = mediaUrl(section.image)
-      if (!src) return null
-      const media = section.image as Media
+      const src = mediaUrl(section.image) || '/placeholder/placeholder.jpg'
+      const media =
+        typeof section.image === 'object' && section.image ? (section.image as Media) : null
       const sizeClass =
         section.size === 'small' ? 'max-w-sm' : section.size === 'medium' ? 'max-w-lg' : 'w-full'
       const positionClass =
@@ -100,9 +100,9 @@ function AboutSection({ section }: { section: Section }) {
           <div className="relative overflow-hidden rounded-2xl border border-border">
             <ImageWithSkeleton
               src={src}
-              alt={media.alt || section.caption || ''}
-              width={media.width ?? 1200}
-              height={media.height ?? 800}
+              alt={media?.alt || section.caption || 'Embed Club placeholder image'}
+              width={media?.width ?? 1200}
+              height={media?.height ?? 800}
               className="h-auto w-full object-cover"
               sizes="(max-width: 768px) 100vw, 40rem"
             />

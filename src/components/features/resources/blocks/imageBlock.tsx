@@ -8,10 +8,8 @@ interface ImageBlockProps {
 export function ImageBlock({ block }: ImageBlockProps) {
   const { image, caption, size } = block
 
-  if (!image || typeof image === 'number') return null
-
-  const media = image as Media
-  if (!media.url) return null
+  const media = typeof image === 'object' && image !== null ? (image as Media) : null
+  const imageUrl = media?.url || '/placeholder/placeholder.jpg'
 
   const sizeClasses = {
     small: 'max-w-sm mx-auto',
@@ -25,10 +23,10 @@ export function ImageBlock({ block }: ImageBlockProps) {
     >
       <div className="relative overflow-hidden rounded-2xl border border-border bg-muted/40 group">
         <ImageWithSkeleton
-          src={media.url}
-          alt={caption || media.alt || ''}
-          width={media.width || 1200}
-          height={media.height || 800}
+          src={imageUrl}
+          alt={caption || media?.alt || 'Embed Club placeholder image'}
+          width={media?.width || 1200}
+          height={media?.height || 800}
           className="w-full h-auto"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none dark:from-black/40" />

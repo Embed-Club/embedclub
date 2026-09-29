@@ -34,9 +34,7 @@ async function getProjects(): Promise<ProjectCardData[]> {
     })
 
     return result.docs.map((project) => {
-      // Null, not a stock photo: a project with no picture of the build gets a
-      // type-led tile in the showcase grid.
-      let imageUrl: string | null = null
+      let imageUrl: string | null = '/placeholder/placeholder.jpg'
 
       if (project.thumbnail) {
         if (
