@@ -9,7 +9,7 @@ export function ImageBlock({ block }: ImageBlockProps) {
   const { image, caption, size } = block
 
   const media = typeof image === 'object' && image !== null ? (image as Media) : null
-  const imageUrl = media?.url || '/placeholder/placeholder.jpg'
+  const imageUrl = media?.url || '/placeholder/placeholder.webp'
 
   const sizeClasses = {
     small: 'max-w-sm mx-auto',

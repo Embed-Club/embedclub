@@ -24,10 +24,10 @@ function resolvePhoto(member: Member): string {
       sizes?.profile?.url ||
       sizes?.thumbnail?.url ||
       p.url ||
-      '/placeholder/placeholder.jpg'
+      '/placeholder/placeholder.webp'
     )
   }
-  return '/placeholder/placeholder.jpg'
+  return '/placeholder/placeholder.webp'
 }
 
 /** First role name, if roles are populated. */

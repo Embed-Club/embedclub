@@ -453,8 +453,8 @@ export type { EventCardData }
 export const eventToCard = (event: Event): EventCardData => {
   const imageUrl =
     typeof event.image === 'object' && event.image !== null && 'url' in event.image
-      ? event.image.url || '/placeholder/placeholder.jpg'
-      : '/placeholder/placeholder.jpg'
+      ? event.image.url || '/placeholder/placeholder.webp'
+      : '/placeholder/placeholder.webp'
 
   return {
     src: imageUrl,

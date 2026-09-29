@@ -83,7 +83,7 @@ function AboutSection({ section }: { section: Section }) {
         </div>
       )
     case 'aboutImageBlock': {
-      const src = mediaUrl(section.image) || '/placeholder/placeholder.jpg'
+      const src = mediaUrl(section.image) || '/placeholder/placeholder.webp'
       const media =
         typeof section.image === 'object' && section.image ? (section.image as Media) : null
       const sizeClass =

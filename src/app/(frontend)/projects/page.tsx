@@ -34,7 +34,7 @@ async function getProjects(): Promise<ProjectCardData[]> {
     })
 
     return result.docs.map((project) => {
-      let imageUrl: string | null = '/placeholder/placeholder.jpg'
+      let imageUrl: string | null = '/placeholder/placeholder.webp'
 
       if (project.thumbnail) {
         if (

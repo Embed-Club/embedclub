@@ -19,8 +19,8 @@ import React from 'react'
 
 function getEventImageUrl(event: Event): string {
   return typeof event.image === 'object' && event.image !== null && 'url' in event.image
-    ? event.image.url || '/placeholder/placeholder.jpg'
-    : '/placeholder/placeholder.jpg'
+    ? event.image.url || '/placeholder/placeholder.webp'
+    : '/placeholder/placeholder.webp'
 }
 
 /**
