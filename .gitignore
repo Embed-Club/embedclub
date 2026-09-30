@@ -76,3 +76,6 @@ next-env.d.ts
 
 # Local state from the impeccable design skill (critique snapshots, live-mode config)
 /.impeccable/
+
+# Motion graphics generator and video renders
+/video_rpi/

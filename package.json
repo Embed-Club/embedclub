@@ -103,6 +103,7 @@
     "sass": "^1.97.1",
     "shadcn": "^3.7.0",
     "tailwindcss": "^3.4.18",
+    "three": "^0.186.1",
     "typescript": "5.7.3",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.7"

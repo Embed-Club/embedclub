@@ -176,5 +176,9 @@ function describeError(error: unknown): string {
         return error.message || `Flashing failed (${error.code}).`
     }
   }
+  const msg = error instanceof Error ? error.message : String(error)
+  if (/access denied|failed to open/i.test(msg)) {
+    return 'Permission denied by the OS. On Linux/Ubuntu, add a udev rule for micro:bit (idVendor: 0d28) or grant raw-usb permission if using Snap.'
+  }
   return error instanceof Error ? error.message : 'Something went wrong while flashing.'
 }
