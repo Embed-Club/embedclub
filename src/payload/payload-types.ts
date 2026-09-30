@@ -360,7 +360,6 @@ export interface Event {
  */
 export interface Form {
   id: number;
-  title: string;
   /**
    * Auto-generates from the title. Enter your own if it clashes with another form.
    */
@@ -402,6 +401,7 @@ export interface Form {
    * Optional - the form closes automatically after this time
    */
   deadline?: string | null;
+  title: string;
   /**
    * Shown under the form title
    */
@@ -411,7 +411,7 @@ export interface Form {
    */
   headerImage?: (number | null) | FormMedia;
   /**
-   * Each step is one screen the person fills in before moving to the next. Group related questions together - personal details on one step, event choices on another - and add a step for each group. One long step works too; several short ones are just easier to fill in on a phone.
+   * Each step is one screen the person fills in before moving to the next. Group related questions together and add a step for each group.
    */
   steps?:
     | {
@@ -443,7 +443,7 @@ export interface Form {
                 | 'imageUpload'
                 | 'image';
               /**
-               * Tells the club what this answer is, so it can be used automatically. Name and email are what certificates are printed with and sent to, so a form that issues them needs one of each. A USN is upper-cased and format-checked on submission, which keeps the responses sheet sortable by batch and department. Leave as "Just an answer" for ordinary questions.
+               * Tells the club what this answer is, so it can be used automatically. Name and email are used for certificates. USN is format-checked.
                */
               role?: ('none' | 'name' | 'email' | 'usn') | null;
               required?: boolean | null;
@@ -489,9 +489,13 @@ export interface Form {
    */
   driveFolderId?: string | null;
   /**
-   * Give respondents a certificate (usually for feedback forms)
+   * Enable automated certificate generation for this form
    */
   showCertificate?: boolean | null;
+  /**
+   * Google Slides link for the certificate. The slide must contain {{name}}.
+   */
+  certificateTemplateDriveId?: string | null;
   /**
    * Immediate sends on submit. Scheduled sends at the time you set below.
    */
@@ -534,10 +538,6 @@ export interface Form {
    * Optional. {{name}} and {{event}} are filled in per person.
    */
   certificateEmailBody?: string | null;
-  /**
-   * Google Slides link for the certificate. The slide must contain {{name}}.
-   */
-  certificateTemplateDriveId?: string | null;
   /**
    * Fills the other {{markers}} in the template. {{name}} and {{event}} are automatic.
    */
@@ -2292,7 +2292,6 @@ export interface MemberPhotoSelect<T extends boolean = true> {
  * via the `definition` "forms_select".
  */
 export interface FormsSelect<T extends boolean = true> {
-  title?: T;
   slug?: T;
   type?: T;
   relatedEvent?: T;
@@ -2304,6 +2303,7 @@ export interface FormsSelect<T extends boolean = true> {
   googleFormId?: T;
   sectionOrder?: T;
   deadline?: T;
+  title?: T;
   description?: T;
   headerImage?: T;
   steps?:
@@ -2338,6 +2338,7 @@ export interface FormsSelect<T extends boolean = true> {
   sheetId?: T;
   driveFolderId?: T;
   showCertificate?: T;
+  certificateTemplateDriveId?: T;
   certificateDelivery?: T;
   certificateSendAt?: T;
   certificateBatches?:
@@ -2353,7 +2354,6 @@ export interface FormsSelect<T extends boolean = true> {
   certificateEmailNameCase?: T;
   certificateEmailSubject?: T;
   certificateEmailBody?: T;
-  certificateTemplateDriveId?: T;
   certificatePlaceholders?:
     | T
     | {

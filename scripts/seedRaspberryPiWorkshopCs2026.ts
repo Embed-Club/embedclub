@@ -3,21 +3,18 @@
  *
  *   pnpm tsx scripts/seedRaspberryPiWorkshopCs2026.ts
  *
- * The 2026 run of the four-session workshop, starting from the 2025 sessions.
- * The one difference so far: session 1 offers the RealVNC Viewer installer from
- * the club Drive, so attendees are not sent hunting on realvnc.com. Content
- * lives in scripts/lib/raspberryPiWorkshop.ts.
+ * The 2026 run of the four-session workshop with the updated 2026 curriculum:
+ * Session 1: Setup & VNC (Imager, Wayland to X11, RealVNC without sign-up)
+ * Session 2: LED Control, Button Inputs (Debounce & Pull-up), and Email Alerts
+ * Session 3: Light & Motion Sensors (LDR digital input, state change email, PIR)
+ * Session 4: Smart Home Automation & Security Capstone
+ *
+ * Content lives in scripts/lib/raspberryPiWorkshop2026.ts.
  */
 import { flushExit } from './lib/learningSeed'
-import { seedRaspberryPiWorkshop } from './lib/raspberryPiWorkshop'
+import { seedRaspberryPiWorkshop2026 } from './lib/raspberryPiWorkshop2026'
 
-seedRaspberryPiWorkshop({
-  slug: 'raspberry-pi-workshop-cs-2026',
-  title: 'Raspberry Pi Workshop CS 2026',
-  // VNC-Viewer-7.15.1-Windows.exe on the club Drive, shared "anyone with the link".
-  vncViewerUrl:
-    'https://drive.google.com/file/d/1O--Uh5XO3yt27H5vLI-paYNbCKEZ_Rw7/view?usp=sharing',
-})
+seedRaspberryPiWorkshop2026()
   .then(() => flushExit(0))
   .catch((err) => {
     console.error(err)

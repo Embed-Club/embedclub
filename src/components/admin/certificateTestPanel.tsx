@@ -1,6 +1,6 @@
 'use client'
 
-import { useAllFormFields } from '@payloadcms/ui'
+import { toast, useAllFormFields } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { useMemo, useState } from 'react'
 
@@ -50,11 +50,16 @@ const CertificateTestPanel: UIFieldClientComponent = () => {
       )
       const result = (await response.json()) as { placeholders?: string[]; error?: string }
       if (!response.ok) throw new Error(result.error || `Scan failed (${response.status})`)
-      setFound(result.placeholders ?? [])
+      const placeholders = result.placeholders ?? []
+      setFound(placeholders)
       setValues((previous) => ({ event: previous.event || formTitle, ...previous }))
-      setStatus(`Found ${(result.placeholders ?? []).length} template fields.`)
+      const msg = `Found ${placeholders.length} template field(s).`
+      setStatus(msg)
+      toast.success(msg)
     } catch (scanError) {
-      setError(scanError instanceof Error ? scanError.message : 'Scan failed')
+      const msg = scanError instanceof Error ? scanError.message : 'Scan failed'
+      setError(msg)
+      toast.error(msg)
     } finally {
       setBusy(null)
     }
@@ -84,65 +89,154 @@ const CertificateTestPanel: UIFieldClientComponent = () => {
       if (mode === 'preview' && result.pdfBase64) {
         setPreviewUrl(`data:${result.mimeType || 'application/pdf'};base64,${result.pdfBase64}`)
         setStatus('Preview generated.')
+        toast.success('Certificate preview generated.')
       } else {
         setStatus('Test certificate emailed successfully.')
+        toast.success('Test certificate emailed successfully.')
       }
     } catch (testError) {
-      setError(testError instanceof Error ? testError.message : 'Test failed')
+      const msg = testError instanceof Error ? testError.message : 'Test failed'
+      setError(msg)
+      toast.error(msg)
     } finally {
       setBusy(null)
     }
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '1.5rem' }}>
-      <p style={{ margin: 0 }}>
-        Scan the Google Slides template, fill the values below, then preview the certificate or
-        email a test copy.
-      </p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+    <div
+      style={{
+        padding: '16px 20px',
+        marginBottom: '24px',
+        borderRadius: '4px',
+        border: '1px solid var(--theme-elevation-150)',
+        background: 'var(--theme-elevation-50)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '14px',
+      }}
+    >
+      <div>
+        <span
+          className="field-label"
+          style={{
+            display: 'block',
+            margin: '0 0 4px',
+            fontSize: '13px',
+            fontWeight: 600,
+            color: 'var(--theme-text)',
+          }}
+        >
+          Test Certificate
+        </span>
+        <p
+          className="field-description"
+          style={{
+            margin: 0,
+            fontSize: '12px',
+            color: 'var(--theme-elevation-600)',
+            lineHeight: 1.5,
+          }}
+        >
+          Scan the Google Slides template, fill the values below, then preview the certificate or
+          email a test copy.
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
         <button
           type="button"
           className="btn btn--style-secondary btn--size-small"
           onClick={scan}
           disabled={busy !== null || !templateId}
+          style={{ margin: 0 }}
         >
-          {busy === 'scan' ? 'Scanning…' : 'Scan template'}
+          {busy === 'scan' ? 'Scanning...' : 'Scan template'}
         </button>
-        {!templateId && <small>Add the Google Slides template above first.</small>}
+        {!templateId && (
+          <small style={{ color: 'var(--theme-elevation-500)', fontSize: '12px' }}>
+            Add the Google Slides template above first.
+          </small>
+        )}
       </div>
 
       {keys.length > 0 && (
-        <div style={{ display: 'grid', gap: '10px', maxWidth: '560px' }}>
-          {keys.map((key) => (
-            <label key={key} style={{ display: 'grid', gap: '4px' }}>
-              <span style={{ fontWeight: 600 }}>{`{{${key}}}`}</span>
-              <input
-                type="text"
-                value={values[key] ?? (key === 'event' ? formTitle : '')}
-                onChange={(event) => updateValue(key, event.target.value)}
-                className="field-type text"
-              />
+        <div style={{ display: 'grid', gap: '12px', maxWidth: '560px' }}>
+          {keys.map((key) => {
+            const inputId = `cert-test-key-${key}`
+            return (
+              <div key={key} style={{ display: 'grid', gap: '4px' }}>
+                <label
+                  htmlFor={inputId}
+                  className="field-label"
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    margin: 0,
+                    color: 'var(--theme-text)',
+                  }}
+                >
+                  {`{{${key}}}`}
+                </label>
+                <input
+                  id={inputId}
+                  type="text"
+                  value={values[key] ?? (key === 'event' ? formTitle : '')}
+                  onChange={(event) => updateValue(key, event.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '7px 10px',
+                    borderRadius: '4px',
+                    border: '1px solid var(--theme-elevation-150)',
+                    backgroundColor: 'var(--theme-input-bg, var(--theme-elevation-50))',
+                    color: 'var(--theme-text)',
+                    fontSize: '13px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            )
+          })}
+          <div style={{ display: 'grid', gap: '4px' }}>
+            <label
+              htmlFor="cert-test-email"
+              className="field-label"
+              style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                margin: 0,
+                color: 'var(--theme-text)',
+              }}
+            >
+              Test email address
             </label>
-          ))}
-          <label style={{ display: 'grid', gap: '4px' }}>
-            <span style={{ fontWeight: 600 }}>Test email address</span>
             <input
+              id="cert-test-email"
               type="email"
               value={testEmail}
               onChange={(event) => setTestEmail(event.target.value)}
-              className="field-type text"
               placeholder="you@example.com"
+              style={{
+                width: '100%',
+                padding: '7px 10px',
+                borderRadius: '4px',
+                border: '1px solid var(--theme-elevation-150)',
+                backgroundColor: 'var(--theme-input-bg, var(--theme-elevation-50))',
+                color: 'var(--theme-text)',
+                fontSize: '13px',
+                boxSizing: 'border-box',
+              }}
             />
-          </label>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             <button
               type="button"
-              className="btn btn--style-primary btn--size-small"
+              className="btn btn--style-secondary btn--size-small"
               onClick={() => runTest('preview')}
               disabled={busy !== null || !values.name?.trim() || !formId}
+              style={{ margin: 0 }}
             >
-              {busy === 'preview' ? 'Generating…' : 'Generate preview'}
+              {busy === 'preview' ? 'Generating...' : 'Generate preview'}
             </button>
             <button
               type="button"
@@ -155,22 +249,25 @@ const CertificateTestPanel: UIFieldClientComponent = () => {
                 !formId ||
                 !emailTemplateReady
               }
+              style={{ margin: 0 }}
             >
-              {busy === 'email' ? 'Sending…' : 'Email test certificate'}
+              {busy === 'email' ? 'Sending...' : 'Email test certificate'}
             </button>
           </div>
           {!emailTemplateReady && (
-            <small>Add both an email subject and email body above to enable email testing.</small>
+            <small style={{ color: 'var(--theme-elevation-500)', fontSize: '12px' }}>
+              Add both an email subject and email body above to enable email testing.
+            </small>
           )}
         </div>
       )}
 
       {status && (
-        <small style={{ color: 'var(--theme-success-600, var(--theme-elevation-700))' }}>
-          {status}
-        </small>
+        <small style={{ color: 'var(--theme-success-600)', fontSize: '12px' }}>{status}</small>
       )}
-      {error && <small style={{ color: 'var(--theme-error-500)' }}>{error}</small>}
+      {error && (
+        <small style={{ color: 'var(--theme-error-500)', fontSize: '12px' }}>{error}</small>
+      )}
       {previewUrl && (
         <iframe
           title="Certificate preview"
@@ -179,6 +276,9 @@ const CertificateTestPanel: UIFieldClientComponent = () => {
             width: '100%',
             minHeight: '520px',
             border: '1px solid var(--theme-elevation-150)',
+            borderRadius: '4px',
+            backgroundColor: 'var(--theme-elevation-50)',
+            marginTop: '8px',
           }}
         />
       )}

@@ -67,6 +67,10 @@ const IMAGES: Record<string, { file: string; alt: string }> = {
   led: { file: 'RaspberryPILED.jpeg', alt: 'LED wired to the Raspberry Pi GPIO header' },
   ldr: { file: 'RaspberryPiLDR.jpeg', alt: 'LDR light sensor wired to the Raspberry Pi' },
   vnc: { file: 'RealVNCAfterInputDetails.png', alt: 'RealVNC connection details entered' },
+  waylandToX11: {
+    file: 'RaspberryPiWaylandToX11.png',
+    alt: 'Switching display server from Wayland to X11 for RealVNC',
+  },
   auto: { file: 'RaspberryPiAuto.jpeg', alt: 'The completed automation build on the bench' },
 }
 
@@ -93,11 +97,11 @@ function buildContent(run: WorkshopRun, id: (key: string) => number) {
             textBlock([
               paragraph([
                 text(
-                  'The first session is the full setup: Raspberry Pi Imager, flashing the card, hostname and Wi-Fi and SSH baked in before first boot, then RealVNC for the desktop.',
+                  'The first session is the full setup: Raspberry Pi Imager, flashing the card, hostname and Wi-Fi and SSH baked in before first boot, switching the display server from Wayland to X11, then RealVNC for remote desktop.',
                 ),
               ]),
               paragraph([
-                bold('That is covered in full, with screenshots, in the '),
+                bold('That is covered in full, with step-by-step screenshots, in the '),
                 link(
                   [bold('Raspberry Pi 3/4/5 Setup tutorial')],
                   '/tutorials/raspberry-pi-345-setup',
@@ -111,28 +115,78 @@ function buildContent(run: WorkshopRun, id: (key: string) => number) {
               ]),
               heading('h3', [text('The short version')]),
               list('number', [
-                [text('Imager → Choose Device, OS (Lite is fine), and Storage.')],
                 [
-                  text('Next → '),
-                  bold('Edit Settings'),
-                  text(': hostname, username, password, Wi-Fi, and Wi-Fi country.'),
+                  text('Imager (Device, OS, Storage) → select '),
+                  bold('Raspberry Pi 4'),
+                  text(', '),
+                  bold('Raspberry Pi OS (64-bit)'),
+                  text(' (or Lite), and your target microSD card.'),
                 ],
-                [text('Services tab → '), bold('enable SSH'), text('.')],
-                [text('Write, boot, then '), code('ssh user@hostname.local'), text('.')],
                 [
-                  text('For the desktop: '),
+                  text('Customisation → configure '),
+                  bold('Hostname'),
+                  text(' (e.g. '),
+                  code('eight'),
+                  text('), '),
+                  bold('Localisation'),
+                  text(' (timezone & keyboard), '),
+                  bold('User'),
+                  text(' credentials, and '),
+                  bold('Wi-Fi'),
+                  text('.'),
+                ],
+                [
+                  text('Services tab → toggle on '),
+                  bold('Enable SSH'),
+                  text(' with password authentication. Leave Raspberry Pi Connect ignored.'),
+                ],
+                [
+                  text(
+                    'Write and verify the card, insert into your Pi 4, power on, and connect over terminal: ',
+                  ),
+                  code('ssh eight@eight.local'),
+                  text(' (or by IP).'),
+                ],
+                [
+                  text('Turn on VNC: run '),
                   code('sudo raspi-config'),
-                  text(' → Interface Options → VNC → Yes, then connect with RealVNC Viewer.'),
-                  ...(run.vncViewerUrl
-                    ? [
-                        text(' Optional: '),
-                        link([bold('download RealVNC Viewer for Windows')], run.vncViewerUrl, {
-                          newTab: true,
-                        }),
-                        text(' if you do not have it yet.'),
-                      ]
-                    : []),
+                  text(' → '),
+                  bold('Interface Options'),
+                  text(' → '),
+                  bold('VNC'),
+                  text(' → choose '),
+                  bold('Yes'),
+                  text(', then Finish.'),
                 ],
+                [
+                  text(
+                    'Switch from Wayland to X11 for RealVNC compatibility, fix headless virtual resolution to 1080p, enable X11 VNC server service, and reboot:',
+                  ),
+                ],
+              ]),
+            ]),
+            codeBlock(
+              'bash',
+              'sudo raspi-config nonint do_wayland W1 && sudo raspi-config nonint do_vnc_resolution 1920x1080 && sudo systemctl disable --now wayvnc && sudo systemctl enable vncserver-x11-serviced && sudo reboot',
+              'Switch Wayland to X11, set resolution, enable VNC service, and reboot',
+            ),
+            imageBlock(id('waylandToX11'), 'Running the Wayland to X11 switch command in terminal'),
+            textBlock([
+              paragraph([
+                text('Connect using RealVNC Viewer to '),
+                code('eight.local'),
+                text(' (or the Pi IP).'),
+                ...(run.vncViewerUrl
+                  ? [
+                      text(' '),
+                      link(
+                        [bold('Download RealVNC Viewer for Windows (Club Drive, No Sign-Up)')],
+                        run.vncViewerUrl,
+                        { newTab: true },
+                      ),
+                      text(' to skip the account creation and login prompt.'),
+                    ]
+                  : []),
               ]),
             ]),
             imageBlock(id('vnc'), 'RealVNC connecting to the Pi'),
