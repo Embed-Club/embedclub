@@ -26,13 +26,9 @@ const CertificateTestPanel: UIFieldClientComponent = () => {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState<'scan' | 'preview' | 'email' | null>(null)
 
-  const templateId = stringValue(fields?.certificateTemplateDriveId?.value).trim()
-  const formTitle = stringValue(fields?.title?.value)
-  const formId = Number(fields?.id?.value)
-  const emailTemplateReady = Boolean(
-    stringValue(fields?.certificateEmailSubject?.value).trim() &&
-      stringValue(fields?.certificateEmailBody?.value).trim(),
-  )
+  const templateId = stringValue(fields?.templateDriveId?.value).trim()
+  const formTitle = stringValue(fields?.eventName?.value)
+  const certificateId = Number(fields?.id?.value)
   const keys = useMemo(() => [...new Set(['name', 'event', ...found])], [found])
 
   const updateValue = (key: string, value: string) => {
@@ -76,7 +72,7 @@ const CertificateTestPanel: UIFieldClientComponent = () => {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          formId,
+          certificateId,
           mode,
           name: values.name,
           email: testEmail,
@@ -233,7 +229,7 @@ const CertificateTestPanel: UIFieldClientComponent = () => {
               type="button"
               className="btn btn--style-secondary btn--size-small"
               onClick={() => runTest('preview')}
-              disabled={busy !== null || !values.name?.trim() || !formId}
+              disabled={busy !== null || !values.name?.trim() || !certificateId}
               style={{ margin: 0 }}
             >
               {busy === 'preview' ? 'Generating...' : 'Generate preview'}
@@ -243,22 +239,14 @@ const CertificateTestPanel: UIFieldClientComponent = () => {
               className="btn btn--style-secondary btn--size-small"
               onClick={() => runTest('email')}
               disabled={
-                busy !== null ||
-                !values.name?.trim() ||
-                !testEmail.trim() ||
-                !formId ||
-                !emailTemplateReady
+                busy !== null || !values.name?.trim() || !testEmail.trim() || !certificateId
               }
               style={{ margin: 0 }}
             >
               {busy === 'email' ? 'Sending...' : 'Email test certificate'}
             </button>
           </div>
-          {!emailTemplateReady && (
-            <small style={{ color: 'var(--theme-elevation-500)', fontSize: '12px' }}>
-              Add both an email subject and email body above to enable email testing.
-            </small>
-          )}
+          {!certificateId && <small>Save the certificate once to enable testing.</small>}
         </div>
       )}
 

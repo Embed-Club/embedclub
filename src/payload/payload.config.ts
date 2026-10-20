@@ -10,6 +10,7 @@ import sharp from 'sharp'
 
 import { Achievements } from './collections/achievements'
 import { BuildTargets } from './collections/buildTargets'
+import { Certificates } from './collections/certificates'
 import { Events } from './collections/events'
 import { FormMedia } from './collections/formMedia'
 import { FormSubmissions } from './collections/formSubmissions'
@@ -103,6 +104,7 @@ export default buildConfig({
     // Forms
     Forms,
     FormSubmissions,
+    Certificates,
     FormMedia,
     // Library & System
     Media,

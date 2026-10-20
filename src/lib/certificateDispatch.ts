@@ -1,9 +1,10 @@
 import 'server-only'
 
 import { appsScriptConfigured, sendCertificate } from '@/lib/appsScript'
+import { certificateForForm, coveredFormIds } from '@/lib/certificateLinks'
 import { resolvePlaceholders } from '@/lib/certificatePlaceholders'
 import { applyNameCase } from '@/lib/textCase'
-import type { Form, FormSubmission } from '@/payload/payload-types'
+import type { Certificate, FormSubmission } from '@/payload/payload-types'
 import config from '@/payload/payload.config'
 import { getPayload } from 'payload'
 
@@ -15,7 +16,7 @@ import { getPayload } from 'payload'
 const NOT_CONFIGURED = 'Apps Script is not configured (APPS_SCRIPT_URL / APPS_SCRIPT_SECRET)'
 
 /** Fill {{name}}/{{event}} in a member-supplied subject/body template. */
-function fillPlaceholders(template: string, name: string, event: string): string {
+export function fillPlaceholders(template: string, name: string, event: string): string {
   return template.replaceAll('{{name}}', name).replaceAll('{{event}}', event)
 }
 
@@ -30,80 +31,74 @@ export interface DispatchResult {
  * When a submission's certificate is due, or null if it isn't yet (or ever,
  * if nothing is configured to cover it).
  *
- * Immediate-delivery forms are always due - dispatch there is really just the
- * retry path for a send that failed right after submit.
+ * Immediate certificates are always due - dispatch there is the retry path
+ * for a send that failed right after submit, and the path that catches up
+ * everyone who answered before the certificate was set up.
  *
- * Scheduled forms support named batches so different groups can go out at
- * different times (e.g. "Section A at 5pm, Section B at 9pm"). A batch is
- * matched by checking one of the form's own questions against an expected
- * answer - `matchField` is the question's exact label, `matchValue` the
- * answer that puts someone in that group. The first matching batch wins.
- * Anyone matched by no batch falls back to the form's plain `certificateSendAt`.
+ * Scheduled certificates support named batches so different groups can go out
+ * at different times. A batch is matched on one question's answer; the first
+ * matching batch wins, and anyone matched by none falls back to `sendAt`.
  */
-function dueAt(form: Form, submission: FormSubmission): Date | null {
-  if (form.certificateDelivery === 'immediate') return new Date(0)
+function dueAt(certificate: Certificate, submission: FormSubmission): Date | null {
+  if (certificate.delivery !== 'scheduled') return new Date(0)
 
   const answers = (submission.answersByLabel ?? {}) as Record<string, unknown>
 
-  for (const batch of form.certificateBatches ?? []) {
+  for (const batch of certificate.batches ?? []) {
     if (!batch.matchField || !batch.sendAt) continue
-    if (String(answers[batch.matchField] ?? '') === batch.matchValue) {
-      return new Date(batch.sendAt)
-    }
+    const answer = answers[batch.matchField]
+    const values = Array.isArray(answer) ? answer.map(String) : [String(answer ?? '')]
+    if (values.includes(batch.matchValue)) return new Date(batch.sendAt)
   }
 
-  return form.certificateSendAt ? new Date(form.certificateSendAt) : null
+  return certificate.sendAt ? new Date(certificate.sendAt) : null
 }
 
 /**
- * Send certificates for one form to everyone still marked `pending` whose
- * certificate is due.
+ * Send one certificate to everyone still marked `pending` on the forms it
+ * covers, whose send time has come.
  *
  * The PDF is built and mailed by the Apps Script web app (see
  * `scripts/appsScript/certificateSender.gs`); this decides who gets one, when,
- * and records the outcome.
- *
- * Rolling by design: it can be called repeatedly and simply picks up whoever
- * is due now, so someone who submits after their batch's send time still gets
- * theirs on the next pass. Status is per recipient, so a failure retries
+ * and records the outcome. Rolling by design: it can be called repeatedly and
+ * picks up whoever is due now. Status is per recipient, so a failure retries
  * without re-sending to people who already received one.
  */
-export async function dispatchCertificatesForForm(
-  formId: number,
+export async function dispatchCertificate(
+  certificateId: number,
   limit = 200,
 ): Promise<DispatchResult> {
-  const result: DispatchResult = {
-    attempted: 0,
-    sent: 0,
-    failed: 0,
-    skipped: [],
-  }
+  const result: DispatchResult = { attempted: 0, sent: 0, failed: 0, skipped: [] }
 
   const payload = await getPayload({ config })
-  const form = await payload.findByID({
-    collection: 'forms',
-    id: formId,
-    depth: 0,
+  const certificate = await payload.findByID({
+    collection: 'certificates',
+    id: certificateId,
+    depth: 1,
+    overrideAccess: true,
   })
 
-  if (!form?.showCertificate) {
-    result.skipped.push('form does not issue certificates')
+  if (!certificate?.enabled) {
+    result.skipped.push('certificate is switched off')
     return result
   }
 
-  // Missing config used to return here silently, which left every affected
-  // submission sitting at `pending` with an empty error - indistinguishable in
-  // the admin from one that is simply not due yet. The reason is recorded on
-  // the rows it actually blocks instead, so a member can see why.
+  const form = typeof certificate.form === 'object' ? certificate.form : null
+  const formId = form?.id ?? (certificate.form as number)
+  const eventName = certificate.eventName?.trim() || form?.title || certificate.title || ''
+
+  // Missing config is recorded on the rows it blocks rather than returning
+  // silently, so a member can see why nothing went out.
   const notConfigured = !appsScriptConfigured()
-  if (notConfigured) {
-    result.skipped.push(NOT_CONFIGURED)
-  }
+  if (notConfigured) result.skipped.push(NOT_CONFIGURED)
 
   const pending = await payload.find({
     collection: 'form-submissions',
     where: {
-      and: [{ form: { equals: formId } }, { certificateStatus: { equals: 'pending' } }],
+      and: [
+        { form: { in: await coveredFormIds(payload, formId) } },
+        { certificateStatus: { equals: 'pending' } },
+      ],
     },
     limit,
     depth: 0,
@@ -113,13 +108,11 @@ export async function dispatchCertificatesForForm(
   const now = Date.now()
 
   for (const submission of pending.docs) {
-    const due = dueAt(form, submission)
-    if (!due || due.getTime() > now) continue // not due yet - stays pending
+    const due = dueAt(certificate, submission)
+    if (!due || due.getTime() > now) continue
 
-    // Due, but there is nothing to send it with. Stay `pending` - this is a
-    // deployment problem that will fix itself the moment the env vars land,
-    // and flipping to `failed` would imply the recipient needs attention.
-    // Written once; later runs see the same message and leave it alone.
+    // Due, but nothing to send it with. Stays `pending` - this fixes itself
+    // the moment the env vars land, and `failed` would point at the recipient.
     if (notConfigured) {
       if (submission.certificateError !== NOT_CONFIGURED) {
         await payload.update({
@@ -140,10 +133,7 @@ export async function dispatchCertificatesForForm(
         collection: 'form-submissions',
         id: submission.id,
         overrideAccess: true,
-        data: {
-          certificateStatus: 'failed',
-          certificateError: 'Submission has no name or email',
-        },
+        data: { certificateStatus: 'failed', certificateError: 'Submission has no name or email' },
       })
       result.failed += 1
       continue
@@ -152,24 +142,21 @@ export async function dispatchCertificatesForForm(
     result.attempted += 1
 
     try {
-      const certificateName = applyNameCase(name, form.certificateNameCase)
-      const emailName = applyNameCase(name, form.certificateEmailNameCase)
+      const certificateName = applyNameCase(name, certificate.nameCase)
+      const emailName = applyNameCase(name, certificate.emailNameCase)
 
       await sendCertificate({
         certificateName,
         emailName,
         email,
-        formTitle: form.title,
-        // Whatever else this form's template prints - USN, section, anything
-        // the member mapped. `name` and `event` are included for templates
-        // that predate the mapping and expect the script to fill them.
-        placeholders: resolvePlaceholders(form, submission, certificateName),
-        templateId: form.certificateTemplateDriveId?.trim() || undefined,
-        emailSubject: form.certificateEmailSubject
-          ? fillPlaceholders(form.certificateEmailSubject, emailName, form.title)
+        formTitle: eventName,
+        placeholders: resolvePlaceholders(certificate, submission, certificateName, eventName),
+        templateId: certificate.templateDriveId?.trim() || undefined,
+        emailSubject: certificate.emailSubject
+          ? fillPlaceholders(certificate.emailSubject, emailName, eventName)
           : undefined,
-        emailBody: form.certificateEmailBody
-          ? fillPlaceholders(form.certificateEmailBody, emailName, form.title)
+        emailBody: certificate.emailBody
+          ? fillPlaceholders(certificate.emailBody, emailName, eventName)
           : undefined,
       })
 
@@ -191,10 +178,7 @@ export async function dispatchCertificatesForForm(
         collection: 'form-submissions',
         id: submission.id,
         overrideAccess: true,
-        data: {
-          certificateStatus: 'failed',
-          certificateError: message.slice(0, 500),
-        },
+        data: { certificateStatus: 'failed', certificateError: message.slice(0, 500) },
       })
       result.failed += 1
     }
@@ -203,27 +187,30 @@ export async function dispatchCertificatesForForm(
   return result
 }
 
-/**
- * Every form that issues certificates. Due-checking happens per submission
- * inside `dispatchCertificatesForForm` (batches mean different recipients of
- * the same form can become due at different times), so this just fans out to
- * every candidate form rather than pre-filtering - the per-form pending query
- * is cheap and indexed.
- */
+/** Run the certificate covering one form, if there is one - the after-submit path. */
+export async function dispatchCertificatesForForm(form: {
+  id: number
+  sectionOf?: unknown
+}): Promise<DispatchResult | null> {
+  const payload = await getPayload({ config })
+  const certificate = await certificateForForm(payload, form)
+  return certificate ? dispatchCertificate(certificate.id) : null
+}
+
+/** Every switched-on certificate. Due-checking happens per recipient inside. */
 export async function dispatchDueCertificates(): Promise<Record<string, DispatchResult>> {
   const payload = await getPayload({ config })
-
-  const forms = await payload.find({
-    collection: 'forms',
-    where: { showCertificate: { equals: true } },
+  const certificates = await payload.find({
+    collection: 'certificates',
+    where: { enabled: { equals: true } },
     limit: 100,
     depth: 0,
     overrideAccess: true,
   })
 
   const out: Record<string, DispatchResult> = {}
-  for (const form of forms.docs) {
-    out[form.slug] = await dispatchCertificatesForForm(form.id)
+  for (const certificate of certificates.docs) {
+    out[certificate.title || String(certificate.id)] = await dispatchCertificate(certificate.id)
   }
   return out
 }
