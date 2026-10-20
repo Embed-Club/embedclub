@@ -207,3 +207,65 @@ export async function deleteDriveFile(fileId: string): Promise<void> {
     throw new Error(`Drive delete failed (${res.status}): ${await res.text()}`)
   }
 }
+
+/**
+ * Create a new folder in Google Drive, optionally inside a parent folder.
+ */
+export async function createDriveFolder(
+  name: string,
+  parentFolderId?: string | null,
+): Promise<{ id: string; name: string }> {
+  const metadata: Record<string, unknown> = {
+    name,
+    mimeType: 'application/vnd.google-apps.folder',
+  }
+  if (parentFolderId?.trim()) {
+    metadata.parents = [parentFolderId.trim()]
+  }
+
+  const res = await driveFetch(`${FILES_URL}?supportsAllDrives=true&fields=id,name`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(metadata),
+  })
+
+  if (!res.ok) {
+    throw new Error(
+      `Drive folder creation failed (${res.status}): ${explainDriveError(res.status, await res.text())}`,
+    )
+  }
+
+  const json = (await res.json()) as { id: string; name: string }
+  return { id: json.id, name: json.name }
+}
+
+/**
+ * Create a new Google Sheet in Google Drive, optionally inside a parent folder.
+ */
+export async function createDriveSheet(
+  title: string,
+  parentFolderId?: string | null,
+): Promise<{ id: string; name: string }> {
+  const metadata: Record<string, unknown> = {
+    name: title,
+    mimeType: 'application/vnd.google-apps.spreadsheet',
+  }
+  if (parentFolderId?.trim()) {
+    metadata.parents = [parentFolderId.trim()]
+  }
+
+  const res = await driveFetch(`${FILES_URL}?supportsAllDrives=true&fields=id,name`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(metadata),
+  })
+
+  if (!res.ok) {
+    throw new Error(
+      `Drive sheet creation failed (${res.status}): ${explainDriveError(res.status, await res.text())}`,
+    )
+  }
+
+  const json = (await res.json()) as { id: string; name: string }
+  return { id: json.id, name: json.name }
+}

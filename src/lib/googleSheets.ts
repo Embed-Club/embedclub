@@ -12,7 +12,7 @@ import {
   oauthAccessToken,
   oauthRefreshTokenPresent,
 } from './googleAuth'
-import { driveViewUrl } from './googleDrive'
+import { createDriveSheet, driveConfigured, driveViewUrl } from './googleDrive'
 
 /**
  * Optional mirror of form submissions into Google Sheets - one spreadsheet per
@@ -206,9 +206,28 @@ function resolveSheetId(form: Form): string | null {
 }
 
 /**
+ * A form that should have a spreadsheet made for it on the next sync: it has a
+ * Drive folder, so a member deliberately wired it up for Drive, but no sheet
+ * yet.
+ *
+ * Deliberately narrow on two counts. Provisioning every sheetless form would
+ * pull the two thousand imported responses straight back into the batch, which
+ * is the starvation `syncPendingSubmissions` was fixed to avoid. And sections
+ * are excluded because they inherit their parent's sheet - giving a section its
+ * own would scatter one form's answers across several spreadsheets.
+ */
+function provisionable(form: Form, parentId?: number | null): boolean {
+  if (parentId) return false
+  if (resolveSheetId(form)) return false
+  if (!driveConfigured()) return false
+  return Boolean(form.driveFolderId?.trim() || process.env.GOOGLE_DRIVE_FOLDER_ID?.trim())
+}
+
+/**
  * Every form whose responses go to a sheet, keyed by id, with sections already
  * merged with their parent (questions, and the sheet itself when the section
- * has none of its own).
+ * has none of its own). Forms still waiting on a spreadsheet are included too,
+ * so the sync can make one - see `provisionable`.
  */
 async function mirroredForms(onlyFormId?: number): Promise<Map<number, Form>> {
   const payload = await getPayload({ config })
@@ -226,7 +245,7 @@ async function mirroredForms(onlyFormId?: number): Promise<Map<number, Form>> {
     if (onlyFormId !== undefined && form.id !== onlyFormId) continue
     const parentId = typeof form.sectionOf === 'object' ? form.sectionOf?.id : form.sectionOf
     const resolved = parentId ? inheritFromParent(form, byId.get(parentId)) : form
-    if (resolveSheetId(resolved)) out.set(form.id, resolved)
+    if (resolveSheetId(resolved) || provisionable(resolved, parentId)) out.set(form.id, resolved)
   }
   return out
 }
@@ -290,7 +309,30 @@ export async function syncPendingSubmissions(
   let failed = 0
 
   for (const { form, submissions } of byForm.values()) {
-    const sheetId = resolveSheetId(form)
+    let sheetId = resolveSheetId(form)
+
+    // Wired up for Drive but no spreadsheet yet: make one and write the id
+    // back to the form, so this happens once per form and not on every sync.
+    // A failure here is logged and the form skipped - the submissions keep
+    // their unsynced stamp and the next run tries again.
+    if (!sheetId) {
+      try {
+        const created = await createDriveSheet(
+          `${form.title} - Responses`,
+          form.driveFolderId?.trim() || process.env.GOOGLE_DRIVE_FOLDER_ID?.trim(),
+        )
+        sheetId = created.id
+        await payload.update({
+          collection: 'forms',
+          id: form.id,
+          overrideAccess: true,
+          data: { sheetId },
+        })
+      } catch (error) {
+        console.error(`[Sheets] Could not create a spreadsheet for form "${form.slug}":`, error)
+      }
+    }
+
     if (!sheetId) continue
 
     const uploads = uploadLabels(form)
