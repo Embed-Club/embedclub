@@ -84,6 +84,11 @@ export const Card = ({
 
     setOriginRect((gridCard ?? e.currentTarget).getBoundingClientRect())
     setOpen(true)
+    if (event?.slug && typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      url.searchParams.set('event', event.slug)
+      window.history.replaceState({}, '', url.toString())
+    }
   }
 
   const restoreGridCard = () => {
@@ -110,6 +115,13 @@ export const Card = ({
     setOpen(false)
     setOriginRect(null)
     onCardClose(index)
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      if (url.searchParams.has('event')) {
+        url.searchParams.delete('event')
+        window.history.replaceState({}, '', url.pathname + (url.search ? url.search : ''))
+      }
+    }
   }
 
   return (

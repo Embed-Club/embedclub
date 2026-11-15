@@ -133,6 +133,12 @@ export function FocusCards({ cards }: { cards: Card[] }) {
           onClick={(e) => {
             setOriginRect(e.currentTarget.getBoundingClientRect())
             setActiveIndex(index)
+            const slug = cards[index]?.event?.slug
+            if (slug && typeof window !== 'undefined') {
+              const url = new URL(window.location.href)
+              url.searchParams.set('event', slug)
+              window.history.replaceState({}, '', url.toString())
+            }
           }}
         />
       ))}
@@ -142,6 +148,13 @@ export function FocusCards({ cards }: { cards: Card[] }) {
           onClose={() => {
             setActiveIndex(null)
             setOriginRect(null)
+            if (typeof window !== 'undefined') {
+              const url = new URL(window.location.href)
+              if (url.searchParams.has('event')) {
+                url.searchParams.delete('event')
+                window.history.replaceState({}, '', url.pathname + (url.search ? url.search : ''))
+              }
+            }
           }}
           card={activeCard}
           event={activeEvent}

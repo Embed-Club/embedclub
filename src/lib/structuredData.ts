@@ -97,7 +97,7 @@ export function breadcrumbJsonLd(trail: { name: string; path: string }[]): JsonL
 }
 
 /** One club event. Online events carry a URL where in-person ones carry a place. */
-function eventJsonLd(event: Event): JsonLd {
+export function eventJsonLd(event: Event): JsonLd {
   const online = event.eventMode === 'online'
   const image = mediaUrl(event.image)
 
@@ -106,7 +106,7 @@ function eventJsonLd(event: Event): JsonLd {
 
   return {
     '@type': 'Event',
-    '@id': `${SITE_URL}/events#${event.slug ?? event.id}`,
+    '@id': `${SITE_URL}/events/${event.slug ?? event.id}#event`,
     name: event.title,
     ...(event.shortDescription ? { description: event.shortDescription } : {}),
     startDate: event.eventDate,
@@ -130,6 +130,17 @@ function eventJsonLd(event: Event): JsonLd {
             addressCountry: 'IN',
           },
         },
+  }
+}
+
+/** Structured data for a single standalone event page. */
+export function singleEventJsonLd(event: Event): JsonLd {
+  const url = `${SITE_URL}/events/${event.slug ?? event.id}`
+  return {
+    '@context': 'https://schema.org',
+    ...eventJsonLd(event),
+    url,
+    mainEntityOfPage: url,
   }
 }
 
