@@ -40,10 +40,10 @@ export interface GooglePayload {
 
 /** The formResponse endpoint for a public Google Form URL, or null if it has no ID. */
 export function googleFormEndpoint(url: string): string | null {
-  const modern = url.match(/\/forms\/d\/e\/([a-zA-Z0-9_-]+)/)?.[1]
+  const modern = url.match(/\/forms\/(?:u\/\d+\/)?d\/e\/([a-zA-Z0-9_-]+)/)?.[1]
   if (modern) return `https://docs.google.com/forms/d/e/${modern}/formResponse`
 
-  const legacy = url.match(/\/forms\/d\/([a-zA-Z0-9_-]+)/)?.[1]
+  const legacy = url.match(/\/forms\/(?:u\/\d+\/)?d\/([a-zA-Z0-9_-]+)/)?.[1]
   if (legacy) return `https://docs.google.com/forms/d/${legacy}/formResponse`
 
   return null
