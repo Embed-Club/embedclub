@@ -39,6 +39,7 @@ migration_log.txt
 .agents/
 .gemini/
 scratch/
+*opencode*.json
 
 # IDE files
 .vscode/

@@ -67,6 +67,15 @@ export const GoogleFormImporter: UIFieldClientComponent = () => {
         })
       }
 
+      // Fill or update the Google Form URL for forwarding
+      if (data.formUrl) {
+        dispatchFields({
+          type: 'UPDATE',
+          path: 'googleFormUrl',
+          value: data.formUrl,
+        })
+      }
+
       setModified(true)
 
       const totalQuestions = steps.reduce(
@@ -122,8 +131,8 @@ export const GoogleFormImporter: UIFieldClientComponent = () => {
             lineHeight: 1.5,
           }}
         >
-          Paste a public Google Form link to auto-fill title, steps, questions, and options, or
-          build manually below.
+          Paste a public Google Form link to auto-fill title, steps, questions, options, and entry
+          IDs for forwarding, or build manually below.
         </p>
       </div>
 

@@ -13,6 +13,7 @@ import {
 } from '@/lib/formAnswers'
 import { withResolvedSteps } from '@/lib/formQueries'
 import { driveConfigured, getDriveFileMeta } from '@/lib/googleDrive'
+import { forwardPendingSubmissions } from '@/lib/googleForms'
 import { syncPendingSubmissions } from '@/lib/googleSheets'
 import { isRateLimited } from '@/lib/rateLimit'
 import { USN_FORMAT_HINT, isValidUsn, normalizeUsn } from '@/lib/usn'
@@ -250,6 +251,11 @@ export async function submitForm(
       // consent that counts is the one covering the answers now on file.
       consentAcceptedAt: new Date().toISOString(),
       certificateStatus: issuesCertificate ? ('pending' as const) : ('notApplicable' as const),
+      // Queued only when this form forwards; otherwise the row is settled from
+      // the start so the cron never picks it up.
+      googleForwardStatus: form.googleFormUrl?.trim()
+        ? ('pending' as const)
+        : ('notApplicable' as const),
     }
 
     if (existingId) {
@@ -259,8 +265,14 @@ export async function submitForm(
         overrideAccess: true,
         // Clearing the sync stamp puts the corrected answers back in the sheet
         // queue. The sync upserts on Submission ID, so this rewrites their
-        // existing row rather than adding a second one.
-        data: { ...data, sheetSyncedAt: null },
+        // existing row rather than adding a second one. The Google Forms copy
+        // is re-queued for the same reason - it cannot be edited once sent.
+        data: {
+          ...data,
+          sheetSyncedAt: null,
+          googleForwardError: null,
+          googleForwardedAt: null,
+        },
       })
     } else {
       await payload.create({
@@ -280,6 +292,18 @@ export async function submitForm(
           await syncPendingSubmissions(20, form.id)
         } catch (err) {
           console.error('[Forms] Sheet sync after submit failed:', err)
+        }
+      })
+    }
+
+    // Same reasoning as the sheet mirror: the response is already stored, so a
+    // failure here only leaves the Google copy pending for the cron to retry.
+    if (form.googleFormUrl?.trim()) {
+      after(async () => {
+        try {
+          await forwardPendingSubmissions(20, form.id)
+        } catch (err) {
+          console.error('[Forms] Google Forms forward after submit failed:', err)
         }
       })
     }

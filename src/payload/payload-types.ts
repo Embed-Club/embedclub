@@ -462,6 +462,10 @@ export interface Form {
                * Tells the club what this answer is, so it can be used automatically. Name and email are what certificates are printed with and sent to, so a form that issues them needs one of each. A USN is upper-cased and format-checked on submission, which keeps the responses sheet sortable by batch and department. Leave as "Just an answer" for ordinary questions.
                */
               role?: ('none' | 'name' | 'email' | 'usn') | null;
+              /**
+               * The entry ID Google uses for this question. Filled in automatically when you import the Google Form. Only needed when the form forwards responses to Google Forms.
+               */
+              googleEntryId?: string | null;
               required?: boolean | null;
               /**
                * Half-width fields pair up side by side on desktop
@@ -534,6 +538,10 @@ export interface Form {
   confirmationMessage?: string | null;
   showProgressBar?: boolean | null;
   allowAnotherResponse?: boolean | null;
+  /**
+   * Optional. Paste the public Google Form link to also record every response there. Each question needs its Google entry ID - importing the form fills them in.
+   */
+  googleFormUrl?: string | null;
   /**
    * Optional. Paste a Sheet URL to mirror responses there. Share it with the service account as an Editor first.
    */
@@ -1510,6 +1518,18 @@ export interface FormSubmission {
    * When this row was copied to the Google Sheet. Empty means not synced.
    */
   sheetSyncedAt?: string | null;
+  /**
+   * Whether this response has reached the Google Form, if the form forwards to one.
+   */
+  googleForwardStatus?: ('notApplicable' | 'pending' | 'forwarded' | 'failed') | null;
+  /**
+   * Why the last forwarding attempt failed, if it did.
+   */
+  googleForwardError?: string | null;
+  /**
+   * When this response was recorded in the Google Form.
+   */
+  googleForwardedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2408,6 +2428,7 @@ export interface FormsSelect<T extends boolean = true> {
               label?: T;
               fieldType?: T;
               role?: T;
+              googleEntryId?: T;
               required?: T;
               width?: T;
               placeholder?: T;
@@ -2454,6 +2475,7 @@ export interface FormsSelect<T extends boolean = true> {
   confirmationMessage?: T;
   showProgressBar?: T;
   allowAnotherResponse?: T;
+  googleFormUrl?: T;
   sheetId?: T;
   driveFolderId?: T;
   certificate?: T;
@@ -2493,6 +2515,9 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   certificateError?: T;
   googleResponseId?: T;
   sheetSyncedAt?: T;
+  googleForwardStatus?: T;
+  googleForwardError?: T;
+  googleForwardedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

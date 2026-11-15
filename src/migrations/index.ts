@@ -46,6 +46,7 @@ import * as migration_20260922_190000_reconcile_schema_drift from './20260922_19
 import * as migration_20260924_120000_add_build_link_block from './20260924_120000_add_build_link_block';
 import * as migration_20260924_200000_forms_parity_and_certificates from './20260924_200000_forms_parity_and_certificates';
 import * as migration_20260929_150324_allow_null_media_relations from './20260929_150324_allow_null_media_relations';
+import * as migration_20261115_120000_add_google_forms_forwarding from './20261115_120000_add_google_forms_forwarding';
 
 export const migrations = [
   {
@@ -287,5 +288,10 @@ export const migrations = [
     up: migration_20260929_150324_allow_null_media_relations.up,
     down: migration_20260929_150324_allow_null_media_relations.down,
     name: '20260929_150324_allow_null_media_relations',
+  },
+  {
+    up: migration_20261115_120000_add_google_forms_forwarding.up,
+    down: migration_20261115_120000_add_google_forms_forwarding.down,
+    name: '20261115_120000_add_google_forms_forwarding',
   },
 ];
