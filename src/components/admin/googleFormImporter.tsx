@@ -1,17 +1,49 @@
 'use client'
 
-import { toast, useAllFormFields, useForm } from '@payloadcms/ui'
+import { toast, useAllFormFields, useDocumentInfo, useForm } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { useState } from 'react'
 
 export const GoogleFormImporter: UIFieldClientComponent = () => {
+  const { id } = useDocumentInfo()
   const { dispatchFields, setModified } = useForm()
   const [fields] = useAllFormFields()
 
   const [url, setUrl] = useState('')
   const [busy, setBusy] = useState(false)
+  const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [importedSummary, setImportedSummary] = useState<string | null>(null)
+
+  const handleSyncPrevious = async () => {
+    if (!id) return
+    setSyncing(true)
+    try {
+      const res = await fetch(`/api/admin/forms/${id}/sync?force=true`, {
+        method: 'POST',
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to sync submissions.')
+
+      if (data.count === 0) {
+        toast.info('No submissions found on this form to sync.')
+      } else {
+        const msg = `Processed ${data.count} submission(s): ${data.forwarded} forwarded to Google Forms, ${data.sheetSynced} synced to Sheets.`
+        if (data.forwardFailed > 0) {
+          toast.error(
+            `${msg} (${data.forwardFailed} failed - check that Google Form accepts public responses)`,
+          )
+        } else {
+          toast.success(msg)
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Sync failed.'
+      toast.error(msg)
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const handleImport = async () => {
     if (!url.trim()) {
@@ -175,6 +207,34 @@ export const GoogleFormImporter: UIFieldClientComponent = () => {
         <small style={{ color: 'var(--theme-success-600)', fontSize: '12px' }}>
           {importedSummary}
         </small>
+      )}
+
+      {Boolean(id) && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingTop: '8px',
+            borderTop: '1px solid var(--theme-elevation-100)',
+            marginTop: '4px',
+            flexWrap: 'wrap',
+            gap: '8px',
+          }}
+        >
+          <span style={{ fontSize: '12px', color: 'var(--theme-elevation-600)' }}>
+            Have earlier registrations that didn't reach Google Forms?
+          </span>
+          <button
+            type="button"
+            className="btn btn--style-secondary btn--size-small"
+            onClick={handleSyncPrevious}
+            disabled={syncing}
+            style={{ margin: 0, whiteSpace: 'nowrap' }}
+          >
+            {syncing ? 'Syncing...' : 'Sync Previous Submissions to Google'}
+          </button>
+        </div>
       )}
     </div>
   )

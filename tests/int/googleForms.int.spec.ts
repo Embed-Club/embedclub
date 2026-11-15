@@ -20,6 +20,13 @@ describe('googleFormEndpoint', () => {
     )
   })
 
+  it('resolves Google Form links containing /u/0/ or account paths', () => {
+    const url = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSc_EXAMPLE_12345/viewform?usp=sharing'
+    expect(googleFormEndpoint(url)).toBe(
+      'https://docs.google.com/forms/d/e/1FAIpQLSc_EXAMPLE_12345/formResponse',
+    )
+  })
+
   it('returns null for non-Google Form links', () => {
     expect(googleFormEndpoint('https://example.com/not-a-form')).toBeNull()
   })
