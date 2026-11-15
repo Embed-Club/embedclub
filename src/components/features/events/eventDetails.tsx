@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { formatEventDate, googleCalendarUrl, isUpcomingEvent } from '@/lib/eventUtils'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/payload/payload-types'
-import { CalendarDays, CalendarPlus, ChevronDown, Video } from 'lucide-react'
+import { CalendarDays, CalendarPlus, Check, ChevronDown, Share2, Video } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import type React from 'react'
 import { Suspense, useEffect, useRef, useState } from 'react'
@@ -187,6 +187,16 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
           (!f.deadline || new Date(f.deadline).getTime() > Date.now()),
       )?.slug ?? null
 
+  const [copied, setCopied] = useState(false)
+  const handleCopyLink = () => {
+    if (typeof window === 'undefined') return
+    const url = event.slug ? `${window.location.origin}/events/${event.slug}` : window.location.href
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Date + mode */}
@@ -243,6 +253,25 @@ export const EventDetails: React.FC<EventDetailsProps> = ({ event }) => {
           Join online meeting
         </a>
       )}
+
+      {/* Share / direct URL */}
+      <button
+        type="button"
+        onClick={handleCopyLink}
+        className="flex items-center justify-center gap-2 w-full px-6 py-2.5 border border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 text-sm font-medium rounded-xl transition-all cursor-pointer"
+      >
+        {copied ? (
+          <>
+            <Check className="h-4 w-4 text-primary" />
+            <span className="text-primary font-medium">Link copied to clipboard</span>
+          </>
+        ) : (
+          <>
+            <Share2 className="h-4 w-4" />
+            <span>Share event link</span>
+          </>
+        )}
+      </button>
 
       {/* Quick Info Section */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
