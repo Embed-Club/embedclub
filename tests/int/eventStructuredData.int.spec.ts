@@ -19,6 +19,16 @@ describe('singleEventJsonLd', () => {
       location: {
         address: 'PA College of Engineering, Mangalore',
       },
+      description: {
+        root: {
+          type: 'root',
+          children: [],
+          direction: null,
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      },
       createdAt: '2026-11-15T00:00:00.000Z',
       updatedAt: '2026-11-15T00:00:00.000Z',
     }
@@ -46,6 +56,16 @@ describe('singleEventJsonLd', () => {
       eventDate: '2026-12-01T15:00:00.000Z',
       eventMode: 'online',
       meetingLink: 'https://meet.google.com/abc-defg-hij',
+      description: {
+        root: {
+          type: 'root',
+          children: [],
+          direction: null,
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      },
       createdAt: '2026-11-15T00:00:00.000Z',
       updatedAt: '2026-11-15T00:00:00.000Z',
     }
