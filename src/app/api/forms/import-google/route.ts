@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       data: parsed,
+      formUrl: res.url || url,
     })
   } catch (error) {
     console.error('[GoogleFormImport] Error:', error)

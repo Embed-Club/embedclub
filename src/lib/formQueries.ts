@@ -88,6 +88,9 @@ export function inheritFromParent(form: Form, parent: Form | null | undefined): 
     steps: parent?.steps ?? [],
     sheetId: form.sheetId?.trim() || parent?.sheetId || null,
     driveFolderId: form.driveFolderId?.trim() || parent?.driveFolderId || null,
+    // A section is answered through its parent's questions, so it forwards to
+    // the parent's Google Form and uses the parent's entry IDs.
+    googleFormUrl: form.googleFormUrl?.trim() || parent?.googleFormUrl || null,
   }
 }
 

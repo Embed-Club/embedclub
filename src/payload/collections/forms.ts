@@ -8,6 +8,7 @@ type FieldRow = {
   role?: string | null
   fieldType?: string | null
   label?: string | null
+  googleEntryId?: string | null
   displayImage?: unknown
 }
 type StepRow = {
@@ -67,6 +68,44 @@ function incompleteQuestions(steps: StepRow[] | null | undefined): string[] {
           if (!field.videoUrl) out.push(`${name} has no YouTube link`)
           break
       }
+    }
+  }
+  return out
+}
+
+/**
+ * Question types Google Forms accepts a plain value for. File uploads are
+ * excluded: a Google upload question wants an uploaded file token, which this
+ * endpoint cannot supply, so those answers are skipped rather than sent wrong.
+ */
+const GOOGLE_FORWARDABLE_TYPES = [
+  'text',
+  'email',
+  'phone',
+  'number',
+  'textarea',
+  'select',
+  'radio',
+  'checkbox',
+  'linearScale',
+  'rating',
+  'radioGrid',
+  'checkboxGrid',
+  'date',
+  'time',
+]
+
+/**
+ * Questions that would be silently dropped by the Google Forms forward, because
+ * no `entry.<id>` is mapped for them. Only enforced when the form actually
+ * forwards, so an ordinary site-only form needs no mapping.
+ */
+function unmappedGoogleQuestions(steps: StepRow[] | null | undefined): string[] {
+  const out: string[] = []
+  for (const step of steps ?? []) {
+    for (const field of step.fields ?? []) {
+      if (!GOOGLE_FORWARDABLE_TYPES.includes(field.fieldType ?? '')) continue
+      if (!field.googleEntryId?.trim()) out.push(field.label || 'Untitled')
     }
   }
   return out
@@ -143,6 +182,20 @@ export const Forms: CollectionConfig = {
         description:
           'Auto-generates from the title. Enter your own if it clashes with another form.',
         placeholder: 'Will auto-generate when you type the title',
+      },
+    },
+    {
+      // Import fills the title, description, questions and their Google entry
+      // IDs in one go, so a form already built in Google Forms can be mirrored
+      // without retyping it. It is a UI-only field: nothing is stored under
+      // this name.
+      name: 'googleFormImport',
+      type: 'ui',
+      admin: {
+        condition: (data) => !data?.sectionOf,
+        components: {
+          Field: '@/components/admin/googleFormImporter',
+        },
       },
     },
     {
@@ -401,6 +454,16 @@ export const Forms: CollectionConfig = {
                 condition: (_data, siblingData) => !ROLELESS_TYPES.includes(siblingData?.fieldType),
                 description:
                   'Tells the club what this answer is, so it can be used automatically. Name and email are what certificates are printed with and sent to, so a form that issues them needs one of each. A USN is upper-cased and format-checked on submission, which keeps the responses sheet sortable by batch and department. Leave as "Just an answer" for ordinary questions.',
+              },
+            },
+            {
+              name: 'googleEntryId',
+              label: 'Google Forms Entry ID',
+              type: 'text',
+              admin: {
+                description:
+                  'The entry ID Google uses for this question. Filled in automatically when you import the Google Form. Only needed when the form forwards responses to Google Forms.',
+                placeholder: '123456789',
               },
             },
             {
@@ -716,6 +779,19 @@ export const Forms: CollectionConfig = {
       ],
     },
     {
+      name: 'googleFormUrl',
+      label: 'Forward to Google Form',
+      type: 'text',
+      admin: {
+        description:
+          'Optional. Paste the public Google Form link to also record every response there. Each question needs its Google entry ID - importing the form fills them in.',
+        placeholder: 'https://docs.google.com/forms/d/e/...',
+      },
+      hooks: {
+        beforeValidate: [({ value }) => (typeof value === 'string' ? value.trim() : value)],
+      },
+    },
+    {
       name: 'sheetId',
       label: 'Google Sheet',
       type: 'text',
@@ -821,6 +897,20 @@ export const Forms: CollectionConfig = {
             `Some questions are missing their setup: ${incomplete.join('; ')}.`,
             400,
           )
+        }
+
+        // Only when the form forwards: an unanswered question is not a problem,
+        // but a question that cannot be represented in Google Forms would be
+        // dropped from every response, so it is caught here rather than at
+        // submit time when nobody is watching.
+        if (data?.googleFormUrl?.trim()) {
+          const unmapped = unmappedGoogleQuestions(data?.steps)
+          if (unmapped.length > 0) {
+            throw new APIError(
+              `Every question needs its Google Forms entry ID before responses can be forwarded. Missing on: ${unmapped.join(', ')}. Import the Google Form to fill them in.`,
+              400,
+            )
+          }
         }
 
         return data

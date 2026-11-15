@@ -10,6 +10,7 @@ export interface ParsedOption {
 
 export interface ParsedField {
   label: string
+  googleEntryId?: string
   fieldType:
     | 'text'
     | 'email'
@@ -113,9 +114,14 @@ export function parseGoogleFormHtml(html: string): ParsedGoogleForm {
 
     const isRequired = Boolean(questionDetails[2] === 1 || questionDetails[2] === true)
     const optionsRaw = questionDetails[1]
+    const entryId =
+      questionDetails[0] !== undefined && questionDetails[0] !== null
+        ? String(questionDetails[0])
+        : undefined
 
     const field: ParsedField = {
       label: itemTitle || 'Untitled Question',
+      googleEntryId: entryId,
       fieldType: 'text',
       required: isRequired,
       role: 'none',

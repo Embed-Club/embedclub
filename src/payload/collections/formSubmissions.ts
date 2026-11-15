@@ -243,6 +243,43 @@ export const FormSubmissions: CollectionConfig = {
         description: 'When this row was copied to the Google Sheet. Empty means not synced.',
       },
     },
+    {
+      // The Google Forms copy is a convenience, never the record: the response
+      // is already safe here, so a pending or failed forward costs the club a
+      // duplicate row in Google, not a lost registration.
+      name: 'googleForwardStatus',
+      type: 'select',
+      defaultValue: 'notApplicable',
+      options: [
+        { label: 'Not applicable', value: 'notApplicable' },
+        { label: 'Pending', value: 'pending' },
+        { label: 'Forwarded', value: 'forwarded' },
+        { label: 'Failed', value: 'failed' },
+      ],
+      index: true,
+      admin: {
+        readOnly: true,
+        description:
+          'Whether this response has reached the Google Form, if the form forwards to one.',
+      },
+    },
+    {
+      name: 'googleForwardError',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        description: 'Why the last forwarding attempt failed, if it did.',
+      },
+    },
+    {
+      name: 'googleForwardedAt',
+      type: 'date',
+      admin: {
+        readOnly: true,
+        date: { pickerAppearance: 'dayAndTime' },
+        description: 'When this response was recorded in the Google Form.',
+      },
+    },
   ],
   timestamps: true,
 }
