@@ -17,12 +17,12 @@ const STATIONS = [
   {
     title: 'Setup & Exhibit',
     detail:
-      'Report to the PACE campus on 25 November. Set up your hardware prototype at the Project Expo stalls or prepare your slide deck in the Paper Presentation hall.',
+      'Report to the PACE campus on 25 November. Set up your build at the Project Expo stalls or prepare your slide deck in the Paper Presentation hall.',
   },
   {
     title: 'Jury Defense & Live Demo',
     detail:
-      'Demonstrate working builds to academic and IEEE evaluators. Walk the judges through your code, circuit schematic, methodology, and innovation.',
+      'Demonstrate working builds to academic and IEEE evaluators. Walk the judges through your code, architecture, methodology, and innovation.',
   },
   {
     title: 'Awards & Cash Prizes',

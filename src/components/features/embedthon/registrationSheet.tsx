@@ -19,7 +19,7 @@ const FAQS = [
   {
     question: 'What facilities are provided at Project Expo booths?',
     answer:
-      'Each team is allotted exhibition desk space, dedicated AC power sockets for hardware and chargers, and access to campus high-speed Wi-Fi.',
+      'Each team is allotted exhibition desk space, dedicated AC power sockets for laptops and any hardware, and access to campus high-speed Wi-Fi.',
   },
   {
     question: 'What are the cash prizes and certificates?',

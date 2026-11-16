@@ -4,7 +4,7 @@ import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTheme } from 'next-themes'
-import { useRef } from 'react'
+import { type CSSProperties, useRef } from 'react'
 import { getWavePolygon } from './wavyThemeReveal'
 
 const SCHEDULE = [
@@ -33,36 +33,109 @@ const SCHEDULE = [
   ],
 ] as const
 
+/**
+ * Two-letter code for a session, the way the reference list abbreviates each
+ * project name. First and last word keeps the result short enough to set at
+ * display size without clipping.
+ */
+function sessionCode(title: string): string {
+  const words = title.split(/\s+/).filter(Boolean)
+  const first = words[0]?.[0] ?? ''
+  const last = words[words.length - 1]?.[0] ?? ''
+  return `${first}${last}`.toUpperCase()
+}
+
+/** Slot length in minutes, or null when the slot closes the day. */
+function slotMinutes(start: string, end: string): number | null {
+  const toMinutes = (value: string) => {
+    const match = /^(\d{1,2}):(\d{2})$/.exec(value)
+    return match ? Number(match[1]) * 60 + Number(match[2]) : null
+  }
+  const from = toMinutes(start)
+  const to = toMinutes(end)
+  return from === null || to === null ? null : to - from
+}
+
 function ScheduleTimeline() {
   return (
-    <div className="mt-14 border-y border-border/80">
-      {SCHEDULE.map(([start, end, title, detail], index) => (
-        <article
-          key={title}
-          className="group relative grid min-h-52 overflow-hidden border-b border-border/80 last:border-b-0 md:grid-cols-[minmax(15rem,0.7fr)_minmax(0,1.3fr)]"
-        >
-          <p className="pointer-events-none absolute -left-1 top-2 font-extrabold leading-none tracking-[-0.08em] text-foreground/[0.08] text-[clamp(5rem,15vw,13rem)]">
-            {start}
-          </p>
-          <div className="relative z-10 flex items-end p-5 sm:p-8">
-            <span className="text-sm font-bold tabular-nums text-primary">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-          </div>
-          <div className="relative z-10 flex flex-col justify-end border-t border-border/60 p-5 sm:border-l sm:border-t-0 sm:p-8">
-            <p className="text-sm font-semibold tabular-nums text-primary">
-              {start} - {end}
-            </p>
-            <h3 className="mt-2 max-w-xl text-2xl font-extrabold tracking-[-0.03em] sm:text-4xl">
-              {title}
-            </h3>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-foreground/65 sm:text-base">
-              {detail}
-            </p>
-          </div>
-        </article>
-      ))}
-    </div>
+    <ol
+      className="mt-14 border-t border-border/70"
+      style={{ '--schedule-display': 'clamp(56px, 21vw, 285px)' } as CSSProperties}
+    >
+      {SCHEDULE.map(([start, end, title, detail], index) => {
+        const minutes = slotMinutes(start, end)
+
+        return (
+          <li key={title} className="border-t border-border/70 first:border-t-0">
+            <article
+              className="grid grid-cols-2 gap-x-[var(--g)] gap-y-0 overflow-clip pb-[1.3rem] text-foreground/30 transition-colors duration-500 hover:text-foreground"
+              style={
+                {
+                  '--g': '1.25rem',
+                  gridTemplateRows: 'calc(var(--schedule-display) * 230 / 285) auto',
+                } as CSSProperties
+              }
+            >
+              {/* Decorative display pair: session number left, code right. */}
+              <span
+                aria-hidden="true"
+                className="block font-bold leading-[0.98] tracking-[-0.01em]"
+                style={{
+                  fontSize: 'var(--schedule-display)',
+                  height: '0.98em',
+                  marginTop: 'calc(var(--schedule-display) * -6 / 285)',
+                  marginLeft: 'calc(var(--schedule-display) * -9 / 285)',
+                }}
+              >
+                {`S.${String(index + 1).padStart(2, '0')}`}
+              </span>
+              <span
+                aria-hidden="true"
+                className="block justify-self-start font-bold leading-[0.98] tracking-[-0.01em]"
+                style={{
+                  fontSize: 'var(--schedule-display)',
+                  height: '0.98em',
+                  marginTop: 'calc(var(--schedule-display) * -6 / 285)',
+                  marginLeft: 'calc(var(--schedule-display) * -10 / 285)',
+                }}
+              >
+                {sessionCode(title)}
+              </span>
+
+              <div className="col-span-2 mt-[1.3rem] grid grid-cols-2 gap-x-[var(--g)] gap-y-[1.2rem] border-t border-border/70 pt-[1.3rem] text-[13px] font-bold uppercase leading-none tracking-[0.01em] md:grid-cols-[6fr_3fr_2fr_1fr] md:gap-y-0">
+                <span className="min-w-0">
+                  <span className="mr-2 inline-block text-[8px] leading-none tracking-[0.01em]">
+                    Session
+                  </span>
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span className="min-w-0">
+                  <span className="mr-2 inline-block text-[8px] leading-none tracking-[0.01em]">
+                    Name:
+                  </span>
+                  {title}
+                </span>
+                <span className="hidden min-w-0 md:block">
+                  <span className="mr-2 inline-block text-[8px] leading-none tracking-[0.01em]">
+                    Time:
+                  </span>
+                  {start} - {end}
+                </span>
+                <span className="hidden text-right md:block">
+                  <span className="mr-2 inline-block text-[8px] leading-none tracking-[0.01em]">
+                    Length:
+                  </span>
+                  {minutes === null ? end : `${minutes} min`}
+                </span>
+              </div>
+
+              {/* Screen readers get the sentence the display type replaces. */}
+              <p className="sr-only">{detail}</p>
+            </article>
+          </li>
+        )
+      })}
+    </ol>
   )
 }
 
@@ -106,7 +179,8 @@ export function EventSchedule() {
       ref={root}
       id="schedule"
       aria-labelledby="schedule-title"
-      className="relative scroll-mt-16"
+      /* z-30 clears the roadmap's z-20 timeline dots, so the wave covers them. */
+      className="relative z-30 scroll-mt-16"
     >
       <div
         ref={wave}
@@ -116,7 +190,9 @@ export function EventSchedule() {
       />
 
       <div className="dark relative z-10 bg-background text-foreground">
-        <div className="mx-auto w-full max-w-[1536px] px-5 py-20 sm:px-10 sm:py-28 lg:px-14">
+        {/* Full-bleed: the row type is sized against the page width, not a
+            content column, so the list keeps the reference's 20px gutter. */}
+        <div className="w-full px-5 py-20 sm:py-28">
           <div className="max-w-2xl">
             <h2
               id="schedule-title"

@@ -13,6 +13,10 @@ import {
   Ticket,
 } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useTheme } from 'next-themes'
+import { useEffect } from 'react'
+
+const DOCK_IDS = ['embedthon-floating-dock', 'embedthon-floating-dock-mobile'] as const
 
 const EMBERS_NAV_ITEMS = [
   {
@@ -64,6 +68,22 @@ const EMBERS_NAV_ITEMS = [
 
 export function EmbedthonNav() {
   const { isRevealed } = useEmbedthonReveal()
+  const { resolvedTheme } = useTheme()
+
+  /*
+   * The dock floats above every section, so it cannot inherit a section's local
+   * palette. The hero's wave pins it to light while its light sheet sits under
+   * the dock, and the earlier handoff left that pin in place for the rest of the
+   * page - which is why it stayed a white pill over the dark sections. Keep it
+   * in step with the resolved theme; the wave's own pin still wins during the
+   * hero transition because it runs outside React.
+   */
+  useEffect(() => {
+    if (resolvedTheme !== 'light' && resolvedTheme !== 'dark') return
+    for (const id of DOCK_IDS) {
+      document.getElementById(id)?.setAttribute('data-theme', resolvedTheme)
+    }
+  }, [resolvedTheme])
 
   return (
     <motion.div
