@@ -7,7 +7,6 @@ const ITEMS = [
   'National Level Technical Fest',
   'Project Expo',
   'Paper Presentation',
-  'Win Exciting Cash Prizes',
   'Ideas / Build / Innovate',
   '25 November 2026',
   'PACE Campus Mangaluru',

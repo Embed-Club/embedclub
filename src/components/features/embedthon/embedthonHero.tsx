@@ -1,7 +1,7 @@
 'use client'
 
-import { WisprFlowTextAnimation } from '@/blocks/wisprFlowTextAnimation'
 import { EmbedthonTextBuildUp } from '@/components/features/embedthon/embedthonTextBuildUp'
+import { WisprFlowTextAnimation } from '@/components/features/embedthon/wisprFlowTextAnimation'
 import { useEventCountdown } from '@/hooks/useEventCountdown'
 import { useTheme } from 'next-themes'
 import { useEffect, useRef } from 'react'
@@ -31,21 +31,29 @@ export function EmbedthonHero({ event }: { event: EventType }) {
 
   const pad = (value: number) => String(value).padStart(2, '0')
 
+  // The flowing corner lines carry the event's own copy rather than new prose.
+  const marqueeText = `${details.name} - ${details.date} - ${details.location} - ${details.label} - ${details.tagline}`
+
   return (
     <section
       ref={root}
       className="dark relative flex min-h-svh flex-col justify-between overflow-hidden text-foreground"
     >
+      {/* Corner marquees sit outside the padded content column so they reach the
+          page edges; the line runs off the viewport corner instead of floating. */}
+      <WisprFlowTextAnimation
+        text={marqueeText}
+        corner="topRight"
+        className="pointer-events-none absolute right-0 top-0 hidden w-[24rem] md:block"
+      />
+      <WisprFlowTextAnimation
+        text={marqueeText}
+        corner="bottomLeft"
+        className="pointer-events-none absolute bottom-0 left-0 hidden w-[22rem] md:block"
+      />
+
       {/* Main hero content */}
       <div className="relative mx-auto flex w-full max-w-[1536px] flex-1 flex-col justify-center px-4 py-10 sm:px-8 sm:py-14 lg:px-10 xl:px-12">
-        <WisprFlowTextAnimation
-          text="EMBED CLUB  EMBED CLUB  EMBED CLUB"
-          className="pointer-events-none absolute right-4 top-7 hidden w-[19rem] sm:block lg:right-10"
-        />
-        <WisprFlowTextAnimation
-          text="IDEAS  BUILD  INNOVATE  IDEAS  BUILD  INNOVATE"
-          className="pointer-events-none absolute bottom-5 left-4 hidden w-[22rem] sm:block lg:left-10"
-        />
         {/* Middle row: Embers '26 title & Date/Countdown */}
         <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-8">
           {/* Middle-Left: Title & Category Sub-banner */}
@@ -109,12 +117,6 @@ export function EmbedthonHero({ event }: { event: EventType }) {
             <p className="text-[clamp(1.05rem,1.5vw,1.25rem)] font-medium leading-[1.6] text-foreground/90">
               {details.description}
             </p>
-
-            {/* Cash prize highlight pill */}
-            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">
-              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-              {event === 'embers' ? 'Win exciting cash prizes' : 'Workshop + 24-hour hackathon'}
-            </div>
 
             <div className="mt-7 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
               <a
