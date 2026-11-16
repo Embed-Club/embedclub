@@ -18,6 +18,7 @@ import {
   SquareChartGantt,
   Trophy,
   UsersRound,
+  Zap,
 } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import * as React from 'react'
@@ -110,6 +111,12 @@ const data = {
       title: 'MEMBERS',
       url: '/members',
       icon: UsersRound,
+    },
+
+    {
+      title: 'EMBED DAYS',
+      url: '/embed-days',
+      icon: Zap,
     },
   ],
   navBottom: [

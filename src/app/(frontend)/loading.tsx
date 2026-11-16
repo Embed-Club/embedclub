@@ -6,10 +6,11 @@ import { useEffect, useState } from 'react'
 export default function Loading() {
   const pathname = usePathname()
   const isLandingPage = pathname === '/' || pathname === '/home'
+  const isEmbedthon = pathname?.startsWith('/embedthon')
   const [fillProgress, setFillProgress] = useState(0)
 
   useEffect(() => {
-    if (isLandingPage) return
+    if (isLandingPage || isEmbedthon) return
 
     const duration = 800
     const start = Date.now()
@@ -19,10 +20,10 @@ export default function Loading() {
       if (elapsed >= duration) clearInterval(timer)
     }, 16)
     return () => clearInterval(timer)
-  }, [isLandingPage])
+  }, [isLandingPage, isEmbedthon])
 
-  // Skip loader content if the layout shell is already handling the high-end intro
-  if (isLandingPage) return <div className="fixed inset-0 z-[999] bg-background" />
+  // Skip loader content if the layout shell or embedthon is active
+  if (isLandingPage || isEmbedthon) return null
 
   return (
     <div className="fixed inset-0 z-[999] bg-background flex items-center justify-center">

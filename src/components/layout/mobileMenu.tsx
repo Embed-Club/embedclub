@@ -15,6 +15,7 @@ import {
   School,
   Trophy,
   UsersRound,
+  Zap,
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
@@ -70,6 +71,12 @@ const navItems = [
     ariaLabel: 'Members',
     link: '/members',
     icon: UsersRound,
+  },
+  {
+    label: 'EMBED DAYS',
+    ariaLabel: 'Embed Days',
+    link: '/embed-days',
+    icon: Zap,
     dividerAfter: true,
   },
 

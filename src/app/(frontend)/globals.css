@@ -5,7 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer base {
-  :root {
+  :root,
+  .light,
+  [data-theme="light"],
+  .dark [data-theme="light"],
+  .dark .light {
     /* Solder & Copper light theme - warm off-white base, deep copper accents */
     --background: 36 30% 97%;
     --foreground: 20 14.3% 8%;
@@ -41,7 +45,10 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-  .dark {
+  .dark,
+  [data-theme="dark"],
+  .light [data-theme="dark"],
+  .light .dark {
     /* Solder & Copper dark theme - graphite base, copper #d98e4a accents */
     --background: 20 14.3% 4.1%;
     --foreground: 36 30% 96%;
@@ -82,8 +89,13 @@
   * {
     @apply border-border;
   }
+  html {
+    overflow-x: clip;
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
+    overflow-x: clip;
   }
 }
 
