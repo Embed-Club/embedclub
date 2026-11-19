@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  DOCK_IDS,
+  isWavePainting,
+  setDockTheme,
+  setScrollbarPalette,
+} from '@/components/features/embedthon/chromeTheme'
 import { useEmbedthonReveal } from '@/components/features/embedthon/embedthonRevealContext'
 import { FloatingDock } from '@/components/ui/floatingDock'
 import {
@@ -16,7 +22,8 @@ import { motion } from 'motion/react'
 import { useTheme } from 'next-themes'
 import { useEffect } from 'react'
 
-const DOCK_IDS = ['embedthon-floating-dock', 'embedthon-floating-dock-mobile'] as const
+const DESKTOP_DOCK = DOCK_IDS[0]
+const MOBILE_DOCK = DOCK_IDS[1]
 
 const EMBERS_NAV_ITEMS = [
   {
@@ -66,22 +73,94 @@ const EMBERS_NAV_ITEMS = [
   },
 ]
 
+/**
+ * The surface the dock is sitting on. Sections on this page paint their own
+ * background and say which palette it is with a `.light` / `.dark` class, so
+ * walking up from the element under the dock finds the colour that is really
+ * there. The walk stops at the page container: above that point the classes
+ * describe the document, not a section.
+ */
+function themedSurface(element: Element | null): Element | null {
+  let node: Element | null = element
+
+  while (node && node.id !== 'top') {
+    const declared = node.getAttribute('data-theme')
+    if (declared === 'light' || declared === 'dark') return node
+    if (node.classList.contains('dark') || node.classList.contains('light')) return node
+    node = node.parentElement
+  }
+
+  return null
+}
+
+/** Palette a themed surface declares. */
+function paletteOf(surface: Element | null): 'light' | 'dark' | null {
+  if (!surface) return null
+  const declared = surface.getAttribute('data-theme')
+  if (declared === 'light' || declared === 'dark') return declared
+  return surface.classList.contains('dark') ? 'dark' : 'light'
+}
+
 export function EmbedthonNav() {
   const { isRevealed } = useEmbedthonReveal()
   const { resolvedTheme } = useTheme()
 
   /*
-   * The dock floats above every section, so it cannot inherit a section's local
-   * palette. The hero's wave pins it to light while its light sheet sits under
-   * the dock, and the earlier handoff left that pin in place for the rest of the
-   * page - which is why it stayed a white pill over the dark sections. Keep it
-   * in step with the resolved theme; the wave's own pin still wins during the
-   * hero transition because it runs outside React.
+   * The dock floats above every section, so it cannot inherit the palette of the
+   * thing behind it, and the global theme is not that palette either: this page
+   * flips the document to light once the hero wave is done, then keeps painting
+   * dark sections (the schedule, the footer) further down. So ask the page what
+   * is actually under the dock - the nearest surface that declares `.light` or
+   * `.dark` - and fall back to the global theme for surfaces that do not. The
+   * scrollbar is drawn by the document and has the same problem, so it takes its
+   * palette from the same answer.
    */
   useEffect(() => {
-    if (resolvedTheme !== 'light' && resolvedTheme !== 'dark') return
-    for (const id of DOCK_IDS) {
-      document.getElementById(id)?.setAttribute('data-theme', resolvedTheme)
+    let lastSurface: Element | null | undefined
+
+    const sync = () => {
+      // A wave sheet covers the dock right now and sets its palette from its own
+      // scroll trigger; writing here at the same time would flicker.
+      if (isWavePainting()) return
+
+      const dock = document.getElementById(
+        window.matchMedia('(min-width: 768px)').matches ? DESKTOP_DOCK : MOBILE_DOCK,
+      )
+      if (!dock) return
+
+      const rect = dock.getBoundingClientRect()
+      // Sample just beside the pill, so the hit test lands on the page rather
+      // than on the dock itself.
+      const x = rect.left > 32 ? rect.left - 16 : rect.right + 16
+      const surface = themedSurface(document.elementFromPoint(x, rect.top + rect.height / 2))
+      const fallback = resolvedTheme === 'light' || resolvedTheme === 'dark' ? resolvedTheme : null
+      const theme = paletteOf(surface) ?? fallback
+
+      if (theme) setDockTheme(theme)
+
+      // The scrollbar is drawn by the document, so it needs the same surface
+      // palette spelled out for it - repainting it on every scroll frame is
+      // wasted work, so only when the surface actually changes.
+      if (surface !== lastSurface) {
+        setScrollbarPalette(surface)
+        lastSurface = surface
+      }
+    }
+
+    let frame = 0
+    const schedule = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(sync)
+    }
+
+    sync()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
     }
   }, [resolvedTheme])
 

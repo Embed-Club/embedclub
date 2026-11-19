@@ -116,19 +116,21 @@ export function AgentLoop() {
 
   return (
     <section id="roadmap" aria-labelledby="loop-title" className="relative scroll-mt-16">
-      <div className="mx-auto grid w-full max-w-[1320px] gap-14 px-6 py-20 sm:px-10 sm:py-28 lg:grid-cols-12 lg:gap-16 lg:px-14">
-        <div className="lg:col-span-4">
+      <div className="mx-auto grid w-full max-w-[1400px] gap-14 px-6 py-20 sm:px-10 sm:py-28 lg:grid-cols-12 lg:gap-16 lg:px-14">
+        <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-24">
             <SectionHeading
               id="loop-title"
               title="The competition roadmap"
               deck="From abstract submission to the live jury stage. Whether you bring a working embedded prototype to the Project Expo or defend original research in Paper Presentation, here is the journey to the podium."
               className="mb-0"
+              titleClassName="max-w-none text-balance text-[clamp(2.4rem,5vw,4.2rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.03em]"
+              deckClassName="mt-6 max-w-lg text-[16px] leading-[1.7] text-foreground/75 sm:text-[18px]"
             />
           </div>
         </div>
 
-        <div className="relative lg:col-span-8">
+        <div className="relative lg:col-span-7">
           {/* Stepper timeline rail: outlined copper capsule with filling bar */}
           <div
             ref={railTrackRef}

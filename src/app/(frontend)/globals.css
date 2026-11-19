@@ -128,24 +128,30 @@ html:not([data-intro-ready="true"]) .home-content-gated {
   background-blend-mode: overlay;
 }
 
+/* The scrollbar belongs to the document, but the page paints its own palette per
+   section. `embedthonNav`'s surface sampler copies the palette of the surface in
+   view onto the root as these two variables, so the thumb stays the same copper
+   as the section instead of the document's. Unset means "no surface declared one"
+   and the document's own tokens are already right. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--primary)) hsl(var(--background));
+  scrollbar-color: hsl(var(--scrollbar-thumb, var(--primary)))
+    hsl(var(--scrollbar-track, var(--background)));
 }
 
 *::-webkit-scrollbar {
-  background-color: hsl(var(--background));
+  background-color: hsl(var(--scrollbar-track, var(--background)));
   width: 4px;
 }
 
 /* background of the scrollbar except button or resizer */
 *::-webkit-scrollbar-track {
-  background-color: hsl(var(--background));
+  background-color: hsl(var(--scrollbar-track, var(--background)));
 }
 
 /* scrollbar itself */
 *::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--primary) / 0.6);
+  background-color: hsl(var(--scrollbar-thumb, var(--primary)) / 0.6);
   border-radius: 16px;
 }
 

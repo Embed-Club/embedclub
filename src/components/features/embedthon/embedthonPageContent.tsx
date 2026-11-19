@@ -41,6 +41,14 @@ function EmbedthonBody({ event }: { event: EventType }) {
       >
         <EmbedthonHero event={event} />
 
+        {/*
+         * The wave lives inside the content layer so the brief can paint above
+         * it: the sheet sweeps over the hero, while the brief it hands off to
+         * already shows through and its words are mid-flight as the light
+         * arrives, instead of appearing only after the sheet drops away.
+         */}
+        <WavyThemeReveal />
+
         <main className="relative flex flex-col">
           <Manifesto event={event} />
           {event === 'embedthon' ? (
@@ -62,9 +70,6 @@ function EmbedthonBody({ event }: { event: EventType }) {
 
       {/* Floating navigation dock */}
       <EmbedthonNav />
-
-      {/* Fullscreen wavy theme reveal overlay (Team Cafeteria style) */}
-      <WavyThemeReveal event={event} />
 
       {/* The pixel animation curtain that triggers isRevealed on completion */}
       <CopperPageReveal />

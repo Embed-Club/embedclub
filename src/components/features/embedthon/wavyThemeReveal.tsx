@@ -5,17 +5,9 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useTheme } from 'next-themes'
 import { useEffect, useRef, useState } from 'react'
-import type { EventType } from './eventType'
 
 const CELL_PHONE = 64
 const CELL_DESKTOP = 88
-
-const BRIEFS: Record<EventType, string> = {
-  embers:
-    'IDEAS BECOME THINGS HERE. BRING A PROJECT. SHARE A PAPER. MEET PEOPLE WHO BUILD. LEARN. COMPETE. LEAVE WITH SOMETHING NEW.',
-  embedthon:
-    'LEARN THE AGENT WORKFLOW. BUILD WITH YOUR TEAM. TURN A PROMPT INTO SOFTWARE THAT WORKS.',
-}
 
 /**
  * Computes the Gaussian wave polygon formula.
@@ -55,11 +47,10 @@ export function getWavePolygon(progress: number, peakX = 0.5): string {
  * Contains the warm-white background, the light copper PCB matrix grid, and the
  * Manifesto text so they emerge together in perfect unison.
  */
-export function WavyThemeReveal({ event }: { event: EventType }) {
+export function WavyThemeReveal() {
   const rootRef = useRef<HTMLDivElement>(null)
   const { setTheme } = useTheme()
   const [grid, setGrid] = useState({ cols: 0, rows: 0 })
-  const words = BRIEFS[event].split(' ').map((text, id) => ({ id: `wave-word-${id}`, text }))
 
   useEffect(() => {
     const measure = () => {
@@ -173,6 +164,7 @@ export function WavyThemeReveal({ event }: { event: EventType }) {
   return (
     <div
       ref={rootRef}
+      id="embedthon-wave-hero"
       aria-hidden="true"
       className="light pointer-events-none fixed inset-0 z-20 overflow-hidden bg-background text-foreground"
       style={
@@ -202,18 +194,11 @@ export function WavyThemeReveal({ event }: { event: EventType }) {
         </div>
       )}
 
-      {/* Manifesto brief text: revealed inside the wave in lockstep with the background */}
-      <div className="relative z-10 flex min-h-svh w-full items-center">
-        <div className="mx-auto w-full max-w-[1320px] px-6 sm:px-10 lg:px-14">
-          <p className="max-w-[26ch] text-[clamp(1.7rem,4.6vw,3.9rem)] font-extrabold uppercase leading-[1.02] tracking-[-0.025em] text-foreground sm:max-w-[22ch] lg:max-w-[24ch]">
-            {words.map((item) => (
-              <span key={item.id} className="inline-block" style={{ opacity: 0.38 }}>
-                {item.text}&nbsp;
-              </span>
-            ))}
-          </p>
-        </div>
-      </div>
+      {/*
+       * Background and grid only. The brief itself lives in Manifesto, which the
+       * wave hands off to - carrying a second copy of the sentence in here meant
+       * the page showed the old static paragraph over the new section.
+       */}
     </div>
   )
 }
