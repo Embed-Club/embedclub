@@ -93,7 +93,21 @@ export function BriefCrest({ cell }: { cell: { width: number; height: number } }
         setTheme(next)
       }
 
-      ScrollTrigger.create({
+      /*
+       * Settle the palette from where the page actually is, not from the last
+       * scroll event. A reload lands wherever the browser restored the scroll
+       * with no scroll event, and a fast jump back up fires the schedule's
+       * `onLeaveBack` (which sets light) after this trigger has already asked for
+       * dark - either way the hero ends up as white text on cream. Only above the
+       * brief's arrival: further down, other sections own the theme.
+       */
+      const settle = (progress: number) => {
+        if (progress >= 1) return
+        wanted = null
+        setPalette(progress)
+      }
+
+      const trigger = ScrollTrigger.create({
         trigger: section,
         // Start when the dome's apex reaches the bottom of the screen: the
         // section's top margin is the crest's height, so that is this far below.
@@ -104,6 +118,7 @@ export function BriefCrest({ cell }: { cell: { width: number; height: number } }
         onRefresh: (self) => {
           measure()
           paint(self.progress)
+          settle(self.progress)
         },
         onUpdate: (self) => {
           paint(self.progress)
@@ -112,6 +127,11 @@ export function BriefCrest({ cell }: { cell: { width: number; height: number } }
         onLeave: () => setPalette(1),
         onLeaveBack: () => setPalette(0),
       })
+
+      const onScrollEnd = () => settle(trigger.progress)
+      ScrollTrigger.addEventListener('scrollEnd', onScrollEnd)
+
+      return () => ScrollTrigger.removeEventListener('scrollEnd', onScrollEnd)
     },
     { scope: crestRef },
   )
