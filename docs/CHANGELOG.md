@@ -132,6 +132,12 @@ Two event pages and a chooser, built for the 24-25 November 2026 events.
   **outside** the sidebar shell and the usual look: a copper PCB matrix grid,
   a pixel-curtain intro, a wavy theme sweep from dark hero to light body, and
   a floating dock nav.
+- The hero is sticky and the brief rises over it, with a dome-shaped crest as
+  its own top edge that relaxes to a flat edge as it arrives (`briefCrest.tsx`).
+  This replaced a fixed full-screen wave that had to be kept in step with the
+  scroll and left a seam. Wheel scrolling is eased by Lenis (`useGentleScroll.ts`,
+  event pages only, off under reduced motion, touch stays native). `lenis` is a
+  new dependency, about 3 kB, justified by the whole scrubbed-section feel.
 - **Owner decision, 2026-11-19:** the event copy (dates, schedule, syllabus,
   tracks) lives in JSX under `components/features/embedthon/`, not in Payload.
   This knowingly departs from AGENTS.md §3 so the event pages can stay a

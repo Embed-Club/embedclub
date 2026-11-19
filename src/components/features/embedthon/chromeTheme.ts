@@ -14,11 +14,7 @@ export const DOCK_IDS = ['embedthon-floating-dock', 'embedthon-floating-dock-mob
 
 export type DockTheme = 'light' | 'dark'
 
-export const WAVE_IDS = [
-  'embedthon-wave-hero',
-  'embedthon-wave-schedule',
-  'embedthon-pixel-venue',
-] as const
+export const WAVE_IDS = ['embedthon-wave-schedule', 'embedthon-pixel-venue'] as const
 
 /** Points every dock variant at a palette. */
 export function setDockTheme(theme: DockTheme) {

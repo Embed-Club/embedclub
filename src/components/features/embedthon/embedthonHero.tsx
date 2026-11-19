@@ -38,7 +38,11 @@ export function EmbedthonHero({ event }: { event: EventType }) {
   return (
     <section
       ref={root}
-      className="dark relative flex min-h-svh flex-col justify-between overflow-hidden text-foreground"
+      id="embedthon-hero"
+      // Sticky and behind the page's other content: the brief rises over it
+      // instead of the hero scrolling away, and BriefCrest dims and finally
+      // hides it once it is covered.
+      className="dark sticky top-0 -z-10 flex min-h-svh flex-col justify-between overflow-hidden text-foreground"
     >
       {/* Corner marquees sit outside the padded content column so they reach the
           page edges; the line runs off the viewport corner instead of floating. */}

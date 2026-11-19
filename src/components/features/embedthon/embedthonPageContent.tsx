@@ -18,18 +18,19 @@ import type { EventType } from '@/components/features/embedthon/eventType'
 import { Manifesto } from '@/components/features/embedthon/manifesto'
 import { RegistrationSheet } from '@/components/features/embedthon/registrationSheet'
 import { SyllabusLedger } from '@/components/features/embedthon/syllabusLedger'
+import { useGentleScroll } from '@/components/features/embedthon/useGentleScroll'
 import { useRestoreSiteTheme } from '@/components/features/embedthon/useRestoreSiteTheme'
-import { WavyThemeReveal } from '@/components/features/embedthon/wavyThemeReveal'
 import { motion } from 'motion/react'
 
 function EmbedthonBody({ event }: { event: EventType }) {
   const { isRevealed } = useEmbedthonReveal()
   useRestoreSiteTheme()
+  useGentleScroll()
 
   return (
     <div
       id="top"
-      className="relative min-h-screen w-full scroll-smooth bg-background font-sans transition-colors duration-150 selection:bg-primary selection:text-primary-foreground"
+      className="relative min-h-screen w-full bg-background font-sans transition-colors duration-150 selection:bg-primary selection:text-primary-foreground"
     >
       {/* The copper PCB board matrix the whole page sits on */}
       <CopperMatrixGrid />
@@ -41,31 +42,30 @@ function EmbedthonBody({ event }: { event: EventType }) {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="relative z-10"
       >
-        <EmbedthonHero event={event} />
-
         {/*
-         * The wave lives inside the content layer so the brief can paint above
-         * it: the sheet sweeps over the hero, while the brief it hands off to
-         * already shows through and its words are mid-flight as the light
-         * arrives, instead of appearing only after the sheet drops away.
+         * The hero is sticky and sits behind the page; the brief rises over it with
+         * its own crest as the top edge (see BriefCrest). `isolate` keeps the hero's
+         * negative z-index inside this block so it can never leak behind the grid.
          */}
-        <WavyThemeReveal />
+        <div className="relative isolate">
+          <EmbedthonHero event={event} />
 
-        <main className="relative flex flex-col">
-          <Manifesto event={event} />
-          {event === 'embedthon' ? (
-            <EmbedthonProgram />
-          ) : (
-            <>
-              <AgentLoop />
-              <EventSchedule />
-              <SyllabusLedger />
-              <BeforeYouCome />
-              <CopperMarquee />
-              <RegistrationSheet />
-            </>
-          )}
-        </main>
+          <main className="relative flex flex-col">
+            <Manifesto event={event} />
+            {event === 'embedthon' ? (
+              <EmbedthonProgram />
+            ) : (
+              <>
+                <AgentLoop />
+                <EventSchedule />
+                <SyllabusLedger />
+                <BeforeYouCome />
+                <CopperMarquee />
+                <RegistrationSheet />
+              </>
+            )}
+          </main>
+        </div>
 
         <EmbedthonFooter event={event} />
       </motion.div>

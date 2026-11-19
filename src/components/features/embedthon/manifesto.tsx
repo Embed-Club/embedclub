@@ -4,6 +4,7 @@ import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useEffect, useRef, useState } from 'react'
+import { BriefCrest } from './briefCrest'
 import { useEmbedthonReveal } from './embedthonRevealContext'
 import type { EventType } from './eventType'
 
@@ -255,8 +256,12 @@ export function Manifesto({ event }: { event: EventType }) {
       ref={root}
       id="brief"
       aria-label="The brief"
-      className="light relative z-30 scroll-mt-16 overflow-x-clip bg-background text-foreground"
+      // The top margin is the crest's height: the dome sits in that gap, below the
+      // hero's first screen, and the hero shows through it until the dome arrives.
+      className="light relative z-30 mt-[var(--crest-h)] scroll-mt-16 overflow-x-clip bg-background text-foreground"
+      style={{ ['--crest-h' as string]: 'clamp(7rem, min(28svh, 40vw), 17rem)' }}
     >
+      <BriefCrest cell={cell} />
       {/* Light theme copper PCB grid on the same 88px rhythm as WavyThemeReveal */}
       {cell.width > 0 && (
         <div
