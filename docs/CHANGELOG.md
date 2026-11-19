@@ -33,8 +33,9 @@ rotate yearly, and none of them should need a developer to add an event.
 ## Design language, in one paragraph
 
 **"Solder & Copper"** - copper (`#d98e4a` dark / `#a05a20` light) on graphite
-or warm white, with a fabric-of-squares texture on panels. Fonts are ITC Avant
-Garde for body and Gobold + Sport Break for display. The signature UI object is
+or warm white, with a fabric-of-squares texture on panels. The font is TeX Gyre
+Adventor for body, UI and (until a licensed display face is chosen) display too;
+the earlier ITC Avant Garde, Gobold and Sport Break were removed. The signature UI object is
 the **cutout card**: notched corners, an inset label strip, an image that zooms
 on hover. Colors only ever come from CSS tokens. Full rules, including the list
 of banned patterns, are in [DESIGN.md](DESIGN.md) and AGENTS.md §1.
@@ -117,6 +118,27 @@ Schema is migration-managed. The workflow is in SETUP.md §4. Two cautions:
 ---
 
 ## Change history
+
+### 2026-11 - Embed Days: Embedthon and Embers '26
+
+Two event pages and a chooser, built for the 24-25 November 2026 events.
+
+- `/embed-days` is a chooser inside the normal sidebar shell. Picking a side
+  slides the shell away and pushes the event page. Listed in the desktop and
+  mobile menus and in the sitemap.
+- `/embedthon` (agentic AI workshop plus 24-hour hackathon, 2nd year CSE) and
+  `/embers` (national level technical fest) share one full-bleed page,
+  `EmbedthonPageContent`, switched by an `event` prop. They deliberately sit
+  **outside** the sidebar shell and the usual look: a copper PCB matrix grid,
+  a pixel-curtain intro, a wavy theme sweep from dark hero to light body, and
+  a floating dock nav.
+- **Owner decision, 2026-11-19:** the event copy (dates, schedule, syllabus,
+  tracks) lives in JSX under `components/features/embedthon/`, not in Payload.
+  This knowingly departs from AGENTS.md §3 so the event pages can stay a
+  bespoke, one-off design. Edit `eventType.ts` and the section components
+  directly. Do not treat this as a pattern for other pages.
+- Tests: `tests/e2e/embedDays.e2e.spec.ts` (routes render, chooser navigates),
+  `tests/int/embedDays.int.spec.ts` (event data sanity, menu parity, sitemap).
 
 ### 2026-07-28 - Forms become the real thing
 

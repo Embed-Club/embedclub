@@ -17,6 +17,9 @@ const STATIC_ROUTES = [
   '/tutorials',
   '/simulators',
   '/build',
+  '/embed-days',
+  '/embedthon',
+  '/embers',
   '/feedback',
   '/contact',
 ]

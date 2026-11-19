@@ -18,11 +18,13 @@ import type { EventType } from '@/components/features/embedthon/eventType'
 import { Manifesto } from '@/components/features/embedthon/manifesto'
 import { RegistrationSheet } from '@/components/features/embedthon/registrationSheet'
 import { SyllabusLedger } from '@/components/features/embedthon/syllabusLedger'
+import { useRestoreSiteTheme } from '@/components/features/embedthon/useRestoreSiteTheme'
 import { WavyThemeReveal } from '@/components/features/embedthon/wavyThemeReveal'
 import { motion } from 'motion/react'
 
 function EmbedthonBody({ event }: { event: EventType }) {
   const { isRevealed } = useEmbedthonReveal()
+  useRestoreSiteTheme()
 
   return (
     <div

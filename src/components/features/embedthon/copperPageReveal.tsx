@@ -1,7 +1,6 @@
 'use client'
 
 import { useEmbedthonReveal } from '@/components/features/embedthon/embedthonRevealContext'
-import { gsap } from 'gsap'
 import { useEffect, useRef } from 'react'
 
 /**
@@ -53,9 +52,12 @@ export function CopperPageReveal() {
       rootEl.style.display = 'none'
     }
 
+    // Visitors who ask for less motion get the page straight away: no curtain,
+    // and no content held back at opacity 0 waiting for it to finish.
     const ctx = canvas.getContext('2d')
-    if (!ctx) {
+    if (!ctx || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       hide()
+      setRevealed(true)
       return
     }
 
@@ -139,18 +141,6 @@ export function CopperPageReveal() {
 
     // Paint initial solid frame immediately before removing the transition curtain
     render(0)
-
-    // Reset slide curtain and shell from previous navigation seamlessly behind this reveal
-    const curtain = document.getElementById('embedthon-slide-curtain')
-    if (curtain) {
-      curtain.style.removeProperty('background-color')
-      curtain.style.display = 'none'
-      gsap.set(curtain, { x: '100vw' })
-    }
-    const shell = document.querySelector<HTMLElement>('.group\\/sidebar-wrapper') || document.body
-    if (shell) {
-      gsap.set(shell, { clearProps: 'transform' })
-    }
 
     let raf = 0
     let finished = false
