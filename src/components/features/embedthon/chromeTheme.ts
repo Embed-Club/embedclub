@@ -14,12 +14,23 @@ export const DOCK_IDS = ['embedthon-floating-dock', 'embedthon-floating-dock-mob
 
 export type DockTheme = 'light' | 'dark'
 
-export const WAVE_IDS = ['embedthon-wave-hero', 'embedthon-wave-schedule'] as const
+export const WAVE_IDS = [
+  'embedthon-wave-hero',
+  'embedthon-wave-schedule',
+  'embedthon-pixel-venue',
+] as const
 
 /** Points every dock variant at a palette. */
 export function setDockTheme(theme: DockTheme) {
   for (const id of DOCK_IDS) {
     document.getElementById(id)?.setAttribute('data-theme', theme)
+  }
+}
+
+/** Drops the pinned palette so the dock samplers decide again. */
+export function clearDockTheme() {
+  for (const id of DOCK_IDS) {
+    document.getElementById(id)?.removeAttribute('data-theme')
   }
 }
 

@@ -18,13 +18,16 @@ export function SyllabusLedger() {
     <section
       id="tracks"
       aria-labelledby="tracks-title"
-      className="relative z-20 scroll-mt-16 bg-background text-foreground"
+      /* Dark is declared here, not inherited: the page turns light from the
+         guidelines section down, and this section has to stay dark so that
+         boundary sits exactly on that section's top edge. */
+      className="dark relative z-20 scroll-mt-16 bg-background text-foreground"
     >
       <div className="w-full px-6 py-20 sm:px-10 sm:py-28 lg:px-16 2xl:px-24">
         <SectionHeading
           id="tracks-title"
           title="Two flagship tracks, one national stage"
-          deck="Choose your arena. Present working software builds in Project Expo, or defend original research and experimental results in Paper Presentation."
+          deck="Enter either track or both. Present working software builds in Project Expo, or defend original research and experimental results in Paper Presentation."
           titleClassName="max-w-5xl text-[clamp(2.5rem,5.2vw,4.8rem)] leading-[0.92] tracking-[-0.03em]"
           deckClassName="mt-6 max-w-4xl text-lg sm:text-xl lg:text-2xl leading-relaxed text-foreground/70"
           className="mb-14 sm:mb-20"

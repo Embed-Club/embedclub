@@ -72,28 +72,18 @@ export function EmbedthonFooter({ event }: { event: EventType }) {
             className="pointer-events-none absolute left-1/2 top-1/4 h-[440px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-[130px]"
           />
 
-          {/* Top signature emblem nestled inside the elevated top tab */}
-          <div className="absolute top-2 sm:top-3.5 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center">
-            <div className="flex h-8 w-24 items-center justify-center rounded-b-xl border-b border-border bg-muted/20 px-3 shadow-inner backdrop-blur-sm sm:h-9 sm:w-28">
-              <svg
-                width="64"
-                height="22"
-                viewBox="0 0 160 64"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-primary stroke-current"
-                aria-hidden="true"
-              >
-                <path
-                  d="M18 48C32 20 45 12 60 12C78 12 72 40 92 40C110 40 120 18 142 16"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <circle cx="92" cy="40" r="6" fill="currentColor" />
-                <circle cx="142" cy="16" r="6" fill="currentColor" />
-                <path d="M74 24L86 16" strokeWidth="3" strokeLinecap="round" />
-                <path d="M102 36L116 28" strokeWidth="3" strokeLinecap="round" />
-              </svg>
+          {/* Top signature emblem nestled inside the elevated top tab. The mark
+              is a light-background illustration, so the tab itself is the
+              light plate it sits on. */}
+          <div className="absolute top-2 left-1/2 z-20 flex -translate-x-1/2 items-center justify-center sm:top-3.5">
+            <div className="light flex h-9 w-28 items-center justify-center rounded-b-xl bg-background px-3 shadow-inner sm:h-11 sm:w-36">
+              <Image
+                src="/embersLogoMark.webp"
+                alt="Embed Club"
+                width={768}
+                height={796}
+                className="size-7 object-contain sm:size-9"
+              />
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import { EmbedthonTextBuildUp } from '@/components/features/embedthon/embedthonT
 import { WisprFlowTextAnimation } from '@/components/features/embedthon/wisprFlowTextAnimation'
 import { useEventCountdown } from '@/hooks/useEventCountdown'
 import { useTheme } from 'next-themes'
+import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import { type EventType, eventDetails } from './eventType'
 
@@ -58,13 +59,24 @@ export function EmbedthonHero({ event }: { event: EventType }) {
         <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-8">
           {/* Middle-Left: Title & Category Sub-banner */}
           <div className="lg:col-span-9 flex flex-col -ml-1 sm:-ml-2 lg:-ml-3">
-            <div className="mb-3 flex items-center gap-2 pl-1 text-foreground/70">
-              <img
-                src="/embedClubLogo-Dark.svg"
-                alt="Embed Club"
-                className="h-8 w-8 object-contain"
-              />
-              <span className="text-sm font-semibold">Embed Club presents</span>
+            <div className="mb-3 flex items-center gap-2.5 pl-1">
+              {/*
+                The club mark is an illustration - near-black lettering with a
+                copper flame - so it needs its own light plate to sit on the
+                dark hero. The label beside it already names the club, hence the
+                empty alt.
+              */}
+              <span className="light flex size-10 shrink-0 items-center justify-center rounded-lg bg-background p-0.5 shadow-sm sm:size-12">
+                <Image
+                  src="/embersLogoMark.webp"
+                  alt=""
+                  width={768}
+                  height={796}
+                  priority
+                  className="size-full object-contain"
+                />
+              </span>
+              <span className="text-sm font-semibold text-foreground/70">Embed Club presents</span>
             </div>
             <EmbedthonTextBuildUp className="w-full" event={event} />
             <div className="mt-3 flex flex-wrap items-center gap-3 pl-1">

@@ -1,4 +1,5 @@
 import { Download } from 'lucide-react'
+import { PixelThemeSweep } from './pixelThemeSweep'
 import { SectionHeading } from './sectionHeading'
 
 const TERMS = [
@@ -32,6 +33,14 @@ const DOWNLOADS = [
 export function BeforeYouCome() {
   return (
     <section id="venue" aria-labelledby="before-title" className="relative scroll-mt-16">
+      {/*
+       * This section is where the page turns light. The sweep owns that
+       * boundary: it paints the light in as the section rises, then hands the
+       * document theme over to it. It is fixed and full-viewport, so it lives
+       * here for the trigger only, not for its box.
+       */}
+      <PixelThemeSweep />
+
       <div className="w-full px-6 py-20 sm:px-10 sm:py-28 lg:px-16 2xl:px-24">
         <SectionHeading
           id="before-title"
