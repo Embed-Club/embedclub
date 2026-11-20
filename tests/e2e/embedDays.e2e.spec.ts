@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Embed Days', () => {
-  test('chooser lists both events and opens Embers', async ({ page }) => {
+  test('chooser shows only the Embers card and opens it', async ({ page }) => {
     await page.goto('/embed-days')
     await expect(page.getByRole('heading', { name: 'Embed Days', level: 1 })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Embedthon', level: 2 })).toBeVisible()
-    await expect(page.getByRole('heading', { name: "Embers '26", level: 2 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: "Embers '26", level: 3 })).toBeVisible()
+    await expect(page.getByText('Embedthon')).toHaveCount(0)
 
     // The choice runs a ~650ms slide before it navigates.
     await page.getByRole('button', { name: /Embers '26/ }).click()

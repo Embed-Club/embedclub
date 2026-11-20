@@ -1,3 +1,4 @@
+import { LightSurface } from './lightSurface'
 import { SectionHeading } from './sectionHeading'
 
 const WORKSHOP_FOCUS = [
@@ -13,7 +14,7 @@ const WORKSHOP_FOCUS = [
 export function EmbedthonProgram() {
   return (
     <>
-      <section id="roadmap" aria-labelledby="program-title" className="relative scroll-mt-16">
+      <LightSurface id="roadmap" aria-labelledby="program-title" className="scroll-mt-16">
         <div className="mx-auto w-full max-w-[1320px] px-6 py-20 sm:px-10 sm:py-28 lg:px-14">
           <SectionHeading
             id="program-title"
@@ -47,9 +48,9 @@ export function EmbedthonProgram() {
             </article>
           </div>
         </div>
-      </section>
+      </LightSurface>
 
-      <section id="tracks" aria-labelledby="focus-title" className="relative scroll-mt-16">
+      <LightSurface id="tracks" aria-labelledby="focus-title" className="scroll-mt-16">
         <div className="mx-auto w-full max-w-[1320px] px-6 py-20 sm:px-10 sm:py-28 lg:px-14">
           <SectionHeading
             id="focus-title"
@@ -68,9 +69,9 @@ export function EmbedthonProgram() {
             ))}
           </ul>
         </div>
-      </section>
+      </LightSurface>
 
-      <section id="register" aria-labelledby="register-title" className="relative scroll-mt-16">
+      <LightSurface id="register" aria-labelledby="register-title" className="scroll-mt-16">
         <div className="mx-auto w-full max-w-[1320px] px-6 py-20 sm:px-10 sm:py-28 lg:px-14">
           <SectionHeading
             id="register-title"
@@ -84,7 +85,7 @@ export function EmbedthonProgram() {
             Register for Embedthon
           </a>
         </div>
-      </section>
+      </LightSurface>
     </>
   )
 }

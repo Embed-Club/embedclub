@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { LightSurface } from './lightSurface'
 import { SectionHeading } from './sectionHeading'
 
 const STATIONS = [
   {
     title: 'Register & Submit',
     detail:
-      'Form your squad (2 to 4 for Project Expo, 1 to 3 for Paper Presentation), pick your domain, and submit your project synopsis or paper abstract online.',
+      'Form your squad (2 to 4 members, for both Project Expo and Paper Presentation), pick your domain, and submit your project synopsis or paper abstract online.',
   },
   {
     title: 'Review & Shortlist',
@@ -50,38 +51,42 @@ export function AgentLoop() {
       const lastNode = nodeRefs.current[nodeRefs.current.length - 1]
       if (!firstNode || !lastNode) return
 
+      // Reads first, writes after: interleaving them forced a fresh layout for
+      // every node on every scroll event.
+      const listRect = list.getBoundingClientRect()
+      if (listRect.bottom < -200 || listRect.top > window.innerHeight + 200) return
+
       const firstRect = firstNode.getBoundingClientRect()
       const lastRect = lastNode.getBoundingClientRect()
-      const listRect = list.getBoundingClientRect()
+      const nodeCenters = nodeRefs.current.map((node) => {
+        if (!node) return 0
+        const rect = node.getBoundingClientRect()
+        return rect.top + rect.height / 2
+      })
 
       // Position rail track between center of first node and center of last node
       const topOffset = firstRect.top - listRect.top + firstRect.height / 2
       const bottomOffset = listRect.bottom - (lastRect.top + lastRect.height / 2)
       const totalBarHeight = listRect.height - topOffset - bottomOffset
 
-      railTrack.style.top = `${topOffset}px`
-      railTrack.style.height = `${Math.max(0, totalBarHeight)}px`
-
       // Measure scroll progression
-      const viewportCenter = window.innerHeight * 0.55
+      const viewportCenter = window.innerHeight * 0.7
       const scrolled = viewportCenter - (firstRect.top + firstRect.height / 2)
       const progress = totalBarHeight > 0 ? Math.max(0, Math.min(1, scrolled / totalBarHeight)) : 0
-
-      // Update copper bar height directly
       const currentBarHeight = progress * totalBarHeight
-      railBar.style.height = `${currentBarHeight}px`
-
       const barBottomPosition = firstRect.top + firstRect.height / 2 + currentBarHeight
       const fillDistance = 48
+
+      railTrack.style.top = `${topOffset}px`
+      railTrack.style.height = `${Math.max(0, totalBarHeight)}px`
+      railBar.style.height = `${currentBarHeight}px`
 
       nodeRefs.current.forEach((node, index) => {
         const fillEl = nodeFillRefs.current[index]
         const numEl = stepNumberRefs.current[index]
         if (!node || !fillEl) return
 
-        const nodeRect = node.getBoundingClientRect()
-        const nodeCenterY = nodeRect.top + nodeRect.height / 2
-        const distanceToNode = nodeCenterY - barBottomPosition
+        const distanceToNode = nodeCenters[index] - barBottomPosition
 
         let fillLevel = 0
         if (distanceToNode <= 0) {
@@ -104,19 +109,33 @@ export function AgentLoop() {
       })
     }
 
+    /*
+     * Pin the section by its bottom edge: the schedule rises over it once it has been
+     * read, instead of it scrolling away. A sticky `top` of (screen height - section
+     * height) holds the section still exactly when its bottom reaches the bottom of
+     * the screen. Measured, because CSS cannot refer to an element's own height.
+     */
+    const section = document.getElementById('roadmap')
+    const pin = () => {
+      if (section) section.style.top = `${window.innerHeight - section.offsetHeight}px`
+    }
+
+    pin()
     calculateFill()
     window.addEventListener('scroll', calculateFill, { passive: true })
     window.addEventListener('resize', calculateFill, { passive: true })
+    window.addEventListener('resize', pin, { passive: true })
 
     return () => {
       window.removeEventListener('scroll', calculateFill)
       window.removeEventListener('resize', calculateFill)
+      window.removeEventListener('resize', pin)
     }
   }, [])
 
   return (
-    <section id="roadmap" aria-labelledby="loop-title" className="relative scroll-mt-16">
-      <div className="mx-auto grid w-full max-w-[1400px] gap-14 px-6 py-20 sm:px-10 sm:py-28 lg:grid-cols-12 lg:gap-16 lg:px-14">
+    <LightSurface id="roadmap" aria-labelledby="loop-title" className="sticky scroll-mt-16">
+      <div className="mx-auto grid w-full max-w-[1400px] gap-14 px-6 pt-20 pb-[calc(5rem+var(--crest-h,0px))] sm:px-10 sm:pt-28 sm:pb-[calc(7rem+var(--crest-h,0px))] lg:grid-cols-12 lg:gap-16 lg:px-14">
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-24">
             <SectionHeading
@@ -192,6 +211,6 @@ export function AgentLoop() {
           </ol>
         </div>
       </div>
-    </section>
+    </LightSurface>
   )
 }

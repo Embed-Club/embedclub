@@ -1,8 +1,9 @@
 'use client'
 
 import { useEventCountdown } from '@/hooks/useEventCountdown'
-import { Check, Copy, Phone, QrCode, Users } from 'lucide-react'
+import { Check, Copy, Phone, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { eventDetails } from './eventType'
 import { SectionHeading } from './sectionHeading'
 
 const FAQS = [
@@ -14,7 +15,7 @@ const FAQS = [
   {
     question: 'What are the squad size requirements?',
     answer:
-      'For Project Expo, squads can have 2 to 4 members. For Paper Presentation, teams can have 1 to 3 authors.',
+      'Every squad has a minimum of 2 and a maximum of 4 members, for both Project Expo and Paper Presentation.',
   },
   {
     question: 'What facilities are provided at Project Expo booths?',
@@ -29,20 +30,32 @@ const FAQS = [
 ]
 
 const STEPS = [
-  'Form your squad: 2 to 4 members for Project Expo, or 1 to 3 authors for Paper Presentation.',
-  'Scan the registration QR code or click the registration link to fill the online portal.',
-  'Submit your project synopsis or research abstract before registration closes.',
-  'Receive your official entry pass and report to the PACE campus by 08:30 on 25 November 2026.',
+  {
+    title: 'Form your squad',
+    detail: 'A squad has 2 to 4 members, for both Project Expo and Paper Presentation.',
+  },
+  {
+    title: 'Fill in the registration form',
+    detail:
+      'One registration per squad. Questions about it? A student coordinator is listed below.',
+  },
+  {
+    title: 'Submit your work',
+    detail: 'Send your project synopsis or research abstract before registration closes.',
+  },
+  {
+    title: 'Get your entry confirmation',
+    detail: 'Report to the PACE campus by 08:30 on 25 November 2026 with your squad.',
+  },
 ]
 
-const PASS_ROWS = [
-  ['Event', "Embers '26 - National Level Technical Fest"],
-  ['Date', '25 November 2026 (Wednesday)'],
-  ['Time', '08:30 - 17:00 IST'],
+const FACTS = [
+  ['Date', '25 November 2026, Wednesday'],
+  ['Time', '08:30 to 17:00 IST'],
   ['Venue', 'P.A. College of Engineering (PACE), Mangaluru'],
-  ['Tracks', 'Project Expo & Paper Presentation'],
-  ['Prizes', 'Exciting Cash Prizes & Merit Certificates'],
-  ['Includes', 'Exhibition booth, power, network, lunch & high tea'],
+  ['Tracks', 'Project Expo and Paper Presentation'],
+  ['Prizes', 'Cash prizes and merit certificates'],
+  ['Includes', 'Exhibition booth, power, network, lunch and high tea'],
 ]
 
 const STAFF_COORDINATORS = [
@@ -55,6 +68,76 @@ const STUDENT_COORDINATORS = [
   { name: 'Rafan Ahamad Sheik', phone: '+91 90361 92359', raw: '+919036192359' },
   { name: 'Fizan Feroz', phone: '+91 94464 51783', raw: '+919446451783' },
 ]
+
+const COUNTDOWN_UNITS = [
+  ['days', 'Days'],
+  ['hours', 'Hours'],
+  ['minutes', 'Min'],
+  ['seconds', 'Sec'],
+] as const
+
+/**
+ * The questions, on a screen of their own: edge to edge and exactly one viewport
+ * tall, outside the page's content column, with the heading centred above the list
+ * and the whole block centred in the screen. Whichever answer is open therefore sits
+ * in the middle of the screen rather than hanging off the bottom of the page. One
+ * answer is open at a time; opening another closes the first, and the answer grows
+ * from nothing rather than snapping into place.
+ */
+function FaqAccordion() {
+  const [open, setOpen] = useState<number | null>(0)
+
+  return (
+    <div className="flex min-h-svh w-full flex-col justify-center border-t border-border py-12 sm:py-16">
+      <h3 className="px-5 text-center text-[clamp(2.2rem,6vw,6rem)] font-extrabold uppercase leading-[0.92] tracking-[-0.03em] text-foreground sm:px-10">
+        Frequently asked questions
+      </h3>
+
+      <div className="mt-[clamp(1.5rem,6svh,4rem)] w-full px-5 sm:px-10">
+        {FAQS.map((faq, index) => {
+          const isOpen = open === index
+
+          return (
+            <div key={faq.question} className="border-b border-border first:border-t">
+              <h4>
+                <button
+                  type="button"
+                  id={`faq-question-${index}`}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${index}`}
+                  onClick={() => setOpen(isOpen ? null : index)}
+                  className="group flex w-full items-center justify-between gap-6 py-[clamp(1rem,3svh,2rem)] text-left text-[clamp(1.2rem,2.6vw,2.6rem)] font-extrabold leading-tight tracking-[-0.02em] text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {faq.question}
+                  <Plus
+                    aria-hidden="true"
+                    className={`h-7 w-7 shrink-0 text-primary transition-transform duration-300 sm:h-9 sm:w-9 ${
+                      isOpen ? 'rotate-45' : ''
+                    }`}
+                  />
+                </button>
+              </h4>
+              <section
+                id={`faq-answer-${index}`}
+                aria-labelledby={`faq-question-${index}`}
+                inert={!isOpen}
+                className={`grid transition-[grid-template-rows] duration-500 [transition-timing-function:cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none ${
+                  isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <p className="max-w-[70ch] pb-[clamp(1rem,3svh,2rem)] text-[clamp(1rem,1.5vw,1.4rem)] leading-relaxed text-foreground/70">
+                    {faq.answer}
+                  </p>
+                </div>
+              </section>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 export function RegistrationSheet() {
   const [copied, setCopied] = useState(false)
@@ -77,163 +160,146 @@ export function RegistrationSheet() {
       <div className="mx-auto w-full max-w-[1320px] px-6 py-20 sm:px-10 sm:py-28 lg:px-14">
         <SectionHeading
           id="register-title"
-          title="Registration and passes"
-          deck="One registration per squad. Scan the official QR code or copy the registration link, submit your abstract, and meet us in Mangaluru on 25 November."
+          title="Register your squad"
+          deck="One registration per squad. Submit your abstract before registration closes, then meet us in Mangaluru on 25 November."
+          titleClassName="max-w-none text-[clamp(2.4rem,5vw,4.2rem)] leading-[0.92] tracking-[-0.03em]"
+          deckClassName="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70 sm:text-xl"
         />
 
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">
+        <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <h4 className="text-xl font-bold uppercase tracking-tight text-foreground sm:text-2xl">
-              Registration steps
-            </h4>
+            <h3 className="text-2xl font-extrabold uppercase tracking-tight text-foreground sm:text-3xl">
+              How to register
+            </h3>
 
-            <ol className="mt-6 border-t border-border">
+            <ol className="mt-8 border-t border-border">
               {STEPS.map((step, index) => (
                 <li
-                  key={step}
-                  className="flex gap-4 border-b border-border py-4 text-[15px] leading-relaxed text-foreground/75"
+                  key={step.title}
+                  className="grid grid-cols-[3.5rem_1fr] items-baseline gap-4 border-b border-border py-6 sm:grid-cols-[4.5rem_1fr]"
                 >
-                  <span className="w-5 shrink-0 font-bold tabular-nums text-primary">
+                  <span className="text-4xl font-extrabold leading-none tabular-nums text-primary sm:text-5xl">
                     {index + 1}
                   </span>
-                  <span>{step}</span>
+                  <div>
+                    <p className="text-lg font-bold text-foreground sm:text-xl">{step.title}</p>
+                    <p className="mt-1 text-base leading-relaxed text-foreground/70">
+                      {step.detail}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ol>
 
-            {/* Coordinators box directly from poster */}
-            <div className="mt-10 rounded-lg border border-border bg-card/60 p-6">
-              <h5 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-                <Users className="h-4 w-4" />
-                Event Coordinators
-              </h5>
+            <h3 className="mt-14 text-2xl font-extrabold uppercase tracking-tight text-foreground sm:text-3xl">
+              Questions? Talk to us
+            </h3>
 
-              <div className="mt-4 grid gap-6 sm:grid-cols-2">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-foreground/45">
-                    Staff Coordinators
-                  </p>
-                  <ul className="mt-2 space-y-1.5 text-sm font-semibold text-foreground/85">
-                    {STAFF_COORDINATORS.map((staff) => (
-                      <li key={staff}>{staff}</li>
-                    ))}
-                  </ul>
-                  <p className="mt-2 text-[11px] text-foreground/50">
-                    Dept. of Computer Science & Engineering
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-foreground/45">
-                    Student Coordinators
-                  </p>
-                  <ul className="mt-2 space-y-2 text-sm text-foreground/85">
-                    {STUDENT_COORDINATORS.map((student) => (
-                      <li key={student.name}>
-                        <p className="font-semibold">{student.name}</p>
-                        <a
-                          href={`tel:${student.raw}`}
-                          className="inline-flex items-center gap-1.5 text-xs text-primary transition-colors hover:underline"
-                        >
-                          <Phone className="h-3 w-3" />
-                          {student.phone}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div className="mt-8 grid gap-10 sm:grid-cols-2">
+              <div>
+                <p className="text-sm font-bold text-foreground/60">Student coordinators</p>
+                <ul className="mt-4 space-y-4">
+                  {STUDENT_COORDINATORS.map((student) => (
+                    <li key={student.name} className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <span className="min-w-[10rem] text-base font-semibold text-foreground">
+                        {student.name}
+                      </span>
+                      <a
+                        href={`tel:${student.raw}`}
+                        className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-semibold tabular-nums text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <Phone aria-hidden="true" className="h-4 w-4 text-primary" />
+                        {student.phone}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <button
-                type="button"
-                onClick={copyLink}
-                className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border px-5 text-sm font-semibold text-foreground transition-colors hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                {copied ? (
-                  <>
-                    <Check aria-hidden="true" className="h-4 w-4 text-primary" />
-                    Link copied
-                  </>
-                ) : (
-                  <>
-                    <Copy aria-hidden="true" className="h-4 w-4 text-primary" />
-                    Copy fest page link
-                  </>
-                )}
-              </button>
-              <p className="text-[13px] text-foreground/50">
-                Send it to your squad members and classmates.
-              </p>
+              <div>
+                <p className="text-sm font-bold text-foreground/60">Staff coordinators</p>
+                <ul className="mt-4 space-y-2 text-base font-semibold text-foreground">
+                  {STAFF_COORDINATORS.map((staff) => (
+                    <li key={staff}>{staff}</li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-sm text-foreground/60">
+                  Department of Computer Science and Engineering
+                </p>
+              </div>
             </div>
           </div>
 
           <aside className="lg:col-span-5">
-            <div className="rounded-lg border border-border bg-card/70 p-6 shadow-md">
-              <div className="flex items-center justify-between gap-4 border-b border-border/80 pb-4">
-                <p className="text-[10px] uppercase tracking-[0.28em] text-foreground/45">
-                  Official Entry Pass
-                </p>
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-primary">
-                  Embers &apos;26
-                </p>
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-md sm:p-8 lg:sticky lg:top-24">
+              <p className="text-sm font-semibold text-foreground/60">Embers ’26 begins in</p>
+
+              <div
+                className="mt-3 grid grid-cols-4 gap-2 sm:gap-3"
+                role="timer"
+                aria-label="Time until Embers 26 begins"
+              >
+                {COUNTDOWN_UNITS.map(([key, label]) => (
+                  <div
+                    key={key}
+                    className="rounded-xl border border-border bg-background px-1 py-3 text-center sm:py-4"
+                  >
+                    <p className="text-3xl font-extrabold leading-none tabular-nums text-primary sm:text-4xl">
+                      {pad(left[key])}
+                    </p>
+                    <p className="mt-2 text-xs font-medium text-foreground/60">{label}</p>
+                  </div>
+                ))}
               </div>
 
-              {/* QR Code Scan block matching poster */}
-              <div className="my-6 flex flex-col items-center justify-center rounded-lg border border-primary/30 bg-primary/5 p-6 text-center">
-                <div className="flex h-28 w-28 items-center justify-center rounded-md border-2 border-dashed border-primary bg-background p-2 shadow-inner">
-                  <QrCode className="h-20 w-20 text-primary" />
-                </div>
-                <p className="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-                  Scan for Registration
-                </p>
-                <p className="mt-1 text-[11px] text-foreground/60">
-                  Scan the QR code to open the online registration portal
-                </p>
-              </div>
-
-              <dl className="space-y-2.5 text-xs">
-                {PASS_ROWS.map(([label, value]) => (
-                  <div key={label} className="flex items-baseline justify-between gap-4 py-1">
-                    <dt className="text-foreground/50">{label}</dt>
-                    <dd className="text-right font-medium text-foreground">{value}</dd>
+              <dl className="mt-8 divide-y divide-border border-y border-border">
+                {FACTS.map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="grid grid-cols-[5.5rem_1fr] items-baseline gap-4 py-3 text-[15px]"
+                  >
+                    <dt className="text-foreground/60">{label}</dt>
+                    <dd className="font-semibold text-foreground">{value}</dd>
                   </div>
                 ))}
               </dl>
 
-              {/* Countdown footer in card */}
-              <div className="mt-6 rounded-md border border-border bg-background p-4 text-center">
-                <p className="text-[10px] uppercase tracking-wider text-foreground/50">
-                  Time until fest inauguration
-                </p>
-                <p className="mt-1 text-xl font-extrabold tabular-nums text-primary">
-                  {pad(left.days)}d : {pad(left.hours)}h : {pad(left.minutes)}m :{' '}
-                  {pad(left.seconds)}s
+              <div className="mt-8 flex flex-col gap-3">
+                <a
+                  href={eventDetails.embers.registrationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-12 items-center justify-center rounded-sm bg-primary px-8 text-[15px] font-bold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  Register your squad
+                </a>
+                <button
+                  type="button"
+                  onClick={copyLink}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-sm border border-border px-5 text-[15px] font-semibold text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  {copied ? (
+                    <>
+                      <Check aria-hidden="true" className="h-4 w-4 text-primary" />
+                      Link copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy aria-hidden="true" className="h-4 w-4 text-primary" />
+                      Copy fest page link
+                    </>
+                  )}
+                </button>
+                <p className="text-sm text-foreground/60">
+                  Send it to your squad members and classmates.
                 </p>
               </div>
             </div>
           </aside>
         </div>
-
-        {/* FAQs */}
-        <div className="mt-20 border-t border-border pt-16">
-          <h4 className="text-xl font-bold uppercase tracking-tight text-foreground sm:text-2xl">
-            Frequently answered questions
-          </h4>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2">
-            {FAQS.map((faq) => (
-              <div
-                key={faq.question}
-                className="rounded-lg border border-border bg-card/30 p-6 transition-colors hover:border-primary/40"
-              >
-                <h5 className="font-bold text-foreground">{faq.question}</h5>
-                <p className="mt-2 text-xs leading-relaxed text-foreground/65">{faq.answer}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
+
+      <FaqAccordion />
     </section>
   )
 }

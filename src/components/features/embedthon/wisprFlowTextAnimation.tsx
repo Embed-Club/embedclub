@@ -127,9 +127,26 @@ export function WisprFlowTextAnimation({
       if (!cancelled) measureUnit()
     })
 
+    // The hero is covered by the brief and then hidden, but it is still in the
+    // page; without this the path text kept being re-laid-out every frame behind
+    // an opaque section. Checked a few times a second, not every frame.
+    const svg = textPath.ownerSVGElement
+    let lastCheck = Number.NEGATIVE_INFINITY
+    let visible = true
+
     const tick = (now: number) => {
       if (startedAt === null) startedAt = now
-      if (unitWidth > 0) {
+      if (now - lastCheck > 250) {
+        lastCheck = now
+        visible =
+          document.visibilityState === 'visible' &&
+          (svg?.checkVisibility?.({
+            checkVisibilityCSS: true,
+            visibilityProperty: true,
+          } as never) ??
+            true)
+      }
+      if (visible && unitWidth > 0) {
         const travelled = ((now - startedAt) / 1000) * speed
         textPath.setAttribute('startOffset', String(-(travelled % unitWidth)))
       }

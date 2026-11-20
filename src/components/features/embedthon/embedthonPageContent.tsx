@@ -15,7 +15,9 @@ import {
 } from '@/components/features/embedthon/embedthonRevealContext'
 import { EventSchedule } from '@/components/features/embedthon/eventSchedule'
 import type { EventType } from '@/components/features/embedthon/eventType'
+import { LightSurface } from '@/components/features/embedthon/lightSurface'
 import { Manifesto } from '@/components/features/embedthon/manifesto'
+import { PixelCover } from '@/components/features/embedthon/pixelCover'
 import { RegistrationSheet } from '@/components/features/embedthon/registrationSheet'
 import { SyllabusLedger } from '@/components/features/embedthon/syllabusLedger'
 import { useGentleScroll } from '@/components/features/embedthon/useGentleScroll'
@@ -50,7 +52,10 @@ function EmbedthonBody({ event }: { event: EventType }) {
         <div className="relative isolate">
           <EmbedthonHero event={event} />
 
-          <main className="relative flex flex-col">
+          <main
+            className="relative flex flex-col"
+            style={{ ['--crest-h' as string]: 'clamp(7rem, min(28svh, 40vw), 17rem)' }}
+          >
             <Manifesto event={event} />
             {event === 'embedthon' ? (
               <EmbedthonProgram />
@@ -59,9 +64,22 @@ function EmbedthonBody({ event }: { event: EventType }) {
                 <AgentLoop />
                 <EventSchedule />
                 <SyllabusLedger />
-                <BeforeYouCome />
-                <CopperMarquee />
-                <RegistrationSheet />
+                {/*
+                 * From here down the page is light. It is held at the top of the screen
+                 * while a field of dark squares clears off its first screen
+                 * (PixelCover), and the light comes from this wrapper, not from
+                 * flipping the document.
+                 */}
+                <LightSurface anchor="self">
+                  <PixelCover />
+                  <BeforeYouCome />
+                  <CopperMarquee />
+                </LightSurface>
+                {/* The grid stops at the ribbon. From registration to the end of the
+                    page the cream is solid, with no grid lines. */}
+                <LightSurface grid={false}>
+                  <RegistrationSheet />
+                </LightSurface>
               </>
             )}
           </main>

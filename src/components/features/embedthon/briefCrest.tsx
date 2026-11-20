@@ -3,17 +3,14 @@
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useTheme } from 'next-themes'
 import { useRef } from 'react'
 
 /** Narrowest the dome may get, as a fraction of the page width. */
-const MIN_SIGMA = 0.32
-const MAX_SIGMA = 0.6
+export const MIN_SIGMA = 0.32
+export const MAX_SIGMA = 0.6
 const POINTS = 48
-/** Progress at which the brief owns the viewport and the document goes light. */
-const LIGHT_AT = 0.8
 
-const smoothstep = (from: number, to: number, value: number) => {
+export const smoothstep = (from: number, to: number, value: number) => {
   const t = Math.min(1, Math.max(0, (value - from) / (to - from)))
   return t * t * (3 - 2 * t)
 }
@@ -24,7 +21,7 @@ const smoothstep = (from: number, to: number, value: number) => {
  * 0 for flat. Points are percentages of the crest box, so the shape scales with
  * the box and the bottom edge always lands on the section it belongs to.
  */
-function crestPolygon(amplitude: number, sigma = MIN_SIGMA): string {
+export function crestPolygon(amplitude: number, sigma = MIN_SIGMA): string {
   // What the bell curve is worth at the page edge, so the tails land on zero.
   const tail = Math.exp(-((0.5 / sigma) ** 2))
   const points: string[] = []
@@ -47,13 +44,16 @@ function crestPolygon(amplitude: number, sigma = MIN_SIGMA): string {
  * across the whole rise, relaxing from a full dome to a flat edge by the time the
  * brief is at the top, while the hero dims beneath it.
  *
+ * It does not touch the document theme. The brief carries its own light palette,
+ * and flipping the whole document mid-scroll restyled every element on the page
+ * in one frame, which is the stutter this replaced.
+ *
  * Lives inside the brief's section: `closest('section')` is the trigger, and the
  * section's top margin is exactly the crest's height, so the dome starts below
  * the first screen and the opening view of the hero stays clean.
  */
 export function BriefCrest({ cell }: { cell: { width: number; height: number } }) {
   const crestRef = useRef<HTMLDivElement>(null)
-  const { setTheme } = useTheme()
 
   useGSAP(
     () => {
@@ -63,7 +63,6 @@ export function BriefCrest({ cell }: { cell: { width: number; height: number } }
 
       gsap.registerPlugin(ScrollTrigger)
       const hero = document.getElementById('embedthon-hero')
-      let wanted: 'light' | 'dark' | null = null
       let sigma = MIN_SIGMA
 
       /*
@@ -86,28 +85,7 @@ export function BriefCrest({ cell }: { cell: { width: number; height: number } }
         }
       }
 
-      const setPalette = (progress: number) => {
-        const next = progress >= LIGHT_AT ? 'light' : 'dark'
-        if (next === wanted) return
-        wanted = next
-        setTheme(next)
-      }
-
-      /*
-       * Settle the palette from where the page actually is, not from the last
-       * scroll event. A reload lands wherever the browser restored the scroll
-       * with no scroll event, and a fast jump back up fires the schedule's
-       * `onLeaveBack` (which sets light) after this trigger has already asked for
-       * dark - either way the hero ends up as white text on cream. Only above the
-       * brief's arrival: further down, other sections own the theme.
-       */
-      const settle = (progress: number) => {
-        if (progress >= 1) return
-        wanted = null
-        setPalette(progress)
-      }
-
-      const trigger = ScrollTrigger.create({
+      ScrollTrigger.create({
         trigger: section,
         // Start when the dome's apex reaches the bottom of the screen: the
         // section's top margin is the crest's height, so that is this far below.
@@ -118,20 +96,9 @@ export function BriefCrest({ cell }: { cell: { width: number; height: number } }
         onRefresh: (self) => {
           measure()
           paint(self.progress)
-          settle(self.progress)
         },
-        onUpdate: (self) => {
-          paint(self.progress)
-          setPalette(self.progress)
-        },
-        onLeave: () => setPalette(1),
-        onLeaveBack: () => setPalette(0),
+        onUpdate: (self) => paint(self.progress),
       })
-
-      const onScrollEnd = () => settle(trigger.progress)
-      ScrollTrigger.addEventListener('scrollEnd', onScrollEnd)
-
-      return () => ScrollTrigger.removeEventListener('scrollEnd', onScrollEnd)
     },
     { scope: crestRef },
   )

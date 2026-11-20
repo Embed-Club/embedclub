@@ -2,7 +2,6 @@
 
 import {
   DOCK_IDS,
-  isWavePainting,
   setDockTheme,
   setScrollbarPalette,
 } from '@/components/features/embedthon/chromeTheme'
@@ -119,10 +118,6 @@ export function EmbedthonNav() {
     let lastSurface: Element | null | undefined
 
     const sync = () => {
-      // A wave sheet covers the dock right now and sets its palette from its own
-      // scroll trigger; writing here at the same time would flicker.
-      if (isWavePainting()) return
-
       const dock = document.getElementById(
         window.matchMedia('(min-width: 768px)').matches ? DESKTOP_DOCK : MOBILE_DOCK,
       )

@@ -12,6 +12,9 @@ export const eventDetails = {
     description:
       'Embers brings student makers, researchers, and problem-solvers together for a day of live demonstrations and original ideas. Enter Project Expo with a working prototype or take the stage for Paper Presentation. Bring work you believe in, learn from the room, and compete for cash prizes.',
     registerLabel: "Register for Embers '26",
+    registrationUrl: 'https://forms.gle/FydTB5VYcbqmsBbj6',
+    rulebookUrl:
+      'https://drive.google.com/file/d/1EuImfJXUIAwuKARnzIWVRqLsQvYX5FxL/view?usp=drivesdk',
     tracksLabel: 'View event tracks',
     start: '2026-11-25T08:30:00+05:30',
   },
@@ -26,6 +29,7 @@ export const eventDetails = {
     description:
       'Embedthon is a two-day hands-on event for second-year CSE students. Start with a practical workshop on AI coding agents, then work with your team through a 24-hour hackathon to turn an idea into working software.',
     registerLabel: 'Register for Embedthon',
+    registrationUrl: 'https://forms.gle/B6RdZZhG5mFa34sJA',
     tracksLabel: 'See the programme',
     start: '2026-11-24T09:00:00+05:30',
   },

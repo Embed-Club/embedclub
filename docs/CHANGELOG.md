@@ -123,9 +123,12 @@ Schema is migration-managed. The workflow is in SETUP.md §4. Two cautions:
 
 Two event pages and a chooser, built for the 24-25 November 2026 events.
 
-- `/embed-days` is a chooser inside the normal sidebar shell. Picking a side
-  slides the shell away and pushes the event page. Listed in the desktop and
-  mobile menus and in the sitemap.
+- `/embed-days` lists Embers '26 as one cutout card (same style as Resources and
+  Tutorials) inside the normal sidebar shell. Opening it slides the shell away
+  under a sheet of copper that `embers/loading.tsx` keeps up until the page has
+  loaded, and `CopperPageReveal` then breaks it into pixels, so the logo loader
+  never shows. Embedthon is no longer listed there (its `/embedthon` route still
+  exists). Listed in the desktop and mobile menus and in the sitemap.
 - `/embedthon` (agentic AI workshop plus 24-hour hackathon, 2nd year CSE) and
   `/embers` (national level technical fest) share one full-bleed page,
   `EmbedthonPageContent`, switched by an `event` prop. They deliberately sit
@@ -138,6 +141,11 @@ Two event pages and a chooser, built for the 24-25 November 2026 events.
   scroll and left a seam. Wheel scrolling is eased by Lenis (`useGentleScroll.ts`,
   event pages only, off under reduced motion, touch stays native). `lenis` is a
   new dependency, about 3 kB, justified by the whole scrubbed-section feel.
+- The home page opens with an announcement modal (`features/home/eventAnnouncement.tsx`,
+  hardcoded for now, to move into Payload) with a button to `/embers`, and a "special
+  thanks to our alumni" drop box (`common/specialThanks.tsx`). The Embers footer thanks
+  the same alumni. Embers '26 is also an Events entry, created by
+  `scripts/seedEmbersEvent.ts`; its description links to `/embers`.
 - **Owner decision, 2026-11-19:** the event copy (dates, schedule, syllabus,
   tracks) lives in JSX under `components/features/embedthon/`, not in Payload.
   This knowingly departs from AGENTS.md §3 so the event pages can stay a

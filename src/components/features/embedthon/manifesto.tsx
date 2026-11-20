@@ -275,7 +275,7 @@ export function Manifesto({ event }: { event: EventType }) {
         />
       )}
 
-      <div className="relative z-10 grid grid-cols-1 px-5 pt-[10svh] pb-[35svh] lg:grid-cols-2 lg:pl-16 lg:pr-0">
+      <div className="relative z-10 grid grid-cols-1 px-5 pt-[10svh] pb-10 lg:grid-cols-2 lg:pb-[35svh] lg:pl-16 lg:pr-0">
         {/* Left Column: Pinned Sticky Caption (IDEAS / LEARN) */}
         <div className="col-span-1">
           <div className="relative lg:sticky lg:top-[calc(50svh-4rem)]">

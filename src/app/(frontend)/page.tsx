@@ -1,3 +1,4 @@
+import { EventAnnouncement } from '@/components/features/home/eventAnnouncement'
 import {
   FeaturedMembersSection,
   type FeaturedRow,
@@ -83,6 +84,7 @@ export default async function Page() {
       <MainbarShell hideScrollbar>
         <div className="home-content-gated">
           <HeroSection />
+          <EventAnnouncement />
           {/* <ScrollAnimationSection /> */}
           <LatestEventsSection events={events} />
           <FeaturedMembersSection rows={rows} />

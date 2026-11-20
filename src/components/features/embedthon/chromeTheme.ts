@@ -14,8 +14,6 @@ export const DOCK_IDS = ['embedthon-floating-dock', 'embedthon-floating-dock-mob
 
 export type DockTheme = 'light' | 'dark'
 
-export const WAVE_IDS = ['embedthon-wave-schedule', 'embedthon-pixel-venue'] as const
-
 /** Points every dock variant at a palette. */
 export function setDockTheme(theme: DockTheme) {
   for (const id of DOCK_IDS) {
@@ -28,20 +26,6 @@ export function clearDockTheme() {
   for (const id of DOCK_IDS) {
     document.getElementById(id)?.removeAttribute('data-theme')
   }
-}
-
-/**
- * True while a wave sheet is mid-sweep. It paints its own background over the
- * dock and sets the dock's palette from its own scroll trigger, so other writers
- * have to stand down or the two fight on every frame.
- */
-export function isWavePainting(): boolean {
-  return WAVE_IDS.some((id) => {
-    const wave = document.getElementById(id)
-    if (!wave) return false
-    const style = window.getComputedStyle(wave)
-    return style.display !== 'none' && Number(style.opacity) > 0.01
-  })
 }
 
 /**

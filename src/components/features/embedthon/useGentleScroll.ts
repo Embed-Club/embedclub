@@ -6,6 +6,13 @@ import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 import { useEffect } from 'react'
 
+/** The live Lenis instance, for code that needs to scroll the page itself. */
+let current: Lenis | null = null
+
+export function getGentleScroll(): Lenis | null {
+  return current
+}
+
 /**
  * Wheel smoothing for the event pages.
  *
@@ -27,6 +34,7 @@ export function useGentleScroll() {
     gsap.registerPlugin(ScrollTrigger)
 
     const lenis = new Lenis({ lerp: 0.07, wheelMultiplier: 0.85, anchors: true })
+    current = lenis
     lenis.on('scroll', ScrollTrigger.update)
 
     const tick = (time: number) => lenis.raf(time * 1000)
@@ -39,6 +47,7 @@ export function useGentleScroll() {
       gsap.ticker.remove(tick)
       gsap.ticker.lagSmoothing(500, 33)
       lenis.destroy()
+      current = null
     }
   }, [])
 }

@@ -141,6 +141,9 @@ export function CopperPageReveal() {
 
     // Paint initial solid frame immediately before removing the transition curtain
     render(0)
+    // The first frame is painted, so the plain copper backing the loader hands over
+    // to can go: from here the dissolving tiles show the board underneath.
+    rootEl.style.background = 'transparent'
 
     let raf = 0
     let finished = false
@@ -184,7 +187,7 @@ export function CopperPageReveal() {
       ref={root}
       id="embedthon-reveal"
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[10000] select-none"
+      className="pointer-events-none fixed inset-0 z-[10000] select-none bg-primary"
     >
       <canvas ref={canvasRef} className="block h-full w-full" />
     </div>

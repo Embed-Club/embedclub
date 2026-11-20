@@ -1,115 +1,121 @@
 'use client'
 
+import {
+  CutoutCard,
+  CutoutCardContent,
+  CutoutCardImage,
+  CutoutCardInsetLabel,
+  CutoutCardMedia,
+  CutoutCardOverlay,
+  CutoutCorner,
+  cutoutCardSurfaceClassName,
+} from '@/components/common/cutoutCard'
+import { cn } from '@/lib/utils'
+import { ArrowUpRight } from 'lucide-react'
 import { animate, motion, useReducedMotion } from 'motion/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { eventDetails } from './eventType'
 
-const EVENTS = [
-  {
-    href: '/embedthon',
-    title: 'Embedthon',
-    detail: 'Agentic AI workshop and 24-hour hackathon',
-    date: '24 - 25 November 2026',
-    audience: 'For 2nd year CSE students',
-    direction: -1,
-  },
-  {
-    href: '/embers',
-    title: "Embers '26",
-    detail: 'National level technical fest',
-    date: '25 November 2026',
-    audience: 'Open to student innovators',
-    direction: 1,
-  },
-] as const
-
+const EVENT_HREF = '/embers'
 const TRANSITION_DURATION = 0.65
 const TRANSITION_DURATION_MS = TRANSITION_DURATION * 1000
 const TRANSITION_EASE = [0.65, 0, 0.35, 1] as const
 
+/**
+ * The Embed Days chooser: one card in the same cutout style the Resources,
+ * Tutorials and Events pages use. Opening it slides the whole shell out of the way
+ * under a sheet of copper that stays up until /embers has loaded, then breaks into
+ * pixels there (see `embers/loading.tsx` and `CopperPageReveal`).
+ */
 export function EmbedDaysPage() {
   const router = useRouter()
   const reduceMotion = useReducedMotion()
-  const [direction, setDirection] = useState<-1 | 1 | null>(null)
+  const [leaving, setLeaving] = useState(false)
+  const details = eventDetails.embers
 
   useEffect(() => {
-    router.prefetch('/embedthon')
-    router.prefetch('/embers')
+    router.prefetch(EVENT_HREF)
   }, [router])
 
-  const chooseEvent = (href: string, nextDirection: -1 | 1) => {
-    if (direction) return
+  const openEvent = () => {
+    if (leaving) return
 
     if (reduceMotion) {
-      router.push(href)
+      router.push(EVENT_HREF)
       return
     }
 
-    const shell = document.querySelector<HTMLElement>('.group\\/sidebar-wrapper')
+    // CSS.escape, because the class name contains a slash.
+    const shell = document.querySelector<HTMLElement>(`.${CSS.escape('group/sidebar-wrapper')}`)
     if (shell) {
       animate(
         shell,
-        { x: nextDirection * window.innerWidth },
+        { x: window.innerWidth },
         { duration: TRANSITION_DURATION, ease: TRANSITION_EASE },
       )
     }
 
-    setDirection(nextDirection)
-    window.setTimeout(() => router.push(href), TRANSITION_DURATION_MS)
+    setLeaving(true)
+    window.setTimeout(() => router.push(EVENT_HREF), TRANSITION_DURATION_MS)
   }
 
   return (
     <>
-      <main className="flex min-h-full w-full flex-col px-5 py-10 sm:px-10 sm:py-14 lg:px-14">
-        <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center">
-          <div className="mb-8 max-w-2xl sm:mb-12">
-            <h1 className="text-balance text-4xl font-extrabold tracking-[-0.04em] sm:text-6xl">
-              Embed Days
-            </h1>
-            <p className="mt-3 max-w-xl text-base leading-relaxed text-foreground/65 sm:text-lg">
-              Pick your side. Build with AI, or bring your best work to the national stage.
-            </p>
-          </div>
+      <div className="grid h-full w-full grid-cols-1 gap-4 px-2 pt-16 sm:grid-cols-2 md:gap-6 md:pt-32 lg:grid-cols-3 xl:grid-cols-4">
+        <CutoutCard className="h-full">
+          <button
+            type="button"
+            onClick={openEvent}
+            disabled={leaving}
+            aria-label={`Open: ${details.name}`}
+            className={cn(
+              cutoutCardSurfaceClassName,
+              'flex h-full w-full flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+            )}
+          >
+            {/* The mark is dark-on-dark artwork, so its well is the dark palette. */}
+            <CutoutCardMedia className="dark h-44 shrink-0 bg-background">
+              <CutoutCardImage
+                alt=""
+                src="/embersLogoBackdrop.webp"
+                sizes="(max-width: 768px) 100vw, 20rem"
+                className="object-contain p-4 [filter:drop-shadow(0_0_1px_hsl(var(--primary)/0.9))_drop-shadow(0_0_10px_hsl(var(--primary)/0.3))]"
+              />
+              <CutoutCardOverlay />
 
-          <div className="grid min-h-0 gap-3 md:grid-cols-2 md:gap-5">
-            {EVENTS.map((event) => (
-              <button
-                key={event.href}
-                type="button"
-                onClick={() => chooseEvent(event.href, event.direction)}
-                disabled={direction !== null}
-                className="group relative flex min-h-52 flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card/70 p-6 text-left transition-[border-color,transform,background-color,opacity] duration-300 hover:-translate-y-1 hover:border-primary hover:bg-accent/50 disabled:pointer-events-none disabled:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-h-64 sm:p-8"
-              >
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 texture-panel"
-                />
-                <div className="relative">
-                  <p className="text-sm font-semibold text-primary">{event.date}</p>
-                  <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.035em] sm:text-5xl">
-                    {event.title}
-                  </h2>
-                  <p className="mt-3 max-w-sm text-sm leading-relaxed text-foreground/70 sm:text-base">
-                    {event.detail}
-                  </p>
-                </div>
-                <div className="relative mt-6 flex items-center justify-between gap-4 border-t border-border pt-4 text-sm">
-                  <span className="text-foreground/55">{event.audience}</span>
-                  <span className="font-bold text-primary">Enter</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
-      </main>
+              <CutoutCardInsetLabel className="bottom-0 left-0 rounded-tr-[16px] bg-card px-4 py-2">
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+                  {details.date}
+                </span>
+                <CutoutCorner className="absolute -right-[27px] -bottom-px rotate-90 text-card" />
+                <CutoutCorner className="absolute -top-[27px] -left-px rotate-90 text-card" />
+              </CutoutCardInsetLabel>
+            </CutoutCardMedia>
 
-      {direction &&
+            <CutoutCardContent className="flex flex-1 flex-col gap-2 p-4">
+              <h3 className="line-clamp-2 font-semibold leading-snug transition-colors group-hover/cutout:text-primary">
+                {details.name}
+              </h3>
+              <p className="line-clamp-2 text-sm text-muted-foreground">{details.label}</p>
+
+              <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+                <span className="text-xs text-muted-foreground">{details.location}</span>
+                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground transition-all group-hover/cutout:border-primary group-hover/cutout:bg-primary group-hover/cutout:text-primary-foreground">
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+            </CutoutCardContent>
+          </button>
+        </CutoutCard>
+      </div>
+
+      {leaving &&
         createPortal(
           <motion.div
-            key={direction}
             aria-hidden="true"
-            initial={{ x: `${-direction * 100}%` }}
+            initial={{ x: '-100%' }}
             animate={{ x: '0%' }}
             transition={{ duration: TRANSITION_DURATION, ease: TRANSITION_EASE }}
             className="pointer-events-none fixed inset-0 z-[10000] bg-primary"
