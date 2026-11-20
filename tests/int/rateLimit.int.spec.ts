@@ -5,7 +5,11 @@ const key = () => `selftest:${Date.now()}:${Math.random().toString(36).slice(2)}
 
 describe('rate limiter', () => {
   it('reports the redis backend when REDIS_URL is set', () => {
-    expect(rateLimitBackend()).toBe('redis')
+    if (process.env.REDIS_URL) {
+      expect(rateLimitBackend()).toBe('redis')
+    } else {
+      expect(rateLimitBackend()).toBe('memory')
+    }
   })
 
   it('allows up to max then blocks', async () => {

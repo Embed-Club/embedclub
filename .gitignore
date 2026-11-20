@@ -12,9 +12,7 @@ out/
 dist/
 
 # Payload CMS generated files
-# (importMap.js is regenerated during the build; payload-types.ts is committed
-#  because next build type-checks against it)
-importMap.js
+# (payload-types.ts and importMap.js are committed so next build & tsc can type-check against them)
 .payload/
 
 # Environment variables
@@ -40,6 +38,7 @@ migration_log.txt
 .gemini/
 .freebuff/
 scratch/
+*opencode*.json
 
 # Attachments pasted into local agent/IDE sessions - never part of the project
 .codex-remote-attachments/

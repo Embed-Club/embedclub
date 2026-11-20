@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const url = (body?.url || '').trim()
+    let url = (body?.url || '').trim()
 
     if (!url) {
       return NextResponse.json({ error: 'Please provide a Google Form URL.' }, { status: 400 })
@@ -17,7 +17,12 @@ export async function POST(request: Request) {
       )
     }
 
-    // Follow redirects (especially for short forms.gle links)
+    // If an editor link was provided (.../edit), convert it to public viewform link.
+    if (url.includes('/edit')) {
+      url = url.replace(/\/edit(\?.*|#.*)?$/, '/viewform')
+    }
+
+    // Follow redirects (especially for short forms.gle links and legacy /forms/d/ links)
     const res = await fetch(url, {
       headers: {
         'User-Agent':
@@ -25,6 +30,16 @@ export async function POST(request: Request) {
       },
       redirect: 'follow',
     })
+
+    if (res.url.includes('accounts.google.com')) {
+      return NextResponse.json(
+        {
+          error:
+            "This Google Form requires Google Sign-In. In Google Forms Settings > Responses, turn OFF 'Limit to 1 response' and 'Restrict to users in [Domain]' so responses can be submitted publicly.",
+        },
+        { status: 400 },
+      )
+    }
 
     if (!res.ok) {
       return NextResponse.json(
@@ -36,11 +51,23 @@ export async function POST(request: Request) {
     }
 
     const html = await res.text()
+
+    if (html.includes('no longer accepting responses')) {
+      return NextResponse.json(
+        {
+          error:
+            "This Google Form is not currently accepting responses. Turn on 'Accepting responses' in the Google Forms Responses tab.",
+        },
+        { status: 400 },
+      )
+    }
+
     const parsed = parseGoogleFormHtml(html)
 
     return NextResponse.json({
       success: true,
       data: parsed,
+      formUrl: res.url || url,
     })
   } catch (error) {
     console.error('[GoogleFormImport] Error:', error)

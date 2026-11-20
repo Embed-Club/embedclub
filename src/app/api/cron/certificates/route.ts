@@ -1,4 +1,5 @@
 import { dispatchDueCertificates } from '@/lib/certificateDispatch'
+import { forwardPendingSubmissions } from '@/lib/googleForms'
 import { syncPendingSubmissions } from '@/lib/googleSheets'
 import { type NextRequest, NextResponse } from 'next/server'
 
@@ -33,7 +34,8 @@ export async function GET(req: NextRequest) {
   try {
     const certificates = await dispatchDueCertificates()
     const sheets = await syncPendingSubmissions()
-    return NextResponse.json({ ok: true, certificates, sheets })
+    const forms = await forwardPendingSubmissions()
+    return NextResponse.json({ ok: true, certificates, sheets, forms })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     console.error('[Cron] Certificate run failed:', message)

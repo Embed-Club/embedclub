@@ -4,7 +4,7 @@ import { EmptyState } from '@/components/common/emptyState'
 import { FocusCards } from '@/components/common/focusCards'
 import { PageTitle } from '@/components/common/pageTitle'
 import { TextReveal } from '@/components/common/textReveal'
-import { EventCard } from '@/components/features/events/eventsCards'
+import { EventCard, EventModal, eventToCard } from '@/components/features/events/eventsCards'
 import { Carousel } from '@/components/features/events/eventsCarousel'
 import {
   Pagination,
@@ -32,6 +32,7 @@ function getEventImageUrl(event: Event): string {
 export function EventsPageContent({ events }: { events: Event[] }) {
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(9)
+  const [deepLinkedEvent, setDeepLinkedEvent] = React.useState<Event | null>(null)
 
   React.useEffect(() => {
     const updatePageSize = () => setPageSize(window.innerWidth < 768 ? 6 : 9)
@@ -39,6 +40,18 @@ export function EventsPageContent({ events }: { events: Event[] }) {
     window.addEventListener('resize', updatePageSize)
     return () => window.removeEventListener('resize', updatePageSize)
   }, [])
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const eventParam = params.get('event')
+    if (!eventParam) return
+
+    const match = events.find((e) => e.slug === eventParam || String(e.id) === eventParam)
+    if (match) {
+      setDeepLinkedEvent(match)
+    }
+  }, [events])
 
   const recent = events.slice(0, 5)
   const totalPages = Math.max(1, Math.ceil(events.length / pageSize))
@@ -131,6 +144,31 @@ export function EventsPageContent({ events }: { events: Event[] }) {
         )}
         {totalPages > 1 && <div className="mt-6 flex w-full justify-end">{pager}</div>}
       </div>
+
+      {deepLinkedEvent && (
+        <EventModal
+          open={Boolean(deepLinkedEvent)}
+          onClose={() => {
+            setDeepLinkedEvent(null)
+            if (typeof window !== 'undefined') {
+              const url = new URL(window.location.href)
+              if (url.searchParams.has('event')) {
+                url.searchParams.delete('event')
+                window.history.replaceState({}, '', url.pathname + (url.search ? url.search : ''))
+              }
+            }
+          }}
+          card={eventToCard(deepLinkedEvent)}
+          event={deepLinkedEvent}
+          originRect={
+            typeof document !== 'undefined' && deepLinkedEvent.id != null
+              ? (document
+                  .querySelector<HTMLElement>(`[data-event-id="${deepLinkedEvent.id}"]`)
+                  ?.getBoundingClientRect() ?? null)
+              : null
+          }
+        />
+      )}
     </>
   )
 }
